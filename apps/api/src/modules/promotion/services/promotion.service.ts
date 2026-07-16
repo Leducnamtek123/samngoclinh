@@ -7,7 +7,9 @@ import { IPromotionFreeTreeItem } from '@modules/promotion/interfaces/promotion.
 export class PromotionService {
     constructor(private readonly promotionRepository: PromotionRepository) {}
 
-    async freeTreeCampaign(): Promise<IResponseReturn<{ items: IPromotionFreeTreeItem[]; note: string }>> {
+    async freeTreeCampaign(): Promise<
+        IResponseReturn<{ items: IPromotionFreeTreeItem[]; note: string }>
+    > {
         const payload = await this.promotionRepository.freeTreeCampaign();
 
         return {

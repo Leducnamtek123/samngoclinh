@@ -1,6 +1,9 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
-import { IWalletSummary, IWalletTransactionItem } from '@modules/wallet/interfaces/wallet.interface';
+import {
+    IWalletSummary,
+    IWalletTransactionItem,
+} from '@modules/wallet/interfaces/wallet.interface';
 
 @Injectable()
 export class WalletRepository {
@@ -15,9 +18,10 @@ export class WalletRepository {
             },
         });
 
-        const transactionsCount = await this.databaseService.walletTransaction.count({
-            where: { userId },
-        });
+        const transactionsCount =
+            await this.databaseService.walletTransaction.count({
+                where: { userId },
+            });
 
         return {
             balancePoint: wallet?.balancePoint ?? 0,

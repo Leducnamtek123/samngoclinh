@@ -7,7 +7,9 @@ import { ContentRepository } from '@modules/content/repositories/content.reposit
 export class ContentService {
     constructor(private readonly contentRepository: ContentRepository) {}
 
-    async listArticles(): Promise<IResponseReturn<{ items: IContentArticleItem[] }>> {
+    async listArticles(): Promise<
+        IResponseReturn<{ items: IContentArticleItem[] }>
+    > {
         return {
             data: {
                 items: await this.contentRepository.listArticles(),

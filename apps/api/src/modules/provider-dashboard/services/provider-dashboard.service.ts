@@ -10,7 +10,9 @@ export class ProviderDashboardService implements IProviderDashboardService {
         private readonly providerDashboardRepository: ProviderDashboardRepository
     ) {}
 
-    async overview(userId: string): Promise<IResponseReturn<ProviderDashboardOverviewResponseDto>> {
+    async overview(
+        userId: string
+    ): Promise<IResponseReturn<ProviderDashboardOverviewResponseDto>> {
         const data = await this.providerDashboardRepository.getOverview(userId);
 
         return {

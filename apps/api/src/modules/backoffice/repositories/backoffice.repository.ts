@@ -8,11 +8,20 @@ export class BackofficeRepository {
     constructor(private readonly databaseService: DatabaseService) {}
 
     async getOverview(): Promise<IBackofficeOverview> {
-        const domains = ['catalog', 'content', 'promotion', 'marketplace', 'wallet', 'orders', 'cultivation'];
+        const domains = [
+            'catalog',
+            'content',
+            'promotion',
+            'marketplace',
+            'wallet',
+            'orders',
+            'cultivation',
+        ];
 
-        const pendingKycCount = await this.databaseService.identityVerificationRequest.count({
-            where: { status: 'pending' },
-        });
+        const pendingKycCount =
+            await this.databaseService.identityVerificationRequest.count({
+                where: { status: 'pending' },
+            });
 
         const activeProvidersCount = await this.databaseService.user.count({
             where: {

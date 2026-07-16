@@ -1,6 +1,10 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
-import { IOrderDetail, IOrderSummaryItem } from '@modules/orders/interfaces/orders.interface';
+import {
+    IOrderDetail,
+    IOrderSummaryItem,
+} from '@modules/orders/interfaces/orders.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrdersRepository {
@@ -36,6 +40,39 @@ export class OrdersRepository {
         if (!order) {
             return null;
         }
+
+        return {
+            id: order.id,
+            code: order.code,
+            status: order.status,
+            currency: order.currency,
+            subtotal: order.subtotal,
+            shippingFee: order.shippingFee,
+            discount: order.discount,
+            total: order.total,
+            paymentMethod: order.paymentMethod,
+            items: order.items,
+            paidAt: order.paidAt,
+            cancelledAt: order.cancelledAt,
+            createdAt: order.createdAt,
+        };
+    }
+
+    async createOrder(data: {
+        code: string;
+        userId: string;
+        status: string;
+        currency: string;
+        subtotal: number;
+        shippingFee: number;
+        discount: number;
+        total: number;
+        paymentMethod: string | null;
+        items: Prisma.InputJsonValue;
+    }): Promise<IOrderDetail> {
+        const order = await this.databaseService.order.create({
+            data,
+        });
 
         return {
             id: order.id,

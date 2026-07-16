@@ -11,15 +11,14 @@ export class ProfileService {
         const profile = await this.profileRepository.me(userId);
 
         return {
-            data:
-                profile ?? {
-                    fullName: '',
-                    email: '',
-                    role: '',
-                    referralCode: '',
-                    rank: '',
-                    verified: false,
-                },
+            data: profile ?? {
+                fullName: '',
+                email: '',
+                role: '',
+                referralCode: '',
+                rank: '',
+                verified: false,
+            },
         };
     }
 }

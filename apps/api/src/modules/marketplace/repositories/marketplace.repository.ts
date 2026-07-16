@@ -1,6 +1,10 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { IMarketplaceListingItem } from '@modules/marketplace/interfaces/marketplace.interface';
+import { MarketplaceListing } from '@generated/prisma-client';
+import { MarketplaceCreateListingRequestDto } from '@modules/marketplace/dtos/request/marketplace.create-listing.request.dto';
+import { MarketplaceUpdateListingRequestDto } from '@modules/marketplace/dtos/request/marketplace.update-listing.request.dto';
 
 @Injectable()
 export class MarketplaceRepository {
@@ -11,6 +15,7 @@ export class MarketplaceRepository {
             where: { status: 'active' },
             orderBy: [{ price: 'asc' }, { createdAt: 'desc' }],
             select: {
+                id: true,
                 code: true,
                 title: true,
                 price: true,
@@ -20,11 +25,64 @@ export class MarketplaceRepository {
         });
 
         return items.map(item => ({
-            id: item.code,
+            id: item.id,
             title: item.title,
             price: item.price,
             quantity: item.quantity,
             ownerType: item.ownerType as IMarketplaceListingItem['ownerType'],
         }));
+    }
+
+    async getListingById(id: string): Promise<MarketplaceListing | null> {
+        return this.databaseService.marketplaceListing.findUnique({
+            where: { id },
+        });
+    }
+
+    async createListing(
+        userId: string,
+        payload: MarketplaceCreateListingRequestDto
+    ): Promise<MarketplaceListing> {
+        const code = 'lst-' + Math.random().toString(36).substring(2, 11);
+        return this.databaseService.marketplaceListing.create({
+            data: {
+                code,
+                title: payload.title,
+                category: payload.category,
+                price: payload.price,
+                quantity: payload.quantity,
+                ownerType: 'provider',
+                ownerUserId: userId,
+                status: 'active',
+                publishedAt: new Date(),
+                metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
+            },
+        });
+    }
+
+    async updateListing(
+        id: string,
+        userId: string,
+        payload: MarketplaceUpdateListingRequestDto
+    ): Promise<MarketplaceListing> {
+        return this.databaseService.marketplaceListing.update({
+            where: { id, ownerUserId: userId },
+            data: {
+                title: payload.title,
+                price: payload.price,
+                quantity: payload.quantity,
+                metadata: payload.metadata as Prisma.InputJsonValue,
+            },
+        });
+    }
+
+    async deleteListing(id: string, userId: string): Promise<boolean> {
+        await this.databaseService.marketplaceListing.update({
+            where: { id, ownerUserId: userId },
+            data: {
+                status: 'archived',
+            },
+        });
+        return true;
     }
 }

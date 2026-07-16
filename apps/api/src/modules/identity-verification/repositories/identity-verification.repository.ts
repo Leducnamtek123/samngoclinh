@@ -7,7 +7,9 @@ import { IdentityVerificationRequest } from '@generated/prisma-client';
 export class IdentityVerificationRepository {
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getLatestRequest(userId: string): Promise<IdentityVerificationRequest | null> {
+    async getLatestRequest(
+        userId: string
+    ): Promise<IdentityVerificationRequest | null> {
         return this.databaseService.identityVerificationRequest.findFirst({
             where: { userId },
             orderBy: { submittedAt: 'desc' },
@@ -31,6 +33,36 @@ export class IdentityVerificationRepository {
                 documentFiles: payload.documentFiles ?? [],
                 note: null,
                 metadata: {},
+            },
+        });
+    }
+
+    async listPendingRequests(): Promise<IdentityVerificationRequest[]> {
+        return this.databaseService.identityVerificationRequest.findMany({
+            where: { status: 'pending' },
+            orderBy: { submittedAt: 'asc' },
+        });
+    }
+
+    async getRequestById(
+        id: string
+    ): Promise<IdentityVerificationRequest | null> {
+        return this.databaseService.identityVerificationRequest.findUnique({
+            where: { id },
+        });
+    }
+
+    async updateStatus(
+        id: string,
+        status: string,
+        note?: string | null
+    ): Promise<IdentityVerificationRequest> {
+        return this.databaseService.identityVerificationRequest.update({
+            where: { id },
+            data: {
+                status,
+                note: note ?? null,
+                reviewedAt: new Date(),
             },
         });
     }

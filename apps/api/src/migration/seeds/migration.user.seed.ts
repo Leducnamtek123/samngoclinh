@@ -157,9 +157,8 @@ export class MigrationUserSeed
                             countryId: countries.find(
                                 country => country.alpha2Code === user.country
                             )!.id,
-                            roleId: roles.find(
-                                role => role.name === user.role
-                            )!.id,
+                            roleId: roles.find(role => role.name === user.role)!
+                                .id,
                             password: passwordHash,
                             passwordCreated,
                             passwordExpired,

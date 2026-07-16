@@ -500,6 +500,22 @@ model CatalogProduct {
   @@map("CatalogProducts")
 }
 
+model Cart {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @db.ObjectId
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique(fields: [userId])
+  @@map("Carts")
+}
+
+type CartItem {
+  productId String @db.ObjectId
+  quantity  Int
+}
+
 model PromotionCampaign {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   code              String

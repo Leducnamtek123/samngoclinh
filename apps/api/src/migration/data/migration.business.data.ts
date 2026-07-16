@@ -1,135 +1,138 @@
 import { EnumAppEnvironment } from '@app/enums/app.enum';
 
-export const migrationBusinessData: Record<EnumAppEnvironment, {
-    catalogPlants: {
-        code: string;
-        name: string;
-        ageYear: number;
-        price: number;
-        stock: number;
-        status: string;
-        orderCount: number;
-        images: string[];
-        description: string;
-    }[];
-    catalogProducts: {
-        code: string;
-        name: string;
-        category: string;
-        unit: string;
-        price: number;
-        stock: number;
-        status: string;
-        featured: boolean;
-        images: string[];
-        description: string;
-    }[];
-    promotionCampaigns: {
-        code: string;
-        title: string;
-        description: string;
-        note: string;
-        status: string;
-        remainingSlots: number;
-        requiredVerified: boolean;
-        requiredDeposit: boolean;
-        plantCode: string;
-        metadata: Record<string, unknown>;
-    }[];
-    marketplaceListings: {
-        code: string;
-        title: string;
-        category: string;
-        price: number;
-        quantity: number;
-        ownerType: string;
-        status: string;
-        metadata: Record<string, unknown>;
-    }[];
-    contentArticles: {
-        slug: string;
-        title: string;
-        category: string;
-        summary: string;
-        body: string;
-        status: string;
-        sortOrder: number;
-    }[];
-    cultivationGardens: {
-        code: string;
-        name: string;
-        status: string;
-        totalBeds: number;
-        activeBeds: number;
-        totalTrees: number;
-        metadata: Record<string, unknown>;
-    }[];
-    cultivationBeds: {
-        code: string;
-        gardenCode: string;
-        name: string;
-        ageYear: number;
-        treeCount: number;
-        status: string;
-        metadata: Record<string, unknown>;
-    }[];
-    cultivationTrees: {
-        code: string;
-        bedCode: string;
-        name: string;
-        ageYear: number;
-        quantity: number;
-        status: string;
-        metadata: Record<string, unknown>;
-    }[];
-    walletAccounts: {
-        balancePoint: number;
-        treesOwned: number;
-        transferEnabled: boolean;
-        metadata: Record<string, unknown>;
-    }[];
-    walletTransactions: {
-        code: string;
-        type: string;
-        title: string;
-        amount: number;
-        balanceAfter: number;
-        status: string;
-        metadata: Record<string, unknown>;
-    }[];
-    orders: {
-        code: string;
-        status: string;
-        currency: string;
-        subtotal: number;
-        shippingFee: number;
-        discount: number;
-        total: number;
-        paymentMethod: string;
-        items: Record<string, unknown>[];
-        metadata: Record<string, unknown>;
-    }[];
-    identityVerificationRequests: {
-        code: string;
-        fullName: string;
-        identityNumber: string;
-        status: string;
-        frontImageUrl: string;
-        backImageUrl: string;
-        documentFiles: string[];
-        note: string;
-        metadata: Record<string, unknown>;
-    }[];
-    businessProfile: {
-        fullName: string;
-        referralCode: string;
-        rank: string;
-        phone: string;
-        gender: string;
-        verified: boolean;
-        metadata: Record<string, unknown>;
-    };
-}> = {
+export const migrationBusinessData: Record<
+    EnumAppEnvironment,
+    {
+        catalogPlants: {
+            code: string;
+            name: string;
+            ageYear: number;
+            price: number;
+            stock: number;
+            status: string;
+            orderCount: number;
+            images: string[];
+            description: string;
+        }[];
+        catalogProducts: {
+            code: string;
+            name: string;
+            category: string;
+            unit: string;
+            price: number;
+            stock: number;
+            status: string;
+            featured: boolean;
+            images: string[];
+            description: string;
+        }[];
+        promotionCampaigns: {
+            code: string;
+            title: string;
+            description: string;
+            note: string;
+            status: string;
+            remainingSlots: number;
+            requiredVerified: boolean;
+            requiredDeposit: boolean;
+            plantCode: string;
+            metadata: Record<string, unknown>;
+        }[];
+        marketplaceListings: {
+            code: string;
+            title: string;
+            category: string;
+            price: number;
+            quantity: number;
+            ownerType: string;
+            status: string;
+            metadata: Record<string, unknown>;
+        }[];
+        contentArticles: {
+            slug: string;
+            title: string;
+            category: string;
+            summary: string;
+            body: string;
+            status: string;
+            sortOrder: number;
+        }[];
+        cultivationGardens: {
+            code: string;
+            name: string;
+            status: string;
+            totalBeds: number;
+            activeBeds: number;
+            totalTrees: number;
+            metadata: Record<string, unknown>;
+        }[];
+        cultivationBeds: {
+            code: string;
+            gardenCode: string;
+            name: string;
+            ageYear: number;
+            treeCount: number;
+            status: string;
+            metadata: Record<string, unknown>;
+        }[];
+        cultivationTrees: {
+            code: string;
+            bedCode: string;
+            name: string;
+            ageYear: number;
+            quantity: number;
+            status: string;
+            metadata: Record<string, unknown>;
+        }[];
+        walletAccounts: {
+            balancePoint: number;
+            treesOwned: number;
+            transferEnabled: boolean;
+            metadata: Record<string, unknown>;
+        }[];
+        walletTransactions: {
+            code: string;
+            type: string;
+            title: string;
+            amount: number;
+            balanceAfter: number;
+            status: string;
+            metadata: Record<string, unknown>;
+        }[];
+        orders: {
+            code: string;
+            status: string;
+            currency: string;
+            subtotal: number;
+            shippingFee: number;
+            discount: number;
+            total: number;
+            paymentMethod: string;
+            items: Record<string, unknown>[];
+            metadata: Record<string, unknown>;
+        }[];
+        identityVerificationRequests: {
+            code: string;
+            fullName: string;
+            identityNumber: string;
+            status: string;
+            frontImageUrl: string;
+            backImageUrl: string;
+            documentFiles: string[];
+            note: string;
+            metadata: Record<string, unknown>;
+        }[];
+        businessProfile: {
+            fullName: string;
+            referralCode: string;
+            rank: string;
+            phone: string;
+            gender: string;
+            verified: boolean;
+            metadata: Record<string, unknown>;
+        };
+    }
+> = {
     [EnumAppEnvironment.local]: {
         catalogPlants: [
             {
@@ -245,7 +248,8 @@ export const migrationBusinessData: Record<EnumAppEnvironment, {
                 slug: 'bao-chi-noi-ve-iwe-farm',
                 title: 'Báo chí nói gì về iWE FARM',
                 category: 'news',
-                summary: 'Tổng hợp góc nhìn báo chí về nền tảng minh bạch nguồn gốc Sâm Ngọc Linh.',
+                summary:
+                    'Tổng hợp góc nhìn báo chí về nền tảng minh bạch nguồn gốc Sâm Ngọc Linh.',
                 body: 'Sự ra đời của ứng dụng iWE FARM đã thu hút sự quan tâm của nhiều cơ quan báo chí...',
                 status: 'published',
                 sortOrder: 1,
@@ -254,7 +258,8 @@ export const migrationBusinessData: Record<EnumAppEnvironment, {
                 slug: 'cup-vang-nen-tang-nong-nghiep-thong-minh',
                 title: 'iWE FARM nhận Cúp vàng nền tảng nông nghiệp thông minh',
                 category: 'event',
-                summary: 'Ghi nhận cho mô hình nông nghiệp số và dữ liệu cây sâm.',
+                summary:
+                    'Ghi nhận cho mô hình nông nghiệp số và dữ liệu cây sâm.',
                 body: 'Ngày 6/12, ứng dụng iWE FARM do Công ty Cổ phần iWE Homes phát triển...',
                 status: 'published',
                 sortOrder: 2,
@@ -263,7 +268,8 @@ export const migrationBusinessData: Record<EnumAppEnvironment, {
                 slug: 'faq-sam-ngoc-linh',
                 title: 'Câu hỏi thường gặp về Sâm Ngọc Linh',
                 category: 'faq',
-                summary: 'Giải thích các câu hỏi phổ biến về cây sâm, tuổi cây và ứng dụng.',
+                summary:
+                    'Giải thích các câu hỏi phổ biến về cây sâm, tuổi cây và ứng dụng.',
                 body: '— iWE FARM — “Gieo mầm giá trị thật”.',
                 status: 'published',
                 sortOrder: 3,

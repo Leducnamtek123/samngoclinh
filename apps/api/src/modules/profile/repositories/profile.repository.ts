@@ -23,8 +23,8 @@ export class ProfileRepository {
             return null;
         }
 
-        const businessProfile = await this.databaseService.businessProfile.findUnique(
-            {
+        const businessProfile =
+            await this.databaseService.businessProfile.findUnique({
                 where: { userId },
                 select: {
                     fullName: true,
@@ -32,8 +32,7 @@ export class ProfileRepository {
                     rank: true,
                     verified: true,
                 },
-            }
-        );
+            });
 
         return {
             fullName: businessProfile?.fullName ?? '',

@@ -4,7 +4,15 @@ import { Expose } from 'class-transformer';
 export class BackofficeOverviewResponseDto {
     @ApiProperty({
         required: true,
-        example: ['catalog', 'content', 'promotion', 'marketplace', 'wallet', 'orders', 'cultivation'],
+        example: [
+            'catalog',
+            'content',
+            'promotion',
+            'marketplace',
+            'wallet',
+            'orders',
+            'cultivation',
+        ],
     })
     @Expose()
     domains: string[];

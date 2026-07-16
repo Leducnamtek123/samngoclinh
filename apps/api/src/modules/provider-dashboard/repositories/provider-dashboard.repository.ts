@@ -14,13 +14,16 @@ export class ProviderDashboardRepository {
             },
         });
 
-        const kycCount = await this.databaseService.identityVerificationRequest.count({
-            where: { status: 'pending' },
-        });
+        const kycCount =
+            await this.databaseService.identityVerificationRequest.count({
+                where: { status: 'pending' },
+            });
 
-        const gardensCount = await this.databaseService.cultivationGarden.count({
-            where: { ownerUserId: userId },
-        });
+        const gardensCount = await this.databaseService.cultivationGarden.count(
+            {
+                where: { ownerUserId: userId },
+            }
+        );
 
         const bedsCount = await this.databaseService.cultivationBed.count({
             where: { ownerUserId: userId },

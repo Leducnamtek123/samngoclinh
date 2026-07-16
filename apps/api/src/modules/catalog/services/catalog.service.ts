@@ -10,7 +10,9 @@ import { CatalogRepository } from '@modules/catalog/repositories/catalog.reposit
 export class CatalogService {
     constructor(private readonly catalogRepository: CatalogRepository) {}
 
-    async listPlants(): Promise<IResponseReturn<{ items: ICatalogPlantItem[] }>> {
+    async listPlants(): Promise<
+        IResponseReturn<{ items: ICatalogPlantItem[] }>
+    > {
         return {
             data: {
                 items: await this.catalogRepository.listPlants(),
@@ -18,7 +20,9 @@ export class CatalogService {
         };
     }
 
-    async listShopItems(): Promise<IResponseReturn<{ items: ICatalogShopItem[] }>> {
+    async listShopItems(): Promise<
+        IResponseReturn<{ items: ICatalogShopItem[] }>
+    > {
         return {
             data: {
                 items: await this.catalogRepository.listShopItems(),

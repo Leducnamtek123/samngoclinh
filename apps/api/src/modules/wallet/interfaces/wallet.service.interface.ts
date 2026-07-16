@@ -4,5 +4,7 @@ import { WalletTransactionResponseDto } from '@modules/wallet/dtos/response/wall
 
 export interface IWalletService {
     summary(userId: string): Promise<IResponseReturn<WalletSummaryResponseDto>>;
-    transactions(userId: string): Promise<IResponseReturn<{ items: WalletTransactionResponseDto[] }>>;
+    transactions(
+        userId: string
+    ): Promise<IResponseReturn<{ items: WalletTransactionResponseDto[] }>>;
 }

@@ -8,6 +8,8 @@ import {
 import { applyDecorators } from '@nestjs/common';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
+import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
+import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 
 export function OrdersUserListDoc(): MethodDecorator {
     return applyDecorators(
@@ -45,6 +47,37 @@ export function OrdersUserDetailDoc(): MethodDecorator {
             jwtAccessToken: true,
         }),
         DocGuard({ role: true }),
+        DocResponse('orders.detail', {
+            dto: OrdersDetailResponseDto,
+        })
+    );
+}
+
+export function OrdersUserCheckoutDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Checkout user shopping cart to create order',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('orders.detail', {
+            dto: OrdersDetailResponseDto,
+        })
+    );
+}
+
+export function OrdersUserPaymentWebhookDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Webhook callback to process order payment from gateway',
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: OrdersPaymentWebhookRequestDto,
+        }),
         DocResponse('orders.detail', {
             dto: OrdersDetailResponseDto,
         })

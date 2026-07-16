@@ -19,7 +19,9 @@ export class PromotionPublicController {
     @Response('promotion.freeTreeCampaign')
     @ApiKeyProtected()
     @Get('/free-tree')
-    async freeTreeCampaign(): Promise<IResponseReturn<PromotionFreeTreeResponseDto>> {
+    async freeTreeCampaign(): Promise<
+        IResponseReturn<PromotionFreeTreeResponseDto>
+    > {
         return this.promotionService.freeTreeCampaign();
     }
 }

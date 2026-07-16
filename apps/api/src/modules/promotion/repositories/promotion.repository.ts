@@ -10,10 +10,12 @@ export class PromotionRepository {
         note: string;
         items: IPromotionFreeTreeItem[];
     }> {
-        const campaign = await this.databaseService.promotionCampaign.findFirst({
-            where: { status: 'active' },
-            orderBy: [{ remainingSlots: 'desc' }, { createdAt: 'desc' }],
-        });
+        const campaign = await this.databaseService.promotionCampaign.findFirst(
+            {
+                where: { status: 'active' },
+                orderBy: [{ remainingSlots: 'desc' }, { createdAt: 'desc' }],
+            }
+        );
 
         if (!campaign) {
             return {

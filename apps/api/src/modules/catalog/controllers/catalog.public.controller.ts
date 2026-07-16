@@ -23,7 +23,9 @@ export class CatalogPublicController {
     @Response('catalog.listPlants')
     @ApiKeyProtected()
     @Get('/plants')
-    async listPlants(): Promise<IResponseReturn<{ items: CatalogPlantResponseDto[] }>> {
+    async listPlants(): Promise<
+        IResponseReturn<{ items: CatalogPlantResponseDto[] }>
+    > {
         return this.catalogService.listPlants();
     }
 
@@ -31,7 +33,9 @@ export class CatalogPublicController {
     @Response('catalog.listShopItems')
     @ApiKeyProtected()
     @Get('/shop-items')
-    async listShopItems(): Promise<IResponseReturn<{ items: CatalogProductResponseDto[] }>> {
+    async listShopItems(): Promise<
+        IResponseReturn<{ items: CatalogProductResponseDto[] }>
+    > {
         return this.catalogService.listShopItems();
     }
 }

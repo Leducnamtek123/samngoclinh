@@ -11,7 +11,8 @@ import { WalletTransactionResponseDto } from '@modules/wallet/dtos/response/wall
 export function WalletUserSummaryDoc(): MethodDecorator {
     return applyDecorators(
         Doc({
-            summary: 'Get wallet summary (balance, trees owned, transactions count)',
+            summary:
+                'Get wallet summary (balance, trees owned, transactions count)',
         }),
         DocAuth({
             xApiKey: true,

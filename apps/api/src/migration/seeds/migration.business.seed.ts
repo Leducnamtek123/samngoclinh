@@ -240,13 +240,15 @@ export class MigrationBusinessSeed
                     where: { userId: provider.id },
                     create: {
                         ...this.data.businessProfile,
-                        metadata: this.data.businessProfile.metadata as Prisma.InputJsonValue,
+                        metadata: this.data.businessProfile
+                            .metadata as Prisma.InputJsonValue,
                         userId: provider.id,
                         createdBy: provider.id,
                     },
                     update: {
                         ...this.data.businessProfile,
-                        metadata: this.data.businessProfile.metadata as Prisma.InputJsonValue,
+                        metadata: this.data.businessProfile
+                            .metadata as Prisma.InputJsonValue,
                         updatedBy: provider.id,
                     },
                 }),

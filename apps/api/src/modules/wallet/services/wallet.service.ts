@@ -9,7 +9,9 @@ import { WalletTransactionResponseDto } from '@modules/wallet/dtos/response/wall
 export class WalletService implements IWalletService {
     constructor(private readonly walletRepository: WalletRepository) {}
 
-    async summary(userId: string): Promise<IResponseReturn<WalletSummaryResponseDto>> {
+    async summary(
+        userId: string
+    ): Promise<IResponseReturn<WalletSummaryResponseDto>> {
         const summaryData = await this.walletRepository.getSummary(userId);
 
         return {
@@ -17,7 +19,9 @@ export class WalletService implements IWalletService {
         };
     }
 
-    async transactions(userId: string): Promise<IResponseReturn<{ items: WalletTransactionResponseDto[] }>> {
+    async transactions(
+        userId: string
+    ): Promise<IResponseReturn<{ items: WalletTransactionResponseDto[] }>> {
         const items = await this.walletRepository.getTransactions(userId);
 
         return {

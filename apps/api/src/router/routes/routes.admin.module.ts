@@ -12,6 +12,8 @@ import { SessionAdminController } from '@modules/session/controllers/session.adm
 import { TermPolicyAdminController } from '@modules/term-policy/controllers/term-policy.admin.controller';
 import { UserAdminController } from '@modules/user/controllers/user.admin.controller';
 import { UserModule } from '@modules/user/user.module';
+import { IdentityVerificationAdminController } from '@modules/identity-verification/controllers/identity-verification.admin.controller';
+import { IdentityVerificationModule } from '@modules/identity-verification/identity-verification.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -30,9 +32,16 @@ import { Module } from '@nestjs/common';
         FeatureFlagAdminController,
         BackofficeAdminController,
         DeviceAdminController,
+        IdentityVerificationAdminController,
     ],
     providers: [],
     exports: [],
-    imports: [UserModule, PasswordHistoryModule, DeviceModule, BackofficeModule],
+    imports: [
+        UserModule,
+        PasswordHistoryModule,
+        DeviceModule,
+        BackofficeModule,
+        IdentityVerificationModule,
+    ],
 })
 export class RoutesAdminModule {}

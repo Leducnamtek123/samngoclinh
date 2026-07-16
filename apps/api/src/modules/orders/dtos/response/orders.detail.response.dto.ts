@@ -67,7 +67,14 @@ export class OrdersDetailResponseDto {
 
     @ApiProperty({
         required: true,
-        example: [{ code: 'plant-3y', name: 'Cây Sâm Ngọc Linh 3 năm', quantity: 1, price: 1162894 }],
+        example: [
+            {
+                code: 'plant-3y',
+                name: 'Cây Sâm Ngọc Linh 3 năm',
+                quantity: 1,
+                price: 1162894,
+            },
+        ],
     })
     @Expose()
     items: unknown;

@@ -1,6 +1,7 @@
 import { CartUserController } from '@modules/cart/controllers/cart.user.controller';
 import { CartModule } from '@modules/cart/cart.module';
 import { CultivationUserController } from '@modules/cultivation/controllers/cultivation.user.controller';
+import { CultivationProviderController } from '@modules/cultivation/controllers/cultivation.provider.controller';
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { IdentityVerificationUserController } from '@modules/identity-verification/controllers/identity-verification.user.controller';
 import { IdentityVerificationModule } from '@modules/identity-verification/identity-verification.module';
@@ -12,6 +13,8 @@ import { WalletUserController } from '@modules/wallet/controllers/wallet.user.co
 import { WalletModule } from '@modules/wallet/wallet.module';
 import { UserUserController } from '@modules/user/controllers/user.user.controller';
 import { UserModule } from '@modules/user/user.module';
+import { MarketplaceProviderController } from '@modules/marketplace/controllers/marketplace.provider.controller';
+import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -24,8 +27,10 @@ import { Module } from '@nestjs/common';
         WalletUserController,
         OrdersUserController,
         CultivationUserController,
+        CultivationProviderController,
         CartUserController,
         IdentityVerificationUserController,
+        MarketplaceProviderController,
     ],
     providers: [],
     exports: [],
@@ -37,6 +42,7 @@ import { Module } from '@nestjs/common';
         CultivationModule,
         CartModule,
         IdentityVerificationModule,
+        MarketplaceModule,
     ],
 })
 export class RoutesUserModule {}

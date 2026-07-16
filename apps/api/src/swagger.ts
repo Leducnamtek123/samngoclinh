@@ -69,10 +69,14 @@ export default async function (app: NestApplication): Promise<void> {
             deepScanRoutes: true,
         });
 
-        const documentPublic = SwaggerModule.createDocument(app, documentBuild, {
-            deepScanRoutes: true,
-            include: [RoutesPublicModule],
-        });
+        const documentPublic = SwaggerModule.createDocument(
+            app,
+            documentBuild,
+            {
+                deepScanRoutes: true,
+                include: [RoutesPublicModule],
+            }
+        );
 
         const documentUser = SwaggerModule.createDocument(app, documentBuild, {
             deepScanRoutes: true,
@@ -84,13 +88,20 @@ export default async function (app: NestApplication): Promise<void> {
             include: [RoutesAdminModule],
         });
 
-        const documentSystem = SwaggerModule.createDocument(app, documentBuild, {
-            deepScanRoutes: true,
-            include: [RoutesSystemModule],
-        });
+        const documentSystem = SwaggerModule.createDocument(
+            app,
+            documentBuild,
+            {
+                deepScanRoutes: true,
+                include: [RoutesSystemModule],
+            }
+        );
 
         try {
-            writeFileSync('generated/swagger.json', JSON.stringify(documentAll));
+            writeFileSync(
+                'generated/swagger.json',
+                JSON.stringify(documentAll)
+            );
         } catch (err: unknown) {
             logger.warn(err, 'Failed to write swagger.json');
         }

@@ -19,7 +19,9 @@ export class MarketplacePublicController {
     @Response('marketplace.listListings')
     @ApiKeyProtected()
     @Get('/listings')
-    async listListings(): Promise<IResponseReturn<{ items: MarketplaceListingResponseDto[] }>> {
+    async listListings(): Promise<
+        IResponseReturn<{ items: MarketplaceListingResponseDto[] }>
+    > {
         return this.marketplaceService.listListings();
     }
 }

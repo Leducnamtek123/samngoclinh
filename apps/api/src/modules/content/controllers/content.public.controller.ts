@@ -19,7 +19,9 @@ export class ContentPublicController {
     @Response('content.listArticles')
     @ApiKeyProtected()
     @Get('/articles')
-    async listArticles(): Promise<IResponseReturn<{ items: ContentArticleResponseDto[] }>> {
+    async listArticles(): Promise<
+        IResponseReturn<{ items: ContentArticleResponseDto[] }>
+    > {
         return this.contentService.listArticles();
     }
 }
