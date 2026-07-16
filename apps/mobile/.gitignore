@@ -1,0 +1,14 @@
+# dependencies
+/node_modules/
+.pub-cache/
+.pub/
+
+# Android/iOS builds
+/build/
+/android/app/build/
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+
+# local env files
+.env
+.env.local
