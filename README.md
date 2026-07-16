@@ -13,9 +13,15 @@
 [![PNPM][pnpm-shield]][ref-pnpm]
 [![Docker][docker-shield]][ref-docker]
 
-# ACK NestJs Boilerplate 🔥 🚀
+<p align="center">
+  <a href="https://vismarttech.com" target="blank">
+    <img src="https://vismarttech.com/logo.png" width="300" alt="Vi Smart Tech Logo" />
+  </a>
+</p>
 
-[ACK NestJs][ref-ack] is a [NestJs v11.x][ref-nestjs] boilerplate with JWT, OAuth (Google & Apple), OTP, TOTP/2FA, and RBAC. Powered by Prisma, works with any database. Repository Design Pattern and Modular. Production-ready.
+# Vi Smart Tech Workspace 🔥 🚀
+
+[Vi Smart Tech Workspace][ref-ack] is a [NestJs v11.x][ref-nestjs] & [Next.js][ref-nestjs] monorepo setup for Vismarttech company, built with JWT, OAuth (Google & Apple), OTP, TOTP/2FA, and RBAC. Powered by Prisma, works with any database. Repository Design Pattern and Modular. Production-ready.
 
 _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with following this link_
 
@@ -332,11 +338,11 @@ If you find this project helpful and would like to support its development, plea
 
 <!-- BADGE LINKS -->
 
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+[ack-contributors-shield]: https://img.shields.io/github/contributors/Leducnamtek123/samngoclinh?style=for-the-badge
+[ack-forks-shield]: https://img.shields.io/github/forks/Leducnamtek123/samngoclinh?style=for-the-badge
+[ack-stars-shield]: https://img.shields.io/github/stars/Leducnamtek123/samngoclinh?style=for-the-badge
+[ack-issues-shield]: https://img.shields.io/github/issues/Leducnamtek123/samngoclinh?style=for-the-badge
+[ack-license-shield]: https://img.shields.io/github/license/Leducnamtek123/samngoclinh?style=for-the-badge
 [nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
 [nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
 [typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
@@ -350,19 +356,17 @@ If you find this project helpful and would like to support its development, plea
 
 <!-- CONTACTS -->
 
-[ref-author-linkedin]: https://linkedin.com/in/andrechristikan
-[ref-author-email]: mailto:andrechristikan@gmail.com
-[ref-author-github]: https://github.com/andrechristikan
-[ref-author-paypal]: https://www.paypal.me/andrechristikan
-[ref-author-kofi]: https://ko-fi.com/andrechristikan
+[ref-author-linkedin]: https://vismarttech.com
+[ref-author-email]: mailto:support@vismarttech.com
+[ref-author-github]: https://github.com/Leducnamtek123
 
 <!-- Repo LINKS -->
 
-[ref-ack]: https://github.com/andrechristikan/ack-nestjs-boilerplate
-[ref-ack-issues]: https://github.com/andrechristikan/ack-nestjs-boilerplate/issues
-[ref-ack-stars]: https://github.com/andrechristikan/ack-nestjs-boilerplate/stargazers
-[ref-ack-forks]: https://github.com/andrechristikan/ack-nestjs-boilerplate/network/members
-[ref-ack-contributors]: https://github.com/andrechristikan/ack-nestjs-boilerplate/graphs/contributors
+[ref-ack]: https://github.com/Leducnamtek123/samngoclinh
+[ref-ack-issues]: https://github.com/Leducnamtek123/samngoclinh/issues
+[ref-ack-stars]: https://github.com/Leducnamtek123/samngoclinh/stargazers
+[ref-ack-forks]: https://github.com/Leducnamtek123/samngoclinh/network/members
+[ref-ack-contributors]: https://github.com/Leducnamtek123/samngoclinh/graphs/contributors
 [ref-ack-license]: LICENSE.md
 
 <!-- THIRD PARTY -->
