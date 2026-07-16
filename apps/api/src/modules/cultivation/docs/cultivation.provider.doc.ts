@@ -9,6 +9,7 @@ import { applyDecorators } from '@nestjs/common';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
+import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 
 export function CultivationProviderCreateGardenDoc(): MethodDecorator {
@@ -62,5 +63,23 @@ export function CultivationProviderCreateTreeDoc(): MethodDecorator {
         }),
         DocGuard({ role: true }),
         DocResponse('cultivation.createTree')
+    );
+}
+
+export function CultivationProviderCreateCareLogDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Create a new care history log for a bed or tree',
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: CultivationCreateCareLogRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.createCareLog')
     );
 }

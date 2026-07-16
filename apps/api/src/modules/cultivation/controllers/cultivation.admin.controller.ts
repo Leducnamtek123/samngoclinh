@@ -1,0 +1,46 @@
+import { Body, Controller, Get, Param, Patch, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Response } from '@common/response/decorators/response.decorator';
+import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
+import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
+import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { EnumRoleType, GardenBooking } from '@generated/prisma-client';
+import { CultivationService } from '@modules/cultivation/services/cultivation.service';
+import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
+import {
+    CultivationAdminListBookingsDoc,
+    CultivationAdminUpdateBookingStatusDoc,
+} from '@modules/cultivation/docs/cultivation.admin.doc';
+import { IResponseReturn } from '@common/response/interfaces/response.interface';
+
+@ApiTags('modules.admin.cultivation')
+@Controller({
+    version: VERSION_NEUTRAL,
+    path: '/cultivation',
+})
+export class CultivationAdminController {
+    constructor(private readonly cultivationService: CultivationService) {}
+
+    @CultivationAdminListBookingsDoc()
+    @Response('cultivation.adminListBookings')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/bookings')
+    async listAllBookings(): Promise<IResponseReturn<GardenBooking[]>> {
+        return this.cultivationService.listBookings();
+    }
+
+    @CultivationAdminUpdateBookingStatusDoc()
+    @Response('cultivation.adminUpdateBookingStatus')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Patch('/bookings/:id/status')
+    async updateStatus(
+        @Param('id') id: string,
+        @Body() body: CultivationUpdateBookingStatusRequestDto
+    ): Promise<IResponseReturn<GardenBooking>> {
+        return this.cultivationService.updateBookingStatus(id, body);
+    }
+}

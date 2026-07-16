@@ -14,6 +14,8 @@ import { UserAdminController } from '@modules/user/controllers/user.admin.contro
 import { UserModule } from '@modules/user/user.module';
 import { IdentityVerificationAdminController } from '@modules/identity-verification/controllers/identity-verification.admin.controller';
 import { IdentityVerificationModule } from '@modules/identity-verification/identity-verification.module';
+import { CultivationAdminController } from '@modules/cultivation/controllers/cultivation.admin.controller';
+import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -33,6 +35,7 @@ import { Module } from '@nestjs/common';
         BackofficeAdminController,
         DeviceAdminController,
         IdentityVerificationAdminController,
+        CultivationAdminController,
     ],
     providers: [],
     exports: [],
@@ -42,6 +45,7 @@ import { Module } from '@nestjs/common';
         DeviceModule,
         BackofficeModule,
         IdentityVerificationModule,
+        CultivationModule,
     ],
 })
 export class RoutesAdminModule {}

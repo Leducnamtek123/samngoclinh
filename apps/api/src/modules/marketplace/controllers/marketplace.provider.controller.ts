@@ -1,12 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Param,
-    Post,
-    Put,
-    VERSION_NEUTRAL,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -36,7 +28,7 @@ export class MarketplaceProviderController {
 
     @MarketplaceProviderCreateDoc()
     @Response('marketplace.create')
-    @RoleProtected(EnumRoleType.provider)
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/')
@@ -49,7 +41,7 @@ export class MarketplaceProviderController {
 
     @MarketplaceProviderUpdateDoc()
     @Response('marketplace.update')
-    @RoleProtected(EnumRoleType.provider)
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/:id')
@@ -63,7 +55,7 @@ export class MarketplaceProviderController {
 
     @MarketplaceProviderDeleteDoc()
     @Response('marketplace.delete')
-    @RoleProtected(EnumRoleType.provider)
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/:id')

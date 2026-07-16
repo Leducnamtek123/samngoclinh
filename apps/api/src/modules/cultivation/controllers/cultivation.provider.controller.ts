@@ -7,18 +7,15 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
-import {
-    CultivationBed,
-    CultivationGarden,
-    CultivationTree,
-    EnumRoleType,
-} from '@generated/prisma-client';
+import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, EnumRoleType } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
+import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import {
     CultivationProviderCreateBedDoc,
+    CultivationProviderCreateCareLogDoc,
     CultivationProviderCreateGardenDoc,
     CultivationProviderCreateTreeDoc,
 } from '@modules/cultivation/docs/cultivation.provider.doc';
@@ -69,5 +66,18 @@ export class CultivationProviderController {
         @Body() body: CultivationCreateTreeRequestDto
     ): Promise<IResponseReturn<CultivationTree>> {
         return this.cultivationService.createTree(userId, body);
+    }
+
+    @CultivationProviderCreateCareLogDoc()
+    @Response('cultivation.createCareLog')
+    @RoleProtected(EnumRoleType.provider)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/logs')
+    async createCareLog(
+        @AuthJwtPayload('userId') userId: string,
+        @Body() body: CultivationCreateCareLogRequestDto
+    ): Promise<IResponseReturn<CultivationCareLog>> {
+        return this.cultivationService.createCareLog(userId, body);
     }
 }

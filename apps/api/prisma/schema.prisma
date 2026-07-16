@@ -765,6 +765,47 @@ model BusinessProfile {
   @@map("BusinessProfiles")
 }
 
+model CultivationCareLog {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  code        String
+  bedCode     String?
+  treeCode    String?
+  action      String
+  title       String
+  description String?
+  status      String
+  images      String[] @default([])
+  loggedAt    DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  createdBy   String?  @db.ObjectId
+  updatedAt   DateTime @updatedAt
+
+  @@unique(fields: [code])
+  @@index(fields: [bedCode, loggedAt(sort: Desc)])
+  @@index(fields: [treeCode, loggedAt(sort: Desc)])
+  @@map("CultivationCareLogs")
+}
+
+model GardenBooking {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  code         String
+  userId       String   @db.ObjectId
+  gardenCode   String
+  visitDate    DateTime
+  guestCount   Int
+  contactPhone String
+  status       String
+  adminNote    String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique(fields: [code])
+  @@index(fields: [userId, status])
+  @@map("GardenBookings")
+}
+
 type UserTermPolicy {
   termsOfService Boolean
   privacy        Boolean

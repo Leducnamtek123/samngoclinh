@@ -39,10 +39,7 @@ export class MarketplaceRepository {
         });
     }
 
-    async createListing(
-        userId: string,
-        payload: MarketplaceCreateListingRequestDto
-    ): Promise<MarketplaceListing> {
+    async createListing(userId: string, ownerType: string, payload: MarketplaceCreateListingRequestDto): Promise<MarketplaceListing> {
         const code = 'lst-' + Math.random().toString(36).substring(2, 11);
         return this.databaseService.marketplaceListing.create({
             data: {
@@ -51,7 +48,7 @@ export class MarketplaceRepository {
                 category: payload.category,
                 price: payload.price,
                 quantity: payload.quantity,
-                ownerType: 'provider',
+                ownerType,
                 ownerUserId: userId,
                 status: 'active',
                 publishedAt: new Date(),

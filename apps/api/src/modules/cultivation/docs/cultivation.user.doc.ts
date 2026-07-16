@@ -2,12 +2,15 @@ import {
     Doc,
     DocAuth,
     DocGuard,
+    DocRequest,
     DocResponse,
 } from '@common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
 import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.garden.response.dto';
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
+import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
+import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 
 export function CultivationUserTreesDoc(): MethodDecorator {
     return applyDecorators(
@@ -54,5 +57,67 @@ export function CultivationUserBedsDoc(): MethodDecorator {
         DocResponse('cultivation.beds', {
             dto: CultivationBedResponseDto,
         })
+    );
+}
+
+export function CultivationUserListCareLogsDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get care history logs for a bed or tree',
+        }),
+        DocRequest({
+            queries: [
+                {
+                    name: 'bedCode',
+                    description: 'Optional bed code to filter logs',
+                    required: false,
+                    type: 'string',
+                },
+                {
+                    name: 'treeCode',
+                    description: 'Optional tree code to filter logs',
+                    required: false,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.listCareLogs')
+    );
+}
+
+export function CultivationUserCreateBookingDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Create a new garden visit booking',
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: CultivationCreateBookingRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.createBooking')
+    );
+}
+
+export function CultivationUserListBookingsDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'List user garden visit bookings',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.listBookings')
     );
 }

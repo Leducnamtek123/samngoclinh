@@ -6,14 +6,13 @@ import {
     ICultivationGardenSummary,
     ICultivationTreeAgeItem,
 } from '@modules/cultivation/interfaces/cultivation.interface';
-import {
-    CultivationBed,
-    CultivationGarden,
-    CultivationTree,
-} from '@generated/prisma-client';
+import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
+import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
+import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
+import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
 
 @Injectable()
 export class CultivationRepository {
@@ -42,13 +41,12 @@ export class CultivationRepository {
             where: { ownerUserId: userId },
         });
 
-        const aggregate =
-            await this.databaseService.cultivationGarden.aggregate({
-                where: { ownerUserId: userId },
-                _sum: {
-                    activeBeds: true,
-                },
-            });
+        const aggregate = await this.databaseService.cultivationGarden.aggregate({
+            where: { ownerUserId: userId },
+            _sum: {
+                activeBeds: true,
+            },
+        });
 
         return {
             total: count,
@@ -73,10 +71,7 @@ export class CultivationRepository {
         }));
     }
 
-    async createGarden(
-        userId: string,
-        payload: CultivationCreateGardenRequestDto
-    ): Promise<CultivationGarden> {
+    async createGarden(userId: string, payload: CultivationCreateGardenRequestDto): Promise<CultivationGarden> {
         const code = 'garden-' + Math.random().toString(36).substring(2, 11);
         return this.databaseService.cultivationGarden.create({
             data: {
@@ -92,12 +87,9 @@ export class CultivationRepository {
         });
     }
 
-    async createBed(
-        userId: string,
-        payload: CultivationCreateBedRequestDto
-    ): Promise<CultivationBed> {
+    async createBed(userId: string, payload: CultivationCreateBedRequestDto): Promise<CultivationBed> {
         const code = 'bed-' + Math.random().toString(36).substring(2, 11);
-        return this.databaseService.$transaction(async tx => {
+        return this.databaseService.$transaction(async (tx) => {
             const bed = await tx.cultivationBed.create({
                 data: {
                     code,
@@ -124,12 +116,9 @@ export class CultivationRepository {
         });
     }
 
-    async createTree(
-        userId: string,
-        payload: CultivationCreateTreeRequestDto
-    ): Promise<CultivationTree> {
+    async createTree(userId: string, payload: CultivationCreateTreeRequestDto): Promise<CultivationTree> {
         const code = 'tree-' + Math.random().toString(36).substring(2, 11);
-        return this.databaseService.$transaction(async tx => {
+        return this.databaseService.$transaction(async (tx) => {
             const tree = await tx.cultivationTree.create({
                 data: {
                     code,
@@ -166,6 +155,89 @@ export class CultivationRepository {
             }
 
             return tree;
+        });
+    }
+
+    async getBedByCodeAndOwner(code: string, ownerUserId: string): Promise<CultivationBed | null> {
+        return this.databaseService.cultivationBed.findFirst({
+            where: { code, ownerUserId },
+        });
+    }
+
+    async getTreeByCodeAndOwner(code: string, ownerUserId: string): Promise<CultivationTree | null> {
+        return this.databaseService.cultivationTree.findFirst({
+            where: { code, ownerUserId },
+        });
+    }
+
+    async createCareLog(payload: CultivationCreateCareLogRequestDto): Promise<CultivationCareLog> {
+        const code = 'log-' + Math.random().toString(36).substring(2, 11);
+        return this.databaseService.cultivationCareLog.create({
+            data: {
+                code,
+                bedCode: payload.bedCode ?? null,
+                treeCode: payload.treeCode ?? null,
+                action: payload.action,
+                title: payload.title,
+                description: payload.description ?? null,
+                status: payload.status,
+                images: payload.images ?? [],
+                loggedAt: new Date(),
+            },
+        });
+    }
+
+    async listCareLogs(bedCode?: string, treeCode?: string): Promise<CultivationCareLog[]> {
+        return this.databaseService.cultivationCareLog.findMany({
+            where: {
+                OR: [
+                    bedCode ? { bedCode } : undefined,
+                    treeCode ? { treeCode } : undefined,
+                ].filter(Boolean) as Prisma.CultivationCareLogWhereInput[],
+            },
+            orderBy: {
+                loggedAt: 'desc',
+            },
+        });
+    }
+
+    async createBooking(userId: string, payload: CultivationCreateBookingRequestDto): Promise<GardenBooking> {
+        const code = 'bkg-' + Math.random().toString(36).substring(2, 11);
+        return this.databaseService.gardenBooking.create({
+            data: {
+                code,
+                userId,
+                gardenCode: payload.gardenCode,
+                visitDate: new Date(payload.visitDate),
+                guestCount: payload.guestCount,
+                contactPhone: payload.contactPhone,
+                status: 'pending',
+            },
+        });
+    }
+
+    async listBookings(userId?: string): Promise<GardenBooking[]> {
+        return this.databaseService.gardenBooking.findMany({
+            where: userId ? { userId } : undefined,
+            orderBy: {
+                visitDate: 'asc',
+            },
+        });
+    }
+
+    async getBookingById(id: string): Promise<GardenBooking | null> {
+        return this.databaseService.gardenBooking.findUnique({
+            where: { id },
+        });
+    }
+
+    async updateBookingStatus(id: string, payload: CultivationUpdateBookingStatusRequestDto): Promise<GardenBooking> {
+        return this.databaseService.gardenBooking.update({
+            where: { id },
+            data: {
+                status: payload.status,
+                adminNote: payload.adminNote ?? null,
+            },
         });
     }
 }

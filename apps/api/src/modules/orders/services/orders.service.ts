@@ -10,6 +10,7 @@ import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { DatabaseService } from '@common/database/services/database.service';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -266,6 +267,168 @@ export class OrdersService implements IOrdersService {
                                 amount: cashbackPoints,
                                 balanceAfter: updatedWallet.balancePoint,
                                 status: 'success',
+                            },
+                        });
+                    }
+
+                    // Ownership Transfer Logic for plants
+                    const orderItems = order.items as unknown as {
+                        productId: string;
+                        code: string;
+                        name: string;
+                        price: number;
+                        quantity: number;
+                        totalPrice: number;
+                        category?: string;
+                    }[];
+
+                    let totalPlantsPurchased = 0;
+
+                    for (const item of orderItems) {
+                        // Check if standard plant catalog product
+                        const plant = await tx.catalogPlant.findFirst({
+                            where: { code: item.code },
+                        });
+
+                        const isPlant = !!plant || item.category === 'plant';
+                        const ageYear = plant ? plant.ageYear : 3;
+
+                        if (isPlant) {
+                            // Check if this item is a P2P listing owned by another customer
+                            const listing = await tx.marketplaceListing.findFirst({
+                                where: { code: item.code },
+                            });
+
+                            if (listing && listing.ownerType === 'customer' && listing.ownerUserId) {
+                                // P2P trade consignment
+                                const sellerId = listing.ownerUserId;
+                                const buyerId = order.userId;
+                                const listingMeta = (listing.metadata ?? {}) as Record<string, unknown>;
+                                const treeCode = listingMeta?.treeCode as string;
+
+                                if (treeCode) {
+                                    // 1. Transfer ownership of the sâm tree
+                                    await tx.cultivationTree.update({
+                                        where: { code: treeCode },
+                                        data: { ownerUserId: buyerId },
+                                    });
+
+                                    // 2. Increment buyer treesOwned
+                                    let buyerWallet = await tx.walletAccount.findUnique({
+                                        where: { userId: buyerId },
+                                    });
+                                    if (!buyerWallet) {
+                                        buyerWallet = await tx.walletAccount.create({
+                                            data: { userId: buyerId, balancePoint: 0, treesOwned: 0 },
+                                        });
+                                    }
+                                    await tx.walletAccount.update({
+                                        where: { id: buyerWallet.id },
+                                        data: { treesOwned: { increment: 1 } },
+                                    });
+
+                                    // 3. Decrement seller treesOwned and credit VND converted to points (1 point per 10k VND)
+                                    let sellerWallet = await tx.walletAccount.findUnique({
+                                        where: { userId: sellerId },
+                                    });
+                                    if (!sellerWallet) {
+                                        sellerWallet = await tx.walletAccount.create({
+                                            data: { userId: sellerId, balancePoint: 0, treesOwned: 0 },
+                                        });
+                                    }
+
+                                    const salesAmountPoints = Math.floor(item.totalPrice / 10000);
+                                    const updatedSellerWallet = await tx.walletAccount.update({
+                                        where: { id: sellerWallet.id },
+                                        data: {
+                                            treesOwned: { decrement: 1 },
+                                            balancePoint: { increment: salesAmountPoints },
+                                        },
+                                    });
+
+                                    // 4. Create P2P transaction log for seller
+                                    await tx.walletTransaction.create({
+                                        data: {
+                                            code: 'TXN' + Date.now() + Math.floor(1000 + Math.random() * 9000),
+                                            userId: sellerId,
+                                            type: 'p2p_sale',
+                                            title: `Doanh thu bán ký gửi sâm đơn hàng ${order.code}`,
+                                            amount: salesAmountPoints,
+                                            balanceAfter: updatedSellerWallet.balancePoint,
+                                            status: 'success',
+                                        },
+                                    });
+
+                                    // 5. Update listing to sold
+                                    await tx.marketplaceListing.update({
+                                        where: { id: listing.id },
+                                        data: { status: 'sold', quantity: 0 },
+                                    });
+                                }
+                            } else {
+                                // Standard system purchase
+                                totalPlantsPurchased += item.quantity;
+
+                                // Find unassigned/provider sâm trees to assign to buyer
+                                const providerTrees = await tx.cultivationTree.findMany({
+                                    where: {
+                                        ownerUserId: { not: order.userId },
+                                        ageYear: ageYear,
+                                        status: 'active',
+                                    },
+                                    take: item.quantity,
+                                });
+
+                                let assignedCount = 0;
+                                for (const tree of providerTrees) {
+                                    await tx.cultivationTree.update({
+                                        where: { id: tree.id },
+                                        data: { ownerUserId: order.userId },
+                                    });
+                                    assignedCount++;
+                                }
+
+                                // If not enough existing trees, create new ones for the customer
+                                const remaining = item.quantity - assignedCount;
+                                for (let i = 0; i < remaining; i++) {
+                                    const treeCode = 'tree-' + Math.random().toString(36).substring(2, 11);
+                                    await tx.cultivationTree.create({
+                                        data: {
+                                            code: treeCode,
+                                            ownerUserId: order.userId,
+                                            name: item.name,
+                                            ageYear: ageYear,
+                                            quantity: 1,
+                                            status: 'active',
+                                            metadata: { source: 'purchase', orderCode: order.code } as Prisma.InputJsonValue,
+                                        },
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    if (totalPlantsPurchased > 0) {
+                        let wallet = await tx.walletAccount.findUnique({
+                            where: { userId: order.userId },
+                        });
+
+                        if (!wallet) {
+                            wallet = await tx.walletAccount.create({
+                                data: {
+                                    userId: order.userId,
+                                    balancePoint: 0,
+                                    treesOwned: 0,
+                                },
+                            });
+                        }
+
+                        await tx.walletAccount.update({
+                            where: { id: wallet.id },
+                            data: {
+                                treesOwned: {
+                                    increment: totalPlantsPurchased,
+                                },
                             },
                         });
                     }
