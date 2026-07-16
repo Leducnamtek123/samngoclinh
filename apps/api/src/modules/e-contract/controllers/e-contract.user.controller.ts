@@ -1,0 +1,82 @@
+import { Body, Controller, Get, Param, Post, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Response } from '@common/response/decorators/response.decorator';
+import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
+import {
+    AuthJwtAccessProtected,
+    AuthJwtPayload,
+} from '@modules/auth/decorators/auth.jwt.decorator';
+import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { EContract, EnumRoleType } from '@generated/prisma-client';
+import { EContractService } from '@modules/e-contract/services/e-contract.service';
+import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';
+import { EContractRenewRequestDto } from '@modules/e-contract/dtos/request/e-contract.renew.request.dto';
+import {
+    EContractUserGetDoc,
+    EContractUserListDoc,
+    EContractUserRenewDoc,
+    EContractUserSignDoc,
+} from '@modules/e-contract/docs/e-contract.user.doc';
+import { IResponseReturn } from '@common/response/interfaces/response.interface';
+
+@ApiTags('modules.user.eContract')
+@Controller({
+    version: VERSION_NEUTRAL,
+    path: '/contracts',
+})
+export class EContractUserController {
+    constructor(private readonly eContractService: EContractService) {}
+
+    @EContractUserListDoc()
+    @Response('eContract.list')
+    @RoleProtected(EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/')
+    async listMyContracts(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<EContract[]>> {
+        return this.eContractService.listContracts(userId);
+    }
+
+    @EContractUserGetDoc()
+    @Response('eContract.get')
+    @RoleProtected(EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/:id')
+    async getMyContract(
+        @Param('id') id: string,
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<EContract>> {
+        return this.eContractService.getContract(id, userId);
+    }
+
+    @EContractUserSignDoc()
+    @Response('eContract.sign')
+    @RoleProtected(EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/:id/sign')
+    async signMyContract(
+        @Param('id') id: string,
+        @AuthJwtPayload('userId') userId: string,
+        @Body() body: EContractSignRequestDto
+    ): Promise<IResponseReturn<EContract>> {
+        return this.eContractService.signContract(id, userId, body);
+    }
+
+    @EContractUserRenewDoc()
+    @Response('eContract.renew')
+    @RoleProtected(EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/:id/renew')
+    async renewMyContract(
+        @Param('id') id: string,
+        @AuthJwtPayload('userId') userId: string,
+        @Body() body: EContractRenewRequestDto
+    ): Promise<IResponseReturn<EContract>> {
+        return this.eContractService.renewContract(id, userId, body);
+    }
+}
