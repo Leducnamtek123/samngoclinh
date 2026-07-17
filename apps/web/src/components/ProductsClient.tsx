@@ -5,10 +5,11 @@ import { useCatalogPlants } from '@/hooks/queries/useCatalog';
 
 type ProductsClientProps = {
   locale: string;
+  initialItems?: any[];
 };
 
-export const ProductsClient = ({ locale: _locale }: ProductsClientProps) => {
-  const { data: items, isLoading, isError } = useCatalogPlants();
+export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClientProps) => {
+  const { data: items, isLoading, isError } = useCatalogPlants(initialItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAges, setSelectedAges] = useState<number[]>([]);
 

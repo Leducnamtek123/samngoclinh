@@ -5,10 +5,11 @@ import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 
 type GinsengClientProps = {
   locale: string;
+  initialItems?: any[];
 };
 
-export const GinsengClient = ({ locale: _locale }: GinsengClientProps) => {
-  const { data: items, isLoading, isError } = useCatalogShopItems();
+export const GinsengClient = ({ locale: _locale, initialItems }: GinsengClientProps) => {
+  const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fallback items if API is empty
