@@ -1,4 +1,4 @@
-import { SignOutButton } from '@clerk/nextjs';
+import { SignOutButton } from '@/components/SignOutButton';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';

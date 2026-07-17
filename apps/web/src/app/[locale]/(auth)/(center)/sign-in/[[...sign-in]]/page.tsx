@@ -1,7 +1,6 @@
-import { SignIn } from '@clerk/nextjs';
+import SignInForm from '@/components/SignInForm';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { getI18nPath } from '@/utils/Helpers';
 
 type SignInPageProps = {
   params: Promise<{ locale: string }>;
@@ -24,5 +23,5 @@ export default async function SignInPage(props: SignInPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  return <SignIn path={getI18nPath('/sign-in', locale)} />;
+  return <SignInForm />;
 }
