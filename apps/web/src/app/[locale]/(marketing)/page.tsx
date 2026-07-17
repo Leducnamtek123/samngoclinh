@@ -7,19 +7,7 @@ type IndexPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const plantImages: Record<number, string> = {
-  1: "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8",
-  2: "https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn",
-  3: "https://lh3.googleusercontent.com/aida-public/AB6AXuBwOfxMRZ0h75uLjdlmrI0cV9AfkTbemFMZbzQV2ml1hDWNs3u8ea5Wg8lEJumqvUILIHEPnHFfJ7g_ZTZgjbWMhtISGs7t2aBscmfqlxKbhMwbdOAQi_bUkAGVIzywaz-aYnTVvFljr1q6oAX62EM_BZ8P8pmSJd-PdVMLjcys1I7HBn8frTYK9sYyfUYntqo0TjDh4ZlKw5ywZaoVtbs1eVRdr7_ydCigwtwc2zB1Yv8P3Pj9FipK",
-  5: "https://lh3.googleusercontent.com/aida-public/AB6AXuDN_cdkuLhVIBynCVVMt_jJrNdBpWZYbNfHnstBfzO3ioIdAHBgoHsU6qraZ2PWYHn9lKRrOeWwaqNljZ2SsrLH6dzjOE5qXOJ6lT9c3kNI24Gsy9hnUCZ-6n3HDgEdflTum3apS4ouS0MuMMmaPTTA81qjyXTgwAcs9P1vLAIkWBPILaYvwnRBXDxWPYjz936UCj7XsbrmZeI_O-ityf8kBpVw3vtYPJXOAA8wGyGMzshkAVHLR-Ck"
-};
 
-const plantOrigins: Record<number, string> = {
-  1: "Nam Trà My",
-  2: "Đắk Glei",
-  3: "Hợp tác xã",
-  5: "Đỉnh Ngọc Linh"
-};
 
 const articleImages: Record<string, string> = {
   "bao-chi-noi-ve-iwe-farm": "https://lh3.googleusercontent.com/aida-public/AB6AXuPhqOeKYOiUfS4imUS-mP7FKEt7RyFWA6h9zcMoQCPkFJnLJdwiIPRmHCC0AWYblEuR6d6bJn6CFksSKCYpPd8gxBiVwR7mLUYyf_Z-334b2SiRWzIiROLDGWKHy0Y-QMoeVC3vW_yctMjYkDvyB9u0CqatiK5RbKa5MWzjQGybt5yJe1-N-pBtsudJ0pwoLQW21Htm3nM3YyCwPNapryMZBwK2ysD0btYoDo0SI7FNFytQEBYjz48",
@@ -34,22 +22,7 @@ const articleCategoryNames: Record<string, string> = {
   "investment": "Đầu tư"
 };
 
-async function getPlants() {
-  try {
-    const res = await fetchApi('/public/catalog/plants', {
-      cache: 'no-store'
-    });
-    if (!res.ok) {
-      console.error('Failed to fetch plants:', res.statusText);
-      return [];
-    }
-    const json = await res.json();
-    return json.data?.items || [];
-  } catch (error) {
-    console.error('Error fetching plants:', error);
-    return [];
-  }
-}
+
 
 async function getArticles() {
   try {
@@ -79,53 +52,7 @@ export default async function Index(props: IndexPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const apiPlants = await getPlants();
   const apiArticles = await getArticles();
-
-  const fallbackPlants = [
-    {
-      id: "NL-302",
-      name: "Ginseng Asset NL-302",
-      ageYear: 3,
-      price: 15500000,
-      code: "NL-D922",
-      origin: "Nam Trà My",
-      health: "98% Sức khỏe",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8"
-    },
-    {
-      id: "NL-510",
-      name: "Ginseng Asset NL-510",
-      ageYear: 5,
-      price: 42000000,
-      code: "NL-D441",
-      origin: "Đắk Glei",
-      health: "",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn"
-    },
-    {
-      id: "seedling",
-      name: "Combo Seedling Pack",
-      ageYear: 0,
-      price: 5200000,
-      code: "05 Cây",
-      origin: "Hợp tác xã",
-      health: "",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBwOfxMRZ0h75uLjdlmrI0cV9AfkTbemFMZbzQV2ml1hDWNs3u8ea5Wg8lEJumqvUILIHEPnHFfJ7g_ZTZgjbWMhtISGs7t2aBscmfqlxKbhMwbdOAQi_bUkAGVIzywaz-aYnTVvFljr1q6oAX62EM_BZ8P8pmSJd-PdVMLjcys1I7HBn8frTYK9sYyfUYntqo0TjDh4ZlKw5ywZaoVtbs1eVRdr7_ydCigwtwc2zB1Yv8P3Pj9FipK",
-      badge: "Mới về"
-    },
-    {
-      id: "imperial",
-      name: "Imperial Root Collection",
-      ageYear: 10,
-      price: 285000000,
-      code: "NL-IMP-01",
-      origin: "Đỉnh Ngọc Linh",
-      health: "",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDN_cdkuLhVIBynCVVMt_jJrNdBpWZYbNfHnstBfzO3ioIdAHBgoHsU6qraZ2PWYHn9lKRrOeWwaqNljZ2SsrLH6dzjOE5qXOJ6lT9c3kNI24Gsy9hnUCZ-6n3HDgEdflTum3apS4ouS0MuMMmaPTTA81qjyXTgwAcs9P1vLAIkWBPILaYvwnRBXDxWPYjz936UCj7XsbrmZeI_O-ityf8kBpVw3vtYPJXOAA8wGyGMzshkAVHLR-Ck",
-      badge: "Hiếm"
-    }
-  ];
 
   const fallbackArticles = [
     {
@@ -157,17 +84,7 @@ export default async function Index(props: IndexPageProps) {
     }
   ];
 
-  const displayedPlants = apiPlants.length > 0 ? apiPlants.map((item: any) => ({
-    id: item.id,
-    name: item.name,
-    ageYear: item.ageYear,
-    price: item.price,
-    code: item.id,
-    origin: plantOrigins[item.ageYear] || "Hợp tác xã",
-    health: item.ageYear === 3 ? "98% Sức khỏe" : "",
-    image: plantImages[item.ageYear] || "https://lh3.googleusercontent.com/aida-public/AB6AXuBwOfxMRZ0h75uLjdlmrI0cV9AfkTbemFMZbzQV2ml1hDWNs3u8ea5Wg8lEJumqvUILIHEPnHFfJ7g_ZTZgjbWMhtISGs7t2aBscmfqlxKbhMwbdOAQi_bUkAGVIzywaz-aYnTVvFljr1q6oAX62EM_BZ8P8pmSJd-PdVMLjcys1I7HBn8frTYK9sYyfUYntqo0TjDh4ZlKw5ywZaoVtbs1eVRdr7_ydCigwtwc2zB1Yv8P3Pj9FipK",
-    badge: item.ageYear === 1 ? "Mới về" : (item.ageYear === 5 ? "Hiếm" : undefined)
-  })) : fallbackPlants;
+
 
   const displayedArticles = apiArticles.length > 0 ? apiArticles.map((item: any) => ({
     id: item.id,
@@ -278,73 +195,7 @@ export default async function Index(props: IndexPageProps) {
         </div>
       </section>
 
-      {/* Digital Plant Catalog */}
-      <section id="shop" className="py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-gray-200 pb-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-extrabold text-primary font-display-lg">
-              Cây Giống Digital
-            </h2>
-            <p className="text-gray-500 text-sm">
-              Sở hữu và theo dõi quá trình sinh trưởng của cây sâm thật thông qua định danh số.
-            </p>
-          </div>
-          <button className="text-primary hover:text-secondary font-semibold text-sm flex items-center gap-1.5 transition-colors">
-            Xem tất cả cây giống ➜
-          </button>
-        </div>
 
-        {/* Plant Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {displayedPlants.map((item: any) => (
-            <div key={item.id} className="group border border-gray-200/80 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 bg-white flex flex-col justify-between">
-              <div>
-                <div className="relative h-56 overflow-hidden bg-gray-50">
-                  <img 
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500" 
-                    src={item.image} 
-                    alt={item.name} 
-                  />
-                  <div className="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2.5 py-1 rounded tracking-wider uppercase">
-                    Tuổi: {item.ageYear > 0 ? `${item.ageYear} Năm` : "Mầm"}
-                  </div>
-                  {item.badge && (
-                    <div className="absolute top-3 right-3 bg-secondary text-white text-[10px] font-bold px-2.5 py-1 rounded tracking-wider uppercase">
-                      {item.badge}
-                    </div>
-                  )}
-                  {item.health && (
-                    <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5 border border-gray-100">
-                      <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                      <span className="text-[11px] font-bold text-gray-800">{item.health}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-5 space-y-3">
-                  <h3 className="font-bold text-lg text-primary">{item.name}</h3>
-                  <div className="flex justify-between items-center text-xs text-gray-500">
-                    <span>Mã số: {item.code}</span>
-                    <span className="font-semibold text-primary">{item.origin}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5 pt-0">
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase font-semibold">Giá đầu tư</p>
-                    <p className="font-bold text-primary text-base">{item.price.toLocaleString('vi-VN')} VNĐ</p>
-                  </div>
-                  <button className="p-2.5 bg-primary/5 hover:bg-primary hover:text-white text-primary rounded-lg transition-all duration-200 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Featured Botanical Extract Products */}
       <section className="py-20 bg-gray-50">
