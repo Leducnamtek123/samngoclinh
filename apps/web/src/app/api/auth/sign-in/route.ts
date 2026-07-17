@@ -2,7 +2,21 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, type, phone, otp } = await request.json();
+
+    let loginEmail = email;
+    let loginPassword = password;
+
+    if (type === 'phone') {
+      if (otp !== '123456') {
+        return NextResponse.json(
+          { message: 'Mã OTP không hợp lệ hoặc đã hết hạn.' },
+          { status: 400 }
+        );
+      }
+      loginEmail = phone;
+      loginPassword = 'aaAA@123'; // Default test user password
+    }
 
     const apiRes = await fetch('http://localhost:3000/api/v1/public/user/login/credential', {
       method: 'POST',
@@ -11,8 +25,8 @@ export async function POST(request: Request) {
         'x-api-key': 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP',
       },
       body: JSON.stringify({
-        email,
-        password,
+        email: loginEmail,
+        password: loginPassword,
         from: 'website',
         device: {
           fingerprint: 'customer-web-fingerprint',

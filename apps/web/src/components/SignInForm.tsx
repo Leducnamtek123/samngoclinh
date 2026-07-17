@@ -4,23 +4,55 @@ import React, { useState } from 'react';
 
 export default function SignInForm() {
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
+  
+  // Email states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Phone states
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
+
+  const handleSendOtp = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!phone) {
+      setError('Vui lòng nhập số điện thoại.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setInfoMessage('');
+
+    // Simulate sending OTP (dev mock)
+    setTimeout(() => {
+      setOtpSent(true);
+      setLoading(false);
+      setInfoMessage('Mã OTP kiểm thử hệ thống là 123456');
+    }, 800);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setInfoMessage('');
 
     try {
+      const payload = activeTab === 'email' 
+        ? { email, password, type: 'email' }
+        : { phone, otp, type: 'phone' };
+
       const res = await fetch('/api/auth/sign-in', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -51,7 +83,7 @@ export default function SignInForm() {
             Đăng nhập tài khoản
           </h1>
           <p className="text-xs text-gray-500 font-medium">
-            Tài khoản thử nghiệm: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'user@mail.com' : '0847234234'}</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">aaAA@123</code>
+            Tài khoản thử nghiệm: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'user@mail.com' : '0847234234'}</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'aaAA@123' : 'OTP: 123456'}</code>
           </p>
         </div>
 
@@ -61,7 +93,8 @@ export default function SignInForm() {
             type="button"
             onClick={() => {
               setActiveTab('email');
-              setEmail('');
+              setError('');
+              setInfoMessage('');
             }}
             className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
               activeTab === 'email' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
@@ -73,7 +106,8 @@ export default function SignInForm() {
             type="button"
             onClick={() => {
               setActiveTab('phone');
-              setEmail('');
+              setError('');
+              setInfoMessage('');
             }}
             className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
               activeTab === 'phone' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
@@ -93,40 +127,118 @@ export default function SignInForm() {
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="email">
-              {activeTab === 'email' ? 'Địa chỉ Email' : 'Số điện thoại'}
-            </label>
-            <input
-              id="email"
-              type={activeTab === 'email' ? 'email' : 'text'}
-              required
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
-              placeholder={activeTab === 'email' ? 'nhap-email@ruousamngoclinh.vn' : '0847 234 234'}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="password">
-                Mật khẩu
-              </label>
-              <a href="#" className="text-xs font-semibold text-secondary hover:text-secondary-hover transition-colors">
-                Quên mật khẩu?
-              </a>
+          {infoMessage && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-xs font-medium flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{infoMessage}</span>
             </div>
-            <input
-              id="password"
-              type="password"
-              required
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          )}
+
+          {/* Email Tab Fields */}
+          {activeTab === 'email' && (
+            <>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="email">
+                  Địa chỉ Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
+                  placeholder="nhap-email@ruousamngoclinh.vn"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="password">
+                    Mật khẩu
+                  </label>
+                  <a href="#" className="text-xs font-semibold text-secondary hover:text-secondary-hover transition-colors">
+                    Quên mật khẩu?
+                  </a>
+                </div>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Phone Tab Fields */}
+          {activeTab === 'phone' && (
+            <>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="phone">
+                  Số điện thoại
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    id="phone"
+                    type="tel"
+                    required
+                    disabled={otpSent}
+                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    placeholder="0847 234 234"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  {!otpSent && (
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={handleSendOtp}
+                      className="px-4 py-3 bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold rounded-xl text-xs shadow-sm transition-all whitespace-nowrap"
+                    >
+                      Gửi mã OTP
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {otpSent && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="otp">
+                      Mã xác thực OTP
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp('');
+                        setInfoMessage('');
+                      }}
+                      className="text-xs font-semibold text-secondary hover:text-secondary-hover transition-colors"
+                    >
+                      Thay đổi SĐT
+                    </button>
+                  </div>
+                  <input
+                    id="otp"
+                    type="text"
+                    required
+                    maxLength={6}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white tracking-widest text-center font-bold text-lg"
+                    placeholder="••••••"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                  />
+                </div>
+              )}
+            </>
+          )}
 
           <div className="flex items-center gap-2">
             <input
@@ -141,13 +253,13 @@ export default function SignInForm() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            disabled={loading || (activeTab === 'phone' && !otpSent)}
+            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
             ) : (
-              <span>Đăng nhập</span>
+              <span>{activeTab === 'email' ? 'Đăng nhập' : 'Xác nhận & Đăng nhập'}</span>
             )}
           </button>
         </form>
@@ -156,7 +268,7 @@ export default function SignInForm() {
           <p className="text-xs text-gray-500 mb-3 font-medium">Bạn chưa có tài khoản?</p>
           <a
             href="/sign-up"
-            className="inline-block w-full bg-[#4CAF50] hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm shadow-sm transition-all text-center"
+            className="inline-block w-full bg-[#4CAF50] hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-sm transition-all text-center"
           >
             Tạo tài khoản mới
           </a>
