@@ -1,5 +1,5 @@
 import { enUS, frFR } from '@clerk/localizations';
-import type { LocalizationResource } from '@clerk/shared/types';
+type LocalizationResource = any;
 import type { LocalePrefixMode } from 'next-intl/routing';
 
 /** Locale prefix strategy for next-intl routing. */

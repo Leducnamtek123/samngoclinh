@@ -8,13 +8,13 @@
     "sign_up_link": "Sign up"
   },
   "BaseTemplate": {
-    "description": "Starter code for your Nextjs Boilerplate with Tailwind CSS",
+    "description": "iWE FARM - Sâm Ngọc Linh Kỹ Thuật Số",
     "footer_text": "© {year} {name}. Made with <author></author>.",
     "main_navigation_label": "Main navigation"
   },
   "Index": {
-    "meta_title": "Next.js Boilerplate Presentation",
-    "meta_description": "Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework.",
+    "meta_title": "iWE FARM | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
+    "meta_description": "iWE FARM là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi cây Sâm Ngọc Linh thật chỉ bằng điện thoại.",
     "sponsors_title": "Sponsors",
     "zap_emoji_label": "Zap"
   },

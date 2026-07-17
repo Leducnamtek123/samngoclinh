@@ -6,7 +6,7 @@
     "dev:spotlight": "npx @spotlightjs/spotlight",
     "dev:next": "next dev -p 3002 --webpack",
     "dev": "run-p db-server:file dev:*",
-    "build:next": "next build",
+    "build:next": "next build --webpack",
     "build-local": "run-p db-server:memory build:next --race",
     "build": "run-s db:migrate build:next",
     "start": "next start",
@@ -88,6 +88,7 @@
     "tailwindcss": "^4.3.0",
     "typescript": "^5.9.3",
     "ultracite": "^7.7.0",
+    "vite": "^6.0.0",
     "vitest": "^4.1.7",
     "vitest-browser-react": "^2.2.0"
   },
