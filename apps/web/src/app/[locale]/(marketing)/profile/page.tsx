@@ -42,8 +42,12 @@ export default async function ProfilePage(props: ProfilePageProps) {
 
   if (!data || !data.profile) {
     return (
-      <div className="max-w-4xl mx-auto py-16 px-4 text-center space-y-4">
-        <span className="text-5xl">⚠️</span>
+      <div className="max-w-4xl mx-auto py-16 px-4 text-center space-y-4 flex flex-col items-center">
+        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
         <h2 className="text-2xl font-bold text-gray-800">Không thể tải thông tin hồ sơ</h2>
         <p className="text-gray-500">Vui lòng kiểm tra lại kết nối hoặc đăng nhập lại.</p>
         <Link href="/sign-in" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg font-bold">
@@ -138,9 +142,12 @@ export default async function ProfilePage(props: ProfilePageProps) {
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>
-                  <p className="text-sm font-semibold text-emerald-600">
-                    {profile.verified ? '✓ Đã xác minh' : '✓ Hoạt động'}
-                  </p>
+                  <div className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{profile.verified ? 'Đã xác minh' : 'Hoạt động'}</span>
+                  </div>
                 </div>
                 {business && (
                   <div className="space-y-1">
