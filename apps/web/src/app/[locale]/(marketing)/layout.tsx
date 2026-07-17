@@ -5,6 +5,7 @@ import { BaseTemplate } from '@/templates/BaseTemplate';
 import { UserHeaderMenu } from '@/components/UserHeaderMenu';
 import { fetchApi } from '@/libs/Api';
 import { HeaderNav } from '@/components/HeaderNav';
+import QueryProvider from '@/providers/QueryProvider';
 
 export default async function Layout(props: {
   children: React.ReactNode;
@@ -30,7 +31,7 @@ export default async function Layout(props: {
   }
 
   return (
-    <>
+    <QueryProvider>
       <BaseTemplate
         leftNav={<HeaderNav />}
         rightNav={
@@ -56,6 +57,6 @@ export default async function Layout(props: {
       >
         <div className="w-full">{props.children}</div>
       </BaseTemplate>
-    </>
+    </QueryProvider>
   );
 }
