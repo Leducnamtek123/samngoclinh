@@ -1,14 +1,27 @@
 # dependencies
-/node_modules/
-.pub-cache/
-.pub/
+/node_modules
 
-# Android/iOS builds
-/build/
-/android/app/build/
-/ios/Flutter/Generated.xcconfig
-/ios/Flutter/flutter_export_environment.sh
+# Expo
+/.expo
+/dist
+/web-build
+expo-env.d.ts
+
+# Native
+/ios
+/android
+*.orig.*
+
+# Metro
+.metro-health-check*
+
+# misc
+.DS_Store
+*.pem
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 
 # local env files
 .env
-.env.local
+.env*.local
