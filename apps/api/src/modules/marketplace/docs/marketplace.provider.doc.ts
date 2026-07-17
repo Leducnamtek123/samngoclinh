@@ -77,3 +77,18 @@ export function MarketplaceProviderDeleteDoc(): MethodDecorator {
         DocResponse('marketplace.delete')
     );
 }
+
+export function MarketplaceProviderListMeDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'List active and pending listings created by the logged in user',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('marketplace.list')
+    );
+}
+

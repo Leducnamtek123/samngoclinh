@@ -9,7 +9,7 @@ import {
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { ProfileService } from '@modules/profile/services/profile.service';
-import { ProfileUserMeDoc } from '@modules/profile/docs/profile.user.doc';
+import { ProfileUserMeDoc, ProfileUserBusinessDoc } from '@modules/profile/docs/profile.user.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ProfileSummaryResponseDto } from '@modules/profile/dtos/response/profile.summary.response.dto';
 
@@ -31,5 +31,17 @@ export class ProfileUserController {
         @AuthJwtPayload('userId') userId: string
     ): Promise<IResponseReturn<ProfileSummaryResponseDto>> {
         return this.profileService.me(userId);
+    }
+
+    @ProfileUserBusinessDoc()
+    @Response('profile.me')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/business')
+    async businessProfile(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<any>> {
+        return this.profileService.userBusinessProfile(userId);
     }
 }

@@ -11,6 +11,9 @@ import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/reque
 import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
+import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
+import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
+import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
 import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 
 @Injectable()
@@ -115,5 +118,59 @@ export class CultivationService implements ICultivationService {
         return {
             data: updated,
         };
+    }
+
+    async updateGarden(id: string, payload: CultivationUpdateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>> {
+        const res = await this.cultivationRepository.updateGarden(id, payload.name, payload.metadata);
+        return { data: res };
+    }
+
+    async deleteGarden(id: string): Promise<IResponseReturn<void>> {
+        await this.cultivationRepository.deleteGarden(id);
+        return { data: undefined };
+    }
+
+    async updateBed(id: string, payload: CultivationUpdateBedRequestDto): Promise<IResponseReturn<CultivationBed>> {
+        const res = await this.cultivationRepository.updateBed(id, payload.name, payload.ageYear, payload.treeCount, payload.metadata);
+        return { data: res };
+    }
+
+    async deleteBed(id: string): Promise<IResponseReturn<void>> {
+        await this.cultivationRepository.deleteBed(id);
+        return { data: undefined };
+    }
+
+    async updateTree(id: string, payload: CultivationUpdateTreeRequestDto): Promise<IResponseReturn<CultivationTree>> {
+        const res = await this.cultivationRepository.updateTree(id, payload.name, payload.ageYear, payload.quantity, payload.status, payload.metadata);
+        return { data: res };
+    }
+
+    async deleteTree(id: string): Promise<IResponseReturn<void>> {
+        await this.cultivationRepository.deleteTree(id);
+        return { data: undefined };
+    }
+
+    async gardenDetail(id: string, userId: string): Promise<IResponseReturn<CultivationGarden>> {
+        const garden = await this.cultivationRepository.getGardenDetail(id, userId);
+        if (!garden) {
+            throw new NotFoundException('Garden not found');
+        }
+        return { data: garden };
+    }
+
+    async bedDetail(id: string, userId: string): Promise<IResponseReturn<any>> {
+        const bed = await this.cultivationRepository.getBedDetail(id, userId);
+        if (!bed) {
+            throw new NotFoundException('Bed not found');
+        }
+        return { data: bed };
+    }
+
+    async treeDetail(id: string, userId: string): Promise<IResponseReturn<any>> {
+        const tree = await this.cultivationRepository.getTreeDetail(id, userId);
+        if (!tree) {
+            throw new NotFoundException('Tree not found');
+        }
+        return { data: tree };
     }
 }

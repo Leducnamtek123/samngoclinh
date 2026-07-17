@@ -10,6 +10,10 @@ import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/re
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
 import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 
+import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
+import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
+import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
+
 export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;
@@ -22,4 +26,15 @@ export interface ICultivationService {
     createBooking(userId: string, payload: CultivationCreateBookingRequestDto): Promise<IResponseReturn<GardenBooking>>;
     listBookings(userId?: string): Promise<IResponseReturn<GardenBooking[]>>;
     updateBookingStatus(id: string, payload: CultivationUpdateBookingStatusRequestDto): Promise<IResponseReturn<GardenBooking>>;
+
+    updateGarden(id: string, payload: CultivationUpdateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>>;
+    deleteGarden(id: string): Promise<IResponseReturn<void>>;
+    updateBed(id: string, payload: CultivationUpdateBedRequestDto): Promise<IResponseReturn<CultivationBed>>;
+    deleteBed(id: string): Promise<IResponseReturn<void>>;
+    updateTree(id: string, payload: CultivationUpdateTreeRequestDto): Promise<IResponseReturn<CultivationTree>>;
+    deleteTree(id: string): Promise<IResponseReturn<void>>;
+    gardenDetail(id: string, userId: string): Promise<IResponseReturn<CultivationGarden>>;
+    bedDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
+    treeDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
 }
+

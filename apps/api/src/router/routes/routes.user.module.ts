@@ -17,6 +17,8 @@ import { MarketplaceProviderController } from '@modules/marketplace/controllers/
 import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
 import { EContractUserController } from '@modules/e-contract/controllers/e-contract.user.controller';
 import { EContractModule } from '@modules/e-contract/e-contract.module';
+import { PackagesUserController } from '@modules/packages/controllers/packages.user.controller';
+import { PackagesModule } from '@modules/packages/packages.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -34,6 +36,7 @@ import { Module } from '@nestjs/common';
         IdentityVerificationUserController,
         MarketplaceProviderController,
         EContractUserController,
+        PackagesUserController,
     ],
     providers: [],
     exports: [],
@@ -47,6 +50,7 @@ import { Module } from '@nestjs/common';
         IdentityVerificationModule,
         MarketplaceModule,
         EContractModule,
+        PackagesModule,
     ],
 })
 export class RoutesUserModule {}

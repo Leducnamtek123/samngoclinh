@@ -18,6 +18,28 @@ import { CultivationAdminController } from '@modules/cultivation/controllers/cul
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { EContractAdminController } from '@modules/e-contract/controllers/e-contract.admin.controller';
 import { EContractModule } from '@modules/e-contract/e-contract.module';
+import { PackagesAdminController } from '@modules/packages/controllers/packages.admin.controller';
+import { PackagesModule } from '@modules/packages/packages.module';
+import { CatalogAdminController } from '@modules/catalog/controllers/catalog.admin.controller';
+import { CatalogModule } from '@modules/catalog/catalog.module';
+import { ContentAdminController } from '@modules/content/controllers/content.admin.controller';
+import { ContentModule } from '@modules/content/content.module';
+import { OrdersAdminController } from '@modules/orders/controllers/orders.admin.controller';
+import { OrdersModule } from '@modules/orders/orders.module';
+import { MarketplaceAdminController } from '@modules/marketplace/controllers/marketplace.admin.controller';
+import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
+import { ProfileAdminController } from '@modules/profile/controllers/profile.admin.controller';
+import { ProfileModule } from '@modules/profile/profile.module';
+import { WalletAdminController } from '@modules/wallet/controllers/wallet.admin.controller';
+import { WalletModule } from '@modules/wallet/wallet.module';
+import { PromotionAdminController } from '@modules/promotion/controllers/promotion.admin.controller';
+import { PromotionModule } from '@modules/promotion/promotion.module';
+import { NotificationAdminController } from '@modules/notification/controllers/notification.admin.controller';
+import { NotificationModule } from '@modules/notification/notification.module';
+import { SettingAdminController } from '@modules/setting/controllers/setting.admin.controller';
+import { SettingModule } from '@modules/setting/setting.module';
+import { ContactAdminController } from '@modules/contact/controllers/contact.admin.controller';
+import { ContactModule } from '@modules/contact/contact.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -39,6 +61,17 @@ import { Module } from '@nestjs/common';
         IdentityVerificationAdminController,
         CultivationAdminController,
         EContractAdminController,
+        PackagesAdminController,
+        CatalogAdminController,
+        ContentAdminController,
+        OrdersAdminController,
+        MarketplaceAdminController,
+        ProfileAdminController,
+        WalletAdminController,
+        PromotionAdminController,
+        NotificationAdminController,
+        SettingAdminController,
+        ContactAdminController,
     ],
     providers: [],
     exports: [],
@@ -50,6 +83,17 @@ import { Module } from '@nestjs/common';
         IdentityVerificationModule,
         CultivationModule,
         EContractModule,
+        PackagesModule,
+        CatalogModule,
+        ContentModule,
+        OrdersModule,
+        MarketplaceModule,
+        ProfileModule,
+        WalletModule,
+        PromotionModule,
+        NotificationModule,
+        SettingModule,
+        ContactModule,
     ],
 })
 export class RoutesAdminModule {}

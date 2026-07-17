@@ -1,6 +1,7 @@
 import {
     Doc,
     DocAuth,
+    DocRequest,
     DocResponse,
 } from '@common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
@@ -19,3 +20,26 @@ export function ContentPublicListArticlesDoc(): MethodDecorator {
         })
     );
 }
+
+export function ContentPublicGetArticleDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific article by ID or Slug',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'idOrSlug',
+                    description: 'Article ID or Slug',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+        }),
+        DocResponse('content.listArticles')
+    );
+}
+

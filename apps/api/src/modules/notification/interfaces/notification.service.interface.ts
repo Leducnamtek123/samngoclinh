@@ -28,4 +28,12 @@ export interface INotificationService {
         userId: string,
         data: NotificationUserSettingRequestDto
     ): Promise<IResponseReturn<void>>;
+    adminSendNotification(data: {
+        userId: string;
+        title: string;
+        body: string;
+        priority?: string;
+        createdBy: string;
+    }): Promise<IResponseReturn<any>>;
 }
+

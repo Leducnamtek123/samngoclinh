@@ -9,7 +9,7 @@ export interface IConfigDoc {
 export default registerAs(
     'doc',
     (): IConfigDoc => ({
-        name: `${process.env.APP_NAME!} APIs Specification`,
+        name: `${process.env.APP_NAME!.toUpperCase()} APIS SPECIFICATION`,
         prefix: '/docs',
         version: '3.1.0',
     })

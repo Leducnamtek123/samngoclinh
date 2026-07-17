@@ -1,6 +1,7 @@
 import {
     Doc,
     DocAuth,
+    DocRequest,
     DocResponse,
 } from '@common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
@@ -34,3 +35,48 @@ export function CatalogPublicListShopItemsDoc(): MethodDecorator {
         })
     );
 }
+
+export function CatalogPublicGetPlantDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific plant catalog item',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Plant ID',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+        }),
+        DocResponse('catalog.listPlants')
+    );
+}
+
+export function CatalogPublicGetProductDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific shop product',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Product ID',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+        }),
+        DocResponse('catalog.listShopItems')
+    );
+}
+

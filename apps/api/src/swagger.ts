@@ -17,12 +17,6 @@ export default async function (app: NestApplication): Promise<void> {
     const env: string = configService.get<string>('app.env')!;
     const appName: string = configService.get<string>('app.name')!;
     const appVersion: string = configService.get<string>('app.version')!;
-    const appUrl: string = configService.get<string>('app.url')!;
-
-    const appAuthorName: string = configService.get<string>('app.author.name')!;
-    const appAuthorEmail: string =
-        configService.get<string>('app.author.email')!;
-
     const docName: string = configService.get<string>('doc.name')!;
     const docVersion: string = configService.get<string>('doc.version')!;
     const docPrefix: string = configService.get<string>('doc.prefix')!;
@@ -41,7 +35,6 @@ export default async function (app: NestApplication): Promise<void> {
                     },
                 })
             )
-            .setContact(appAuthorName, appUrl, appAuthorEmail)
             .addServer('/')
             .addBearerAuth(
                 { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
@@ -131,23 +124,23 @@ export default async function (app: NestApplication): Promise<void> {
             swaggerOptions: {
                 urls: [
                     {
-                        url: `/${docPrefix}/public/json`,
+                        url: `${docPrefix}/public/json`,
                         name: 'Public APIs',
                     },
                     {
-                        url: `/${docPrefix}/user/json`,
+                        url: `${docPrefix}/user/json`,
                         name: 'User APIs',
                     },
                     {
-                        url: `/${docPrefix}/admin/json`,
+                        url: `${docPrefix}/admin/json`,
                         name: 'Admin APIs',
                     },
                     {
-                        url: `/${docPrefix}/system/json`,
+                        url: `${docPrefix}/system/json`,
                         name: 'System APIs',
                     },
                     {
-                        url: `/${docPrefix}/all/json`,
+                        url: `${docPrefix}/all/json`,
                         name: 'All APIs',
                     },
                 ],

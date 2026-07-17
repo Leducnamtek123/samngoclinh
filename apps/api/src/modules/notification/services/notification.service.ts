@@ -113,4 +113,33 @@ export class NotificationService implements INotificationService {
 
         return {};
     }
+
+    async adminSendNotification(data: {
+        userId: string;
+        title: string;
+        body: string;
+        priority?: string;
+        createdBy: string;
+    }): Promise<IResponseReturn<any>> {
+        if (data.userId === 'all') {
+            const userIds = await this.notificationRepository.getAllUserIds();
+            const promises = userIds.map(userId =>
+                this.notificationRepository.createCustomNotification({
+                    ...data,
+                    userId,
+                })
+            );
+            await Promise.all(promises);
+            return {
+                data: {
+                    count: userIds.length,
+                },
+            };
+        } else {
+            const item = await this.notificationRepository.createCustomNotification(data);
+            return {
+                data: item,
+            };
+        }
+    }
 }

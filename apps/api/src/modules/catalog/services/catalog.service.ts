@@ -1,10 +1,17 @@
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
     ICatalogPlantItem,
     ICatalogShopItem,
 } from '@modules/catalog/interfaces/catalog.interface';
 import { CatalogRepository } from '@modules/catalog/repositories/catalog.repository';
+import { CatalogPlant, CatalogProduct } from '@generated/prisma-client';
+import {
+    CatalogPlantCreateDto,
+    CatalogPlantUpdateDto,
+    CatalogProductCreateDto,
+    CatalogProductUpdateDto,
+} from '../dtos/catalog.admin.dto';
 
 @Injectable()
 export class CatalogService {
@@ -28,5 +35,51 @@ export class CatalogService {
                 items: await this.catalogRepository.listShopItems(),
             },
         };
+    }
+
+    async createPlant(data: CatalogPlantCreateDto): Promise<IResponseReturn<CatalogPlant>> {
+        const item = await this.catalogRepository.createPlant(data);
+        return { data: item };
+    }
+
+    async updatePlant(id: string, data: CatalogPlantUpdateDto): Promise<IResponseReturn<CatalogPlant>> {
+        const item = await this.catalogRepository.updatePlant(id, data);
+        return { data: item };
+    }
+
+    async deletePlant(id: string): Promise<IResponseReturn<CatalogPlant>> {
+        const item = await this.catalogRepository.deletePlant(id);
+        return { data: item };
+    }
+
+    async createProduct(data: CatalogProductCreateDto): Promise<IResponseReturn<CatalogProduct>> {
+        const item = await this.catalogRepository.createProduct(data);
+        return { data: item };
+    }
+
+    async updateProduct(id: string, data: CatalogProductUpdateDto): Promise<IResponseReturn<CatalogProduct>> {
+        const item = await this.catalogRepository.updateProduct(id, data);
+        return { data: item };
+    }
+
+    async deleteProduct(id: string): Promise<IResponseReturn<CatalogProduct>> {
+        const item = await this.catalogRepository.deleteProduct(id);
+        return { data: item };
+    }
+
+    async getPlantDetail(id: string): Promise<IResponseReturn<CatalogPlant>> {
+        const item = await this.catalogRepository.getPlantDetail(id);
+        if (!item) {
+            throw new NotFoundException('Plant not found');
+        }
+        return { data: item };
+    }
+
+    async getProductDetail(id: string): Promise<IResponseReturn<CatalogProduct>> {
+        const item = await this.catalogRepository.getProductDetail(id);
+        if (!item) {
+            throw new NotFoundException('Product not found');
+        }
+        return { data: item };
     }
 }

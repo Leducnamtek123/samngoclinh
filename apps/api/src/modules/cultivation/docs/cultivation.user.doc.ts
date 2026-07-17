@@ -121,3 +121,76 @@ export function CultivationUserListBookingsDoc(): MethodDecorator {
         DocResponse('cultivation.listBookings')
     );
 }
+
+export function CultivationUserGardenDetailDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific garden by ID',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Garden ID',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.gardens')
+    );
+}
+
+export function CultivationUserBedDetailDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific bed by ID',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Bed ID',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.beds')
+    );
+}
+
+export function CultivationUserTreeDetailDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a specific tree by ID',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Tree ID',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.trees')
+    );
+}
+

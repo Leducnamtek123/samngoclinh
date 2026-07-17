@@ -57,4 +57,42 @@ export class WalletRepository {
             occurredAt: t.occurredAt,
         }));
     }
+
+    async listAllTransactions(): Promise<any[]> {
+        return this.databaseService.walletTransaction.findMany({
+            orderBy: { occurredAt: 'desc' },
+        });
+    }
+
+    async adjustBalance(userId: string, amount: number, title: string): Promise<any> {
+        return this.databaseService.$transaction(async (tx) => {
+            let wallet = await tx.walletAccount.findUnique({ where: { userId } });
+            if (!wallet) {
+                wallet = await tx.walletAccount.create({
+                    data: { userId, balancePoint: 0, treesOwned: 0 },
+                });
+            }
+            const updatedWallet = await tx.walletAccount.update({
+                where: { id: wallet.id },
+                data: {
+                    balancePoint: {
+                        increment: amount,
+                    },
+                },
+            });
+            const code = 'TXN' + Date.now() + Math.floor(1000 + Math.random() * 9000);
+            await tx.walletTransaction.create({
+                data: {
+                    code,
+                    userId,
+                    type: amount >= 0 ? 'admin_credit' : 'admin_debit',
+                    title,
+                    amount,
+                    balanceAfter: updatedWallet.balancePoint,
+                    status: 'success',
+                },
+            });
+            return updatedWallet;
+        });
+    }
 }

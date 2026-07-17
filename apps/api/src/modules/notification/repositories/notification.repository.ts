@@ -770,4 +770,41 @@ export class NotificationRepository {
             }),
         ]);
     }
+
+    async createCustomNotification(data: {
+        userId: string;
+        title: string;
+        body: string;
+        priority?: string;
+        createdBy: string;
+    }): Promise<Notification> {
+        const today = this.helperService.dateCreate();
+        return this.databaseService.notification.create({
+            data: {
+                type: EnumNotificationType.userActivity,
+                title: data.title,
+                body: data.body,
+                userId: data.userId,
+                isRead: false,
+                priority: (data.priority as EnumNotificationPriority) ?? EnumNotificationPriority.normal,
+                createdBy: data.createdBy,
+                deliveries: {
+                    createMany: {
+                        data: [
+                            {
+                                channel: EnumNotificationChannel.inApp,
+                                processedAt: today,
+                                sentAt: today,
+                            },
+                        ],
+                    },
+                },
+            },
+        });
+    }
+
+    async getAllUserIds(): Promise<string[]> {
+        const users = await this.databaseService.user.findMany({ select: { id: true } });
+        return users.map(u => u.id);
+    }
 }

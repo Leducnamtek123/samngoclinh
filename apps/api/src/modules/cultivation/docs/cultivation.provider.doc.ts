@@ -83,3 +83,78 @@ export function CultivationProviderCreateCareLogDoc(): MethodDecorator {
         DocResponse('cultivation.createCareLog')
     );
 }
+
+export function CultivationProviderUpdateGardenDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Update garden details' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Garden ID', required: true, type: 'string' }],
+            bodyType: EnumDocRequestBodyType.json,
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.updateGarden')
+    );
+}
+
+export function CultivationProviderDeleteGardenDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Delete a garden' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Garden ID', required: true, type: 'string' }],
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.deleteGarden')
+    );
+}
+
+export function CultivationProviderUpdateBedDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Update bed details' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Bed ID', required: true, type: 'string' }],
+            bodyType: EnumDocRequestBodyType.json,
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.updateBed')
+    );
+}
+
+export function CultivationProviderDeleteBedDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Delete a bed' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Bed ID', required: true, type: 'string' }],
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.deleteBed')
+    );
+}
+
+export function CultivationProviderUpdateTreeDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Update tree details' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Tree ID', required: true, type: 'string' }],
+            bodyType: EnumDocRequestBodyType.json,
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.updateTree')
+    );
+}
+
+export function CultivationProviderDeleteTreeDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({ summary: 'Delete a tree' }),
+        DocRequest({
+            params: [{ name: 'id', description: 'Tree ID', required: true, type: 'string' }],
+        }),
+        DocAuth({ xApiKey: true, jwtAccessToken: true }),
+        DocGuard({ role: true }),
+        DocResponse('cultivation.deleteTree')
+    );
+}

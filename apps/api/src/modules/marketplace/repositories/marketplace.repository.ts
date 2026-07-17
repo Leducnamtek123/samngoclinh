@@ -50,7 +50,7 @@ export class MarketplaceRepository {
                 quantity: payload.quantity,
                 ownerType,
                 ownerUserId: userId,
-                status: 'active',
+                status: 'pending_approval',
                 publishedAt: new Date(),
                 metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
             },
@@ -81,5 +81,25 @@ export class MarketplaceRepository {
             },
         });
         return true;
+    }
+
+    async updateStatus(id: string, status: string): Promise<MarketplaceListing> {
+        return this.databaseService.marketplaceListing.update({
+            where: { id },
+            data: { status },
+        });
+    }
+
+    async listAllListings(): Promise<MarketplaceListing[]> {
+        return this.databaseService.marketplaceListing.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async listUserListings(userId: string): Promise<MarketplaceListing[]> {
+        return this.databaseService.marketplaceListing.findMany({
+            where: { ownerUserId: userId },
+            orderBy: { createdAt: 'desc' },
+        });
     }
 }

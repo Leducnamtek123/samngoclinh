@@ -630,15 +630,19 @@ model CultivationBed {
 }
 
 model CultivationTree {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  code         String
-  bedCode      String?
-  ownerUserId  String?  @db.ObjectId
-  name         String
-  ageYear      Int
-  quantity     Int
-  status       String
-  metadata     Json?
+  id                         String   @id @default(auto()) @map("_id") @db.ObjectId
+  code                       String
+  bedCode                    String?
+  ownerUserId                String?  @db.ObjectId
+  name                       String
+  ageYear                    Int
+  quantity                   Int
+  status                     String
+  carePackageCode            String?
+  carePackageExpiredAt       DateTime?
+  protectionPackageCode      String?
+  protectionPackageExpiredAt DateTime?
+  metadata                   Json?
 
   createdAt DateTime @default(now())
   createdBy String?  @db.ObjectId
@@ -825,6 +829,38 @@ model EContract {
   @@unique(fields: [code])
   @@index(fields: [userId, status])
   @@map("EContracts")
+}
+
+model CarePackage {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  code           String
+  name           String
+  price          Int
+  description    String?
+  durationMonths Int
+  status         String   @default("active")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique(fields: [code])
+  @@map("CarePackages")
+}
+
+model ProtectionPackage {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  code           String
+  name           String
+  price          Int
+  description    String?
+  coverage       String?
+  status         String   @default("active")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique(fields: [code])
+  @@map("ProtectionPackages")
 }
 
 type UserTermPolicy {
@@ -1074,3 +1110,27 @@ enum EnumBiometricType {
   fingerprint
   faceId
 }
+
+model SystemSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("SystemSettings")
+}
+
+model ContactRequest {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  fullName    String
+  email       String
+  phoneNumber String
+  subject     String
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("ContactRequests")
+}
+

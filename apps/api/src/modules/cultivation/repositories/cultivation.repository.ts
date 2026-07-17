@@ -240,4 +240,154 @@ export class CultivationRepository {
             },
         });
     }
+
+    async updateGarden(id: string, name?: string, metadata?: Record<string, unknown>): Promise<CultivationGarden> {
+        return this.databaseService.cultivationGarden.update({
+            where: { id },
+            data: {
+                name,
+                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+            },
+        });
+    }
+
+    async deleteGarden(id: string): Promise<void> {
+        const garden = await this.databaseService.cultivationGarden.findUnique({ where: { id } });
+        if (!garden) {
+            return;
+        }
+
+        // Check if contains beds
+        const bedsCount = await this.databaseService.cultivationBed.count({
+            where: { gardenCode: garden.code },
+        });
+        if (bedsCount > 0) {
+            throw new Error('Cannot delete garden that still contains beds');
+        }
+
+        await this.databaseService.cultivationGarden.delete({ where: { id } });
+    }
+
+    async updateBed(id: string, name?: string, ageYear?: number, treeCount?: number, metadata?: Record<string, unknown>): Promise<CultivationBed> {
+        return this.databaseService.cultivationBed.update({
+            where: { id },
+            data: {
+                name,
+                ageYear,
+                treeCount,
+                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+            },
+        });
+    }
+
+    async deleteBed(id: string): Promise<void> {
+        const bed = await this.databaseService.cultivationBed.findUnique({ where: { id } });
+        if (!bed) {
+            return;
+        }
+
+        // Check if contains trees
+        const treesCount = await this.databaseService.cultivationTree.count({
+            where: { bedCode: bed.code },
+        });
+        if (treesCount > 0) {
+            throw new Error('Cannot delete bed that still contains trees');
+        }
+
+        await this.databaseService.$transaction(async tx => {
+            await tx.cultivationBed.delete({ where: { id } });
+            await tx.cultivationGarden.update({
+                where: { code: bed.gardenCode },
+                data: {
+                    totalBeds: { decrement: 1 },
+                    activeBeds: { decrement: 1 },
+                    totalTrees: { decrement: bed.treeCount },
+                },
+            });
+        });
+    }
+
+    async updateTree(
+        id: string,
+        name?: string,
+        ageYear?: number,
+        quantity?: number,
+        status?: string,
+        metadata?: Record<string, unknown>
+    ): Promise<CultivationTree> {
+        return this.databaseService.cultivationTree.update({
+            where: { id },
+            data: {
+                name,
+                ageYear,
+                quantity,
+                status,
+                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+            },
+        });
+    }
+
+    async deleteTree(id: string): Promise<void> {
+        const tree = await this.databaseService.cultivationTree.findUnique({ where: { id } });
+        if (!tree) {
+            return;
+        }
+
+        await this.databaseService.$transaction(async tx => {
+            await tx.cultivationTree.delete({ where: { id } });
+            if (tree.bedCode) {
+                const bed = await tx.cultivationBed.findUnique({ where: { code: tree.bedCode } });
+                if (bed) {
+                    await tx.cultivationBed.update({
+                        where: { code: tree.bedCode },
+                        data: {
+                            treeCount: { decrement: tree.quantity },
+                        },
+                    });
+
+                    await tx.cultivationGarden.update({
+                        where: { code: bed.gardenCode },
+                        data: {
+                            totalTrees: { decrement: tree.quantity },
+                        },
+                    });
+                }
+            }
+        });
+    }
+
+    async getGardenDetail(id: string, userId: string): Promise<CultivationGarden | null> {
+        return this.databaseService.cultivationGarden.findFirst({
+            where: { id, ownerUserId: userId },
+        });
+    }
+
+    async getBedDetail(id: string, userId: string): Promise<any | null> {
+        const bed = await this.databaseService.cultivationBed.findFirst({
+            where: { id, ownerUserId: userId },
+        });
+        if (!bed) return null;
+        const trees = await this.databaseService.cultivationTree.findMany({
+            where: { bedCode: bed.code },
+        });
+        return {
+            ...bed,
+            trees,
+        };
+    }
+
+    async getTreeDetail(id: string, userId: string): Promise<any | null> {
+        const tree = await this.databaseService.cultivationTree.findFirst({
+            where: { id, ownerUserId: userId },
+        });
+        if (!tree) return null;
+        const careLogs = await this.databaseService.cultivationCareLog.findMany({
+            where: { treeCode: tree.code },
+            orderBy: { loggedAt: 'desc' },
+        });
+        return {
+            ...tree,
+            careLogs,
+        };
+    }
 }

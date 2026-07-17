@@ -7,4 +7,7 @@ export interface IWalletService {
     transactions(
         userId: string
     ): Promise<IResponseReturn<{ items: WalletTransactionResponseDto[] }>>;
+    adminListTransactions(): Promise<IResponseReturn<{ items: any[] }>>;
+    adminAdjustBalance(userId: string, amount: number, title: string): Promise<IResponseReturn<any>>;
 }
+

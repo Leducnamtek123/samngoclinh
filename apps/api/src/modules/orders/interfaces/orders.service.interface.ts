@@ -3,6 +3,8 @@ import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
 
+import { OrdersUserCheckoutRequestDto } from '@modules/orders/dtos/request/orders.checkout.request.dto';
+
 export interface IOrdersService {
     list(
         userId: string
@@ -11,8 +13,18 @@ export interface IOrdersService {
         id: string,
         userId: string
     ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
-    checkout(userId: string): Promise<IResponseReturn<OrdersDetailResponseDto>>;
+    checkout(
+        userId: string,
+        dto?: OrdersUserCheckoutRequestDto
+    ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
     handlePaymentWebhook(
         payload: OrdersPaymentWebhookRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
+    adminList(): Promise<IResponseReturn<{ items: OrdersListResponseDto[] }>>;
+    adminDetail(id: string): Promise<IResponseReturn<OrdersDetailResponseDto>>;
+    adminUpdateStatus(
+        id: string,
+        status: string
+    ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
 }
+

@@ -13,6 +13,8 @@ import { PromotionModule } from '@modules/promotion/promotion.module';
 import { TermPolicyPublicController } from '@modules/term-policy/controllers/term-policy.public.controller';
 import { UserPublicController } from '@modules/user/controllers/user.public.controller';
 import { UserModule } from '@modules/user/user.module';
+import { ContactUserController } from '@modules/contact/controllers/contact.user.controller';
+import { ContactModule } from '@modules/contact/contact.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -28,6 +30,7 @@ import { Module } from '@nestjs/common';
         PromotionPublicController,
         UserPublicController,
         TermPolicyPublicController,
+        ContactUserController,
     ],
     providers: [],
     exports: [],
@@ -39,6 +42,7 @@ import { Module } from '@nestjs/common';
         MarketplaceModule,
         PromotionModule,
         UserModule,
+        ContactModule,
     ],
 })
 export class RoutesPublicModule {}

@@ -22,3 +22,18 @@ export function ProfileUserMeDoc(): MethodDecorator {
         })
     );
 }
+
+export function ProfileUserBusinessDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get current user business profile details (distributor info)',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('profile.me')
+    );
+}
+

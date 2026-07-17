@@ -43,4 +43,23 @@ export class ProfileRepository {
             verified: businessProfile?.verified ?? false,
         };
     }
+
+    async adminListBusinessProfiles(): Promise<any[]> {
+        return this.databaseService.businessProfile.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async updateRank(id: string, rank: string): Promise<any> {
+        return this.databaseService.businessProfile.update({
+            where: { id },
+            data: { rank },
+        });
+    }
+
+    async getBusinessProfileByUserId(userId: string): Promise<any> {
+        return this.databaseService.businessProfile.findUnique({
+            where: { userId },
+        });
+    }
 }

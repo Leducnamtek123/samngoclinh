@@ -72,4 +72,29 @@ export class MarketplaceService {
             data: { success: true },
         };
     }
+
+    async listAllListings(): Promise<IResponseReturn<{ items: MarketplaceListing[] }>> {
+        const items = await this.marketplaceRepository.listAllListings();
+        return {
+            data: { items },
+        };
+    }
+
+    async listUserListings(userId: string): Promise<IResponseReturn<{ items: MarketplaceListing[] }>> {
+        const items = await this.marketplaceRepository.listUserListings(userId);
+        return {
+            data: { items },
+        };
+    }
+
+    async adminUpdateStatus(id: string, status: string): Promise<IResponseReturn<MarketplaceListing>> {
+        const existing = await this.marketplaceRepository.getListingById(id);
+        if (!existing) {
+            throw new NotFoundException('Listing not found');
+        }
+        const updated = await this.marketplaceRepository.updateStatus(id, status);
+        return {
+            data: updated,
+        };
+    }
 }

@@ -47,4 +47,48 @@ export class PromotionRepository {
             ],
         };
     }
+
+    async listCampaigns(): Promise<any[]> {
+        return this.databaseService.promotionCampaign.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async createCampaign(data: any): Promise<any> {
+        return this.databaseService.promotionCampaign.create({
+            data: {
+                code: data.code,
+                title: data.title,
+                description: data.description,
+                note: data.note ?? null,
+                status: data.status ?? 'active',
+                plantCode: data.plantCode ?? null,
+                requiredVerified: data.requiredVerified ?? false,
+                requiredDeposit: data.requiredDeposit ?? false,
+                remainingSlots: data.remainingSlots ?? 0,
+            },
+        });
+    }
+
+    async updateCampaign(id: string, data: any): Promise<any> {
+        return this.databaseService.promotionCampaign.update({
+            where: { id },
+            data: {
+                title: data.title ?? undefined,
+                description: data.description ?? undefined,
+                note: data.note !== undefined ? data.note : undefined,
+                status: data.status ?? undefined,
+                plantCode: data.plantCode !== undefined ? data.plantCode : undefined,
+                requiredVerified: data.requiredVerified ?? undefined,
+                requiredDeposit: data.requiredDeposit ?? undefined,
+                remainingSlots: data.remainingSlots ?? undefined,
+            },
+        });
+    }
+
+    async deleteCampaign(id: string): Promise<any> {
+        return this.databaseService.promotionCampaign.delete({
+            where: { id },
+        });
+    }
 }

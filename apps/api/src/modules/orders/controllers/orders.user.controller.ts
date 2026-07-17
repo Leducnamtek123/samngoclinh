@@ -27,6 +27,8 @@ import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
 
+import { OrdersUserCheckoutRequestDto } from '@modules/orders/dtos/request/orders.checkout.request.dto';
+
 @ApiTags('modules.user.orders')
 @Controller({
     version: VERSION_NEUTRAL,
@@ -54,9 +56,10 @@ export class OrdersUserController {
     @ApiKeyProtected()
     @Post('/checkout')
     async checkout(
-        @AuthJwtPayload('userId') userId: string
+        @AuthJwtPayload('userId') userId: string,
+        @Body() body: OrdersUserCheckoutRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
-        return this.ordersService.checkout(userId);
+        return this.ordersService.checkout(userId, body);
     }
 
     @OrdersUserPaymentWebhookDoc()

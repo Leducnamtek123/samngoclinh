@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -15,6 +15,7 @@ import {
     MarketplaceProviderCreateDoc,
     MarketplaceProviderDeleteDoc,
     MarketplaceProviderUpdateDoc,
+    MarketplaceProviderListMeDoc,
 } from '@modules/marketplace/docs/marketplace.provider.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 
@@ -25,6 +26,18 @@ import { IResponseReturn } from '@common/response/interfaces/response.interface'
 })
 export class MarketplaceProviderController {
     constructor(private readonly marketplaceService: MarketplaceService) {}
+
+    @MarketplaceProviderListMeDoc()
+    @Response('marketplace.list')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/me')
+    async listMe(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<{ items: MarketplaceListing[] }>> {
+        return this.marketplaceService.listUserListings(userId);
+    }
 
     @MarketplaceProviderCreateDoc()
     @Response('marketplace.create')

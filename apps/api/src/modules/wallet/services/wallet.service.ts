@@ -30,4 +30,18 @@ export class WalletService implements IWalletService {
             },
         };
     }
+
+    async adminListTransactions(): Promise<IResponseReturn<{ items: any[] }>> {
+        const items = await this.walletRepository.listAllTransactions();
+        return {
+            data: { items },
+        };
+    }
+
+    async adminAdjustBalance(userId: string, amount: number, title: string): Promise<IResponseReturn<any>> {
+        const wallet = await this.walletRepository.adjustBalance(userId, amount, title);
+        return {
+            data: wallet,
+        };
+    }
 }
