@@ -5,6 +5,7 @@ import { Link } from '@/libs/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 import { UserHeaderMenu } from '@/components/UserHeaderMenu';
 import { fetchApi } from '@/libs/Api';
+import { HeaderNav } from '@/components/HeaderNav';
 
 export default async function Layout(props: {
   children: React.ReactNode;
@@ -32,45 +33,7 @@ export default async function Layout(props: {
   return (
     <>
       <BaseTemplate
-        leftNav={
-          <>
-            <li>
-              <Link href="/" className="text-gray-600 hover:text-primary transition-colors">
-                Trang chủ
-              </Link>
-            </li>
-            <li>
-              <Link href="/campaigns/free-tree" className="text-gray-600 hover:text-primary transition-colors">
-                Khuyến mãi
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard" className="text-gray-600 hover:text-primary transition-colors">
-                Trồng sâm
-              </Link>
-            </li>
-            <li>
-              <Link href="/#shop" className="text-gray-600 hover:text-primary transition-colors">
-                Cửa hàng
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="text-gray-600 hover:text-primary transition-colors">
-                Thông tin
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard" className="text-gray-600 hover:text-primary transition-colors">
-                Ký gửi
-              </Link>
-            </li>
-            <li>
-              <Link href="/about" className="text-gray-600 hover:text-primary transition-colors">
-                Giới thiệu
-              </Link>
-            </li>
-          </>
-        }
+        leftNav={<HeaderNav />}
         rightNav={
           <>
             {token ? (
