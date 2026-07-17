@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
+import { fetchApi } from '@/libs/Api';
 
 type IndexPageProps = {
   params: Promise<{ locale: string }>;
@@ -33,13 +34,8 @@ const articleCategoryNames: Record<string, string> = {
 };
 
 async function getPlants() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || '';
   try {
-    const res = await fetch(`${apiUrl}/public/catalog/plants`, {
-      headers: {
-        'x-api-key': apiKey,
-      },
+    const res = await fetchApi('/public/catalog/plants', {
       next: { revalidate: 60 }
     });
     if (!res.ok) {
@@ -55,13 +51,8 @@ async function getPlants() {
 }
 
 async function getArticles() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || '';
   try {
-    const res = await fetch(`${apiUrl}/public/content/articles`, {
-      headers: {
-        'x-api-key': apiKey,
-      },
+    const res = await fetchApi('/public/content/articles', {
       next: { revalidate: 60 }
     });
     if (!res.ok) {
