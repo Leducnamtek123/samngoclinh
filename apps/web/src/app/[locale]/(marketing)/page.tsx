@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
+import { Link } from '@/libs/I18nNavigation';
 
 type IndexPageProps = {
   params: Promise<{ locale: string }>;
@@ -223,12 +224,12 @@ export default async function Index(props: IndexPageProps) {
               </div>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <button className="bg-secondary text-white hover:bg-secondary-hover px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-secondary/20">
+                <Link href="/dashboard" className="bg-secondary text-white hover:bg-secondary-hover px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-secondary/20 block text-center">
                   Khám phá Marketplace
-                </button>
-                <button className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-lg font-bold transition-all">
+                </Link>
+                <Link href="/dashboard" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-lg font-bold transition-all block text-center">
                   Xem Vườn Của Tôi
-                </button>
+                </Link>
               </div>
             </div>
 

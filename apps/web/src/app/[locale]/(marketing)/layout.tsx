@@ -25,27 +25,27 @@ export default async function Layout(props: {
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
                 Khuyến mãi
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
                 Trồng sâm
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
                 Cửa hàng
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
                 Thông tin
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
                 Ký gửi
               </Link>
             </li>
