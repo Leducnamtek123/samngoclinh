@@ -6,10 +6,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import MainTabs from './navigation/MainTabs';
+import WelcomeScreen from './screens/WelcomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import ComingSoonScreen from './screens/ComingSoonScreen';
 import { colors } from './utils/theme';
 
 const Stack = createNativeStackNavigator();
@@ -51,6 +54,8 @@ function RootNavigator() {
         </>
       ) : (
         <>
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen
             name="ForgotPassword"
@@ -64,6 +69,14 @@ function RootNavigator() {
           />
         </>
       )}
+      <Stack.Screen
+        name="ComingSoon"
+        component={ComingSoonScreen}
+        options={({ route }) => ({
+          title: route.params?.title || 'Sắp ra mắt',
+          headerShadowVisible: false,
+        })}
+      />
     </Stack.Navigator>
   );
 }
