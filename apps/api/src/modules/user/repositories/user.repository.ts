@@ -1725,6 +1725,125 @@ export class UserRepository {
         );
     }
 
+    async requestVerificationMobileNumber(
+        userId: string,
+        mobileNumber: string,
+        { expiredAt, reference, hashedToken, type }: IUserVerificationCreate,
+        { ipAddress, userAgent, geoLocation }: IRequestLog
+    ): Promise<User> {
+        const today = this.helperService.dateCreate();
+
+        return this.databaseService.$transaction(
+            async (tx: Prisma.TransactionClient) => {
+                const [_, newVerification] = await Promise.all([
+                    tx.verification.updateMany({
+                        where: {
+                            userId,
+                            type,
+                            isUsed: false,
+                            expiredAt: {
+                                gt: today,
+                            },
+                        },
+                        data: {
+                            expiredAt: today,
+                        },
+                    }),
+                    tx.user.update({
+                        where: {
+                            id: userId,
+                        },
+                        data: {
+                            verifications: {
+                                create: {
+                                    expiredAt,
+                                    reference,
+                                    token: hashedToken,
+                                    type,
+                                    to: mobileNumber,
+                                    createdBy: userId,
+                                    createdAt: today,
+                                },
+                            },
+                            activityLogs: {
+                                create: {
+                                    action: EnumActivityLogAction.userSendVerificationEmail,
+                                    description:
+                                        this.activityLogUtil.getDescription(
+                                            EnumActivityLogAction.userSendVerificationEmail
+                                        ),
+                                    ipAddress,
+                                    userAgent:
+                                        this.databaseUtil.toPlainObject(
+                                            userAgent
+                                        ),
+                                    geoLocation:
+                                        this.databaseUtil.toPlainObject(
+                                            geoLocation
+                                        ),
+                                    createdBy: userId,
+                                },
+                            },
+                        },
+                    }),
+                ]);
+
+                return newVerification;
+            }
+        );
+    }
+
+    async findOneLatestByVerificationMobileNumber(
+        userId: string
+    ): Promise<Verification | null> {
+        return this.databaseService.verification.findFirst({
+            where: {
+                userId,
+                type: EnumVerificationType.mobileNumber,
+                user: {
+                    deletedAt: null,
+                    status: EnumUserStatus.active,
+                },
+            },
+            orderBy: {
+                createdAt: EnumPaginationOrderDirectionType.desc,
+            },
+        });
+    }
+
+    async findOneActiveByVerificationMobileNumberToken(
+        userId: string,
+        token: string
+    ): Promise<Verification | null> {
+        const today = this.helperService.dateCreate();
+
+        return this.databaseService.verification.findFirst({
+            where: {
+                userId,
+                token,
+                isUsed: false,
+                type: EnumVerificationType.mobileNumber,
+                expiredAt: {
+                    gt: today,
+                },
+                user: {
+                    deletedAt: null,
+                    status: EnumUserStatus.active,
+                },
+            },
+        });
+    }
+
+    async markVerificationAsUsed(id: string): Promise<void> {
+        await this.databaseService.verification.update({
+            where: { id },
+            data: {
+                isUsed: true,
+                verifiedAt: this.helperService.dateCreate(),
+            },
+        });
+    }
+
     async refresh(
         userId: string,
         { loginFrom, loginWith, sessionId, jti }: IUserLogin,

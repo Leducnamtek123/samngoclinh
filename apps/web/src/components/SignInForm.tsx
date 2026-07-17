@@ -28,12 +28,28 @@ export default function SignInForm() {
     setError('');
     setInfoMessage('');
 
-    // Simulate sending OTP (dev mock)
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Gửi mã OTP thất bại');
+      }
+
       setOtpSent(true);
+      setInfoMessage(`Mã OTP đã được gửi. Sử dụng mã OTP thật vừa sinh: ${data.otp}`);
+    } catch (err: any) {
+      setError(err.message || 'Đã xảy ra lỗi khi gửi OTP');
+    } finally {
       setLoading(false);
-      setInfoMessage('Mã OTP kiểm thử hệ thống là 123456');
-    }, 800);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

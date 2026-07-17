@@ -4,34 +4,35 @@ export async function POST(request: Request) {
   try {
     const { email, password, type, phone, otp } = await request.json();
 
-    let loginEmail = email;
-    let loginPassword = password;
+    let endpoint = 'http://localhost:3000/api/v1/public/user/login/credential';
+    let bodyPayload: any = {
+      email,
+      password,
+      from: 'website',
+      device: {
+        fingerprint: 'customer-web-fingerprint',
+      },
+    };
 
     if (type === 'phone') {
-      if (otp !== '123456') {
-        return NextResponse.json(
-          { message: 'Mã OTP không hợp lệ hoặc đã hết hạn.' },
-          { status: 400 }
-        );
-      }
-      loginEmail = phone;
-      loginPassword = 'aaAA@123'; // Default test user password
+      endpoint = 'http://localhost:3000/api/v1/public/user/login/otp/verify';
+      bodyPayload = {
+        phone,
+        otp,
+        from: 'website',
+        device: {
+          fingerprint: 'customer-web-fingerprint',
+        },
+      };
     }
 
-    const apiRes = await fetch('http://localhost:3000/api/v1/public/user/login/credential', {
+    const apiRes = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP',
       },
-      body: JSON.stringify({
-        email: loginEmail,
-        password: loginPassword,
-        from: 'website',
-        device: {
-          fingerprint: 'customer-web-fingerprint',
-        },
-      }),
+      body: JSON.stringify(bodyPayload),
     });
 
     const payload = await apiRes.json();
