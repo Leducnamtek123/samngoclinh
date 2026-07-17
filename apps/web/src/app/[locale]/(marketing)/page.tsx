@@ -78,7 +78,7 @@ async function getArticles() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'iWE FARM | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh',
+    title: 'Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh',
     description: 'Ứng dụng tiên phong mua, sở hữu và theo dõi quá trình sinh trưởng của sâm Ngọc Linh thật qua điện thoại.',
   };
 }
@@ -202,10 +202,10 @@ export default async function Index(props: IndexPageProps) {
               
               <div className="space-y-4">
                 <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight font-display-lg text-white leading-tight">
-                  iWE FARM
+                  Rượu Sâm Ngọc Linh
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-300 max-w-xl font-medium leading-relaxed">
-                  Khám phá các dịch vụ của chúng tôi và bắt đầu phát triển trang trại của bạn.
+                  Khám phá các sản phẩm và bắt đầu phát triển hoạt động đầu tư số hóa của bạn.
                 </p>
               </div>
 
@@ -226,7 +226,7 @@ export default async function Index(props: IndexPageProps) {
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Email</p>
-                    <p className="font-semibold text-white">admin@iwefarm.com.vn</p>
+                    <p className="font-semibold text-white">admin@ruousamngoclinh.vn</p>
                   </div>
                 </div>
               </div>
@@ -270,10 +270,10 @@ export default async function Index(props: IndexPageProps) {
             Giới thiệu về công ty
           </span>
           <h2 className="text-3xl sm:text-5xl font-extrabold text-primary font-display-lg">
-            iWE FARM
+            Rượu Sâm Ngọc Linh
           </h2>
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed font-body-md max-w-2xl mx-auto">
-            iWE FARM là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi cây Sâm Ngọc Linh thật chỉ bằng điện thoại.
+            Rượu Sâm Ngọc Linh là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi sản phẩm Rượu Sâm Ngọc Linh thật chỉ bằng điện thoại.
           </p>
           <div className="w-16 h-1 bg-secondary mx-auto rounded-full"></div>
         </div>

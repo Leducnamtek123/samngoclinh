@@ -6,7 +6,7 @@ const localePrefix: LocalePrefixMode = 'as-needed';
 // FIXME: Customize this configuration for your product
 /** Centralized application configuration */
 export const AppConfig = {
-  name: 'iWE FARM',
+  name: 'Rượu Sâm Ngọc Linh',
   i18n: {
     locales: ['en', 'vi'],
     defaultLocale: 'vi',

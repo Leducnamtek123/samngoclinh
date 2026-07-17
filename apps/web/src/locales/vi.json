@@ -8,13 +8,13 @@
     "sign_up_link": "S'inscrire"
   },
   "BaseTemplate": {
-    "description": "iWE FARM - Sâm Ngọc Linh Kỹ Thuật Số",
+    "description": "Rượu Sâm Ngọc Linh",
     "footer_text": "© {year} {name}. Fait avec <author></author>.",
     "main_navigation_label": "Navigation principale"
   },
   "Index": {
-    "meta_title": "iWE FARM | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
-    "meta_description": "iWE FARM là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi cây Sâm Ngọc Linh thật chỉ bằng điện thoại.",
+    "meta_title": "Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
+    "meta_description": "Rượu Sâm Ngọc Linh là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi sản phẩm Rượu Sâm Ngọc Linh thật chỉ bằng điện thoại.",
     "sponsors_title": "Partenaires",
     "zap_emoji_label": "Éclair"
   },

@@ -40,11 +40,13 @@ export default function SignInForm() {
   return (
     <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-xl p-8 space-y-6">
       <div className="space-y-2 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary text-2xl">
-          🌿
-        </div>
+        <img
+          src="/assets/images/logo_ruou_sam.png"
+          alt="Rượu Sâm Ngọc Linh Logo"
+          className="mx-auto h-12 w-12 rounded-full object-cover shadow-sm border border-gray-100"
+        />
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-          Đăng nhập iWE FARM
+          Đăng nhập Rượu Sâm Ngọc Linh
         </h1>
         <p className="text-sm text-gray-500">
           Nhập thông tin tài khoản của bạn để tiếp tục
@@ -67,7 +69,7 @@ export default function SignInForm() {
             type="email"
             required
             className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-            placeholder="vi-du@iwefarm.com.vn"
+            placeholder="vi-du@ruousamngoclinh.vn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

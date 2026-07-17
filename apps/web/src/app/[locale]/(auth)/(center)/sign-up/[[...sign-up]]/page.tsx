@@ -26,11 +26,13 @@ export default async function SignUpPage(props: SignUpPageProps) {
   return (
     <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-xl p-8 space-y-6 text-center">
       <div className="space-y-2">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary text-2xl">
-          🌱
-        </div>
+        <img
+          src="/assets/images/logo_ruou_sam.png"
+          alt="Rượu Sâm Ngọc Linh Logo"
+          className="mx-auto h-12 w-12 rounded-full object-cover shadow-sm border border-gray-100"
+        />
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-          Đăng ký iWE FARM
+          Đăng ký Rượu Sâm Ngọc Linh
         </h1>
         <p className="text-sm text-gray-500">
           Tính năng tự đăng ký tài khoản hiện đang được bảo trì thử nghiệm.

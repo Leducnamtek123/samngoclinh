@@ -24,7 +24,7 @@ export class ProfileUserController {
 
     @ProfileUserMeDoc()
     @Response('profile.me')
-    @RoleProtected(EnumRoleType.provider)
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

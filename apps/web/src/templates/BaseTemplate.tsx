@@ -12,23 +12,13 @@ export const BaseTemplate = (props: {
           {/* Logo & Navigation */}
           <div className="flex items-center gap-8 md:gap-12">
             <a href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white shadow-sm shadow-primary/20">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5.5 h-5.5 text-secondary"
-                >
-                  <path d="m12 3-10 9h3v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8h3L12 3z" />
-                  <path d="M9 22V12h6v10" />
-                </svg>
-              </div>
+              <img
+                src="/assets/images/logo_ruou_sam.png"
+                alt="Rượu Sâm Ngọc Linh Logo"
+                className="w-10 h-10 rounded-full object-cover shadow-sm shadow-primary/20 border border-gray-100"
+              />
               <span className="font-bold text-[22px] tracking-tight text-primary font-display-lg">
-                iWE FARM
+                Rượu Sâm Ngọc Linh
               </span>
             </a>
 
@@ -60,10 +50,10 @@ export const BaseTemplate = (props: {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="md:col-span-2 space-y-6">
               <span className="font-bold text-2xl text-white tracking-wider font-display-lg block">
-                iWE FARM
+                Rượu Sâm Ngọc Linh
               </span>
               <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
-                © {new Date().getFullYear()} iWE FARM. Digital Asset Agriculture. Nền tảng tiên phong trong việc số hóa và minh bạch chuỗi cung ứng sâm Ngọc Linh tại Việt Nam.
+                © {new Date().getFullYear()} Rượu Sâm Ngọc Linh. Nền tảng số hóa và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
               </p>
               <div className="flex gap-4 text-secondary">
                 <span className="text-xs text-gray-500">Trụ sở: 123 Đường Nam Trà My, Tỉnh Quảng Nam, Việt Nam. Hotline: 0847 234 234</span>

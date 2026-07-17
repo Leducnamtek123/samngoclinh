@@ -106,7 +106,7 @@ export default async function DashboardPage(props: { params: Promise<{ locale: s
             <h3 className="text-2xl font-bold text-gray-900">
               {wallet.balancePoint.toLocaleString('vi-VN')}
             </h3>
-            <p className="text-xs text-gray-500">Điểm khả dụng (iWE Points)</p>
+            <p className="text-xs text-gray-500">Điểm khả dụng (Điểm Sâm)</p>
           </div>
         </div>
 
