@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { Link } from '@/libs/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
+import { SignOutButton } from '@/components/SignOutButton';
 
 export default async function Layout(props: {
   children: React.ReactNode;
@@ -61,14 +62,16 @@ export default async function Layout(props: {
             {token ? (
               <>
                 <li>
-                  <Link href="/dashboard/" className="text-primary hover:text-primary-hover font-bold transition-colors px-3 py-2">
-                    Vào Dashboard
+                  <Link href="/profile" className="bg-primary/10 text-primary hover:bg-primary/15 transition-all px-4 py-2 rounded-lg font-bold">
+                    Hồ sơ của tôi
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/user-profile/" className="text-gray-700 hover:text-primary transition-colors px-3 py-2">
-                    Tài khoản
-                  </Link>
+                  <SignOutButton>
+                    <button className="text-gray-700 hover:text-primary transition-colors px-3 py-2" type="button">
+                      Đăng xuất
+                    </button>
+                  </SignOutButton>
                 </li>
               </>
             ) : (
