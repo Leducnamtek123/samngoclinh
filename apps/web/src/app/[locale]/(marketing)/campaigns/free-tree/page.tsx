@@ -64,8 +64,10 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
       <section className="bg-primary text-white py-16 px-4 md:px-8 border-b border-gray-800">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Gift Icon */}
-          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-2xl shadow-inner">
-            🎁
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shadow-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+            </svg>
           </div>
 
           {/* Title & Description */}
@@ -85,14 +87,23 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
 
           {/* Badges / Campaign Meta */}
           <div className="flex flex-wrap gap-4 text-xs font-semibold pt-2">
-            <span className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-white">
-              🌱 Cây sâm 1 năm
+            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
+              </svg>
+              Cây sâm 1 năm
             </span>
-            <span className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-white">
-              🛡️ Cần gói chăm sóc và bảo vệ
+            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Cần gói chăm sóc và bảo vệ
             </span>
-            <span className="flex items-center gap-1 bg-white/15 px-3 py-1.5 rounded-full text-secondary">
-              ⚡ Còn {primaryItem.remainingSlots} suất
+            <span className="flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Còn {primaryItem.remainingSlots} suất
             </span>
           </div>
         </div>
@@ -121,9 +132,12 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
                   <h3 className="font-bold text-gray-900 text-lg">
                     {slot.plantName}
                   </h3>
-                  <p className="text-xs text-gray-400 font-medium">
-                    🌱 Cây sâm 1 năm
-                  </p>
+                  <div className="text-xs text-gray-400 font-medium flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
+                    </svg>
+                    Cây sâm 1 năm
+                  </div>
                 </div>
 
                 <div className="text-secondary font-bold text-base pt-1 border-t border-gray-100">

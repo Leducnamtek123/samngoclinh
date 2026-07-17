@@ -100,7 +100,11 @@ export default async function DashboardPage(props: { params: Promise<{ locale: s
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Ví Điểm Số</span>
-            <span className="p-2 bg-secondary/10 text-secondary rounded-lg text-lg">💰</span>
+            <span className="p-2 bg-secondary/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
           </div>
           <div className="mt-4 space-y-1">
             <h3 className="text-2xl font-bold text-gray-900">
@@ -114,7 +118,11 @@ export default async function DashboardPage(props: { params: Promise<{ locale: s
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Cây Sâm Sở Hữu</span>
-            <span className="p-2 bg-primary/10 text-primary rounded-lg text-lg">🌿</span>
+            <span className="p-2 bg-primary/10 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
+              </svg>
+            </span>
           </div>
           <div className="mt-4 space-y-1">
             <h3 className="text-2xl font-bold text-gray-900">
@@ -128,7 +136,11 @@ export default async function DashboardPage(props: { params: Promise<{ locale: s
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Số Giao Dịch</span>
-            <span className="p-2 bg-indigo-50 text-indigo-600 rounded-lg text-lg">📊</span>
+            <span className="p-2 bg-indigo-50 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </span>
           </div>
           <div className="mt-4 space-y-1">
             <h3 className="text-2xl font-bold text-gray-900">

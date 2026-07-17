@@ -189,7 +189,10 @@ export default async function Index(props: IndexPageProps) {
             {/* Left Info Column */}
             <div className="lg:col-span-7 space-y-8 text-white">
               <div className="inline-flex items-center gap-2 bg-secondary/15 text-secondary border border-secondary/30 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
-                🌿 Sâm Ngọc Linh Kỹ Thuật Số
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
+                </svg>
+                Sâm Ngọc Linh Kỹ Thuật Số
               </div>
               
               <div className="space-y-4">
@@ -205,7 +208,9 @@ export default async function Index(props: IndexPageProps) {
               <div className="flex flex-col sm:flex-row gap-6 text-sm text-gray-300 pt-4 border-t border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary">
-                    📞
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Số điện thoại</p>
@@ -214,7 +219,9 @@ export default async function Index(props: IndexPageProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-secondary">
-                    ✉️
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                   </div>
                   <div>
                     <p className="text-xs text-gray-400">Email</p>
@@ -327,8 +334,10 @@ export default async function Index(props: IndexPageProps) {
                     <p className="text-[10px] text-gray-400 uppercase font-semibold">Giá đầu tư</p>
                     <p className="font-bold text-primary text-base">{item.price.toLocaleString('vi-VN')} VNĐ</p>
                   </div>
-                  <button className="p-2.5 bg-primary/5 hover:bg-primary hover:text-white text-primary rounded-lg transition-all duration-200">
-                    🛒
+                  <button className="p-2.5 bg-primary/5 hover:bg-primary hover:text-white text-primary rounded-lg transition-all duration-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
                   </button>
                 </div>
               </div>
