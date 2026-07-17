@@ -231,10 +231,10 @@ export default async function Index(props: IndexPageProps) {
               </div>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/dashboard" className="bg-secondary text-white hover:bg-secondary-hover px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-secondary/20 block text-center">
+                <Link href="/trading-floor" className="bg-secondary text-white hover:bg-secondary-hover px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-secondary/20 block text-center">
                   Khám phá Marketplace
                 </Link>
-                <Link href="/dashboard" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-lg font-bold transition-all block text-center">
+                <Link href="/profile?tabs=assets" className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-lg font-bold transition-all block text-center">
                   Xem Vườn Của Tôi
                 </Link>
               </div>

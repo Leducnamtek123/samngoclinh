@@ -137,7 +137,7 @@ export default async function GinsengPage(props: GinsengPageProps) {
                 </div>
 
                 <Link
-                  href="/dashboard"
+                  href="/cart"
                   className="block w-full text-center bg-[#4CAF50] hover:bg-emerald-600 text-white py-2.5 rounded-lg font-bold transition-colors text-xs"
                 >
                   Mua ngay

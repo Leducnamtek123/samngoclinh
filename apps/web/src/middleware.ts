@@ -8,7 +8,7 @@ import { routing } from './libs/I18nRouting';
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = (pathname: string) => {
-  return pathname.includes('/dashboard');
+  return pathname.includes('/profile');
 };
 
 const isAuthPage = (pathname: string) => {
@@ -58,8 +58,8 @@ export default async function middleware(request: NextRequest) {
     const token = request.cookies.get('user_session')?.value;
     if (token) {
       const locale = getLocale(pathname);
-      const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
-      return NextResponse.redirect(dashboardUrl);
+      const homeUrl = new URL(`/${locale}`, request.url);
+      return NextResponse.redirect(homeUrl);
     }
   }
 

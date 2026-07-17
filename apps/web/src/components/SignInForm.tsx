@@ -28,8 +28,8 @@ export default function SignInForm() {
         throw new Error(data.message || 'Đăng nhập thất bại');
       }
 
-      // Redirect to dashboard
-      window.location.href = '/dashboard';
+      // Redirect to homepage
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.message || 'Đã xảy ra lỗi kết nối');
     } finally {

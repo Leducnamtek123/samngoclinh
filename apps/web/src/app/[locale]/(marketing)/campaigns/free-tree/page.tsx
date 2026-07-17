@@ -145,7 +145,7 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
                 </div>
 
                 <Link
-                  href="/dashboard"
+                  href="/profile?tabs=kyc"
                   className="block w-full text-center bg-secondary hover:bg-secondary-hover text-white py-3 rounded-lg font-bold transition-colors text-sm shadow-sm"
                 >
                   Xác thực để nhận
