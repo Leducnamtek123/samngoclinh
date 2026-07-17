@@ -9,12 +9,6 @@ type IndexPageProps = {
 
 
 
-const articleImages: Record<string, string> = {
-  "bao-chi-noi-ve-iwe-farm": "https://lh3.googleusercontent.com/aida-public/AB6AXuPhqOeKYOiUfS4imUS-mP7FKEt7RyFWA6h9zcMoQCPkFJnLJdwiIPRmHCC0AWYblEuR6d6bJn6CFksSKCYpPd8gxBiVwR7mLUYyf_Z-334b2SiRWzIiROLDGWKHy0Y-QMoeVC3vW_yctMjYkDvyB9u0CqatiK5RbKa5MWzjQGybt5yJe1-N-pBtsudJ0pwoLQW21Htm3nM3YyCwPNapryMZBwK2ysD0btYoDo0SI7FNFytQEBYjz48",
-  "cup-vang-nen-tang-nong-nghiep-thong-minh": "https://lh3.googleusercontent.com/aida-public/AB6AXuCl-Y12_9-sl_LoKH5v957vcLQl1qHlS9Qw8nI4p4JSU8pmBS5grM0BwPxcQXJd897ulLd4xTRXTordF5to1prfnIftJnXCfGo1d_GMzB7KvI-wkC913UCQq7guYEY4h7LkSi-OcRbeZKTLEAGJGzukQNOBi1HnF49u7ylb6zt2skbfkynIdB-XEnDOYYJfPM66_qClngJyYNMojwhAFVitXO59xaolyde4U3qMPzd9bjvI5XEzRWN8",
-  "faq-sam-ngoc-linh": "https://lh3.googleusercontent.com/aida-public/AB6AXuAKgctCQk83ormjDyhpWu9sYAIM_6IS57FhJMPi2fA9rjI_Cde_N7byQ57Zdetq4xCzaVfYTtxPKXZMlmG3h5szK9ihjXb3jbwpGh6RXboGoYoi0qw-zzNxCBIyfNVfjFXTFCAL1wvxvYK9R9x4W37CuZzdBzvAzaIBgkwSxjfFY5kBT890ek1LzjzHk1rDbid77iCoCoLSdbMJQcno70PjO8lYza338AGHFR_DmJR5mLIHfD9Eubol"
-};
-
 const articleCategoryNames: Record<string, string> = {
   "news": "Thị trường",
   "event": "Khoa học",
@@ -41,6 +35,35 @@ async function getArticles() {
   }
 }
 
+async function getBannerImages() {
+  try {
+    const [largeRes, smallRes] = await Promise.all([
+      fetchApi('/public/settings/homepage_banner_large_image', { cache: 'no-store' }),
+      fetchApi('/public/settings/homepage_banner_small_image', { cache: 'no-store' }),
+    ]);
+    
+    let largeImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e';
+    let smallImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn';
+
+    if (largeRes.ok) {
+      const json = await largeRes.json();
+      if (json.data?.value) largeImage = json.data.value;
+    }
+    if (smallRes.ok) {
+      const json = await smallRes.json();
+      if (json.data?.value) smallImage = json.data.value;
+    }
+
+    return { largeImage, smallImage };
+  } catch (error) {
+    console.error('Error fetching banner images:', error);
+    return {
+      largeImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e',
+      smallImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn',
+    };
+  }
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh',
@@ -52,50 +75,20 @@ export default async function Index(props: IndexPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const apiArticles = await getArticles();
+  const [apiArticles, bannerImages] = await Promise.all([
+    getArticles(),
+    getBannerImages(),
+  ]);
 
-  const fallbackArticles = [
-    {
-      id: "art-1",
-      slug: "bao-chi-noi-ve-iwe-farm",
-      title: "Sâm Ngọc Linh chính thức được định danh tài sản số trên sàn quốc tế",
-      category: "news",
-      publishedAt: "20/05/2026",
-      summary: "Bước tiến quan trọng giúp nâng tầm giá trị thương hiệu sâm Việt Nam trên bản đồ thảo dược thế giới thông qua nền tảng công nghệ Blockchain...",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuPhqOeKYOiUfS4imUS-mP7FKEt7RyFWA6h9zcMoQCPkFJnLJdwiIPRmHCC0AWYblEuR6d6bJn6CFksSKCYpPd8gxBiVwR7mLUYyf_Z-334b2SiRWzIiROLDGWKHy0Y-QMoeVC3vW_yctMjYkDvyB9u0CqatiK5RbKa5MWzjQGybt5yJe1-N-pBtsudJ0pwoLQW21Htm3nM3YyCwPNapryMZBwK2ysD0btYoDo0SI7FNFytQEBYjz48"
-    },
-    {
-      id: "art-2",
-      slug: "cup-vang-nen-tang-nong-nghiep-thong-minh",
-      title: "Phát hiện thêm 2 hợp chất Saponin mới trong mẫu sâm 10 năm tuổi",
-      category: "event",
-      publishedAt: "15/05/2026",
-      summary: "Các nhà khoa học tại Viện Nghiên cứu Dược liệu vừa công bố kết quả phân tích định lượng cho thấy hàm lượng dược chất vượt trội trong giống sâm mới...",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCl-Y12_9-sl_LoKH5v957vcLQl1qHlS9Qw8nI4p4JSU8pmBS5grM0BwPxcQXJd897ulLd4xTRXTordF5to1prfnIftJnXCfGo1d_GMzB7KvI-wkC913UCQq7guYEY4h7LkSi-OcRbeZKTLEAGJGzukQNOBi1HnF49u7ylb6zt2skbfkynIdB-XEnDOYYJfPM66_qClngJyYNMojwhAFVitXO59xaolyde4U3qMPzd9bjvI5XEzRWN8"
-    },
-    {
-      id: "art-3",
-      slug: "faq-sam-ngoc-linh",
-      title: "Hướng dẫn tham gia đầu tư vườn sâm kỹ thuật số cho người mới",
-      category: "faq",
-      publishedAt: "10/05/2026",
-      summary: "Làm thế nào để bắt đầu hành trình đầu tư vào \"vàng xanh\" của Việt Nam một cách an toàn và hiệu quả nhất thông qua nền tảng...",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAKgctCQk83ormjDyhpWu9sYAIM_6IS57FhJMPi2fA9rjI_Cde_N7byQ57Zdetq4xCzaVfYTtxPKXZMlmG3h5szK9ihjXb3jbwpGh6RXboGoYoi0qw-zzNxCBIyfNVfjFXTFCAL1wvxvYK9R9x4W37CuZzdBzvAzaIBgkwSxjfFY5kBT890ek1LzjzHk1rDbid77iCoCoLSdbMJQcno70PjO8lYza338AGHFR_DmJR5mLIHfD9Eubol"
-    }
-  ];
-
-
-
-  const displayedArticles = apiArticles.length > 0 ? apiArticles.map((item: any) => ({
+  const displayedArticles = apiArticles.map((item: any) => ({
     id: item.id,
-    slug: item.slug,
+    slug: item.slug || item.id,
     title: item.title,
     category: articleCategoryNames[item.category] || "Tin tức",
     publishedAt: new Date(item.publishedAt).toLocaleDateString('vi-VN'),
     summary: item.summary,
-    image: articleImages[item.slug] || "https://lh3.googleusercontent.com/aida-public/AB6AXuPhqOeKYOiUfS4imUS-mP7FKEt7RyFWA6h9zcMoQCPkFJnLJdwiIPRmHCC0AWYblEuR6d6bJn6CFksSKCYpPd8gxBiVwR7mLUYyf_Z-334b2SiRWzIiROLDGWKHy0Y-QMoeVC3vW_yctMjYkDvyB9u0CqatiK5RbKa5MWzjQGybt5yJe1-N-pBtsudJ0pwoLQW21Htm3nM3YyCwPNapryMZBwK2ysD0btYoDo0SI7FNFytQEBYjz48"
-  })) : fallbackArticles;
-
+    image: item.image || "https://lh3.googleusercontent.com/aida-public/AB6AXuPhqOeKYOiUfS4imUS-mP7FKEt7RyFWA6h9zcMoQCPkFJnLJdwiIPRmHCC0AWYblEuR6d6bJn6CFksSKCYpPd8gxBiVwR7mLUYyf_Z-334b2SiRWzIiROLDGWKHy0Y-QMoeVC3vW_yctMjYkDvyB9u0CqatiK5RbKa5MWzjQGybt5yJe1-N-pBtsudJ0pwoLQW21Htm3nM3YyCwPNapryMZBwK2ysD0btYoDo0SI7FNFytQEBYjz48"
+  }));
 
   return (
     <div className="w-full bg-brand-bg text-gray-800">
@@ -162,7 +155,7 @@ export default async function Index(props: IndexPageProps) {
               <div className="relative w-80 h-80 sm:w-96 sm:h-96 rounded-full overflow-hidden border-8 border-white/10 shadow-2xl flex items-center justify-center bg-white">
                 <img 
                   className="w-full h-full object-cover" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e" 
+                  src={bannerImages.largeImage} 
                   alt="Sâm Ngọc Linh" 
                 />
               </div>
@@ -170,7 +163,7 @@ export default async function Index(props: IndexPageProps) {
               <div className="absolute -bottom-4 -left-4 w-32 h-32 rounded-full overflow-hidden border-4 border-white/20 shadow-xl bg-white hidden sm:block">
                 <img 
                   className="w-full h-full object-cover" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn" 
+                  src={bannerImages.smallImage} 
                   alt="Sâm non" 
                 />
               </div>
