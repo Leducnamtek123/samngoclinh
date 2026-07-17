@@ -8,16 +8,27 @@ import { useCultivationTrees } from '@/hooks/queries/useCultivation';
 type ProfileClientProps = {
   locale: string;
   initialTab?: string;
+  initialProfile?: any;
+  initialBusiness?: any;
+  initialWallet?: any;
+  initialTrees?: any[];
 };
 
-export const ProfileClient = ({ locale: _locale, initialTab = 'info' }: ProfileClientProps) => {
+export const ProfileClient = ({
+  locale: _locale,
+  initialTab = 'info',
+  initialProfile,
+  initialBusiness,
+  initialWallet,
+  initialTrees,
+}: ProfileClientProps) => {
   const [tabs, setTabs] = useState(initialTab);
 
   // Queries
-  const { data: profile, isLoading: profileLoading, isError: profileError, refetch: refetchProfile } = useProfileMe();
-  const { data: business, isLoading: businessLoading } = useProfileBusiness();
-  const { data: wallet, isLoading: walletLoading } = useWalletSummary();
-  const { data: trees, isLoading: treesLoading } = useCultivationTrees();
+  const { data: profile, isLoading: profileLoading, isError: profileError, refetch: refetchProfile } = useProfileMe(initialProfile);
+  const { data: business, isLoading: businessLoading } = useProfileBusiness(initialBusiness);
+  const { data: wallet, isLoading: walletLoading } = useWalletSummary(initialWallet);
+  const { data: trees, isLoading: treesLoading } = useCultivationTrees(initialTrees);
 
   const isLoading = profileLoading || businessLoading || walletLoading || treesLoading;
   const isError = profileError || !profile;
