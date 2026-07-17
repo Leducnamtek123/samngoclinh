@@ -1,6 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { Link } from '@/libs/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 import { UserHeaderMenu } from '@/components/UserHeaderMenu';
@@ -52,10 +51,6 @@ export default async function Layout(props: {
                 </li>
               </>
             )}
-
-            <li className="ml-2">
-              <LocaleSwitcher />
-            </li>
           </>
         }
       >
