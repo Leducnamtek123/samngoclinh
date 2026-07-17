@@ -46,8 +46,19 @@ export async function POST(request: Request) {
 
     const token = payload.data.tokens.accessToken;
 
+    let userEmail = '';
+    const parts = token.split('.');
+    if (parts.length === 3) {
+      try {
+        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+        userEmail = decodedPayload.email || '';
+      } catch (e) {
+        console.error('Failed to decode JWT token payload:', e);
+      }
+    }
+
     // Set secure cookie
-    const response = NextResponse.json({ success: true, message: 'Đăng nhập thành công' });
+    const response = NextResponse.json({ success: true, email: userEmail, message: 'Đăng nhập thành công' });
     response.cookies.set('user_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

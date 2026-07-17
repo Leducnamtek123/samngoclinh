@@ -77,8 +77,12 @@ export default function SignInForm() {
         throw new Error(data.message || 'Đăng nhập thất bại');
       }
 
-      // Redirect to homepage
-      window.location.href = '/';
+      // Redirect to homepage or admin panel based on role email
+      if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
+        window.location.href = 'http://localhost:3001/en';
+      } else {
+        window.location.href = '/';
+      }
     } catch (err: any) {
       setError(err.message || 'Đã xảy ra lỗi kết nối');
     } finally {
