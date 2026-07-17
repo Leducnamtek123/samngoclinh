@@ -3,7 +3,8 @@ import { cookies } from 'next/headers';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { Link } from '@/libs/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
-import { SignOutButton } from '@/components/SignOutButton';
+import { UserHeaderMenu } from '@/components/UserHeaderMenu';
+import { fetchApi } from '@/libs/Api';
 
 export default async function Layout(props: {
   children: React.ReactNode;
@@ -14,6 +15,19 @@ export default async function Layout(props: {
 
   const cookieStore = await cookies();
   const token = cookieStore.get('user_session')?.value;
+
+  let profile = null;
+  if (token) {
+    try {
+      const res = await fetchApi('/user/profile/me');
+      if (res.ok) {
+        const json = await res.json();
+        profile = json.data;
+      }
+    } catch (e) {
+      console.error('Error fetching profile for header:', e);
+    }
+  }
 
   return (
     <>
@@ -60,20 +74,7 @@ export default async function Layout(props: {
         rightNav={
           <>
             {token ? (
-              <>
-                <li>
-                  <Link href="/profile" className="bg-primary/10 text-primary hover:bg-primary/15 transition-all px-4 py-2 rounded-lg font-bold">
-                    Hồ sơ của tôi
-                  </Link>
-                </li>
-                <li>
-                  <SignOutButton>
-                    <button className="text-gray-700 hover:text-primary transition-colors px-3 py-2" type="button">
-                      Đăng xuất
-                    </button>
-                  </SignOutButton>
-                </li>
-              </>
+              <UserHeaderMenu profile={profile} />
             ) : (
               <>
                 <li>
