@@ -15,56 +15,7 @@ export const TradingFloorClient = ({ locale: _locale }: TradingFloorClientProps)
 
   const isVerified = profile?.verified || false;
 
-  // Fallback listings if API is empty
-  const fallbackListings = [
-    {
-      id: 'fallback-listing-1',
-      title: 'Cây Sâm Ngọc Linh 2026',
-      price: 200000,
-      quantity: 1,
-      ownerType: 'customer',
-      note: '1 năm • Cây Khỏe',
-      payments: ['Điểm', 'Chuyển khoản']
-    },
-    {
-      id: 'fallback-listing-2',
-      title: 'Cây Sâm Ngọc Linh 2026',
-      price: 200000,
-      quantity: 1,
-      ownerType: 'customer',
-      note: '1 năm • Cây Khỏe',
-      payments: ['Điểm']
-    },
-    {
-      id: 'fallback-listing-3',
-      title: 'Cây Sâm Ngọc Linh 2026',
-      price: 250000,
-      quantity: 1,
-      ownerType: 'customer',
-      note: '1 năm • Cây Khỏe',
-      payments: ['Điểm']
-    },
-    {
-      id: 'fallback-listing-4',
-      title: 'Cây Sâm Ngọc Linh 2026',
-      price: 500000,
-      quantity: 1,
-      ownerType: 'customer',
-      note: '1 năm • Cây Khỏe',
-      payments: ['Điểm']
-    },
-    {
-      id: 'fallback-listing-5',
-      title: 'Cây Sâm Ngọc Linh 2022',
-      price: 9000000,
-      quantity: 1,
-      ownerType: 'customer',
-      note: '5 năm • Cây đang ra hoa',
-      payments: ['Điểm']
-    }
-  ];
-
-  const displayListings = listings && listings.length > 0 ? listings : fallbackListings;
+  const displayListings = listings || [];
 
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">

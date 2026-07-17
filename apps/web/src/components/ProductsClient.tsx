@@ -13,37 +13,6 @@ export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClient
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAges, setSelectedAges] = useState<number[]>([]);
 
-  // Fallback plants if API is empty
-  const fallbackItems = [
-    {
-      id: 'fallback-plant-1',
-      name: 'Cây Sâm Ngọc Linh 2026',
-      code: 'plant-1y',
-      origin: 'Nam Trà My',
-      price: 84758,
-      age: 1,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
-    },
-    {
-      id: 'fallback-plant-2',
-      name: 'Cây Sâm Ngọc Linh 2025',
-      code: 'plant-2y',
-      origin: 'Đắk Glei',
-      price: 330103,
-      age: 2,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
-    },
-    {
-      id: 'fallback-plant-3',
-      name: 'Cây Sâm Ngọc Linh 2024',
-      code: 'plant-3y',
-      origin: 'Hợp tác xã',
-      price: 873547,
-      age: 3,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
-    }
-  ];
-
   const filterAges = [
     { label: '1 năm', age: 1, count: 17 },
     { label: '2 năm', age: 2, count: 30 },
@@ -52,7 +21,7 @@ export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClient
     { label: '5 năm', age: 5, count: 2 }
   ];
 
-  const displayItems = items && items.length > 0 ? items : fallbackItems;
+  const displayItems = items || [];
 
   const handleAgeToggle = (age: number) => {
     if (selectedAges.includes(age)) {

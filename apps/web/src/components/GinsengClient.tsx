@@ -12,35 +12,7 @@ export const GinsengClient = ({ locale: _locale, initialItems }: GinsengClientPr
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Fallback items if API is empty
-  const fallbackItems = [
-    {
-      id: 'fallback-item-1',
-      name: 'RƯỢU SÂM NGỌC LINH NGUYÊN CÂY - NGUYÊN CỦ',
-      price: 7000000,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLuXy8pynMd9n3uXsIueZ4qIRS2WNO0S4OEociDUZ_OyEZNaaqmMzxQ2xn2TO1IzDsBxZez1hYYesLk5evUcf75DHGB6J89oP-T8CWiodimudqIPHhntR8tHXqs3WDjqTYLhivQBhpgoPMxRa-FwV3P9s54pTKKTQfO9M8wIlID3bDRQm0izlE87wrSRO5ngMAFxl77dCeBDEM9rDTRosaAxQgqmOSHb2J34UZsKnm8kBXTD-zhLyW',
-    },
-    {
-      id: 'fallback-item-2',
-      name: 'SÂM NGỌC LINH CẮT LÁT SẤY THĂNG HOA 10G',
-      price: 3500000,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLuXy8pynMd9n3uXsIueZ4qIRS2WNO0S4OEociDUZ_OyEZNaaqmMzxQ2xn2TO1IzDsBxZez1hYYesLk5evUcf75DHGB6J89oP-T8CWiodimudqIPHhntR8tHXqs3WDjqTYLhivQBhpgoPMxRa-FwV3P9s54pTKKTQfO9M8wIlID3bDRQm0izlE87wrSRO5ngMAFxl77dCeBDEM9rDTRosaAxQgqmOSHb2J34UZsKnm8kBXTD-zhLyW',
-    },
-    {
-      id: 'fallback-item-3',
-      name: 'RƯỢU LÁ SÂM NGỌC LINH 100ML',
-      price: 200000,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLuXy8pynMd9n3uXsIueZ4qIRS2WNO0S4OEociDUZ_OyEZNaaqmMzxQ2xn2TO1IzDsBxZez1hYYesLk5evUcf75DHGB6J89oP-T8CWiodimudqIPHhntR8tHXqs3WDjqTYLhivQBhpgoPMxRa-FwV3P9s54pTKKTQfO9M8wIlID3bDRQm0izlE87wrSRO5ngMAFxl77dCeBDEM9rDTRosaAxQgqmOSHb2J34UZsKnm8kBXTD-zhLyW',
-    },
-    {
-      id: 'fallback-item-4',
-      name: 'RƯỢU BÔNG SÂM NGỌC LINH 1 LÍT',
-      price: 1400000,
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBLuXy8pynMd9n3uXsIueZ4qIRS2WNO0S4OEociDUZ_OyEZNaaqmMzxQ2xn2TO1IzDsBxZez1hYYesLk5evUcf75DHGB6J89oP-T8CWiodimudqIPHhntR8tHXqs3WDjqTYLhivQBhpgoPMxRa-FwV3P9s54pTKKTQfO9M8wIlID3bDRQm0izlE87wrSRO5ngMAFxl77dCeBDEM9rDTRosaAxQgqmOSHb2J34UZsKnm8kBXTD-zhLyW',
-    }
-  ];
-
-  const displayItems = items && items.length > 0 ? items : fallbackItems;
+  const displayItems = items || [];
 
   const filteredItems = displayItems.filter((item: any) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
