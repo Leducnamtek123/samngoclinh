@@ -206,13 +206,41 @@ export class UserRepository {
     }
 
     async findOneWithRoleByEmail(email: string): Promise<IUser | null> {
-        return this.databaseService.user.findUnique({
+        const userByEmail = await this.databaseService.user.findFirst({
             where: { email, deletedAt: null },
             include: {
                 role: true,
                 twoFactor: true,
             },
         });
+        if (userByEmail) {
+            return userByEmail;
+        }
+
+        const cleanPhone = email.replace(/[^0-9]/g, '');
+        if (cleanPhone.length >= 6) {
+            const userByPhone = await this.databaseService.user.findFirst({
+                where: {
+                    deletedAt: null,
+                    mobileNumbers: {
+                        some: {
+                            number: {
+                                endsWith: cleanPhone,
+                            },
+                        },
+                    },
+                },
+                include: {
+                    role: true,
+                    twoFactor: true,
+                },
+            });
+            if (userByPhone) {
+                return userByPhone;
+            }
+        }
+
+        return null;
     }
 
     async findOneProfileById(id: string): Promise<IUserProfile | null> {

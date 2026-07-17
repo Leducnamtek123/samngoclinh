@@ -1,4 +1,3 @@
-import { IsCustomEmail } from '@common/request/validations/request.custom-email.validation';
 import { faker } from '@faker-js/faker';
 import { DeviceRequestDto } from '@modules/device/dtos/requests/device.request.dto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -20,9 +19,8 @@ export class UserLoginRequestDto {
     })
     @IsString()
     @IsNotEmpty()
-    @IsCustomEmail()
     @Transform(({ value }) => value.toLowerCase().trim())
-    email: Lowercase<string>;
+    email: string;
 
     @ApiProperty({
         description: 'string password',

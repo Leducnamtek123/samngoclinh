@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 export default function SignInForm() {
+  const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -50,7 +51,7 @@ export default function SignInForm() {
             Đăng nhập tài khoản
           </h1>
           <p className="text-xs text-gray-500 font-medium">
-            Tài khoản thử nghiệm: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">user@mail.com</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">aaAA@123</code>
+            Tài khoản thử nghiệm: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'user@mail.com' : '0847234234'}</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">aaAA@123</code>
           </p>
         </div>
 
@@ -58,16 +59,27 @@ export default function SignInForm() {
         <div className="flex border-b border-gray-200">
           <button
             type="button"
-            className="flex-1 pb-3 text-center border-b-2 border-primary text-xs font-bold text-primary transition-all"
+            onClick={() => {
+              setActiveTab('email');
+              setEmail('');
+            }}
+            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
+              activeTab === 'email' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
+            }`}
           >
             Đăng nhập bằng Email
           </button>
           <button
             type="button"
-            disabled
-            className="flex-1 pb-3 text-center border-b-2 border-transparent text-xs font-medium text-gray-400 cursor-not-allowed"
+            onClick={() => {
+              setActiveTab('phone');
+              setEmail('');
+            }}
+            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
+              activeTab === 'phone' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
+            }`}
           >
-            Đăng nhập bằng SĐT (Bảo trì)
+            Đăng nhập bằng SĐT
           </button>
         </div>
 
@@ -83,14 +95,14 @@ export default function SignInForm() {
 
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-wider text-gray-500" htmlFor="email">
-              Địa chỉ Email
+              {activeTab === 'email' ? 'Địa chỉ Email' : 'Số điện thoại'}
             </label>
             <input
               id="email"
-              type="email"
+              type={activeTab === 'email' ? 'email' : 'text'}
               required
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
-              placeholder="nhap-email@ruousamngoclinh.vn"
+              placeholder={activeTab === 'email' ? 'nhap-email@ruousamngoclinh.vn' : '0847 234 234'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
