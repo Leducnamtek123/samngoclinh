@@ -8,8 +8,8 @@ const localePrefix: LocalePrefixMode = 'as-needed';
 export const AppConfig = {
   name: 'iWE FARM',
   i18n: {
-    locales: ['en', 'fr'],
-    defaultLocale: 'en',
+    locales: ['en', 'vi'],
+    defaultLocale: 'vi',
     localePrefix,
   },
 };

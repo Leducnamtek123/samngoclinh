@@ -3,29 +3,50 @@ import { fetchApi } from '@/libs/Api';
 import Link from 'next/link';
 
 async function getDashboardData() {
+  const errors: string[] = [];
+  let profile = null;
+  let wallet = null;
+  let trees = null;
+
   try {
     // 1. Profile
     const profileRes = await fetchApi('/user/profile/me');
-    if (!profileRes.ok) return null;
-    const profile = await profileRes.json();
+    if (!profileRes.ok) {
+      const body = await profileRes.json().catch(() => ({}));
+      errors.push(`Profile endpoint (/user/profile/me) returned status ${profileRes.status}: ${JSON.stringify(body)}`);
+    } else {
+      const payload = await profileRes.json();
+      profile = payload.data;
+    }
 
     // 2. Wallet Summary
     const walletRes = await fetchApi('/user/wallet/summary');
-    const wallet = walletRes.ok ? await walletRes.json() : null;
+    if (!walletRes.ok) {
+      const body = await walletRes.json().catch(() => ({}));
+      errors.push(`Wallet endpoint (/user/wallet/summary) returned status ${walletRes.status}: ${JSON.stringify(body)}`);
+    } else {
+      const payload = await walletRes.json();
+      wallet = payload.data;
+    }
 
     // 3. Cultivation Trees
     const treesRes = await fetchApi('/user/cultivation/trees');
-    const trees = treesRes.ok ? await treesRes.json() : null;
-
-    return {
-      profile: profile.data,
-      wallet: wallet?.data || { balancePoint: 0, treesOwned: 0, transactions: 0 },
-      trees: trees?.data || [],
-    };
-  } catch (e) {
-    console.error('Error loading user dashboard data:', e);
-    return null;
+    if (!treesRes.ok) {
+      const body = await treesRes.json().catch(() => ({}));
+      errors.push(`Trees endpoint (/user/cultivation/trees) returned status ${treesRes.status}: ${JSON.stringify(body)}`);
+    } else {
+      const payload = await treesRes.json();
+      trees = payload.data;
+    }
+  } catch (e: any) {
+    errors.push(`Fetch exception: ${e.message}`);
   }
+
+  if (errors.length > 0) {
+    return { errorDetails: errors };
+  }
+
+  return { profile, wallet, trees };
 }
 
 export default async function DashboardPage(props: { params: Promise<{ locale: string }> }) {
@@ -34,23 +55,19 @@ export default async function DashboardPage(props: { params: Promise<{ locale: s
 
   const data = await getDashboardData();
 
-  if (!data) {
+  if (!data || data.errorDetails) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+      <div className="flex flex-col items-center justify-center py-16 text-center space-y-4 bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
         <span className="text-4xl">⚠️</span>
         <h2 className="text-xl font-bold text-gray-800">Không thể tải dữ liệu tài khoản</h2>
+        <div className="text-left bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-xs font-mono max-w-lg space-y-1 overflow-auto max-h-60">
+          {data?.errorDetails?.map((err: string, i: number) => (
+            <p key={i}>{err}</p>
+          )) || <p>Lỗi kết nối không xác định</p>}
+        </div>
         <p className="text-gray-500 text-sm max-w-sm">
           Đã xảy ra lỗi kết nối với máy chủ API. Vui lòng kiểm tra lại dịch vụ NestJS.
         </p>
-        <button
-          onClick={async () => {
-            'use server';
-            // Simple revalidate trigger
-          }}
-          className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm transition-colors"
-        >
-          Thử lại
-        </button>
       </div>
     );
   }
