@@ -162,7 +162,10 @@ export default async function TradingFloorPage(props: TradingFloorPageProps) {
               {/* Table Sub-header tabs */}
               <div className="flex border-b border-gray-200 px-6 py-4 bg-gray-50/50">
                 <button className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-                  📈 Thị Trường Giao Dịch
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  Thị Trường Giao Dịch
                   <span className="bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded-full">{displayListings.length}</span>
                 </button>
                 <button className="text-xs font-bold text-gray-500 hover:text-gray-800 px-4 py-1.5">
