@@ -104,7 +104,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
-                  onClick={() => navigateToTab('address')}
+                  onClick={() => navigateToTab('orders')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -115,7 +115,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
-                  onClick={() => navigateToTab('info')}
+                  onClick={() => navigateToTab('assets')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -126,7 +126,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
-                  onClick={() => navigateToTab('info')}
+                  onClick={() => navigateToTab('kyc')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

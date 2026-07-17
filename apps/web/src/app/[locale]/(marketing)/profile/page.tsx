@@ -15,17 +15,23 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function getProfileData() {
+async function getProfileFullData() {
   try {
     const profileRes = await fetchApi('/user/profile/me');
     const businessRes = await fetchApi('/user/profile/business');
+    const walletRes = await fetchApi('/user/wallet/summary');
+    const treesRes = await fetchApi('/user/cultivation/trees');
 
     const profile = profileRes.ok ? await profileRes.json() : null;
     const business = businessRes.ok ? await businessRes.json() : null;
+    const wallet = walletRes.ok ? await walletRes.json() : null;
+    const trees = treesRes.ok ? await treesRes.json() : null;
 
     return {
       profile: profile?.data,
       business: business?.data,
+      wallet: wallet?.data,
+      trees: trees?.data,
     };
   } catch (e) {
     console.error('Error fetching profile data:', e);
@@ -38,7 +44,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
   setRequestLocale(locale);
 
   const { tabs = 'info' } = await props.searchParams;
-  const data = await getProfileData();
+  const data = await getProfileFullData();
 
   if (!data || !data.profile) {
     return (
@@ -57,7 +63,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
     );
   }
 
-  const { profile, business } = data;
+  const { profile, business, wallet, trees } = data;
   const fullName = profile.fullName || 'Nhà đầu tư';
   const email = profile.email;
   const rank = profile.rank || 'Đồng';
@@ -65,7 +71,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
 
   // Active tab state styling helper
   const tabClass = (current: string) =>
-    `flex-1 py-3.5 text-center font-bold text-sm border-b-2 transition-all ${
+    `flex-1 py-3.5 text-center font-bold text-sm border-b-2 transition-all whitespace-nowrap px-4 ${
       tabs === current
         ? 'border-secondary text-secondary'
         : 'border-transparent text-gray-500 hover:text-gray-800'
@@ -98,7 +104,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
                 <span className="bg-secondary/15 text-secondary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   Hạng {rank}
                 </span>
-                <span className="bg-gray-150 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full">
+                <span className="bg-gray-100 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full">
                   Mã giới thiệu: {referralCode}
                 </span>
               </div>
@@ -111,15 +117,24 @@ export default async function ProfilePage(props: ProfilePageProps) {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto flex scrollbar-thin">
           <Link href="/profile?tabs=info" className={tabClass('info')}>
             Thông tin
+          </Link>
+          <Link href="/profile?tabs=orders" className={tabClass('orders')}>
+            Đơn hàng
+          </Link>
+          <Link href="/profile?tabs=assets" className={tabClass('assets')}>
+            Tài sản
           </Link>
           <Link href="/profile?tabs=address" className={tabClass('address')}>
             Địa chỉ
           </Link>
           <Link href="/profile?tabs=pin" className={tabClass('pin')}>
             Mã PIN
+          </Link>
+          <Link href="/profile?tabs=kyc" className={tabClass('kyc')}>
+            Căn cước
           </Link>
           <Link href="/profile?tabs=referral" className={tabClass('referral')}>
             Giới thiệu
@@ -159,6 +174,82 @@ export default async function ProfilePage(props: ProfilePageProps) {
             </div>
           )}
 
+          {tabs === 'orders' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Lịch sử đơn hàng</h3>
+                <p className="text-xs text-gray-400 font-medium">Theo dõi và quản lý các đơn mua sâm Ngọc Linh và gói chăm sóc</p>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 border-dashed rounded-xl p-8 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mx-auto">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </div>
+                <p className="text-sm text-gray-500">Bạn chưa thực hiện đơn hàng nào.</p>
+                <Link href="/#shop" className="inline-block bg-primary text-white hover:bg-primary-hover px-5 py-2 rounded-lg text-xs font-bold transition-colors shadow-sm">
+                  Ghé Cửa hàng ngay
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {tabs === 'assets' && (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Tài sản của tôi</h3>
+                <p className="text-xs text-gray-400 font-medium">Quản lý số dư Điểm Sâm và chi tiết cây sâm sở hữu</p>
+              </div>
+
+              {/* Stats sub-cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-secondary/5 border border-secondary/15 rounded-xl p-5 flex flex-col justify-between">
+                  <span className="text-xs font-bold text-secondary uppercase tracking-wider">Ví Điểm Số</span>
+                  <h4 className="text-3xl font-black text-secondary mt-2">
+                    {wallet?.balancePoint?.toLocaleString('vi-VN') || 0}
+                  </h4>
+                  <p className="text-[10px] text-gray-500 mt-1">Điểm khả dụng (Điểm Sâm)</p>
+                </div>
+                <div className="bg-primary/5 border border-primary/15 rounded-xl p-5 flex flex-col justify-between">
+                  <span className="text-xs font-bold text-primary uppercase tracking-wider">Cây giống sở hữu</span>
+                  <h4 className="text-3xl font-black text-primary mt-2">
+                    {wallet?.treesOwned || 0} Cây
+                  </h4>
+                  <p className="text-[10px] text-gray-500 mt-1">Cây giống kỹ thuật số trên hệ thống</p>
+                </div>
+              </div>
+
+              {/* Trees owned list */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-gray-900 text-sm">Danh sách cây giống chi tiết</h4>
+                {!trees || trees.length === 0 ? (
+                  <p className="text-sm text-gray-500">Bạn chưa sở hữu cây sâm Ngọc Linh nào.</p>
+                ) : (
+                  <div className="border border-gray-150 rounded-xl divide-y divide-gray-100 overflow-hidden bg-gray-50/30">
+                    {trees.map((tree: any, idx: number) => (
+                      <div key={idx} className="px-5 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 bg-primary/10 text-primary rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-bold text-gray-800 text-sm">Cây Sâm Ngọc Linh {tree.ageYear} Năm Tuổi</p>
+                            <p className="text-[10px] text-gray-400">Sâm giống chuẩn DNA</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-gray-800 text-sm">{tree.count} Cây</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {tabs === 'address' && (
             <div className="space-y-6">
               <h3 className="text-lg font-bold text-gray-900">Sổ địa chỉ</h3>
@@ -173,6 +264,44 @@ export default async function ProfilePage(props: ProfilePageProps) {
               <button className="bg-primary text-white hover:bg-primary-hover px-6 py-2.5 rounded-lg font-bold text-sm transition-colors shadow-sm">
                 Thiết lập mã PIN
               </button>
+            </div>
+          )}
+
+          {tabs === 'kyc' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Căn cước công dân (KYC)</h3>
+                <p className="text-xs text-gray-400 font-medium">Quản lý trạng thái xác minh thông tin cá nhân</p>
+              </div>
+
+              {profile.verified ? (
+                <div className="bg-emerald-50/50 border border-emerald-200 text-emerald-800 p-5 rounded-xl space-y-3">
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Tài khoản đã được xác minh thành công!
+                  </div>
+                  <p className="text-xs text-emerald-700 leading-relaxed font-medium">
+                    Thông tin căn cước công dân (CCCD) của bạn đã được đối soát chính xác trên hệ thống. Bạn đã đủ điều kiện nhận các quyền lợi và chương trình khuyến mãi đặc biệt.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-amber-50/50 border border-amber-200 text-amber-800 p-5 rounded-xl space-y-3">
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Tài khoản chưa được xác minh KYC
+                  </div>
+                  <p className="text-xs text-amber-700 leading-relaxed font-medium">
+                    Hãy cung cấp hình ảnh CCCD mặt trước/sau để mở khóa toàn bộ tính năng và nhận cây giống 1 năm từ chương trình khuyến mãi.
+                  </p>
+                  <button className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition-colors shadow-sm">
+                    Gửi tài liệu xác minh
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
