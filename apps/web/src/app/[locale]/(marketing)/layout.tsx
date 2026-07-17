@@ -25,7 +25,7 @@ export default async function Layout(props: {
               </Link>
             </li>
             <li>
-              <Link href="/dashboard/" className="text-gray-600 hover:text-primary transition-colors">
+              <Link href="/campaigns/free-tree" className="text-gray-600 hover:text-primary transition-colors">
                 Khuyến mãi
               </Link>
             </li>

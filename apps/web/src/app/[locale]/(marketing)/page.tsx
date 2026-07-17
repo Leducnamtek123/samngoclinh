@@ -37,7 +37,7 @@ const articleCategoryNames: Record<string, string> = {
 async function getPlants() {
   try {
     const res = await fetchApi('/public/catalog/plants', {
-      next: { revalidate: 60 }
+      cache: 'no-store'
     });
     if (!res.ok) {
       console.error('Failed to fetch plants:', res.statusText);
@@ -54,7 +54,7 @@ async function getPlants() {
 async function getArticles() {
   try {
     const res = await fetchApi('/public/content/articles', {
-      next: { revalidate: 60 }
+      cache: 'no-store'
     });
     if (!res.ok) {
       console.error('Failed to fetch articles:', res.statusText);
