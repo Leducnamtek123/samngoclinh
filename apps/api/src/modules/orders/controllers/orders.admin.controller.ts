@@ -11,6 +11,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { OrdersService } from '@modules/orders/services/orders.service';
 import {
@@ -34,6 +35,7 @@ export class OrdersAdminController {
     @OrdersAdminListDoc()
     @Response('orders.list')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -44,6 +46,7 @@ export class OrdersAdminController {
     @OrdersAdminDetailDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/:id')
@@ -56,6 +59,7 @@ export class OrdersAdminController {
     @OrdersAdminUpdateStatusDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/:id/status')

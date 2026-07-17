@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CatalogPlant, CatalogProduct, EnumRoleType } from '@generated/prisma-client';
 import { CatalogService } from '../services/catalog.service';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
@@ -33,6 +34,7 @@ export class CatalogAdminController {
     @CatalogAdminCreatePlantDoc()
     @Response('catalog.create')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/plants')
@@ -43,6 +45,7 @@ export class CatalogAdminController {
     @CatalogAdminUpdatePlantDoc()
     @Response('catalog.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/plants/:id')
@@ -53,6 +56,7 @@ export class CatalogAdminController {
     @CatalogAdminDeletePlantDoc()
     @Response('catalog.delete')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/plants/:id')
@@ -63,6 +67,7 @@ export class CatalogAdminController {
     @CatalogAdminCreateProductDoc()
     @Response('catalog.create')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/shop-items')
@@ -73,6 +78,7 @@ export class CatalogAdminController {
     @CatalogAdminUpdateProductDoc()
     @Response('catalog.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/shop-items/:id')
@@ -83,6 +89,7 @@ export class CatalogAdminController {
     @CatalogAdminDeleteProductDoc()
     @Response('catalog.delete')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/shop-items/:id')

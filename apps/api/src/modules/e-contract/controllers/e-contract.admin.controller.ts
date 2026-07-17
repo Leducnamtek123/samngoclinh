@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EContract, EnumRoleType } from '@generated/prisma-client';
 import { EContractService } from '@modules/e-contract/services/e-contract.service';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
@@ -28,6 +29,7 @@ export class EContractAdminController {
     @EContractAdminListDoc()
     @Response('eContract.list')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -38,6 +40,7 @@ export class EContractAdminController {
     @EContractAdminCreateDoc()
     @Response('eContract.create')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/')
@@ -50,6 +53,7 @@ export class EContractAdminController {
     @EContractAdminUpdateDoc()
     @Response('eContract.update')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/:id')
@@ -63,6 +67,7 @@ export class EContractAdminController {
     @EContractAdminDeleteDoc()
     @Response('eContract.delete')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/:id')
@@ -75,6 +80,7 @@ export class EContractAdminController {
     @EContractAdminCheckExpiryDoc()
     @Response('eContract.checkExpiry')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/check-expiry')

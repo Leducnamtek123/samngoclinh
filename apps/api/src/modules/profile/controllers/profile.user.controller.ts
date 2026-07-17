@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { ProfileService } from '@modules/profile/services/profile.service';
 import { ProfileUserMeDoc, ProfileUserBusinessDoc } from '@modules/profile/docs/profile.user.doc';
@@ -24,6 +25,7 @@ export class ProfileUserController {
     @ProfileUserMeDoc()
     @Response('profile.me')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/me')
@@ -36,6 +38,7 @@ export class ProfileUserController {
     @ProfileUserBusinessDoc()
     @Response('profile.me')
     @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/business')

@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { WalletService } from '@modules/wallet/services/wallet.service';
 import {
@@ -28,6 +29,7 @@ export class WalletUserController {
     @WalletUserSummaryDoc()
     @Response('wallet.summary')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/summary')
@@ -40,6 +42,7 @@ export class WalletUserController {
     @WalletUserTransactionsDoc()
     @Response('wallet.transactions')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/transactions')

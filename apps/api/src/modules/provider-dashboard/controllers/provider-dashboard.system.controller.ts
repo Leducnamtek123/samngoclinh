@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { ProviderDashboardService } from '@modules/provider-dashboard/services/provider-dashboard.service';
 import { ProviderDashboardSystemOverviewDoc } from '@modules/provider-dashboard/docs/provider-dashboard.system.doc';
@@ -26,6 +27,7 @@ export class ProviderDashboardSystemController {
     @ProviderDashboardSystemOverviewDoc()
     @Response('providerDashboard.overview')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/overview')

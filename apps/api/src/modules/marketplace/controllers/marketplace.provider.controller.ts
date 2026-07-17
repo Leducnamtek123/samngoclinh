@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType, MarketplaceListing } from '@generated/prisma-client';
 import { MarketplaceService } from '@modules/marketplace/services/marketplace.service';
 import { MarketplaceCreateListingRequestDto } from '@modules/marketplace/dtos/request/marketplace.create-listing.request.dto';
@@ -30,6 +31,7 @@ export class MarketplaceProviderController {
     @MarketplaceProviderListMeDoc()
     @Response('marketplace.list')
     @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/me')
@@ -42,6 +44,7 @@ export class MarketplaceProviderController {
     @MarketplaceProviderCreateDoc()
     @Response('marketplace.create')
     @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/')
@@ -55,6 +58,7 @@ export class MarketplaceProviderController {
     @MarketplaceProviderUpdateDoc()
     @Response('marketplace.update')
     @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/:id')
@@ -69,6 +73,7 @@ export class MarketplaceProviderController {
     @MarketplaceProviderDeleteDoc()
     @Response('marketplace.delete')
     @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/:id')

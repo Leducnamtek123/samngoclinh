@@ -11,6 +11,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType, MarketplaceListing } from '@generated/prisma-client';
 import { MarketplaceService } from '@modules/marketplace/services/marketplace.service';
 import {
@@ -31,6 +32,7 @@ export class MarketplaceAdminController {
     @MarketplaceAdminListDoc()
     @Response('marketplace.list')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/listings')
@@ -41,6 +43,7 @@ export class MarketplaceAdminController {
     @MarketplaceAdminUpdateStatusDoc()
     @Response('marketplace.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/listings/:id/status')

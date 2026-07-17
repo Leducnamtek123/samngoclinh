@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType, GardenBooking } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
@@ -24,6 +25,7 @@ export class CultivationAdminController {
     @CultivationAdminListBookingsDoc()
     @Response('cultivation.adminListBookings')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/bookings')
@@ -34,6 +36,7 @@ export class CultivationAdminController {
     @CultivationAdminUpdateBookingStatusDoc()
     @Response('cultivation.adminUpdateBookingStatus')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/bookings/:id/status')

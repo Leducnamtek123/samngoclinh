@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CarePackage, EnumRoleType, ProtectionPackage } from '@generated/prisma-client';
 import { PackagesService } from '../services/packages.service';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
@@ -33,6 +34,7 @@ export class PackagesAdminController {
     @PackagesAdminCreateCareDoc()
     @Response('packages.create')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/care')
@@ -43,6 +45,7 @@ export class PackagesAdminController {
     @PackagesAdminUpdateCareDoc()
     @Response('packages.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/care/:id')
@@ -53,6 +56,7 @@ export class PackagesAdminController {
     @PackagesAdminDeleteCareDoc()
     @Response('packages.delete')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/care/:id')
@@ -63,6 +67,7 @@ export class PackagesAdminController {
     @PackagesAdminCreateProtectionDoc()
     @Response('packages.create')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/protection')
@@ -73,6 +78,7 @@ export class PackagesAdminController {
     @PackagesAdminUpdateProtectionDoc()
     @Response('packages.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/protection/:id')
@@ -83,6 +89,7 @@ export class PackagesAdminController {
     @PackagesAdminDeleteProtectionDoc()
     @Response('packages.delete')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/protection/:id')

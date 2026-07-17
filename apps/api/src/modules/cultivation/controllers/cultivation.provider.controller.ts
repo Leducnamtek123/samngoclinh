@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, EnumRoleType } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
@@ -41,6 +42,7 @@ export class CultivationProviderController {
     @CultivationProviderCreateGardenDoc()
     @Response('cultivation.createGarden')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/gardens')
@@ -54,6 +56,7 @@ export class CultivationProviderController {
     @CultivationProviderCreateBedDoc()
     @Response('cultivation.createBed')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/beds')
@@ -67,6 +70,7 @@ export class CultivationProviderController {
     @CultivationProviderCreateTreeDoc()
     @Response('cultivation.createTree')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/trees')
@@ -80,6 +84,7 @@ export class CultivationProviderController {
     @CultivationProviderCreateCareLogDoc()
     @Response('cultivation.createCareLog')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/logs')
@@ -93,6 +98,7 @@ export class CultivationProviderController {
     @CultivationProviderUpdateGardenDoc()
     @Response('cultivation.updateGarden')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/gardens/:id')
@@ -106,6 +112,7 @@ export class CultivationProviderController {
     @CultivationProviderDeleteGardenDoc()
     @Response('cultivation.deleteGarden')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/gardens/:id')
@@ -118,6 +125,7 @@ export class CultivationProviderController {
     @CultivationProviderUpdateBedDoc()
     @Response('cultivation.updateBed')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/beds/:id')
@@ -131,6 +139,7 @@ export class CultivationProviderController {
     @CultivationProviderDeleteBedDoc()
     @Response('cultivation.deleteBed')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/beds/:id')
@@ -143,6 +152,7 @@ export class CultivationProviderController {
     @CultivationProviderUpdateTreeDoc()
     @Response('cultivation.updateTree')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/trees/:id')
@@ -156,6 +166,7 @@ export class CultivationProviderController {
     @CultivationProviderDeleteTreeDoc()
     @Response('cultivation.deleteTree')
     @RoleProtected(EnumRoleType.provider)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/trees/:id')

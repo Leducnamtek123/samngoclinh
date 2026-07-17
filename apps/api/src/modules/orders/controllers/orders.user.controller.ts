@@ -14,6 +14,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { OrdersService } from '@modules/orders/services/orders.service';
 import {
@@ -40,6 +41,7 @@ export class OrdersUserController {
     @OrdersUserListDoc()
     @Response('orders.list')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -52,6 +54,7 @@ export class OrdersUserController {
     @OrdersUserCheckoutDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/checkout')
@@ -74,6 +77,7 @@ export class OrdersUserController {
     @OrdersUserDetailDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/:id')

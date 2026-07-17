@@ -9,6 +9,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected, AuthJwtPayload } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { NotificationService } from '@modules/notification/services/notification.service';
 import { NotificationAdminSendDoc } from '@modules/notification/docs/notification.admin.doc';
@@ -26,6 +27,7 @@ export class NotificationAdminController {
     @NotificationAdminSendDoc()
     @Response('notification.list')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/send')

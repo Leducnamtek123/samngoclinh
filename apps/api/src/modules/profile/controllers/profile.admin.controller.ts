@@ -11,6 +11,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { ProfileService } from '@modules/profile/services/profile.service';
 import {
@@ -31,6 +32,7 @@ export class ProfileAdminController {
     @ProfileAdminListBusinessDoc()
     @Response('profile.me')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -41,6 +43,7 @@ export class ProfileAdminController {
     @ProfileAdminUpdateRankDoc()
     @Response('profile.me')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/:id/rank')

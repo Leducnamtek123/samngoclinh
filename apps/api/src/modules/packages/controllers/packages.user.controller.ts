@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected, AuthJwtPayload } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CarePackage, CultivationTree, EnumRoleType, ProtectionPackage } from '@generated/prisma-client';
 import { PackagesService } from '../services/packages.service';
 import { PackageSubscribeRequestDto } from '../dtos/packages.dto';
@@ -25,6 +26,7 @@ export class PackagesUserController {
     @PackagesUserListCareDoc()
     @Response('packages.list')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/care')
@@ -35,6 +37,7 @@ export class PackagesUserController {
     @PackagesUserListProtectionDoc()
     @Response('packages.list')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/protection')
@@ -45,6 +48,7 @@ export class PackagesUserController {
     @PackagesUserSubscribeDoc()
     @Response('packages.subscribe')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/subscribe')

@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EContract, EnumRoleType } from '@generated/prisma-client';
 import { EContractService } from '@modules/e-contract/services/e-contract.service';
 import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';
@@ -30,6 +31,7 @@ export class EContractUserController {
     @EContractUserListDoc()
     @Response('eContract.list')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -42,6 +44,7 @@ export class EContractUserController {
     @EContractUserGetDoc()
     @Response('eContract.get')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/:id')
@@ -55,6 +58,7 @@ export class EContractUserController {
     @EContractUserSignDoc()
     @Response('eContract.sign')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/:id/sign')
@@ -69,6 +73,7 @@ export class EContractUserController {
     @EContractUserRenewDoc()
     @Response('eContract.renew')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/:id/renew')

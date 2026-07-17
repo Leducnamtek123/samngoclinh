@@ -16,6 +16,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { CartService } from '@modules/cart/services/cart.service';
 import {
@@ -41,6 +42,7 @@ export class CartUserController {
     @CartUserSummaryDoc()
     @Response('cart.summary')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -53,6 +55,7 @@ export class CartUserController {
     @CartUserAddItemDoc()
     @Response('cart.addItem')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/items')
@@ -66,6 +69,7 @@ export class CartUserController {
     @CartUserUpdateItemDoc()
     @Response('cart.updateItem')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/items/:productId')
@@ -80,6 +84,7 @@ export class CartUserController {
     @CartUserRemoveItemDoc()
     @Response('cart.removeItem')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/items/:productId')
@@ -93,6 +98,7 @@ export class CartUserController {
     @CartUserClearDoc()
     @Response('cart.clear')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/')

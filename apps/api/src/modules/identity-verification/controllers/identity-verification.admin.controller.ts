@@ -11,6 +11,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import {
     EnumRoleType,
     IdentityVerificationRequest,
@@ -37,6 +38,7 @@ export class IdentityVerificationAdminController {
     @IdentityVerificationAdminListDoc()
     @Response('identityVerification.adminListPending')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -49,6 +51,7 @@ export class IdentityVerificationAdminController {
     @IdentityVerificationAdminApproveDoc()
     @Response('identityVerification.adminApprove')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/:id/approve')
@@ -61,6 +64,7 @@ export class IdentityVerificationAdminController {
     @IdentityVerificationAdminRejectDoc()
     @Response('identityVerification.adminReject')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/:id/reject')

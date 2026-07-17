@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CultivationCareLog, CultivationGarden, EnumRoleType, GardenBooking } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import {
@@ -37,6 +38,7 @@ export class CultivationUserController {
     @CultivationUserTreesDoc()
     @Response('cultivation.trees')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/trees')
@@ -49,6 +51,7 @@ export class CultivationUserController {
     @CultivationUserGardensDoc()
     @Response('cultivation.gardens')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/gardens')
@@ -61,6 +64,7 @@ export class CultivationUserController {
     @CultivationUserBedsDoc()
     @Response('cultivation.beds')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/beds')
@@ -73,6 +77,7 @@ export class CultivationUserController {
     @CultivationUserListCareLogsDoc()
     @Response('cultivation.listCareLogs')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/logs')
@@ -86,6 +91,7 @@ export class CultivationUserController {
     @CultivationUserCreateBookingDoc()
     @Response('cultivation.createBooking')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/bookings')
@@ -99,6 +105,7 @@ export class CultivationUserController {
     @CultivationUserListBookingsDoc()
     @Response('cultivation.listBookings')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/bookings')
@@ -111,6 +118,7 @@ export class CultivationUserController {
     @CultivationUserGardenDetailDoc()
     @Response('cultivation.gardens')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/gardens/:id')
@@ -124,6 +132,7 @@ export class CultivationUserController {
     @CultivationUserBedDetailDoc()
     @Response('cultivation.beds')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/beds/:id')
@@ -137,6 +146,7 @@ export class CultivationUserController {
     @CultivationUserTreeDetailDoc()
     @Response('cultivation.trees')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/trees/:id')

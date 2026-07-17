@@ -13,6 +13,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { PromotionService } from '@modules/promotion/services/promotion.service';
 import {
@@ -36,6 +37,7 @@ export class PromotionAdminController {
     @PromotionAdminListDoc()
     @Response('promotion.freeTree')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -46,6 +48,7 @@ export class PromotionAdminController {
     @PromotionAdminCreateDoc()
     @Response('promotion.freeTree')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/')
@@ -58,6 +61,7 @@ export class PromotionAdminController {
     @PromotionAdminUpdateDoc()
     @Response('promotion.freeTree')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/:id')
@@ -71,6 +75,7 @@ export class PromotionAdminController {
     @PromotionAdminDeleteDoc()
     @Response('promotion.freeTree')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/:id')

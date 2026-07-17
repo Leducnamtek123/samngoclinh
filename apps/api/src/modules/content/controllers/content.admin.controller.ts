@@ -4,6 +4,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { ContentArticle, EnumRoleType } from '@generated/prisma-client';
 import { ContentService } from '../services/content.service';
 import { ContentArticleCreateDto, ContentArticleUpdateDto } from '../dtos/content.admin.dto';
@@ -25,6 +26,7 @@ export class ContentAdminController {
     @ContentAdminCreateArticleDoc()
     @Response('content.create')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/articles')
@@ -35,6 +37,7 @@ export class ContentAdminController {
     @ContentAdminUpdateArticleDoc()
     @Response('content.update')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/articles/:id')
@@ -45,6 +48,7 @@ export class ContentAdminController {
     @ContentAdminDeleteArticleDoc()
     @Response('content.delete')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/articles/:id')

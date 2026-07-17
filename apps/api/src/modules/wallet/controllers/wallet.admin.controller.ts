@@ -10,6 +10,7 @@ import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { WalletService } from '@modules/wallet/services/wallet.service';
 import {
@@ -30,6 +31,7 @@ export class WalletAdminController {
     @WalletAdminListTransactionsDoc()
     @Response('wallet.transactions')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/transactions')
@@ -40,6 +42,7 @@ export class WalletAdminController {
     @WalletAdminAdjustDoc()
     @Response('wallet.summary')
     @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Patch('/balance')

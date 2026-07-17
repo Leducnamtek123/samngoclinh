@@ -7,6 +7,7 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@generated/prisma-client';
 import { IdentityVerificationService } from '@modules/identity-verification/services/identity-verification.service';
 import { IdentityVerificationSubmitRequestDto } from '@modules/identity-verification/dtos/request/identity-verification.submit.request.dto';
@@ -31,6 +32,7 @@ export class IdentityVerificationUserController {
     @IdentityVerificationUserStatusDoc()
     @Response('identityVerification.status')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/status')
@@ -43,6 +45,7 @@ export class IdentityVerificationUserController {
     @IdentityVerificationUserSubmitDoc()
     @Response('identityVerification.submit')
     @RoleProtected(EnumRoleType.user)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/submit')
