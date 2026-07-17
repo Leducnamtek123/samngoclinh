@@ -11,7 +11,7 @@ export const HeaderNav = () => {
     { name: 'Khuyến mãi', href: '/campaigns/free-tree' },
     { name: 'Trồng sâm', href: '/ginseng' },
     { name: 'Cửa hàng', href: '/products' },
-    { name: 'Thông tin', href: '/about' },
+    { name: 'Thông tin', href: '/news' },
     { name: 'Ký gửi', href: '/trading-floor' },
     { name: 'Giới thiệu', href: '/about' }
   ];
