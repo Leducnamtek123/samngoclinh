@@ -9,14 +9,14 @@ type ProductsPageProps = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Cửa Hàng Cây Giống | Rượu Sâm Ngọc Linh',
-    description: 'Sở hữu và bảo tồn cây sâm Ngọc Linh chuẩn nguồn gốc qua công nghệ số hóa.',
+    title: 'Cửa Hàng Sản Phẩm | Rượu Sâm Ngọc Linh',
+    description: 'Sở hữu sản phẩm Rượu Sâm Ngọc Linh chuẩn nguồn gốc chất lượng cao.',
   };
 }
 
-async function getPlants() {
+async function getShopItems() {
   try {
-    const res = await fetchApi('/public/catalog/plants', {
+    const res = await fetchApi('/public/catalog/shop-items', {
       cache: 'no-store',
     });
     if (!res.ok) {
@@ -25,7 +25,7 @@ async function getPlants() {
     const json = await res.json();
     return json.data?.items || [];
   } catch (error) {
-    console.error('Error fetching plants:', error);
+    console.error('Error fetching shop items:', error);
     return [];
   }
 }
@@ -34,7 +34,7 @@ export default async function ProductsPage(props: ProductsPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const initialItems = await getPlants();
+  const initialItems = await getShopItems();
 
   return (
     <div className="w-full">
