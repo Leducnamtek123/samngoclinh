@@ -17,6 +17,9 @@ export const HeaderNav = () => {
   ];
 
   const isActive = (link: { name: string; href: string }) => {
+    if (!pathname) {
+      return link.href === '/';
+    }
     // Strip locale prefix from pathname for exact matching (e.g. /vi/dashboard -> /dashboard)
     const rawPath = pathname.replace(/^\/(vi|en)/, '') || '/';
     
