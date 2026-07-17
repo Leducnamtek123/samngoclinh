@@ -268,7 +268,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
           )}
 
           {tabs === 'kyc' && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">Căn cước công dân (KYC)</h3>
                 <p className="text-xs text-gray-400 font-medium">Quản lý trạng thái xác minh thông tin cá nhân</p>
@@ -287,19 +287,159 @@ export default async function ProfilePage(props: ProfilePageProps) {
                   </p>
                 </div>
               ) : (
-                <div className="bg-amber-50/50 border border-amber-200 text-amber-800 p-5 rounded-xl space-y-3">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    Tài khoản chưa được xác minh KYC
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+                  {/* Warning banner */}
+                  <div className="bg-amber-50/50 border border-amber-200 text-amber-900 p-5 rounded-xl space-y-2 flex gap-3">
+                    <div className="text-amber-600 flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-sm">Xác thực danh tính</h4>
+                      <p className="text-xs text-amber-700 font-medium">Để tham gia giao dịch, bạn cần xác thực danh tính bằng giấy tờ tùy thân</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-amber-700 leading-relaxed font-medium">
-                    Hãy cung cấp hình ảnh CCCD mặt trước/sau để mở khóa toàn bộ tính năng và nhận cây giống 1 năm từ chương trình khuyến mãi.
-                  </p>
-                  <button className="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition-colors shadow-sm">
-                    Gửi tài liệu xác minh
-                  </button>
+
+                  {/* Form fields grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+                    {/* Doc Type select */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Loại giấy tờ</label>
+                      <select className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary text-gray-700">
+                        <option>Chọn loại giấy tờ</option>
+                        <option>Căn cước công dân (CCCD)</option>
+                        <option>Chứng minh nhân dân (CMND)</option>
+                        <option>Hộ chiếu (Passport)</option>
+                      </select>
+                    </div>
+
+                    {/* ID number input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Số định danh</label>
+                      <input
+                        type="text"
+                        placeholder="Nhập số CMND/CCCD/Hộ chiếu"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary font-medium"
+                      />
+                    </div>
+
+                    {/* Full Name input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Họ và tên</label>
+                      <input
+                        type="text"
+                        placeholder="Nguyễn Văn A"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary font-medium"
+                      />
+                    </div>
+
+                    {/* Birth Date input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày sinh</label>
+                      <input
+                        type="date"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary text-gray-700 font-medium"
+                      />
+                    </div>
+
+                    {/* Gender input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Giới tính</label>
+                      <input
+                        type="text"
+                        placeholder="Nam/Nữ"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary font-medium"
+                      />
+                    </div>
+
+                    {/* Issuer input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Nơi cấp</label>
+                      <input
+                        type="text"
+                        placeholder="Cục CSQLHC về TTXH"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary font-medium"
+                      />
+                    </div>
+
+                    {/* Address input */}
+                    <div className="space-y-1.5 md:col-span-2">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Địa chỉ thường trú</label>
+                      <input
+                        type="text"
+                        placeholder="Nhập địa chỉ trên giấy tờ"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary font-medium"
+                      />
+                    </div>
+
+                    {/* Issue Date input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày cấp</label>
+                      <input
+                        type="date"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary text-gray-700 font-medium"
+                      />
+                    </div>
+
+                    {/* Expiry Date input */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày hết hạn</label>
+                      <input
+                        type="date"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:border-primary text-gray-700 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Liability text */}
+                  <div className="bg-amber-50/30 border border-amber-100 rounded-xl p-4 text-[11px] text-amber-800 leading-relaxed font-medium">
+                    Khách hàng chịu trách nhiệm về tính chính xác của thông tin và ảnh giấy tờ đã tải lên. Rượu Sâm Ngọc Linh không chịu trách nhiệm đối với sai sót, giả mạo hoặc thông tin không chính xác do khách hàng cung cấp.
+                  </div>
+
+                  {/* Confirmation Checkbox */}
+                  <label className="flex items-start gap-2.5 text-xs text-gray-600 font-semibold cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4 mt-0.5"
+                    />
+                    <span className="leading-relaxed">
+                      Tôi xác nhận thông tin giấy tờ là chính xác và đồng ý với điều khoản trách nhiệm, miễn trừ trách nhiệm nếu sai sót phát sinh từ phía khách hàng.
+                    </span>
+                  </label>
+
+                  {/* Image uploads */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ảnh mặt trước</span>
+                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 hover:border-primary cursor-pointer transition-colors bg-gray-50/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span className="text-xs text-gray-500 font-bold">Tải ảnh lên</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Ảnh mặt sau</span>
+                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 hover:border-primary cursor-pointer transition-colors bg-gray-50/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span className="text-xs text-gray-500 font-bold">Tải ảnh lên</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex gap-4 pt-4 border-t border-gray-100">
+                    <button className="flex-grow sm:flex-none bg-[#1C3F24] hover:bg-emerald-800 text-white font-bold px-8 py-3 rounded-xl text-xs transition-colors shadow-md shadow-primary/10">
+                      Gửi xác thực
+                    </button>
+                    <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 font-bold px-8 py-3 rounded-xl text-xs transition-colors">
+                      Hủy
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
