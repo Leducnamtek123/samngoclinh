@@ -39,12 +39,16 @@ export default async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  const getLocale = (path: string) => {
+    const match = path.match(/^\/([^/]+)/u);
+    const firstSegment = match ? match[1] : '';
+    return ['en', 'fr'].includes(firstSegment || '') ? firstSegment : 'en';
+  };
+
   if (isProtectedRoute(pathname)) {
     const token = request.cookies.get('user_session')?.value;
     if (!token) {
-      // Find locale
-      const localeMatch = pathname.match(/^\/([^/]+)/u);
-      const locale = localeMatch ? localeMatch[1] : 'en';
+      const locale = getLocale(pathname);
       const signInUrl = new URL(`/${locale}/sign-in`, request.url);
       return NextResponse.redirect(signInUrl);
     }
@@ -53,8 +57,7 @@ export default async function middleware(request: NextRequest) {
   if (isAuthPage(pathname)) {
     const token = request.cookies.get('user_session')?.value;
     if (token) {
-      const localeMatch = pathname.match(/^\/([^/]+)/u);
-      const locale = localeMatch ? localeMatch[1] : 'en';
+      const locale = getLocale(pathname);
       const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
       return NextResponse.redirect(dashboardUrl);
     }
