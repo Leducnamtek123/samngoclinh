@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Pencil, Eye, EyeOff, Plus } from "lucide-react"
+import { Trash2, Pencil, Eye, EyeOff, Plus, LayoutGrid } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface Bed {
@@ -25,6 +25,23 @@ interface Bed {
   treeCount: number
   status: string
   createdAt: string
+}
+
+interface CultivationBedLocation {
+  id: string
+  code: string
+  bedCode: string
+  row: number
+  col: number
+  status: string
+  treeCode?: string
+}
+
+interface Tree {
+  id: string
+  code: string
+  name: string
+  quantity: number
 }
 
 interface Garden {
@@ -69,6 +86,110 @@ export function BedsTable({ initialBeds, gardens, errorMsg: initialError }: Beds
     ageYear: 1,
     treeCount: 50,
   })
+
+  // Bed Locations Grid state
+  const [isGridOpen, setIsGridOpen] = useState(false)
+  const [selectedBedForGrid, setSelectedBedForGrid] = useState<Bed | null>(null)
+  const [locations, setLocations] = useState<CultivationBedLocation[]>([])
+  const [loadingGrid, setLoadingGrid] = useState(false)
+  const [gridRows, setGridRows] = useState(5)
+  const [gridCols, setGridCols] = useState(10)
+  const [trees, setTrees] = useState<Tree[]>([])
+  
+  // Edit Location state
+  const [selectedLocationForEdit, setSelectedLocationForEdit] = useState<CultivationBedLocation | null>(null)
+  const [editLocationStatus, setEditLocationStatus] = useState("empty")
+  const [editLocationTreeCode, setEditLocationTreeCode] = useState("none")
+  const [savingLocation, setSavingLocation] = useState(false)
+
+  const openGridDialog = async (bed: Bed) => {
+    setSelectedBedForGrid(bed)
+    setIsGridOpen(true)
+    setLoadingGrid(true)
+    setLocations([])
+    setSelectedLocationForEdit(null)
+
+    try {
+      // 1. Fetch locations
+      const locRes = await fetchApi(`/user/cultivation/beds/${bed.code}/locations`)
+      const locPayload = await locRes.json()
+      if (locRes.status < 400 && Array.isArray(locPayload.data)) {
+        setLocations(locPayload.data)
+      }
+
+      // 2. Fetch trees
+      const treeRes = await fetchApi("/user/cultivation/trees/admin-list")
+      const treePayload = await treeRes.json()
+      if (treeRes.status < 400 && Array.isArray(treePayload.data)) {
+        setTrees(treePayload.data)
+      }
+    } catch (e) {
+      console.error("Error loading grid locations:", e)
+    } finally {
+      setLoadingGrid(false)
+    }
+  }
+
+  const handleGenerateGrid = async () => {
+    if (!selectedBedForGrid) return
+    setLoadingGrid(true)
+    try {
+      const res = await fetchApi(`/user/cultivation/beds/${selectedBedForGrid.code}/locations/generate`, {
+        method: "POST",
+        body: JSON.stringify({
+          rows: gridRows,
+          cols: gridCols,
+        }),
+      })
+      if (res.status < 400) {
+        // Reload locations
+        const locRes = await fetchApi(`/user/cultivation/beds/${selectedBedForGrid.code}/locations`)
+        const locPayload = await locRes.json()
+        if (locRes.status < 400 && Array.isArray(locPayload.data)) {
+          setLocations(locPayload.data)
+        }
+      } else {
+        alert("Không thể khởi tạo lưới vị trí.")
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setLoadingGrid(false)
+    }
+  }
+
+  const handleOpenEditLocation = (loc: CultivationBedLocation) => {
+    setSelectedLocationForEdit(loc)
+    setEditLocationStatus(loc.status)
+    setEditLocationTreeCode(loc.treeCode || "none")
+  }
+
+  const handleSaveLocation = async () => {
+    if (!selectedLocationForEdit) return
+    setSavingLocation(true)
+    try {
+      const res = await fetchApi(`/user/cultivation/beds/locations/${selectedLocationForEdit.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          status: editLocationStatus,
+          treeCode: editLocationTreeCode === "none" ? null : editLocationTreeCode,
+        }),
+      })
+      if (res.status < 400) {
+        const payload = await res.json()
+        setLocations((prev) =>
+          prev.map((l) => (l.id === selectedLocationForEdit.id ? payload.data : l))
+        )
+        setSelectedLocationForEdit(null)
+      } else {
+        alert("Không thể cập nhật vị trí.")
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSavingLocation(false)
+    }
+  }
 
   // Filter logic
   const filteredBeds = beds.filter((bed) => {
@@ -462,6 +583,14 @@ export function BedsTable({ initialBeds, gardens, errorMsg: initialError }: Beds
                           <Button
                             variant="ghost"
                             size="icon"
+                            onClick={() => openGridDialog(bed)}
+                            title="Quản lý vị trí trong luống"
+                          >
+                            <LayoutGrid className="w-4 h-4 text-emerald-600 hover:text-emerald-700" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => handleToggleStatus(bed)}
                             title={bed.status === "active" ? "Tạm ẩn luống" : "Kích hoạt luống"}
                           >
@@ -600,6 +729,195 @@ export function BedsTable({ initialBeds, gardens, errorMsg: initialError }: Beds
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Visual Bed Location Grid Dialog */}
+      <Dialog open={isGridOpen} onOpenChange={setIsGridOpen}>
+        <DialogContent className="max-w-[700px] max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Quản lý Vị trí Luống - {selectedBedForGrid?.name}</DialogTitle>
+            <DialogDescription>
+              Xem và phân bổ vị trí cây sâm trong luống trồng sâm Ngọc Linh.
+            </DialogDescription>
+          </DialogHeader>
+
+          {loadingGrid ? (
+            <div className="text-center py-12">Đang tải lưới vị trí luống sâm...</div>
+          ) : locations.length === 0 ? (
+            <div className="space-y-4 py-6 text-center">
+              <p className="text-slate-500">Luống này chưa được phân bổ lưới ô trồng trọt.</p>
+              <div className="flex items-center justify-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="grid-rows">Số hàng</Label>
+                  <Input
+                    id="grid-rows"
+                    type="number"
+                    value={gridRows}
+                    onChange={(e) => setGridRows(Number(e.target.value))}
+                    className="w-16"
+                    min={1}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="grid-cols">Số cột</Label>
+                  <Input
+                    id="grid-cols"
+                    type="number"
+                    value={gridCols}
+                    onChange={(e) => setGridCols(Number(e.target.value))}
+                    className="w-16"
+                    min={1}
+                  />
+                </div>
+                <Button onClick={handleGenerateGrid} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+                  Khởi tạo lưới {gridRows}x{gridCols}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-6 text-xs font-semibold">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-slate-100 border border-slate-300"></div>
+                  <span>Ô trống</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-emerald-500"></div>
+                  <span>Đang trồng sâm</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-4 h-4 rounded bg-slate-300"></div>
+                  <span>Hỏng/Lỗi</span>
+                </div>
+              </div>
+
+              {/* Grid Scrollable Wrapper */}
+              <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 dark:bg-slate-900/50 max-h-[350px] overflow-auto">
+                <div
+                  className="grid gap-2 mx-auto"
+                  style={{
+                    gridTemplateColumns: `repeat(${locations.reduce((max, loc) => Math.max(max, loc.col), 0) + 1}, minmax(48px, 1fr))`,
+                    width: "max-content",
+                  }}
+                >
+                  {locations.map((loc) => {
+                    let cellBg = "bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-500"
+                    if (loc.status === "planted") {
+                      cellBg = "bg-emerald-500 hover:bg-emerald-600 text-white border-emerald-600"
+                    } else if (loc.status === "inactive") {
+                      cellBg = "bg-slate-300 text-slate-500 border-slate-400 line-through"
+                    }
+
+                    return (
+                      <button
+                        key={loc.id}
+                        type="button"
+                        onClick={() => handleOpenEditLocation(loc)}
+                        className={`w-12 h-12 rounded-lg border text-[10px] font-mono flex flex-col items-center justify-center transition-all ${cellBg}`}
+                        title={`Hàng ${loc.row + 1}, Cột ${loc.col + 1} - Mã: ${loc.code}`}
+                      >
+                        <span className="font-bold">H{loc.row + 1}</span>
+                        <span>C{loc.col + 1}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Edit Specific Slot Form */}
+              {selectedLocationForEdit && (
+                <Card className="border border-slate-200 dark:border-slate-800">
+                  <CardHeader className="py-3">
+                    <CardTitle className="text-sm">
+                      Cập nhật vị trí Ô: Hàng {selectedLocationForEdit.row + 1} - Cột {selectedLocationForEdit.col + 1}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pb-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="loc-status">Trạng thái ô trồng</Label>
+                        <Select value={editLocationStatus} onValueChange={setEditLocationStatus}>
+                          <SelectTrigger id="loc-status">
+                            <SelectValue placeholder="Chọn trạng thái" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="empty">Trống (Empty)</SelectItem>
+                            <SelectItem value="planted">Đang trồng sâm (Planted)</SelectItem>
+                            <SelectItem value="inactive">Không sử dụng (Inactive)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="grid gap-2">
+                        <Label htmlFor="loc-treeCode">Mã cây sâm trồng</Label>
+                        <Select
+                          value={editLocationTreeCode}
+                          onValueChange={setEditLocationTreeCode}
+                          disabled={editLocationStatus !== "planted"}
+                        >
+                          <SelectTrigger id="loc-treeCode">
+                            <SelectValue placeholder="Chọn cây trồng" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">— Chọn lô cây sâm —</SelectItem>
+                            {trees.map((tree) => (
+                              <SelectItem key={tree.id} value={tree.code}>
+                                {tree.name} ({tree.code}) - {tree.quantity} gốc
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedLocationForEdit(null)}
+                      >
+                        Đóng
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleSaveLocation}
+                        disabled={savingLocation}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                      >
+                        {savingLocation ? "Đang lưu..." : "Lưu ô vị trí"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Re-generate button if already exists */}
+              <div className="pt-4 border-t flex justify-between items-center text-xs text-muted-foreground">
+                <span>Ô vị trí hiện tại: {locations.length} ô</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (confirm("Hành động này sẽ xóa toàn bộ ô vị trí hiện có trong luống và tạo mới lại. Bạn có chắc không?")) {
+                      setLocations([])
+                    }
+                  }}
+                  className="text-red-500 hover:text-red-600 border-red-200 font-semibold"
+                >
+                  Xóa lưới cũ để chia lại
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsGridOpen(false)}>
+              Đóng hộp thoại
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

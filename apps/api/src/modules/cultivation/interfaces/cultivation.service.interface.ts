@@ -8,7 +8,7 @@ import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/reque
 import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 
 import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
 import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
@@ -17,6 +17,7 @@ import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/reque
 export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;
+    gardensList(userId: string): Promise<IResponseReturn<CultivationGarden[]>>;
     beds(userId: string): Promise<IResponseReturn<{ items: CultivationBedResponseDto[] }>>;
     createGarden(userId: string, payload: CultivationCreateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>>;
     createBed(userId: string, payload: CultivationCreateBedRequestDto): Promise<IResponseReturn<CultivationBed>>;
@@ -36,5 +37,11 @@ export interface ICultivationService {
     gardenDetail(id: string, userId: string): Promise<IResponseReturn<CultivationGarden>>;
     bedDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
     treeDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
+
+    getBedLocations(bedCode: string): Promise<IResponseReturn<CultivationBedLocation[]>>;
+    generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<any>>;
+    updateBedLocation(id: string, status: string, treeCode?: string): Promise<IResponseReturn<CultivationBedLocation>>;
+    deleteBedLocation(id: string): Promise<IResponseReturn<void>>;
+    listAllTreesAdmin(): Promise<IResponseReturn<CultivationTree[]>>;
 }
 

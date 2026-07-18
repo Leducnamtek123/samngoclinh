@@ -14,7 +14,7 @@ import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/d
 import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
 import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
 import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 
 @Injectable()
 export class CultivationService implements ICultivationService {
@@ -179,5 +179,30 @@ export class CultivationService implements ICultivationService {
             throw new NotFoundException('Tree not found');
         }
         return { data: tree };
+    }
+
+    async getBedLocations(bedCode: string): Promise<IResponseReturn<CultivationBedLocation[]>> {
+        const res = await this.cultivationRepository.getBedLocations(bedCode);
+        return { data: res };
+    }
+
+    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<any>> {
+        const res = await this.cultivationRepository.generateBedLocations(bedCode, rows, cols);
+        return { data: res };
+    }
+
+    async updateBedLocation(id: string, status: string, treeCode?: string): Promise<IResponseReturn<CultivationBedLocation>> {
+        const res = await this.cultivationRepository.updateBedLocation(id, status, treeCode);
+        return { data: res };
+    }
+
+    async deleteBedLocation(id: string): Promise<IResponseReturn<void>> {
+        await this.cultivationRepository.deleteBedLocation(id);
+        return { data: undefined };
+    }
+
+    async listAllTreesAdmin(): Promise<IResponseReturn<CultivationTree[]>> {
+        const res = await this.cultivationRepository.listAllTreesAdmin();
+        return { data: res };
     }
 }

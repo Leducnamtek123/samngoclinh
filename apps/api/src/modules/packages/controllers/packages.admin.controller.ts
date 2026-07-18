@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -95,5 +95,25 @@ export class PackagesAdminController {
     @Delete('/protection/:id')
     async deleteProtection(@Param('id') id: string): Promise<IResponseReturn<{ success: boolean }>> {
         return this.packagesService.deleteProtection(id);
+    }
+
+    @Response('packages.list')
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/care')
+    async listAllCare(): Promise<IResponseReturn<{ items: CarePackage[] }>> {
+        return this.packagesService.listAllCare();
+    }
+
+    @Response('packages.list')
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/protection')
+    async listAllProtection(): Promise<IResponseReturn<{ items: ProtectionPackage[] }>> {
+        return this.packagesService.listAllProtection();
     }
 }

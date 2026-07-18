@@ -6,7 +6,7 @@ import {
     ICultivationGardenSummary,
     ICultivationTreeAgeItem,
 } from '@modules/cultivation/interfaces/cultivation.interface';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
@@ -405,5 +405,63 @@ export class CultivationRepository {
             ...tree,
             careLogs,
         };
+    }
+
+    async getBedLocations(bedCode: string): Promise<CultivationBedLocation[]> {
+        return this.databaseService.cultivationBedLocation.findMany({
+            where: { bedCode },
+            orderBy: [{ row: 'asc' }, { col: 'asc' }],
+        });
+    }
+
+    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<any> {
+        return this.databaseService.$transaction(async (tx) => {
+            await tx.cultivationBedLocation.deleteMany({
+                where: { bedCode },
+            });
+
+            const dataToInsert = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    dataToInsert.push({
+                        code: `${bedCode}-l-${r}-${c}`,
+                        bedCode,
+                        row: r,
+                        col: c,
+                        status: 'empty',
+                    });
+                }
+            }
+
+            if (dataToInsert.length > 0) {
+                await tx.cultivationBedLocation.createMany({
+                    data: dataToInsert,
+                });
+            }
+
+            return { count: dataToInsert.length };
+        });
+    }
+
+    async updateBedLocation(id: string, status: string, treeCode?: string): Promise<CultivationBedLocation> {
+        return this.databaseService.cultivationBedLocation.update({
+            where: { id },
+            data: {
+                status,
+                treeCode: treeCode !== undefined ? treeCode : undefined,
+            },
+        });
+    }
+
+    async deleteBedLocation(id: string): Promise<void> {
+        await this.databaseService.cultivationBedLocation.delete({
+            where: { id },
+        });
+    }
+
+    async listAllTreesAdmin(): Promise<CultivationTree[]> {
+        return this.databaseService.cultivationTree.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
     }
 }

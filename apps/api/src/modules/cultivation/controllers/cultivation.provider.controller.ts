@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -8,7 +8,7 @@ import {
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, EnumRoleType } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, EnumRoleType } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
@@ -174,5 +174,61 @@ export class CultivationProviderController {
         @Param('id') id: string
     ): Promise<IResponseReturn<void>> {
         return this.cultivationService.deleteTree(id);
+    }
+
+    @Response('cultivation.bedLocations')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/beds/:bedCode/locations')
+    async getBedLocations(@Param('bedCode') bedCode: string): Promise<IResponseReturn<CultivationBedLocation[]>> {
+        return this.cultivationService.getBedLocations(bedCode);
+    }
+
+    @Response('cultivation.generateLocations')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/beds/:bedCode/locations/generate')
+    async generateBedLocations(
+        @Param('bedCode') bedCode: string,
+        @Body() body: { rows: number; cols: number }
+    ): Promise<IResponseReturn<any>> {
+        return this.cultivationService.generateBedLocations(bedCode, body.rows, body.cols);
+    }
+
+    @Response('cultivation.updateLocation')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Put('/beds/locations/:id')
+    async updateBedLocation(
+        @Param('id') id: string,
+        @Body() body: { status: string; treeCode?: string }
+    ): Promise<IResponseReturn<CultivationBedLocation>> {
+        return this.cultivationService.updateBedLocation(id, body.status, body.treeCode);
+    }
+
+    @Response('cultivation.deleteLocation')
+    @RoleProtected(EnumRoleType.provider, EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Delete('/beds/locations/:id')
+    async deleteBedLocation(@Param('id') id: string): Promise<IResponseReturn<void>> {
+        return this.cultivationService.deleteBedLocation(id);
+    }
+
+    @Response('cultivation.listAllTreesAdmin')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/trees/admin-list')
+    async listAllTreesAdmin(): Promise<IResponseReturn<CultivationTree[]>> {
+        return this.cultivationService.listAllTreesAdmin();
     }
 }

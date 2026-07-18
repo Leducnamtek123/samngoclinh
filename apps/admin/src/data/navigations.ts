@@ -51,6 +51,16 @@ export const navigationsData: NavigationType[] = [
         href: "/pages/beds",
       },
       {
+        title: "Quản lý cây trồng",
+        iconName: "TreePine",
+        href: "/pages/trees",
+      },
+      {
+        title: "Gói dịch vụ",
+        iconName: "HeartHandshake",
+        href: "/pages/packages",
+      },
+      {
         title: "Banners",
         iconName: "Image",
         href: "/pages/banners",
