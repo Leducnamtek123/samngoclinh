@@ -12,6 +12,7 @@ import { DatabaseService } from '@common/database/services/database.service';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
 import { OrdersUserCheckoutRequestDto } from '@modules/orders/dtos/request/orders.checkout.request.dto';
 import { Prisma } from '@prisma/client';
+import { CartItem } from '@generated/prisma-client';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -57,21 +58,22 @@ export class OrdersService implements IOrdersService {
         const cart = await this.databaseService.cart.findUnique({
             where: { userId },
         });
+        const cartItems = (cart?.items as unknown as CartItem[]) || [];
 
-        if (!cart || cart.items.length === 0) {
+        if (!cart || cartItems.length === 0) {
             throw new BadRequestException({
                 statusCode: 400,
                 message: 'cart.error.empty',
             });
         }
 
-        const productIds = cart.items.map(item => item.productId);
+        const productIds = cartItems.map(item => item.productId);
         const products = await this.databaseService.catalogProduct.findMany({
             where: { id: { in: productIds } },
         });
 
         // 1. Validate stock and existence before transaction
-        for (const cartItem of cart.items) {
+        for (const cartItem of cartItems) {
             const product = products.find(p => p.id === cartItem.productId);
             if (!product) {
                 throw new NotFoundException({
@@ -96,7 +98,7 @@ export class OrdersService implements IOrdersService {
         // 2. Perform checkout as a transaction
         const order = await this.databaseService.$transaction(async tx => {
             // Decrement stock for all items
-            for (const cartItem of cart.items) {
+            for (const cartItem of cartItems) {
                 await tx.catalogProduct.update({
                     where: { id: cartItem.productId },
                     data: {
@@ -109,7 +111,7 @@ export class OrdersService implements IOrdersService {
 
             // Calculate costs
             let subtotal = 0;
-            const orderItems = cart.items.map(cartItem => {
+            const orderItems = cartItems.map(cartItem => {
                 const product = products.find(
                     p => p.id === cartItem.productId
                 )!;
@@ -622,6 +624,16 @@ export class OrdersService implements IOrdersService {
             });
         }
 
+        const user = await this.databaseService.user.findUnique({
+            where: { id: order.userId },
+            select: { name: true, email: true },
+        });
+
+        const businessProfile = await this.databaseService.businessProfile.findUnique({
+            where: { userId: order.userId },
+            select: { fullName: true, phone: true },
+        });
+
         return {
             data: {
                 id: order.id,
@@ -637,6 +649,11 @@ export class OrdersService implements IOrdersService {
                 paidAt: order.paidAt,
                 cancelledAt: order.cancelledAt,
                 createdAt: order.createdAt,
+                user: {
+                    fullName: businessProfile?.fullName || user?.name || 'Khách hàng',
+                    email: user?.email || 'N/A',
+                    phone: businessProfile?.phone || 'N/A',
+                },
             },
         };
     }

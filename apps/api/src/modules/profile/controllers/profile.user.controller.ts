@@ -24,7 +24,7 @@ export class ProfileUserController {
 
     @ProfileUserMeDoc()
     @Response('profile.me')
-    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -37,7 +37,7 @@ export class ProfileUserController {
 
     @ProfileUserBusinessDoc()
     @Response('profile.me')
-    @RoleProtected(EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

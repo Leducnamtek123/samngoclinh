@@ -13,13 +13,15 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { buttonVariants } from "@/components/ui/button"
 
-export function ProfileHeader({ locale }: { locale: LocaleType }) {
+export function ProfileHeader({ locale, user }: { locale: LocaleType; user?: any }) {
+  const profileUser = user || userData
+
   return (
     <section className="bg-background border-y border-border">
       <AspectRatio ratio={5 / 1} className="bg-muted">
-        {userData.background && (
+        {profileUser.background && (
           <Image
-            src={userData.background}
+            src={profileUser.background}
             fill
             className="h-full w-full object-cover"
             alt="Profile Background"
@@ -29,12 +31,12 @@ export function ProfileHeader({ locale }: { locale: LocaleType }) {
       <div className="relative w-full flex flex-col items-center gap-2 p-4 md:flex-row">
         <Avatar className="size-32 -mt-20 md:size-40">
           <AvatarImage
-            src={userData.avatar}
+            src={profileUser.avatar}
             alt="Profile Avatar"
             className="border-4 border-background"
           />
           <AvatarFallback className="border-4 border-background">
-            {getInitials(userData.name)}
+            {getInitials(profileUser.name)}
           </AvatarFallback>
         </Avatar>
         <Link
@@ -49,18 +51,18 @@ export function ProfileHeader({ locale }: { locale: LocaleType }) {
         </Link>
         <div className="text-center md:text-start">
           <div>
-            <h1 className="text-2xl font-bold line-clamp-1">{userData.name}</h1>
+            <h1 className="text-2xl font-bold line-clamp-1">{profileUser.name}</h1>
             <p className="text-muted-foreground line-clamp-1">
-              {userData.state && userData.state + ", "}
-              {userData.country}
+              {profileUser.state && profileUser.state + ", "}
+              {profileUser.country}
             </p>
           </div>
           <div className="inline-flex w-full">
             <p className="text-primary after:content-['\00b7'] after:mx-1">
-              {formatNumberToCompact(userData.followers)} followers
+              {formatNumberToCompact(profileUser.followers)} followers
             </p>
             <p className="text-primary">
-              {formatNumberToCompact(userData.connections)} connections
+              {formatNumberToCompact(profileUser.connections)} connections
             </p>
           </div>
         </div>

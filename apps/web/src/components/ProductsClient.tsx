@@ -2,15 +2,26 @@
 
 import { useState } from 'react';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
+import { useBanner } from '@/hooks/queries/useBanner';
+import { PageBannerSlider } from '@/components/PageBannerSlider';
 
 type ProductsClientProps = {
   locale: string;
   initialItems?: any[];
+  isLoggedIn?: boolean;
 };
 
-export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClientProps) => {
+export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
+  const { data: banners } = useBanner('ginseng');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const handleAction = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      window.location.href = `/${locale}/sign-in?reason=cart`;
+    }
+  };
 
   const displayItems = items || [];
 
@@ -21,22 +32,15 @@ export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClient
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       {/* Hero Banner Section */}
-      <section className="bg-[#1C3F24]/5 bg-[url('/assets/images/banner_bg.png')] bg-cover py-16 px-4 md:px-8 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            Sản phẩm rượu sâm
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-primary leading-tight font-display-lg">
-            Sản Phẩm Rượu Sâm Ngọc Linh
-          </h1>
-          <p className="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Khám phá danh mục sản phẩm rượu sâm Ngọc Linh nguyên cây, nguyên củ và các chế phẩm sâm cao cấp khác.
-          </p>
-        </div>
-      </section>
+      <PageBannerSlider 
+        banners={banners || []} 
+        badgeText="Sản phẩm rượu sâm" 
+        badgeIcon={
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        }
+      />
 
       {/* Search Section */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-8">
@@ -112,6 +116,7 @@ export const ProductsClient = ({ locale: _locale, initialItems }: ProductsClient
                     </div>
                     <a
                       href="/cart"
+                      onClick={handleAction}
                       className="p-2 bg-[#4CAF50] hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center justify-center gap-1 px-4 py-2 text-xs font-bold shadow-sm"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">

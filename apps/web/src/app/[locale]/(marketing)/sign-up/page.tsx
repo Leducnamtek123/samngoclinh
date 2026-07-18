@@ -28,9 +28,9 @@ export default async function SignUpPage(props: SignUpPageProps) {
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-xl p-8 space-y-6 text-center">
         <div className="space-y-2">
           <img
-            src="/assets/images/logo_ruou_sam.png"
+            src="/assets/images/logo_ruou_sam.png?v=2"
             alt="Rượu Sâm Ngọc Linh Logo"
-            className="mx-auto h-16 w-16 rounded-full object-cover shadow-sm border border-gray-100"
+            className="mx-auto h-16 w-16 object-contain"
           />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-display-lg">
             Đăng ký tài khoản mới

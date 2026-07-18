@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const { email, password, type, phone, otp } = await request.json();
 
-    let endpoint = 'http://localhost:3000/api/v1/public/user/login/credential';
+    let endpoint = 'http://127.0.0.1:3000/api/v1/public/user/login/credential';
     let bodyPayload: any = {
       email,
       password,
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     };
 
     if (type === 'phone') {
-      endpoint = 'http://localhost:3000/api/v1/public/user/login/otp/verify';
+      endpoint = 'http://127.0.0.1:3000/api/v1/public/user/login/otp/verify';
       bodyPayload = {
         phone,
         otp,
@@ -45,6 +45,8 @@ export async function POST(request: Request) {
     }
 
     const token = payload.data.tokens.accessToken;
+    const refreshToken = payload.data.tokens.refreshToken || '';
+    const expiresIn = payload.data.tokens.expiresIn || 3600;
 
     let userEmail = '';
     const parts = token.split('.');
@@ -58,7 +60,14 @@ export async function POST(request: Request) {
     }
 
     // Set secure cookie
-    const response = NextResponse.json({ success: true, email: userEmail, message: 'Đăng nhập thành công' });
+    const response = NextResponse.json({
+      success: true,
+      email: userEmail,
+      token,
+      refreshToken,
+      expiresIn,
+      message: 'Đăng nhập thành công'
+    });
     response.cookies.set('user_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

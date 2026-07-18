@@ -20,11 +20,34 @@ import { Toaster } from "@/components/ui/toaster"
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata: Metadata = {
   title: {
-    template: "%s | Shadboard",
-    default: "Shadboard",
+    template: "%s | Sâm Ngọc Linh Admin",
+    default: "Sâm Ngọc Linh Admin",
   },
-  description: "",
+  description: "Trang quản trị Rượu Sâm Ngọc Linh",
   metadataBase: new URL(process.env.BASE_URL as string),
+  icons: [
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      url: "/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      url: "/favicon-32x32.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "16x16",
+      url: "/favicon-16x16.png",
+    },
+    {
+      rel: "icon",
+      url: "/favicon.ico",
+    },
+  ],
 }
 
 // Define fonts for the application
@@ -57,7 +80,7 @@ export default async function RootLayout(props: {
     <html lang={params.lang} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
-          "[&:lang(en)]:font-lato [&:lang(ar)]:font-cairo", // Set font styles based on the language
+          "[&:lang(en)]:font-lato [&:lang(vi)]:font-lato", // Set font styles based on the language
           "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
           latoFont.variable, // Include Lato font variable
           cairoFont.variable // Include Cairo font variable

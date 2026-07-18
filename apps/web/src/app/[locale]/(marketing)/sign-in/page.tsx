@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SignInForm from '@/components/SignInForm';
 
@@ -25,7 +26,9 @@ export default async function SignInPage(props: SignInPageProps) {
 
   return (
     <div className="w-full">
-      <SignInForm />
+      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm font-semibold text-gray-500">Đang tải...</div>}>
+        <SignInForm />
+      </Suspense>
     </div>
   );
 }

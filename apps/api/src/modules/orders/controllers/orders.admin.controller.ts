@@ -27,7 +27,7 @@ import { OrdersAdminUpdateStatusRequestDto } from '@modules/orders/dtos/request/
 @ApiTags('modules.admin.orders')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/orders',
+    path: '/orders',
 })
 export class OrdersAdminController {
     constructor(private readonly ordersService: OrdersService) {}

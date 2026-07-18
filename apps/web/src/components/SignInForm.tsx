@@ -1,9 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function SignInForm() {
+  const searchParams = useSearchParams();
+  const reason = searchParams?.get('reason');
+
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
+  const [showToast, setShowToast] = useState(!!reason);
   
   // Email states
   const [email, setEmail] = useState('');
@@ -17,6 +22,36 @@ export default function SignInForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [infoMessage, setInfoMessage] = useState('');
+
+  const getReasonMessage = (resVal: string | null) => {
+    switch (resVal) {
+      case 'campaigns':
+        return {
+          title: 'Vui lòng đăng nhập',
+          description: 'Bạn cần đăng nhập để nhận cây sâm 1 năm.',
+        };
+      case 'ginseng':
+        return {
+          title: 'Vui lòng đăng nhập',
+          description: 'Bạn cần đăng nhập để truy cập tính năng Trồng sâm.',
+        };
+      case 'trading-floor':
+        return {
+          title: 'Vui lòng đăng nhập',
+          description: 'Bạn cần đăng nhập để tham gia Sàn ký gửi.',
+        };
+      case 'cart':
+        return {
+          title: 'Vui lòng đăng nhập',
+          description: 'Bạn cần đăng nhập để xem giỏ hàng của mình.',
+        };
+      default:
+        return {
+          title: 'Vui lòng đăng nhập',
+          description: 'Bạn cần đăng nhập để tiếp tục truy cập trang này.',
+        };
+    }
+  };
 
   const handleSendOtp = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -79,7 +114,7 @@ export default function SignInForm() {
 
       // Redirect to homepage or admin panel based on role email
       if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
-        window.location.href = 'http://localhost:3001/en';
+        window.location.href = `http://localhost:3001/en?token=${data.token}&refreshToken=${data.refreshToken || ''}&expiresIn=${data.expiresIn || 3600}`;
       } else {
         window.location.href = '/';
       }
@@ -95,9 +130,9 @@ export default function SignInForm() {
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-xl p-8 space-y-6">
         <div className="space-y-3 text-center">
           <img
-            src="/assets/images/logo_ruou_sam.png"
+            src="/assets/images/logo_ruou_sam.png?v=2"
             alt="Rượu Sâm Ngọc Linh Logo"
-            className="mx-auto h-16 w-16 rounded-full object-cover shadow-sm border border-gray-100"
+            className="mx-auto h-16 w-16 object-contain"
           />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-display-lg">
             Đăng nhập tài khoản
@@ -294,6 +329,30 @@ export default function SignInForm() {
           </a>
         </div>
       </div>
+
+      {/* Red Floating Toast at Bottom-Right */}
+      {showToast && reason && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#EF4444] text-white rounded-2xl shadow-2xl p-4 flex gap-3.5 border border-red-400/20 animate-in fade-in slide-in-from-bottom-10 duration-300">
+          <div className="bg-white/20 p-2 rounded-xl h-10 w-10 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+            </svg>
+          </div>
+          <div className="flex-1 space-y-1">
+            <h4 className="font-bold text-sm tracking-wide text-left">{getReasonMessage(reason).title}</h4>
+            <p className="text-xs text-white/90 font-medium leading-relaxed text-left">{getReasonMessage(reason).description}</p>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setShowToast(false)} 
+            className="text-white/70 hover:text-white transition-colors shrink-0 align-top self-start"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -46,13 +46,11 @@ export function Hero() {
 function SocialProofBadge() {
   return (
     <a
-      href="https://github.com/Qualiora/shadboard"
+      href="/"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
         "group gap-x-1.5"
       )}
-      target="_blank"
-      rel="noopener noreferrer"
     >
       <AvatarStack
         avatars={SocialProofBadgeAvatarsData}

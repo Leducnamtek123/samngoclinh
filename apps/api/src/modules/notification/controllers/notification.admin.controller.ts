@@ -19,7 +19,7 @@ import { NotificationAdminSendRequestDto } from '@modules/notification/dtos/requ
 @ApiTags('modules.admin.notification')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/notifications',
+    path: '/notifications',
 })
 export class NotificationAdminController {
     constructor(private readonly notificationService: NotificationService) {}

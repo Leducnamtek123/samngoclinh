@@ -202,26 +202,6 @@ export function Customizer() {
                     </Button>
                   </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  <span className="text-sm">Direction</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      variant={direction === "ltr" ? "secondary" : "outline"}
-                      onClick={() => handleSetLocale("en")}
-                    >
-                      <AlignLeft className="shrink-0 h-4 w-4 me-2" />
-                      LRT
-                    </Button>
-                    <Button
-                      variant={direction === "rtl" ? "secondary" : "outline"}
-                      onClick={() => handleSetLocale("ar")}
-                    >
-                      <AlignRight className="shrink-0 h-4 w-4 me-2" />
-                      RTL
-                    </Button>
-                  </div>
-                </div>
               </div>
 
               <Button

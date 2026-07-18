@@ -130,17 +130,17 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
       <SidebarHeader>
         <Link
           href={ensureLocalizedPathname("/", locale)}
-          className="w-fit flex text-foreground font-black p-2 pb-0 mb-2"
+          className="w-fit flex items-center gap-2 text-foreground font-black p-2 pb-0 mb-2"
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
           <Image
-            src="/images/icons/shadboard.svg"
-            alt=""
+            src="/images/logo_ruou_sam.png?v=2"
+            alt="Logo"
             height={24}
             width={24}
-            className="dark:invert"
+            className="object-cover"
           />
-          <span>Shadboard</span>
+          <span>Sâm Ngọc Linh</span>
         </Link>
         <CommandMenu dictionary={dictionary} buttonClassName="max-w-full" />
       </SidebarHeader>

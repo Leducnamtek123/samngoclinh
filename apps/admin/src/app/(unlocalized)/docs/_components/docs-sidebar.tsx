@@ -41,13 +41,13 @@ export function DocsSidebar() {
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
           <Image
-            src="/images/icons/shadboard.svg"
-            alt=""
+            src="/images/logo_ruou_sam.png"
+            alt="Logo"
             height={24}
             width={24}
-            className="dark:invert"
+            className="object-cover"
           />
-          <span>Shadboard</span>
+          <span>Sâm Ngọc Linh Admin</span>
         </Link>
       </SidebarHeader>
       <ScrollArea className="h-[calc(100svh-4.25rem)]">

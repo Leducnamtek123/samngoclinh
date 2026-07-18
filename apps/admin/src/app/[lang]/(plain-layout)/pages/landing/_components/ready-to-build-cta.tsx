@@ -12,18 +12,14 @@ export function ReadyToBuildCTA() {
             Ready to build your next project faster?
           </h2>
           <p className="max-w-prose mx-auto text-sm text-muted-foreground">
-            Get started with our free, open-source admin dashboard template — no
-            signup required.
+            Get started with our administration dashboard panel.
           </p>
         </div>
         <a
-          href="https://github.com/Qualiora/shadboard"
+          href="/dashboards/analytics"
           className={buttonVariants({ size: "lg" })}
-          target="_blank"
-          rel="noopener noreferrer"
         >
-          <SiGithub className="me-2 h-4 w-4" />
-          View on GitHub
+          Get Started
         </a>
       </Card>
     </section>

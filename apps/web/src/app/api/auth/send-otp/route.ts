@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const { phone } = await request.json();
 
-    const apiRes = await fetch('http://localhost:3000/api/v1/public/user/login/otp/send', {
+    const apiRes = await fetch('http://127.0.0.1:3000/api/v1/public/user/login/otp/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

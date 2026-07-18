@@ -24,7 +24,7 @@ import { MarketplaceAdminUpdateStatusRequestDto } from '@modules/marketplace/dto
 @ApiTags('modules.admin.marketplace')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/marketplace',
+    path: '/marketplace',
 })
 export class MarketplaceAdminController {
     constructor(private readonly marketplaceService: MarketplaceService) {}

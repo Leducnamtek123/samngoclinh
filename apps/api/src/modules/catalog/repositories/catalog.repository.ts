@@ -21,22 +21,28 @@ export class CatalogRepository {
         const items = await this.databaseService.catalogPlant.findMany({
             orderBy: [{ ageYear: 'asc' }, { price: 'asc' }],
             select: {
+                id: true,
                 code: true,
                 name: true,
                 ageYear: true,
                 price: true,
                 stock: true,
                 status: true,
+                images: true,
+                description: true,
             },
         });
 
         return items.map(item => ({
-            id: item.code,
+            id: item.id,
+            code: item.code,
             name: item.name,
             ageYear: item.ageYear,
             price: item.price,
             stock: item.stock,
             status: item.status as ICatalogPlantItem['status'],
+            images: item.images,
+            description: item.description ?? undefined,
         }));
     }
 
@@ -44,20 +50,30 @@ export class CatalogRepository {
         const items = await this.databaseService.catalogProduct.findMany({
             orderBy: [{ featured: 'desc' }, { price: 'asc' }],
             select: {
+                id: true,
                 code: true,
                 name: true,
                 price: true,
                 unit: true,
                 category: true,
+                stock: true,
+                status: true,
+                images: true,
+                description: true,
             },
         });
 
         return items.map(item => ({
-            id: item.code,
+            id: item.id,
+            code: item.code,
             name: item.name,
             price: item.price,
             unit: item.unit,
             category: item.category,
+            stock: item.stock,
+            status: item.status,
+            images: item.images,
+            description: item.description ?? undefined,
         }));
     }
 

@@ -4,10 +4,17 @@ import { Expose } from 'class-transformer';
 export class CatalogPlantResponseDto {
     @ApiProperty({
         required: true,
-        example: 'plant-1y',
+        example: 'plant-id-123',
     })
     @Expose()
     id: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'plant-1y',
+    })
+    @Expose()
+    code?: string;
 
     @ApiProperty({
         required: true,
@@ -43,4 +50,18 @@ export class CatalogPlantResponseDto {
     })
     @Expose()
     status: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'Mô tả sâm ngọc linh',
+    })
+    @Expose()
+    description?: string;
+
+    @ApiProperty({
+        required: false,
+        example: ['/images/logo_ruou_sam.png'],
+    })
+    @Expose()
+    images?: string[];
 }

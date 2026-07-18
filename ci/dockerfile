@@ -9,23 +9,23 @@ WORKDIR /app
 
 # Stage to install all dependencies and build the app
 FROM base AS builder
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN set -x && pnpm install --frozen-lockfile --ignore-scripts
-
 COPY . .
-
+RUN set -x && pnpm install --frozen-lockfile --prod=false --ignore-scripts
 RUN pnpm db:generate
-RUN pnpm build
+RUN pnpm --filter api build
 
 # Main Stage
 FROM base AS main
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/package.json
 RUN set -x && pnpm install --frozen-lockfile --prod --ignore-scripts
 
 # Copy only necessary files from previous stages
-COPY --from=builder /app/generated/prisma-client ./generated/prisma-client
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/apps/api/generated/prisma-client ./apps/api/generated/prisma-client
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+
+# Set working directory to apps/api for running the app
+WORKDIR /app/apps/api
 
 # Create non-root user for security
 RUN addgroup -S ec2-user && adduser -S ec2-user -G ec2-user && \

@@ -79,6 +79,7 @@
         "case": "^1.6.3",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.15.1",
+        "cloudinary": "^2.10.0",
         "compression": "^1.8.1",
         "cors": "^2.8.6",
         "crypto-js": "^4.2.0",
@@ -176,7 +177,6 @@
             "prettier --write"
         ]
     },
-    "packageManager": "pnpm@11.5.2",
     "engines": {
         "npm": "please-use-pnpm",
         "yarn": "please-use-pnpm",

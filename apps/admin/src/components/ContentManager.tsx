@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchApi } from '@/lib/api';
 import {
   createArticleAction,
   updateArticleAction,
@@ -21,8 +22,14 @@ type Article = {
 type ContentManagerProps = {
   initialArticles: Article[];
   initialBannerSettings: {
-    largeImage: string;
-    smallImage: string;
+    homepage_banner_image_1: string;
+    homepage_banner_image_2: string;
+    homepage_banner_image_3: string;
+    homepage_banner_image_4: string;
+    homepage_banner_image_5: string;
+    about_banner_image: string;
+    news_banner_image: string;
+    campaigns_banner_image: string;
   };
 };
 
@@ -46,11 +53,51 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
   const [error, setError] = useState('');
 
   // Banner settings states
-  const [largeBanner, setLargeBanner] = useState(initialBannerSettings.largeImage);
-  const [smallBanner, setSmallBanner] = useState(initialBannerSettings.smallImage);
+  const [homepageBanner1, setHomepageBanner1] = useState(initialBannerSettings.homepage_banner_image_1);
+  const [homepageBanner2, setHomepageBanner2] = useState(initialBannerSettings.homepage_banner_image_2);
+  const [homepageBanner3, setHomepageBanner3] = useState(initialBannerSettings.homepage_banner_image_3);
+  const [homepageBanner4, setHomepageBanner4] = useState(initialBannerSettings.homepage_banner_image_4);
+  const [homepageBanner5, setHomepageBanner5] = useState(initialBannerSettings.homepage_banner_image_5);
+  
+  const [aboutBanner, setAboutBanner] = useState(initialBannerSettings.about_banner_image);
+  const [newsBanner, setNewsBanner] = useState(initialBannerSettings.news_banner_image);
+  const [campaignsBanner, setCampaignsBanner] = useState(initialBannerSettings.campaigns_banner_image);
+
   const [bannerLoading, setBannerLoading] = useState(false);
   const [bannerError, setBannerError] = useState('');
   const [bannerSuccess, setBannerSuccess] = useState(false);
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setError('');
+
+    const fd = new FormData();
+    fd.append("file", file);
+
+    try {
+      const res = await fetchApi("/admin/catalog/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      const payload = await res.json();
+      if (res.status >= 400) {
+        setError(payload?.message || "Tải ảnh lên thất bại");
+      } else {
+        setImage(payload.data?.url || "");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Lỗi kết nối khi tải ảnh lên");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const openCreateModal = () => {
     setEditingArticle(null);
@@ -62,10 +109,30 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     setIsOpen(true);
   };
 
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  };
+
   const openEditModal = (article: Article) => {
     setEditingArticle(article);
     setTitle(article.title);
-    setCategory(article.category);
+    
+    const reverseCategoryMap: Record<string, string> = {
+      'news': 'Tin tức',
+      'faq': 'Kiến thức',
+      'guide': 'Hướng dẫn sử dụng app',
+      'event': 'Sự kiện'
+    };
+    setCategory(reverseCategoryMap[article.category] || article.category);
     setImage(article.image || '');
     setSummary(article.summary || '');
     setError('');
@@ -82,12 +149,23 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     setLoading(true);
     setError('');
 
+    const categoryMap: Record<string, string> = {
+      'Tin tức': 'news',
+      'Kiến thức': 'faq',
+      'Hướng dẫn sử dụng app': 'guide',
+      'Sự kiện': 'event'
+    };
+
+    const dbCategory = categoryMap[category] || 'news';
+    const generatedSlug = slugify(title);
+
     const payload = {
+      slug: generatedSlug,
       title,
-      category,
-      image: image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
+      category: dbCategory,
+      coverImage: image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
       summary,
-      publishedAt: new Date().toLocaleDateString('vi-VN')
+      status: 'published',
     };
 
     let res;
@@ -102,10 +180,16 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     if (res.success) {
       setIsOpen(false);
       router.refresh();
+      const updatedArticle = {
+        id: editingArticle?.id || 'new-' + Math.random(),
+        ...payload,
+        image: payload.coverImage,
+        publishedAt: new Date().toLocaleDateString('vi-VN')
+      };
       if (editingArticle) {
-        setArticles(articles.map(a => a.id === editingArticle.id ? { ...a, ...payload } : a));
+        setArticles(articles.map(a => a.id === editingArticle.id ? (updatedArticle as any) : a));
       } else {
-        setArticles([{ id: 'new-' + Math.random(), ...payload }, ...articles]);
+        setArticles([updatedArticle as any, ...articles]);
       }
     } else {
       setError(res.error || 'Có lỗi xảy ra.');
@@ -133,16 +217,24 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     setBannerSuccess(false);
 
     try {
-      const [resLarge, resSmall] = await Promise.all([
-        updateSettingAction('homepage_banner_large_image', largeBanner),
-        updateSettingAction('homepage_banner_small_image', smallBanner)
+      const results = await Promise.all([
+        updateSettingAction('homepage_banner_image_1', homepageBanner1),
+        updateSettingAction('homepage_banner_image_2', homepageBanner2),
+        updateSettingAction('homepage_banner_image_3', homepageBanner3),
+        updateSettingAction('homepage_banner_image_4', homepageBanner4),
+        updateSettingAction('homepage_banner_image_5', homepageBanner5),
+        updateSettingAction('about_banner_image', aboutBanner),
+        updateSettingAction('news_banner_image', newsBanner),
+        updateSettingAction('campaigns_banner_image', campaignsBanner),
       ]);
 
-      if (resLarge.success && resSmall.success) {
+      const failedResult = results.find(res => !res.success);
+
+      if (!failedResult) {
         setBannerSuccess(true);
         router.refresh();
       } else {
-        setBannerError(resLarge.error || resSmall.error || 'Lỗi khi cập nhật cài đặt banner.');
+        setBannerError(failedResult.error || 'Lỗi khi cập nhật cài đặt banner.');
       }
     } catch (err: any) {
       setBannerError(err.message || 'Lỗi kết nối.');
@@ -261,8 +353,8 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
       {activeTab === 'banner' && (
         <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Quản lý Banner Trang chủ</h2>
-            <p className="text-xs text-gray-400 font-medium">Cấu hình các hình ảnh hiển thị ở phần Banner chính của trang web khách hàng</p>
+            <h2 className="text-xl font-bold text-gray-900">Quản lý Banner Hệ Thống</h2>
+            <p className="text-xs text-gray-400 font-medium">Cấu hình các hình ảnh hiển thị ở phần Banner chính trên Trang chủ và các Trang con</p>
           </div>
 
           <form onSubmit={handleSaveBanner} className="space-y-6">
@@ -274,63 +366,119 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
 
             {bannerSuccess && (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl text-xs font-semibold">
-                Cập nhật cấu hình Banner trang chủ thành công!
+                Cập nhật cấu hình Banner hệ thống thành công!
               </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Inputs */}
-              <div className="lg:col-span-7 space-y-5 text-xs font-semibold text-gray-500">
-                <div className="space-y-1.5">
-                  <label className="uppercase tracking-wider">Hình Tròn Lớn (Mặc định: Rừng Sâm)</label>
-                  <input
-                    type="text"
-                    value={largeBanner}
-                    onChange={(e) => setLargeBanner(e.target.value)}
-                    placeholder="Đường dẫn ảnh lớn (URL)"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
-                  />
-                </div>
+            <div className="space-y-6">
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="text-sm font-bold text-emerald-800 mb-4">I. Banners Trang Chủ (5 ảnh slide hiển thị xoay vòng)</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Hình Banner Slide 1</label>
+                    <input
+                      type="text"
+                      value={homepageBanner1}
+                      onChange={(e) => setHomepageBanner1(e.target.value)}
+                      placeholder="Đường dẫn ảnh slide 1 (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
 
-                <div className="space-y-1.5">
-                  <label className="uppercase tracking-wider">Hình Tròn Nhỏ (Mặc định: Cây Giống non)</label>
-                  <input
-                    type="text"
-                    value={smallBanner}
-                    onChange={(e) => setSmallBanner(e.target.value)}
-                    placeholder="Đường dẫn ảnh nhỏ (URL)"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
-                  />
-                </div>
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Hình Banner Slide 2</label>
+                    <input
+                      type="text"
+                      value={homepageBanner2}
+                      onChange={(e) => setHomepageBanner2(e.target.value)}
+                      placeholder="Đường dẫn ảnh slide 2 (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
 
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Hình Banner Slide 3</label>
+                    <input
+                      type="text"
+                      value={homepageBanner3}
+                      onChange={(e) => setHomepageBanner3(e.target.value)}
+                      placeholder="Đường dẫn ảnh slide 3 (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Hình Banner Slide 4</label>
+                    <input
+                      type="text"
+                      value={homepageBanner4}
+                      onChange={(e) => setHomepageBanner4(e.target.value)}
+                      placeholder="Đường dẫn ảnh slide 4 (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Hình Banner Slide 5</label>
+                    <input
+                      type="text"
+                      value={homepageBanner5}
+                      onChange={(e) => setHomepageBanner5(e.target.value)}
+                      placeholder="Đường dẫn ảnh slide 5 (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-150 pb-4">
+                <h3 className="text-sm font-bold text-emerald-800 mb-4">II. Banners Cho Các Trang Con</h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-semibold text-gray-500">
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Banner trang Giới Thiệu (About)</label>
+                    <input
+                      type="text"
+                      value={aboutBanner}
+                      onChange={(e) => setAboutBanner(e.target.value)}
+                      placeholder="Đường dẫn ảnh trang Giới Thiệu (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Banner trang Tin Tức (News)</label>
+                    <input
+                      type="text"
+                      value={newsBanner}
+                      onChange={(e) => setNewsBanner(e.target.value)}
+                      placeholder="Đường dẫn ảnh trang Tin Tức (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="uppercase tracking-wider">Banner trang Khuyến Mãi (Campaigns)</label>
+                    <input
+                      type="text"
+                      value={campaignsBanner}
+                      onChange={(e) => setCampaignsBanner(e.target.value)}
+                      placeholder="Đường dẫn ảnh trang Khuyến Mãi (URL)"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
                 <button
                   type="submit"
                   disabled={bannerLoading}
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-colors text-xs disabled:opacity-50"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-8 py-3.5 rounded-xl shadow-md transition-colors text-xs disabled:opacity-50"
                 >
-                  {bannerLoading ? 'Đang lưu...' : 'Lưu cấu hình Banner'}
+                  {bannerLoading ? 'Đang lưu...' : 'Lưu toàn bộ Banner'}
                 </button>
-              </div>
-
-              {/* Live Preview box */}
-              <div className="lg:col-span-5 bg-gray-50 border border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden">
-                <span className="absolute top-3 left-3 bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full">Xem trước</span>
-                
-                {/* Banner Graphics mockup */}
-                <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex items-center justify-center">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={largeBanner || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e'}
-                    alt="Lớn"
-                  />
-                </div>
-                <div className="absolute bottom-6 right-16 w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-white">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={smallBanner || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn'}
-                    alt="Nhỏ"
-                  />
-                </div>
               </div>
             </div>
           </form>
@@ -385,14 +533,40 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
               </div>
 
               <div className="space-y-1.5">
-                <label className="uppercase tracking-wider">Hình ảnh (URL)</label>
-                <input
-                  type="text"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="Nhập đường dẫn hình ảnh"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
-                />
+                <label className="uppercase tracking-wider">Hình ảnh bài viết</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="Đường dẫn ảnh hoặc tải lên..."
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
+                  />
+                  <label className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-lg transition-colors text-xs flex items-center justify-center cursor-pointer min-w-[100px] text-center">
+                    {uploadingImage ? 'Đang tải...' : 'Tải ảnh lên'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                {image && (
+                  <div className="mt-2 relative w-full h-32 rounded-lg overflow-hidden border border-gray-200">
+                    <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setImage('')}
+                      className="absolute top-1.5 right-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 transition-colors"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">

@@ -94,7 +94,7 @@ export default async function CartPage(props: CartPageProps) {
             </div>
           </div>
 
-          <Link href="/products" className="inline-block bg-primary hover:bg-primary-hover text-white font-bold px-8 py-3 rounded-xl text-xs transition-colors shadow-md shadow-primary/10">
+          <Link href="/ginseng" className="inline-block bg-primary hover:bg-primary-hover text-white font-bold px-8 py-3 rounded-xl text-xs transition-colors shadow-md shadow-primary/10">
             Khám phá sản phẩm
           </Link>
         </div>

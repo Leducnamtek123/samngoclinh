@@ -99,4 +99,19 @@ export class OrdersDetailResponseDto {
     })
     @Expose()
     createdAt: Date;
+
+    @ApiProperty({
+        required: false,
+        example: {
+            fullName: 'Nguyễn Văn A',
+            email: 'user@mail.com',
+            phone: '0847234234',
+        },
+    })
+    @Expose()
+    user?: {
+        fullName: string;
+        email: string;
+        phone: string;
+    };
 }

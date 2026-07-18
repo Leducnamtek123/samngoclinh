@@ -39,13 +39,13 @@ export function LandingHeader({ dictionary }: { dictionary: DictionaryType }) {
           className="place-self-center w-fit flex text-foreground font-black hover:text-primary/90 lg:place-self-auto"
         >
           <Image
-            src="/images/icons/shadboard.svg"
-            alt=""
+            src="/images/logo_ruou_sam.png"
+            alt="Logo"
             height={24}
             width={24}
-            className="dark:invert"
+            className="object-cover"
           />
-          <span>Shadboard</span>
+          <span>Sâm Ngọc Linh</span>
         </Link>
         <nav className="hidden lg:block">
           <ul className="place-self-center flex gap-2">

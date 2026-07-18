@@ -29,16 +29,16 @@ export function BottomBarHeader({
       <ToggleMobileSidebar />
       <Link
         href={ensureLocalizedPathname("/", locale)}
-        className="hidden text-foreground font-black lg:flex"
+        className="hidden items-center gap-2 text-foreground font-black lg:flex"
       >
         <Image
-          src="/images/icons/shadboard.svg"
-          alt=""
+          src="/images/logo_ruou_sam.png?v=2"
+          alt="Logo"
           height={24}
           width={24}
-          className="dark:invert"
+          className="object-cover"
         />
-        <span>Shadboard</span>
+        <span>Sâm Ngọc Linh</span>
       </Link>
       <div className="flex gap-2">
         <NotificationDropdown dictionary={dictionary} />

@@ -159,7 +159,7 @@ export class TermPolicyRepository {
         contents: Prisma.JsonArray;
         status: EnumTermPolicyStatus;
     } | null> {
-        return this.databaseService.termPolicy.findFirst({
+        const result = await this.databaseService.termPolicy.findFirst({
             where: {
                 version,
                 type,
@@ -170,6 +170,7 @@ export class TermPolicyRepository {
                 status: true,
             },
         });
+        return result as any;
     }
 
     async accept(
@@ -239,7 +240,7 @@ export class TermPolicyRepository {
                 type,
                 version,
                 status: EnumTermPolicyStatus.draft,
-                contents: this.databaseUtil.toPlainArray(contents),
+                contents: this.databaseUtil.toPlainArray(contents) as any,
                 createdBy,
             },
         });
@@ -271,7 +272,7 @@ export class TermPolicyRepository {
                 id: termPolicyId,
             },
             data: {
-                contents: this.databaseUtil.toPlainArray(contents),
+                contents: this.databaseUtil.toPlainArray(contents) as any,
                 updatedBy,
             },
         });
@@ -279,20 +280,18 @@ export class TermPolicyRepository {
 
     async addContent(
         termPolicyId: string,
+        contents: TermContentDto[],
         newContent: TermContentDto,
         updatedBy: string
     ): Promise<TermPolicy> {
+        contents.push(newContent);
+
         return this.databaseService.termPolicy.update({
             where: {
                 id: termPolicyId,
             },
             data: {
-                contents: {
-                    push: this.databaseUtil.toPlainObject<
-                        TermContentDto,
-                        Prisma.TermPolicyContentCreateInput
-                    >(newContent),
-                },
+                contents: this.databaseUtil.toPlainArray(contents) as any,
                 updatedBy,
             },
         });
@@ -314,7 +313,7 @@ export class TermPolicyRepository {
                 id: termPolicyId,
             },
             data: {
-                contents: this.databaseUtil.toPlainArray(contents),
+                contents: this.databaseUtil.toPlainArray(contents) as any,
                 updatedBy,
             },
         });
@@ -334,7 +333,7 @@ export class TermPolicyRepository {
                 data: {
                     status: EnumTermPolicyStatus.published,
                     publishedAt: this.helperService.dateCreate(),
-                    contents,
+                    contents: contents as any,
                     updatedBy,
                 },
             }),
@@ -346,7 +345,7 @@ export class TermPolicyRepository {
                 data: {
                     termPolicy: {
                         [type]: false,
-                    },
+                    } as any,
                 },
             }),
         ]);

@@ -36,7 +36,7 @@ export class MigrationBusinessSeed
         this.logger.log('Seeding business data...');
 
         const provider = await this.databaseService.user.findFirst({
-            where: { email: 'provider@mail.com' },
+            where: { email: 'admin@mail.com' },
             select: { id: true },
         });
 

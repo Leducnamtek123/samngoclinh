@@ -24,31 +24,50 @@ async function getArticles() {
 }
 
 async function getBannerSettings() {
+  const keys = [
+    'homepage_banner_image_1',
+    'homepage_banner_image_2',
+    'homepage_banner_image_3',
+    'homepage_banner_image_4',
+    'homepage_banner_image_5',
+    'about_banner_image',
+    'news_banner_image',
+    'campaigns_banner_image',
+  ];
+
+  const defaultImages: Record<string, string> = {
+    homepage_banner_image_1: '/images/banners/homepage_banner_1.png',
+    homepage_banner_image_2: '/images/banners/homepage_banner_2.png',
+    homepage_banner_image_3: '/images/banners/homepage_banner_3.png',
+    homepage_banner_image_4: '/images/banners/homepage_banner_4.png',
+    homepage_banner_image_5: '/images/banners/homepage_banner_5.png',
+    about_banner_image: '/images/banners/about_banner.png',
+    news_banner_image: '/images/banners/news_banner.png',
+    campaigns_banner_image: '/images/banners/campaigns_banner.png',
+  };
+
+  const results: Record<string, string> = {};
+
   try {
-    const [largeRes, smallRes] = await Promise.all([
-      fetchApi('/public/settings/homepage_banner_large_image', { cache: 'no-store' }),
-      fetchApi('/public/settings/homepage_banner_small_image', { cache: 'no-store' }),
-    ]);
-
-    let largeImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e';
-    let smallImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn';
-
-    if (largeRes.ok) {
-      const json = await largeRes.json();
-      if (json.data?.value) largeImage = json.data.value;
-    }
-    if (smallRes.ok) {
-      const json = await smallRes.json();
-      if (json.data?.value) smallImage = json.data.value;
-    }
-
-    return { largeImage, smallImage };
+    await Promise.all(
+      keys.map(async (key) => {
+        try {
+          const res = await fetchApi(`/public/settings/${key}`, { cache: 'no-store' });
+          if (res.ok) {
+            const json = await res.json();
+            results[key] = json.data?.value || defaultImages[key];
+          } else {
+            results[key] = defaultImages[key];
+          }
+        } catch (err) {
+          results[key] = defaultImages[key];
+        }
+      })
+    );
+    return results;
   } catch (error) {
     console.error('Error fetching banner settings for admin:', error);
-    return {
-      largeImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMsiW4ViCyUtMk4AfTXxRrJiQcT8tKQAUyVZSXqxfcf1L9lTee9CFuEtFGMMjXYCiQ171omUJD_nKj17QENbeUhZY9asWGZwU2oUtaEVYL2WrPG-leo-Rl4Z4xzRajZWEEFUdZuNQ-Oabmc8mly-VTAvsgCjL5V8dXv3dSEEgjgGwV9kzzLxA9nRYYRqkuY1002C6NkxdMXfId3twLyXv07FUV5yuZvj7I3k8B5ftQ2qY81eNSId_e',
-      smallImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMm0MsRntVMXJuZkq_isCb_qWD3-uvCuw7p3HKx0E-SWSpRdnCX13R14A5EkaBtLx0vmjYQa9E1AquPBXvMm4zbWQDvVaQQPjjBm16XxTYavFOm4o1KWFxMlGCevWg0QI8T27IldHLjvAOiCs1EeCWCXrhj79MnkffrdbmPfTMyjAjF3Wv0iwhVac1vCXcUBBnMZ7ZMLMT_ih8W6NH1PapFilnZDUzOs5D6CkUAPi6cZLtA3IMEEkn',
-    };
+    return defaultImages;
   }
 }
 
@@ -62,7 +81,7 @@ export default async function ContentPage(props: {
 
   return (
     <div className="container py-6 space-y-6">
-      <ContentManager initialArticles={articles} initialBannerSettings={bannerSettings} />
+      <ContentManager initialArticles={articles} initialBannerSettings={bannerSettings as any} />
     </div>
   );
 }

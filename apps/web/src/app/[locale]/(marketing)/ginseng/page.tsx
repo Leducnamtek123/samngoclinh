@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { GinsengClient } from '@/components/GinsengClient';
+import { cookies } from 'next/headers';
+import { ProductsClient } from '@/components/ProductsClient';
 import { fetchApi } from '@/libs/Api';
 
 type GinsengPageProps = {
@@ -9,8 +10,8 @@ type GinsengPageProps = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Trồng Sâm Ngọc Linh | Rượu Sâm Ngọc Linh',
-    description: 'Trải nghiệm mô hình trồng sâm cùng Rượu Sâm Ngọc Linh qua nền tảng công nghệ số.',
+    title: 'Cửa Hàng Sản Phẩm | Rượu Sâm Ngọc Linh',
+    description: 'Sở hữu sản phẩm Rượu Sâm Ngọc Linh chuẩn nguồn gốc chất lượng cao.',
   };
 }
 
@@ -35,10 +36,12 @@ export default async function GinsengPage(props: GinsengPageProps) {
   setRequestLocale(locale);
 
   const initialItems = await getShopItems();
+  const cookieStore = await cookies();
+  const isLoggedIn = !!cookieStore.get('user_session')?.value;
 
   return (
     <div className="w-full">
-      <GinsengClient locale={locale} initialItems={initialItems} />
+      <ProductsClient locale={locale} initialItems={initialItems} isLoggedIn={isLoggedIn} />
     </div>
   );
 }

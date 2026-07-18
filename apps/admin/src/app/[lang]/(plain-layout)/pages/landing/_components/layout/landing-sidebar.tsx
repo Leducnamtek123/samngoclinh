@@ -61,13 +61,13 @@ export function LandingSidebar({ fullPathname }: { fullPathname: string }) {
               onClick={() => isMobile && setOpenMobile(!openMobile)}
             >
               <Image
-                src="/images/icons/shadboard.svg"
-                alt=""
+                src="/images/logo_ruou_sam.png"
+                alt="Logo"
                 height={24}
                 width={24}
-                className="dark:invert"
+                className="rounded-full object-cover"
               />
-              <span>Shadboard</span>
+              <span>Sâm Ngọc Linh</span>
             </Link>
             <Link
               href={ensureLocalizedPathname("/register", locale)}

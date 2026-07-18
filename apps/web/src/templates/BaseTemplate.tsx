@@ -13,9 +13,9 @@ export const BaseTemplate = (props: {
           <div className="flex items-center gap-8 md:gap-12">
             <a href="/" className="flex items-center gap-2.5 group">
               <img
-                src="/assets/images/logo_ruou_sam.png"
+                src="/assets/images/logo_ruou_sam.png?v=2"
                 alt="Rượu Sâm Ngọc Linh Logo"
-                className="w-10 h-10 rounded-full object-cover shadow-sm shadow-primary/20 border border-gray-100"
+                className="w-10 h-10 object-contain"
               />
               <span className="font-bold text-[22px] tracking-tight text-primary font-display-lg">
                 Rượu Sâm Ngọc Linh

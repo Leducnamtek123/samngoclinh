@@ -1,5 +1,7 @@
+"use client"
+
 import Link from "next/link"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { LogOut, User, UserCog } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
@@ -29,6 +31,13 @@ export function UserDropdown({
   dictionary: DictionaryType
   locale: LocaleType
 }) {
+  const { data: session } = useSession()
+  const user = session?.user
+
+  const name = user?.name || userData?.name
+  const email = user?.email || userData?.email
+  const avatar = user?.avatar || userData?.avatar
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,9 +48,9 @@ export function UserDropdown({
           aria-label="User"
         >
           <Avatar className="size-9">
-            <AvatarImage src={userData?.avatar} alt="" />
+            <AvatarImage src={avatar} alt="" />
             <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
+              {name && getInitials(name)}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -49,15 +58,15 @@ export function UserDropdown({
       <DropdownMenuContent forceMount>
         <DropdownMenuLabel className="flex gap-2">
           <Avatar>
-            <AvatarImage src={userData?.avatar} alt="Avatar" />
+            <AvatarImage src={avatar} alt="Avatar" />
             <AvatarFallback className="bg-transparent">
-              {userData?.name && getInitials(userData.name)}
+              {name && getInitials(name)}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col overflow-hidden">
-            <p className="text-sm font-medium truncate">John Doe</p>
+            <p className="text-sm font-medium truncate">{name}</p>
             <p className="text-xs text-muted-foreground font-semibold truncate">
-              {userData?.email}
+              {email}
             </p>
           </div>
         </DropdownMenuLabel>

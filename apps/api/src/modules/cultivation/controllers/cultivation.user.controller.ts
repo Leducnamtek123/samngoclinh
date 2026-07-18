@@ -37,7 +37,12 @@ export class CultivationUserController {
 
     @CultivationUserTreesDoc()
     @Response('cultivation.trees')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -50,7 +55,12 @@ export class CultivationUserController {
 
     @CultivationUserGardensDoc()
     @Response('cultivation.gardens')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -61,9 +71,31 @@ export class CultivationUserController {
         return this.cultivationService.gardens(userId);
     }
 
+    @Response('cultivation.gardens')
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/gardens/list')
+    async gardensList(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<CultivationGarden[]>> {
+        return this.cultivationService.gardensList(userId);
+    }
+
     @CultivationUserBedsDoc()
     @Response('cultivation.beds')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -76,7 +108,12 @@ export class CultivationUserController {
 
     @CultivationUserListCareLogsDoc()
     @Response('cultivation.listCareLogs')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -90,7 +127,12 @@ export class CultivationUserController {
 
     @CultivationUserCreateBookingDoc()
     @Response('cultivation.createBooking')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -104,7 +146,12 @@ export class CultivationUserController {
 
     @CultivationUserListBookingsDoc()
     @Response('cultivation.listBookings')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -117,7 +164,12 @@ export class CultivationUserController {
 
     @CultivationUserGardenDetailDoc()
     @Response('cultivation.gardens')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -131,7 +183,12 @@ export class CultivationUserController {
 
     @CultivationUserBedDetailDoc()
     @Response('cultivation.beds')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -145,7 +202,12 @@ export class CultivationUserController {
 
     @CultivationUserTreeDetailDoc()
     @Response('cultivation.trees')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

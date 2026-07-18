@@ -48,6 +48,7 @@ import {
     EnumTermPolicyStatus,
     EnumTermPolicyType,
     Prisma,
+    UserTermPolicy,
 } from '@generated/prisma-client';
 
 @Injectable()
@@ -68,7 +69,7 @@ export class TermPolicyService implements ITermPolicyService {
             throw new AuthJwtAccessTokenInvalidException();
         }
 
-        const { termPolicy } = user;
+        const termPolicy = user.termPolicy as unknown as UserTermPolicy;
 
         const defaultTermPolicies = [
             EnumTermPolicyType.termsOfService,
@@ -402,6 +403,7 @@ export class TermPolicyService implements ITermPolicyService {
             };
             const updated = await this.termPolicyRepository.addContent(
                 termPolicyId,
+                termPolicy.contents as unknown as TermContentDto[],
                 mappedContent,
                 updatedBy
             );

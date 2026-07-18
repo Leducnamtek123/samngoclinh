@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
+import { cookies } from 'next/headers';
 import { TradingFloorClient } from '@/components/TradingFloorClient';
 
 type TradingFloorPageProps = {
@@ -17,9 +18,12 @@ export default async function TradingFloorPage(props: TradingFloorPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
+  const cookieStore = await cookies();
+  const isLoggedIn = !!cookieStore.get('user_session')?.value;
+
   return (
     <div className="w-full">
-      <TradingFloorClient locale={locale} />
+      <TradingFloorClient locale={locale} isLoggedIn={isLoggedIn} />
     </div>
   );
 }

@@ -19,6 +19,7 @@ export class ContentRepository {
                 summary: true,
                 publishedAt: true,
                 createdAt: true,
+                coverImage: true,
             },
         });
 
@@ -29,6 +30,7 @@ export class ContentRepository {
             category: item.category as IContentArticleItem['category'],
             publishedAt: (item.publishedAt ?? item.createdAt).toISOString(),
             summary: item.summary,
+            image: item.coverImage || undefined,
         }));
     }
 

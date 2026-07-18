@@ -36,6 +36,13 @@ export class CultivationService implements ICultivationService {
         };
     }
 
+    async gardensList(userId: string): Promise<IResponseReturn<CultivationGarden[]>> {
+        const gardens = await this.cultivationRepository.getGardensList(userId);
+        return {
+            data: gardens,
+        };
+    }
+
     async beds(userId: string): Promise<IResponseReturn<{ items: CultivationBedResponseDto[] }>> {
         const items = await this.cultivationRepository.getBeds(userId);
 

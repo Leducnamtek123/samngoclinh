@@ -26,7 +26,7 @@ import {
 @ApiTags('modules.admin.packages')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/packages',
+    path: '/packages',
 })
 export class PackagesAdminController {
     constructor(private readonly packagesService: PackagesService) {}

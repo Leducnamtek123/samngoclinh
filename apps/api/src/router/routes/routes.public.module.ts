@@ -17,6 +17,8 @@ import { ContactUserController } from '@modules/contact/controllers/contact.user
 import { ContactModule } from '@modules/contact/contact.module';
 import { SettingPublicController } from '@modules/setting/controllers/setting.public.controller';
 import { SettingModule } from '@modules/setting/setting.module';
+import { BannerPublicController } from '@modules/banner/controllers/banner.public.controller';
+import { BannerModule } from '@modules/banner/banner.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -34,6 +36,7 @@ import { Module } from '@nestjs/common';
         TermPolicyPublicController,
         ContactUserController,
         SettingPublicController,
+        BannerPublicController,
     ],
     providers: [],
     exports: [],
@@ -47,6 +50,7 @@ import { Module } from '@nestjs/common';
         UserModule,
         ContactModule,
         SettingModule,
+        BannerModule,
     ],
 })
 export class RoutesPublicModule {}

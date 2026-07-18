@@ -4,10 +4,17 @@ import { Expose } from 'class-transformer';
 export class CatalogProductResponseDto {
     @ApiProperty({
         required: true,
-        example: 'product-wine-root',
+        example: 'product-id-123',
     })
     @Expose()
     id: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'product-wine-root',
+    })
+    @Expose()
+    code?: string;
 
     @ApiProperty({
         required: true,
@@ -36,4 +43,39 @@ export class CatalogProductResponseDto {
     })
     @Expose()
     category: string;
+
+    @ApiProperty({
+        required: false,
+        example: 100,
+    })
+    @Expose()
+    stock?: number;
+
+    @ApiProperty({
+        required: false,
+        example: 'active',
+    })
+    @Expose()
+    status?: string;
+
+    @ApiProperty({
+        required: false,
+        example: false,
+    })
+    @Expose()
+    featured?: boolean;
+
+    @ApiProperty({
+        required: false,
+        example: ['/images/logo_ruou_sam.png'],
+    })
+    @Expose()
+    images?: string[];
+
+    @ApiProperty({
+        required: false,
+        example: 'Mô tả rượu sâm ngọc linh',
+    })
+    @Expose()
+    description?: string;
 }

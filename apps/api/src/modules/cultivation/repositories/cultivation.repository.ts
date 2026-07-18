@@ -59,15 +59,25 @@ export class CultivationRepository {
             where: { ownerUserId: userId },
             select: {
                 id: true,
+                code: true,
+                gardenCode: true,
                 name: true,
+                ageYear: true,
+                treeCount: true,
                 status: true,
+                createdAt: true,
             },
         });
 
         return beds.map(b => ({
             id: b.id,
+            code: b.code,
+            gardenCode: b.gardenCode,
             name: b.name,
+            ageYear: b.ageYear,
+            treeCount: b.treeCount,
             status: b.status,
+            createdAt: b.createdAt,
         }));
     }
 
@@ -353,6 +363,12 @@ export class CultivationRepository {
                     });
                 }
             }
+        });
+    }
+
+    async getGardensList(userId: string): Promise<CultivationGarden[]> {
+        return this.databaseService.cultivationGarden.findMany({
+            where: { ownerUserId: userId },
         });
     }
 

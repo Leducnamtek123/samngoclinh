@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
+import { cookies } from 'next/headers';
+import { PageBannerSlider } from '@/components/PageBannerSlider';
 
 type FreeTreePageProps = {
   params: Promise<{ locale: string }>;
@@ -30,25 +32,81 @@ async function getCampaignDetails() {
   }
 }
 
+async function getCampaignsBanner() {
+  try {
+    const res = await fetchApi('/public/banners/campaigns', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      return Array.isArray(json.data) ? json.data : [json.data];
+    }
+  } catch (error) {
+    console.error('Error fetching campaigns banner:', error);
+  }
+  return [
+    {
+      id: 'campaigns-default',
+      pageKey: 'campaigns',
+      title: 'Tặng cây sâm 1 năm',
+      subtitle: 'Chọn cây sâm 1 năm phù hợp, hoàn tất gói chăm sóc và bảo vệ cây để nhận ưu đãi dành riêng cho tài khoản đủ điều kiện.',
+      image: '/images/banners/campaigns_banner.png',
+      order: 0
+    }
+  ];
+}
+
 export default async function FreeTreePage(props: FreeTreePageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const campaignData = await getCampaignDetails();
+  const cookieStore = await cookies();
+  const token = cookieStore.get('user_session')?.value;
 
-  // Fallback if API fails or returns empty
-  const note = campaignData?.note || "Tài khoản cần được xác nhận ID trước khi nhận cây sâm 1 năm.";
-  const items = campaignData?.items && campaignData.items.length > 0 ? campaignData.items : [
-    {
-      id: "fallback-campaign",
-      plantName: "Cây Sâm Ngọc Linh 2026",
-      price: 84758,
-      eligible: false,
-      remainingSlots: 23
-    }
-  ];
+  const [campaignData, banner] = await Promise.all([
+    getCampaignDetails(),
+    getCampaignsBanner(),
+  ]);
 
+  if (!campaignData) {
+    return (
+      <div className="w-full bg-gray-50 min-h-screen pb-16 animate-fade-in">
+        <PageBannerSlider 
+          banners={banner || []} 
+          badgeText="Khuyến mãi" 
+          badgeIcon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+            </svg>
+          }
+        />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 text-center text-slate-500 font-semibold">
+          Chương trình hiện tại đã kết thúc hoặc chưa được kích hoạt từ trang quản trị. Vui lòng quay lại sau!
+        </div>
+      </div>
+    );
+  }
+
+  const note = campaignData.note || "Tài khoản cần được xác nhận ID trước khi nhận cây sâm 1 năm.";
+  const items = campaignData.items || [];
   const primaryItem = items[0];
+
+  if (!primaryItem) {
+    return (
+      <div className="w-full bg-gray-50 min-h-screen pb-16">
+        <PageBannerSlider 
+          banners={banner || []} 
+          badgeText="Khuyến mãi" 
+          badgeIcon={
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+            </svg>
+          }
+        />
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 text-center text-slate-500 font-semibold">
+          Không có suất quà tặng hoặc cây sâm nào khả dụng trong chương trình lúc này.
+        </div>
+      </div>
+    );
+  }
 
   // We render 4 slots to match the UI layout in the screenshot
   const slots = Array.from({ length: 4 }).map((_, i) => ({
@@ -61,56 +119,34 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       {/* Hero Banner Section */}
-      <section className="bg-primary text-white py-16 px-4 md:px-8 border-b border-gray-800">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Gift Icon */}
-          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center shadow-inner">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
-            </svg>
-          </div>
+      <PageBannerSlider 
+        banners={banner || []} 
+        badgeText="Chương trình Tặng cây sâm 1 năm" 
+        badgeIcon={
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+          </svg>
+        }
+      />
 
-          {/* Title & Description */}
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight font-display-lg leading-tight">
-              Tặng cây sâm 1 năm
-            </h1>
-            <p className="text-gray-300 text-base sm:text-lg max-w-2xl leading-relaxed">
-              Chọn cây sâm 1 năm phù hợp, hoàn tất gói chăm sóc và bảo vệ cây để nhận ưu đãi dành riêng cho tài khoản đủ điều kiện.
-            </p>
+      {/* Grid of plants */}
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 space-y-8">
+        
+        {/* Warning / Note banner */}
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 max-w-4xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="text-sm font-semibold">
+            📢 {note}
           </div>
-
-          {/* Warning / Note banner */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 max-w-2xl text-sm text-gray-200">
-            {note}
-          </div>
-
-          {/* Badges / Campaign Meta */}
-          <div className="flex flex-wrap gap-4 text-xs font-semibold pt-2">
-            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
-              </svg>
+          <div className="flex flex-wrap gap-2 text-xs font-bold">
+            <span className="flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full">
               Cây sâm 1 năm
             </span>
-            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              Cần gói chăm sóc và bảo vệ
-            </span>
-            <span className="flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full text-secondary">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <span className="flex items-center gap-1.5 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full">
               Còn {primaryItem.remainingSlots} suất
             </span>
           </div>
         </div>
-      </section>
 
-      {/* Grid of plants */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {slots.map((slot) => (
             <div
@@ -121,35 +157,38 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
               <div className="relative h-60 bg-gray-100">
                 <img
                   src={imageUrl}
-                  alt={slot.plantName}
+                  alt={slot.plantCatalog?.name || "Sâm Ngọc Linh"}
                   className="w-full h-full object-cover"
                 />
+                <div className="absolute top-3 right-3 bg-[#1C3F24]/90 text-white text-xs font-bold px-2.5 py-1 rounded-lg">
+                  {slot.plantCatalog?.ageYear || 1} Năm Tuổi
+                </div>
               </div>
 
-              {/* Plant info & Action */}
-              <div className="p-5 space-y-4">
-                <div className="space-y-1">
-                  <h3 className="font-bold text-gray-900 text-lg">
-                    {slot.plantName}
+              {/* Plant Details */}
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <h3 className="font-bold text-slate-800 text-lg line-clamp-1">
+                    {slot.plantCatalog?.name || "Sâm Ngọc Linh"}
                   </h3>
-                  <div className="text-xs text-gray-400 font-medium flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V9m0 0a4 4 0 10-8 0m8 0a4 4 0 118 0M7 21h10" />
-                    </svg>
-                    Cây sâm 1 năm
-                  </div>
+                  <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed">
+                    {slot.plantCatalog?.description || "Gói sở hữu cây sâm thật được chăm sóc trực tiếp tại vườn sâm chuẩn nguồn gốc Kon Tum."}
+                  </p>
                 </div>
 
-                <div className="text-secondary font-bold text-base pt-1 border-t border-gray-100">
-                  {slot.price.toLocaleString('vi-VN')} đ
+                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="text-xs text-slate-400 font-semibold">Giá gói chăm sóc</div>
+                  <div className="text-[#D97706] font-extrabold text-base">Miễn phí</div>
                 </div>
 
-                <Link
-                  href="/profile?tabs=kyc"
-                  className="block w-full text-center bg-secondary hover:bg-secondary-hover text-white py-3 rounded-lg font-bold transition-colors text-sm shadow-sm"
-                >
-                  Xác thực để nhận
-                </Link>
+                <div className="pt-3">
+                  <Link
+                    href={token ? `/${locale}/portfolio` : `/${locale}/sign-in?reason=campaign`}
+                    className="block w-full py-2.5 text-center bg-[#1C3F24] hover:bg-[#15301B] text-white rounded-xl font-bold text-xs transition-colors shadow-sm"
+                  >
+                    {token ? "Nhận cây ngay" : "Đăng nhập để nhận"}
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

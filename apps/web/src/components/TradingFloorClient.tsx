@@ -5,10 +5,18 @@ import { useMarketplaceListings } from '@/hooks/queries/useMarketplace';
 
 type TradingFloorClientProps = {
   locale: string;
+  isLoggedIn?: boolean;
 };
-export const TradingFloorClient = ({ locale: _locale }: TradingFloorClientProps) => {
+export const TradingFloorClient = ({ locale, isLoggedIn }: TradingFloorClientProps) => {
   const { data: listings, isLoading: listingsLoading, isError: listingsError } = useMarketplaceListings();
   const { data: profile, isLoading: profileLoading } = useProfileMe();
+
+  const handleAction = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      window.location.href = `/${locale}/sign-in?reason=trading-floor`;
+    }
+  };
 
   const isLoading = listingsLoading || profileLoading;
   const isError = listingsError;
@@ -36,13 +44,19 @@ export const TradingFloorClient = ({ locale: _locale }: TradingFloorClientProps)
           </div>
 
           <div className="flex gap-3 text-xs font-bold text-gray-700">
-            <button className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-colors border border-gray-200">
+            <button 
+              onClick={handleAction}
+              className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-colors border border-gray-200"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
               Quản lý thẻ
             </button>
-            <button className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-colors border border-gray-200">
+            <button 
+              onClick={handleAction}
+              className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg flex items-center gap-1.5 transition-colors border border-gray-200"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
               </svg>
@@ -136,7 +150,10 @@ export const TradingFloorClient = ({ locale: _locale }: TradingFloorClientProps)
                           </div>
                         </div>
 
-                        <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2 rounded-lg shadow-sm transition-colors">
+                        <button 
+                          onClick={handleAction}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2 rounded-lg shadow-sm transition-colors"
+                        >
                           Mua
                         </button>
                       </div>
@@ -214,7 +231,10 @@ export const TradingFloorClient = ({ locale: _locale }: TradingFloorClientProps)
                     </div>
                   </div>
 
-                  <button className="w-full bg-[#D32F2F] hover:bg-red-700 text-white font-bold py-3.5 rounded-lg text-sm transition-colors shadow-md shadow-red-600/10">
+                  <button 
+                    onClick={handleAction}
+                    className="w-full bg-[#D32F2F] hover:bg-red-700 text-white font-bold py-3.5 rounded-lg text-sm transition-colors shadow-md shadow-red-600/10"
+                  >
                     Đăng Bán
                   </button>
                 </div>

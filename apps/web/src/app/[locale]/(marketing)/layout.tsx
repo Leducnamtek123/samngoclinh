@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { Link } from '@/libs/I18nNavigation';
@@ -33,7 +34,11 @@ export default async function Layout(props: {
   return (
     <QueryProvider>
       <BaseTemplate
-        leftNav={<HeaderNav />}
+        leftNav={
+          <Suspense fallback={<span className="text-gray-400 text-sm">Thông tin...</span>}>
+            <HeaderNav />
+          </Suspense>
+        }
         rightNav={
           <>
             {token ? (

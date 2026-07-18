@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
+import { fetchApi } from '@/libs/Api';
+import { PageBannerSlider } from '@/components/PageBannerSlider';
 
 type AboutPageProps = {
   params: Promise<{ locale: string }>;
@@ -12,28 +14,45 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+async function getAboutBanner() {
+  try {
+    const res = await fetchApi('/public/banners/about', { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      return Array.isArray(json.data) ? json.data : [json.data];
+    }
+  } catch (error) {
+    console.error('Error fetching about banner:', error);
+  }
+  return [
+    {
+      id: 'about-default',
+      pageKey: 'about',
+      title: 'Hành Trình Rượu Sâm Ngọc Linh',
+      subtitle: 'Kết nối giá trị tự nhiên nguyên bản của Quốc bảo Sâm Ngọc Linh Quảng Nam với giải pháp công nghệ số minh bạch chuỗi cung ứng độc bản tại Việt Nam.',
+      image: '/images/banners/about_banner.png',
+      order: 0
+    }
+  ];
+}
+
 export default async function About(props: AboutPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
+
+  const banners = await getAboutBanner();
 
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       
       {/* Hero Header Section */}
-      <section className="bg-gradient-to-br from-[#1C3F24] via-[#15301B] to-[#0A1A0F] text-white py-20 px-4 md:px-8 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/assets/images/banner_bg.png')] opacity-10 mix-blend-overlay"></div>
-        <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-          <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">
-            Di sản quốc bảo Việt Nam
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight font-display-lg">
-            Hành Trình Rượu Sâm Ngọc Linh
-          </h1>
-          <p className="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            Kết nối giá trị tự nhiên nguyên bản của Quốc bảo Sâm Ngọc Linh Quảng Nam với giải pháp công nghệ số minh bạch chuỗi cung ứng độc bản tại Việt Nam.
-          </p>
-        </div>
-      </section>
+      <PageBannerSlider 
+        banners={banners} 
+        badgeText="Di sản quốc bảo Việt Nam" 
+        badgeIcon={
+          <span className="text-[10px]">🍃</span>
+        }
+      />
 
       {/* Main Grid Content */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-16 space-y-20">

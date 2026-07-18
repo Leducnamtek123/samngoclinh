@@ -42,16 +42,16 @@ export function Auth({
         <div className="absolute top-0 inset-x-0 flex justify-between items-center px-4 py-2.5">
           <Link
             href={ensureLocalizedPathname("/", locale)}
-            className="flex text-foreground font-black z-50"
+            className="flex items-center gap-2 text-foreground font-black z-50"
           >
             <Image
-              src="/images/icons/shadboard.svg"
-              alt=""
+              src="/images/logo_ruou_sam.png?v=2"
+              alt="Logo"
               height={24}
               width={24}
-              className="dark:invert"
+              className="object-cover"
             />
-            <span>Shadboard</span>
+            <span>Sâm Ngọc Linh</span>
           </Link>
           <LanguageDropdown dictionary={dictionary} />
         </div>

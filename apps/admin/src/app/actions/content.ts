@@ -55,7 +55,7 @@ export async function deleteArticleAction(id: string) {
 
 export async function updateSettingAction(key: string, value: string) {
   try {
-    const res = await fetchApi(`/settings/${key}`, {
+    const res = await fetchApi(`/admin/settings/${key}`, {
       method: 'PUT',
       body: JSON.stringify({ value }),
     });

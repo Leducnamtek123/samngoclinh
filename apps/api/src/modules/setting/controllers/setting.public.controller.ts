@@ -14,7 +14,7 @@ import { SystemSetting } from '@generated/prisma-client';
 @ApiTags('modules.public.setting')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/public/settings',
+    path: '/settings',
 })
 export class SettingPublicController {
     constructor(private readonly settingService: SettingService) {}

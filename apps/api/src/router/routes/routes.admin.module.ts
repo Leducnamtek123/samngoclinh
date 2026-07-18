@@ -40,6 +40,8 @@ import { SettingAdminController } from '@modules/setting/controllers/setting.adm
 import { SettingModule } from '@modules/setting/setting.module';
 import { ContactAdminController } from '@modules/contact/controllers/contact.admin.controller';
 import { ContactModule } from '@modules/contact/contact.module';
+import { BannerAdminController } from '@modules/banner/controllers/banner.admin.controller';
+import { BannerModule } from '@modules/banner/banner.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -72,6 +74,7 @@ import { Module } from '@nestjs/common';
         NotificationAdminController,
         SettingAdminController,
         ContactAdminController,
+        BannerAdminController,
     ],
     providers: [],
     exports: [],
@@ -94,6 +97,7 @@ import { Module } from '@nestjs/common';
         NotificationModule,
         SettingModule,
         ContactModule,
+        BannerModule,
     ],
 })
 export class RoutesAdminModule {}

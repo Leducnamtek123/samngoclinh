@@ -58,7 +58,7 @@ export class MigrationTermPolicySeed
                             ...termPolicy,
                             contents: this.databaseUtil.toPlainArray(
                                 termPolicy.contents
-                            ),
+                            ) as any,
                             status: EnumTermPolicyStatus.published,
                         },
                         update: {},
