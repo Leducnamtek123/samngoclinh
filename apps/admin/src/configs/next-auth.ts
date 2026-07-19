@@ -46,7 +46,7 @@ declare module "next-auth/jwt" {
 
 async function refreshAccessToken(token: any) {
   try {
-    const url = "http://localhost:3000/api/v1/user/refresh"
+    const url = `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/user/refresh`
 
     const response = await fetch(url, {
       method: "POST",
@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
         // If an accessToken is provided, we use it directly to fetch user details and validate session
         if (credentials.accessToken) {
           try {
-            const res = await fetch("http://localhost:3000/api/user/profile/me", {
+            const res = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`, {
               method: "GET",
               headers: {
                 "Authorization": `Bearer ${credentials.accessToken}`,
@@ -134,7 +134,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const res = await fetch("http://localhost:3000/api/v1/public/user/login/credential", {
+          const res = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/public/user/login/credential`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -160,7 +160,7 @@ export const authOptions: NextAuthOptions = {
           const refreshToken = payload.data.tokens.refreshToken || ""
           const expiresIn = payload.data.tokens.expiresIn || 3600
 
-          const profileRes = await fetch("http://localhost:3000/api/user/profile/me", {
+          const profileRes = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`, {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${accessToken}`,

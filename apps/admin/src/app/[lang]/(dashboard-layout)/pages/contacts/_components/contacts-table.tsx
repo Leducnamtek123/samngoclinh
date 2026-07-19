@@ -1,0 +1,311 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Search, Eye, Mail, Phone, User, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+import { fetchApi } from "@/lib/api"
+
+interface ContactRequest {
+  id: string
+  fullName: string
+  email: string
+  phoneNumber: string
+  subject: string
+  message: string
+  isRead: boolean
+  createdAt: string
+}
+
+interface ContactsTableProps {
+  initialContacts: ContactRequest[]
+  metadata: {
+    page: number
+    perPage: number
+    totalPage: number
+    count: number
+    hasNext: boolean
+    hasPrevious: boolean
+  } | null
+  errorMsg?: string
+}
+
+export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsTableProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const [contacts, setContacts] = useState<ContactRequest[]>(initialContacts)
+
+  // URL query params states
+  const initialSearch = searchParams.get("search") || ""
+  const [searchVal, setSearchVal] = useState(initialSearch)
+
+  const isReadFilter = searchParams.get("isRead") || "all"
+
+  // Dialog state
+  const [selectedContact, setSelectedContact] = useState<ContactRequest | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [detailLoading, setDetailLoading] = useState(false)
+
+  // Sync contacts on props change
+  useEffect(() => {
+    setContacts(initialContacts)
+  }, [initialContacts])
+
+  const createQueryString = (newParams: Record<string, string | null>) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString())
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value === null || value === "all" || value === "") {
+        updatedSearchParams.delete(key)
+      } else {
+        updatedSearchParams.set(key, value)
+      }
+    }
+    if (!newParams.hasOwnProperty("page")) {
+      updatedSearchParams.set("page", "1")
+    }
+    return updatedSearchParams.toString()
+  }
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchVal !== currentSearch) {
+        router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
+      }
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchVal])
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+  }
+
+  const handleReadFilterChange = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ isRead: val })}`)
+  }
+
+  const handleViewDetail = async (contact: ContactRequest) => {
+    setSelectedContact(contact)
+    setIsDialogOpen(true)
+    setDetailLoading(true)
+
+    try {
+      const res = await fetchApi(`/admin/contacts/${contact.id}`)
+      const payload = await res.json()
+      if (res.ok && payload.data) {
+        setContacts(prev =>
+          prev.map(c => (c.id === contact.id ? { ...c, isRead: true } : c))
+        )
+        setSelectedContact(payload.data)
+        router.refresh() // Refresh page to keep unread counts synced
+      }
+    } catch (e) {
+      console.error("Error loading contact detail:", e)
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString("vi-VN", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Tìm tên, email, tiêu đề..."
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+            className="w-full h-10 text-sm pl-9 bg-white dark:bg-slate-900 border-slate-200"
+          />
+        </div>
+
+        <div className="w-full sm:w-48">
+          <Select value={isReadFilter} onValueChange={handleReadFilterChange}>
+            <SelectTrigger className="h-10 text-sm bg-white dark:bg-slate-900 border-slate-200">
+              <SelectValue placeholder="Đọc / Chưa đọc" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả trạng thái</SelectItem>
+              <SelectItem value="false">Chưa đọc</SelectItem>
+              <SelectItem value="true">Đã đọc</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {errorMsg ? (
+        <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
+          {errorMsg}
+        </div>
+      ) : contacts.length === 0 ? (
+        <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+          Chưa có yêu cầu liên hệ nào được gửi đến.
+        </div>
+      ) : (
+        <div className="border border-slate-200/60 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs bg-white dark:bg-slate-900">
+          <Table>
+            <TableHeader className="bg-slate-50/75 dark:bg-slate-900/50">
+              <TableRow>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead>Khách hàng</TableHead>
+                <TableHead>Liên hệ</TableHead>
+                <TableHead>Tiêu đề</TableHead>
+                <TableHead>Ngày gửi</TableHead>
+                <TableHead className="text-right">Thao tác</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {contacts.map((contact) => (
+                <TableRow key={contact.id} className={!contact.isRead ? "bg-muted/40 font-medium" : ""}>
+                  <TableCell>
+                    <Badge variant={contact.isRead ? "secondary" : "default"} className={!contact.isRead ? "bg-blue-600 text-white" : ""}>
+                      {contact.isRead ? "Đã đọc" : "Chưa đọc"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-semibold">{contact.fullName}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col text-xs text-muted-foreground">
+                      <span>{contact.email}</span>
+                      <span>{contact.phoneNumber}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate">
+                    {contact.subject}
+                  </TableCell>
+                  <TableCell className="text-xs text-slate-500">
+                    {formatDate(contact.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewDetail(contact)}
+                      className="text-emerald-600 hover:text-emerald-700"
+                    >
+                      <Eye className="size-4 mr-1" />
+                      Chi tiết
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          {/* Pagination Controls */}
+          {metadata && (
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} tin nhắn)
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasPrevious}
+                  onClick={() => handlePageChange(metadata.page - 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span>Trước</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasNext}
+                  onClick={() => handlePageChange(metadata.page + 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <span>Kế tiếp</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Detail Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="size-5 text-emerald-600" />
+              Chi tiết tin nhắn liên hệ
+            </DialogTitle>
+            <DialogDescription>
+              Xem nội dung đầy đủ của yêu cầu liên hệ.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedContact && (
+            <div className="space-y-4 my-2">
+              <div className="grid grid-cols-2 gap-4 border-b pb-4">
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <User className="size-3" /> Họ tên
+                  </span>
+                  <p className="text-sm font-semibold">{selectedContact.fullName}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Calendar className="size-3" /> Ngày gửi
+                  </span>
+                  <p className="text-sm font-semibold">{formatDate(selectedContact.createdAt)}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Mail className="size-3" /> Email
+                  </span>
+                  <p className="text-sm font-semibold break-all">{selectedContact.email}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Phone className="size-3" /> Số điện thoại
+                  </span>
+                  <p className="text-sm font-semibold">{selectedContact.phoneNumber}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs text-muted-foreground font-semibold">Tiêu đề:</span>
+                <p className="text-sm font-medium bg-muted p-2 rounded-md">{selectedContact.subject}</p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs text-muted-foreground font-semibold">Nội dung tin nhắn:</span>
+                <div className="text-sm bg-muted/60 p-3 rounded-md min-h-[100px] whitespace-pre-wrap">
+                  {detailLoading ? "Đang tải chi tiết..." : selectedContact.message}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button onClick={() => setIsDialogOpen(false)} className="bg-emerald-600 hover:bg-emerald-700 text-white">Đóng</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

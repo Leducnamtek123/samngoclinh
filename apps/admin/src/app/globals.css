@@ -287,3 +287,10 @@ aside.EmojiPickerReact {
   border-radius: var(--radius);
   border-width: 1px;
 }
+
+/* Force all containers to be full width */
+.container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+

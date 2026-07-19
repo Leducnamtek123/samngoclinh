@@ -3,7 +3,7 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { IOrdersService } from '@modules/orders/interfaces/orders.service.interface';
 import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
@@ -13,12 +13,15 @@ import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/ord
 import { OrdersUserCheckoutRequestDto } from '@modules/orders/dtos/request/orders.checkout.request.dto';
 import { Prisma } from '@prisma/client';
 import { CartItem } from '@generated/prisma-client';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
     constructor(
         private readonly ordersRepository: OrdersRepository,
-        private readonly databaseService: DatabaseService
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
     ) {}
 
     async list(
@@ -610,6 +613,27 @@ export class OrdersService implements IOrdersService {
                 })),
             },
         };
+    }
+
+    async adminListPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            OrdersListResponseDto,
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >(this.databaseService.order, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
+        });
     }
 
     async adminDetail(id: string): Promise<IResponseReturn<OrdersDetailResponseDto>> {

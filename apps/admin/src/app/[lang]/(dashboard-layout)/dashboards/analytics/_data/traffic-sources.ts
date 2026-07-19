@@ -1,42 +1,42 @@
 import type { TrafficSourcesType } from "../types"
 
 export const trafficSourcesData: TrafficSourcesType = {
-  period: "Last month",
+  period: "Tháng này",
   sources: [
     {
-      name: "Direct",
+      name: "Vườn liên kết",
       visitors: 4000,
       fill: "hsl(var(--chart-1))",
       percentageChange: 0.3,
-      icon: "MousePointer",
+      icon: "Sprout",
     },
     {
-      name: "Referral",
+      name: "Đại lý phân phối",
       visitors: 2500,
       fill: "hsl(var(--chart-2))",
       percentageChange: 0.25,
-      icon: "Link",
+      icon: "Home",
     },
     {
-      name: "Social Media",
+      name: "Đơn hàng Online",
       visitors: 2000,
       fill: "hsl(var(--chart-3))",
       percentageChange: 0.2,
-      icon: "Users",
+      icon: "ShoppingBag",
     },
     {
-      name: "Search Engine",
+      name: "Khách ký gửi tự do",
       visitors: 1000,
       fill: "hsl(var(--chart-4))",
       percentageChange: -0.1,
-      icon: "Search",
+      icon: "User",
     },
     {
-      name: "Email",
+      name: "Hợp đồng doanh nghiệp",
       visitors: 500,
       fill: "hsl(var(--chart-5))",
       percentageChange: 0.05,
-      icon: "Mail",
+      icon: "FileCheck",
     },
   ],
 }

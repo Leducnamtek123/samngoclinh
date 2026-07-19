@@ -1,23 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+import { EContractCreateRequestDto } from './e-contract.create.request.dto';
 
-export class EContractUpdateRequestDto {
-    @ApiProperty({
-        required: false,
-        example: 'Hợp đồng gia hạn sâm Trà My',
-    })
-    @IsOptional()
-    @IsString()
-    title?: string;
-
-    @ApiProperty({
-        required: false,
-        example: 'Nội dung điều khoản mới...',
-    })
-    @IsOptional()
-    @IsString()
-    content?: string;
-
+export class EContractUpdateRequestDto extends PartialType(EContractCreateRequestDto) {
     @ApiProperty({
         required: false,
         example: 'signed',
@@ -26,18 +11,4 @@ export class EContractUpdateRequestDto {
     @IsOptional()
     @IsString()
     status?: string;
-
-    @ApiProperty({
-        required: false,
-        example: '2028-07-16T00:00:00.000Z',
-    })
-    @IsOptional()
-    @IsDateString()
-    expiredAt?: string;
-
-    @ApiProperty({
-        required: false,
-    })
-    @IsOptional()
-    metadata?: Record<string, unknown>;
 }

@@ -9,6 +9,7 @@ import {
   deleteArticleAction,
   updateSettingAction
 } from '@/app/actions/content';
+import { ToastCard, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 type Article = {
   id: string;
@@ -51,6 +52,15 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Toast & Confirmation Dialog States
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("");
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("");
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {});
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false);
 
   // Banner settings states
   const [homepageBanner1, setHomepageBanner1] = useState(initialBannerSettings.homepage_banner_image_1);
@@ -196,17 +206,34 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
-      return;
-    }
+  const handleDelete = (id: string) => {
+    const article = articles.find((a) => a.id === id);
+    setConfirmDialogTitle("Xóa bài viết?");
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn bài viết "${article?.title || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`);
+    setConfirmDialogAction(() => () => performDelete(id));
+    setConfirmDialogOpen(true);
+  };
 
-    const res = await deleteArticleAction(id);
-    if (res.success) {
-      setArticles(articles.filter(a => a.id !== id));
-      router.refresh();
-    } else {
-      alert(res.error || 'Lỗi khi xóa bài viết.');
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true);
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    try {
+      const res = await deleteArticleAction(id);
+      if (res.success) {
+        setArticles(articles.filter(a => a.id !== id));
+        setSuccessMsg("Xóa bài viết thành công!");
+        router.refresh();
+      } else {
+        setErrorMsg(res.error || 'Lỗi khi xóa bài viết.');
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Lỗi hệ thống khi xóa bài viết.");
+    } finally {
+      setConfirmDialogOpen(false);
+      setConfirmDialogLoading(false);
     }
   };
 
@@ -600,6 +627,38 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
           </div>
         </div>
       )}
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   );
 };

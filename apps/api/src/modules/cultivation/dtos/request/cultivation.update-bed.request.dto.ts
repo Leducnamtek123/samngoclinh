@@ -1,23 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+import { CultivationCreateBedRequestDto } from './cultivation.create-bed.request.dto';
 
-export class CultivationUpdateBedRequestDto {
-    @ApiProperty({ required: false, example: 'Luống 1 (Cập nhật)' })
+export class CultivationUpdateBedRequestDto extends PartialType(CultivationCreateBedRequestDto) {
+    @ApiProperty({ required: false, example: 'active' })
     @IsOptional()
     @IsString()
-    name?: string;
-
-    @ApiProperty({ required: false, example: 4 })
-    @IsOptional()
-    @IsNumber()
-    ageYear?: number;
-
-    @ApiProperty({ required: false, example: 100 })
-    @IsOptional()
-    @IsNumber()
-    treeCount?: number;
-
-    @ApiProperty({ required: false })
-    @IsOptional()
-    metadata?: Record<string, unknown>;
+    status?: string;
 }

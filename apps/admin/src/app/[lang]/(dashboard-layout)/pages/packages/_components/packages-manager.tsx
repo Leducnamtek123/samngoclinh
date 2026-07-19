@@ -9,11 +9,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Pencil, Trash2 } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 interface CarePackage {
   id: string
@@ -52,6 +52,13 @@ export function PackagesManager({
 
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
+
+  // Confirmation Dialog States
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
 
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -190,9 +197,18 @@ export function PackagesManager({
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa gói dịch vụ này?")) return
+  const handleDelete = (id: string) => {
+    const pkg = activeTab === "care" 
+      ? carePackages.find((p) => p.id === id) 
+      : protectionPackages.find((p) => p.id === id)
+    setConfirmDialogTitle("Xóa gói dịch vụ?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn gói dịch vụ "${pkg?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => () => performDelete(id))
+    setConfirmDialogOpen(true)
+  }
 
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -215,6 +231,9 @@ export function PackagesManager({
     } catch (err) {
       console.error(err)
       setErrorMsg("Lỗi hệ thống khi thực hiện xóa.")
+    } finally {
+      setConfirmDialogOpen(false)
+      setConfirmDialogLoading(false)
     }
   }
 
@@ -231,20 +250,6 @@ export function PackagesManager({
           <Plus className="h-4 w-4" /> Thêm gói mới
         </Button>
       </div>
-
-      {successMsg && (
-        <Alert className="bg-emerald-50 text-emerald-800 border-emerald-200">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
-
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
 
       <Tabs
         defaultValue="care"
@@ -285,8 +290,13 @@ export function PackagesManager({
                   <TableBody>
                     {carePackages.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                          Chưa có gói chăm sóc nào.
+                        <TableCell colSpan={7} className="py-8">
+                          <EmptyState
+                            title="Chưa có gói chăm sóc"
+                            description="Chưa cấu hình gói chăm sóc định kỳ nào trong hệ thống. Hãy tạo gói đầu tiên để tiếp tục."
+                            actionLabel="Thêm gói mới"
+                            onAction={handleOpenCreate}
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -363,8 +373,13 @@ export function PackagesManager({
                   <TableBody>
                     {protectionPackages.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                          Chưa có gói bảo vệ nào.
+                        <TableCell colSpan={7} className="py-8">
+                          <EmptyState
+                            title="Chưa có gói bảo vệ"
+                            description="Chưa cấu hình gói bảo vệ/bảo hiểm nào trong hệ thống. Hãy tạo gói bảo vệ đầu tiên."
+                            actionLabel="Thêm gói mới"
+                            onAction={handleOpenCreate}
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -540,6 +555,38 @@ export function PackagesManager({
           </form>
         </DialogContent>
       </Dialog>
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

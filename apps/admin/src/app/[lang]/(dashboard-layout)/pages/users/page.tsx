@@ -1,9 +1,6 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { fetchApi } from "@/lib/api"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { UsersTable } from "./_components/users-table"
 
 export const metadata: Metadata = {
   title: "Quản lý Người dùng | Sâm Ngọc Linh Admin",
@@ -21,17 +18,43 @@ interface User {
   createdAt?: string
 }
 
-export default async function UsersPage() {
+interface UsersPageProps {
+  params: Promise<{
+    lang: string
+  }>
+  searchParams: Promise<{
+    page?: string
+    perPage?: string
+    search?: string
+    status?: string
+  }>
+}
+
+export default async function UsersPage({ searchParams }: UsersPageProps) {
+  const resolvedSearchParams = await searchParams
+  const page = resolvedSearchParams.page || "1"
+  const perPage = resolvedSearchParams.perPage || "10"
+  const search = resolvedSearchParams.search || ""
+  const status = resolvedSearchParams.status || ""
+
   let customers: User[] = []
+  let metadata: any = null
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/admin/user/list")
+    const queryParams = new URLSearchParams()
+    queryParams.append("page", page)
+    queryParams.append("perPage", perPage)
+    if (search) queryParams.append("search", search)
+    if (status && status !== "all") queryParams.append("status", status)
+
+    const res = await fetchApi(`/admin/user/list?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load users"
     } else {
-      customers = Array.isArray(payload.data) ? payload.data : (payload.data?.data || [])
+      customers = Array.isArray(payload.data) ? payload.data : []
+      metadata = payload.metadata || null
     }
   } catch (e) {
     console.error("Error fetching users:", e)
@@ -47,71 +70,20 @@ export default async function UsersPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh sách tài khoản</CardTitle>
-          <CardDescription>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách tài khoản</h2>
+          <p className="text-xs text-muted-foreground">
             Hiển thị thông tin tên, email, trạng thái hoạt động và ngày đăng ký.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {errorMsg ? (
-            <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
-              {errorMsg}
-            </div>
-          ) : customers.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Không tìm thấy khách hàng nào.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tên hiển thị</TableHead>
-                  <TableHead>Username</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Xác minh</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Ngày đăng ký</TableHead>
-                  <TableHead className="text-center">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name || "-"}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.isVerified ? "default" : "outline"}>
-                        {user.isVerified ? "Đã xác minh" : "Chưa xác minh"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.status === "ACTIVE" || user.status === "active" ? "default" : "destructive"}>
-                        {user.status.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {user.signUpDate || user.createdAt
-                        ? new Date(user.signUpDate || user.createdAt!).toLocaleDateString("vi-VN")
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Link
-                        href={`/pages/users/details?id=${user.id}`}
-                        className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
-                      >
-                        Chi tiết
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+          </p>
+        </div>
+        
+        <UsersTable 
+          initialUsers={customers} 
+          metadata={metadata} 
+          errorMsg={errorMsg} 
+        />
+      </div>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsNumber, IsDateString, Min } from 'class-validator';
 
 export class CultivationCreateBedRequestDto {
     @ApiProperty({
@@ -45,4 +45,40 @@ export class CultivationCreateBedRequestDto {
     })
     @IsOptional()
     metadata?: Record<string, unknown>;
+
+    @ApiProperty({ required: false, example: 100 })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
+    maxTrees?: number;
+
+    @ApiProperty({ required: false, example: 1.2 })
+    @IsOptional()
+    @IsNumber()
+    width?: number;
+
+    @ApiProperty({ required: false, example: 10.5 })
+    @IsOptional()
+    @IsNumber()
+    length?: number;
+
+    @ApiProperty({ required: false, example: 'Đất đỏ Ba Gian' })
+    @IsOptional()
+    @IsString()
+    soilType?: string;
+
+    @ApiProperty({ required: false, example: '2026-07-19T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    lastFertilizedAt?: string;
+
+    @ApiProperty({ required: false, example: '2026-07-19T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    lastWateredAt?: string;
+
+    @ApiProperty({ required: false, example: 'Luống gieo trồng sâm giống' })
+    @IsOptional()
+    @IsString()
+    description?: string;
 }

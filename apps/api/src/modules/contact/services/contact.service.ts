@@ -1,7 +1,8 @@
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ContactRepository } from '@modules/contact/repositories/contact.repository';
-import { ContactRequest } from '@generated/prisma-client';
+import { ContactRequest, Prisma } from '@generated/prisma-client';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class ContactService {
@@ -23,6 +24,16 @@ export class ContactService {
         return {
             data: { items },
         };
+    }
+
+    async adminListPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.ContactRequestSelect,
+            Prisma.ContactRequestWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<ContactRequest>> {
+        return this.contactRepository.listPaginated(pagination, status);
     }
 
     async adminGetDetail(id: string): Promise<IResponseReturn<ContactRequest>> {

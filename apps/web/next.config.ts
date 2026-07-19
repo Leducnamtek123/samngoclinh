@@ -17,6 +17,15 @@ const baseConfig: any = {
   outputFileTracingIncludes: {
     '/': ['./migrations/**/*'],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 // Initialize the Next-Intl plugin

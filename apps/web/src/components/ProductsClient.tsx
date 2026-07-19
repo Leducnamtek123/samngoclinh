@@ -13,7 +13,7 @@ type ProductsClientProps = {
 
 export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
-  const { data: banners } = useBanner('ginseng');
+  const { data: banners } = useBanner('products');
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleAction = (e: React.MouseEvent) => {

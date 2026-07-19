@@ -25,7 +25,7 @@ export function NewVsReturningVisitorsList({
             }}
             className="h-2.5 w-2.5 rounded-sm"
           />
-          <span>New</span>
+          <span>Mới</span>
         </h3>
         <p className="text-2xl font-semibold leading-tight">
           {newVisitors.value.toLocaleString()}
@@ -47,7 +47,7 @@ export function NewVsReturningVisitorsList({
       </SeparatorWithText>
       <li className="grid place-items-end">
         <h3 className="inline-flex items-center gap-x-1 text-sm text-muted-foreground">
-          <span>Returning</span>
+          <span>Thường niên</span>
           <div
             style={{
               backgroundColor: returningVisitors.fill,

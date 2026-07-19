@@ -4,7 +4,8 @@ export async function POST(request: Request) {
   try {
     const { email, password, type, phone, otp } = await request.json();
 
-    let endpoint = 'http://127.0.0.1:3000/api/v1/public/user/login/credential';
+    const apiBaseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    let endpoint = `${apiBaseUrl}/v1/public/user/login/credential`;
     let bodyPayload: any = {
       email,
       password,
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     };
 
     if (type === 'phone') {
-      endpoint = 'http://127.0.0.1:3000/api/v1/public/user/login/otp/verify';
+      endpoint = `${apiBaseUrl}/v1/public/user/login/otp/verify`;
       bodyPayload = {
         phone,
         otp,

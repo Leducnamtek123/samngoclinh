@@ -50,4 +50,11 @@ export class ContentArticleResponseDto {
     })
     @Expose()
     image?: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'iWE FARM',
+    })
+    @Expose()
+    author?: string;
 }

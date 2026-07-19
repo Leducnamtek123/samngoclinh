@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Cropper from "react-easy-crop"
 import { fetchApi } from "@/lib/api"
@@ -11,10 +12,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Trash2, Pencil, Plus, Upload, Loader2, Image as ImageIcon } from "lucide-react"
+import { Trash2, Pencil, Plus, Upload, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { InlineAlert, ToastCard, EmptyState, EmptySearchResult, ImagePlaceholder, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 interface ShopItem {
   id: string
@@ -31,6 +32,14 @@ interface ShopItem {
 
 interface ShopItemsTableProps {
   initialItems: ShopItem[]
+  metadata: {
+    page: number
+    perPage: number
+    totalPage: number
+    count: number
+    hasNext: boolean
+    hasPrevious: boolean
+  } | null
   errorMsg?: string
 }
 
@@ -90,14 +99,34 @@ async function getCroppedImg(
   })
 }
 
-export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopItemsTableProps) {
+export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError }: ShopItemsTableProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [items, setItems] = useState<ShopItem[]>(initialItems)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("all")
+
+  // URL query params states
+  const initialSearch = searchParams.get("search") || ""
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
+
+  const categoryFilter = searchParams.get("status") || "all"
+
+  // Sync items on props change
+  useEffect(() => {
+    setItems(initialItems)
+  }, [initialItems])
   
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  // Confirmation Dialog States
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -134,9 +163,52 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
     }).format(price)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm thương mại này?")) return
-    setDeletingId(id)
+  const createQueryString = (newParams: Record<string, string | null>) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString())
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value === null || value === "all" || value === "") {
+        updatedSearchParams.delete(key)
+      } else {
+        updatedSearchParams.set(key, value)
+      }
+    }
+    if (!newParams.hasOwnProperty("page")) {
+      updatedSearchParams.set("page", "1")
+    }
+    return updatedSearchParams.toString()
+  }
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchQuery !== currentSearch) {
+        router.push(`${pathname}?${createQueryString({ search: searchQuery })}`)
+      }
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+  }
+
+  const handleCategoryFilterChange = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ status: val })}`)
+  }
+
+  // Sync items on props change
+
+  const handleDelete = (id: string) => {
+    const item = items.find((x) => x.id === id)
+    setConfirmDialogTitle("Xóa sản phẩm thương mại?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn sản phẩm "${item?.name || ""}" (${item?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => () => performDelete(id))
+    setConfirmDialogOpen(true)
+  }
+
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -151,12 +223,14 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
       } else {
         setItems(items.filter((item) => item.id !== id))
         setSuccessMsg("Xóa sản phẩm thành công!")
+        router.refresh()
       }
     } catch (e) {
       console.error(e)
       setErrorMsg("Không thể kết nối đến máy chủ API")
     } finally {
-      setDeletingId(null)
+      setConfirmDialogOpen(false)
+      setConfirmDialogLoading(false)
     }
   }
 
@@ -303,6 +377,7 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
           setSuccessMsg("Cập nhật thông tin sản phẩm thành công!")
         }
         setIsDialogOpen(false)
+        router.refresh()
       }
     } catch (err) {
       console.error(err)
@@ -312,13 +387,7 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
     }
   }
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.code.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = categoryFilter === "all" || item.category === categoryFilter
-    return matchesSearch && matchesCategory
-  })
+  const filteredItems = items
 
   return (
     <div className="space-y-6">
@@ -334,20 +403,6 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
           Thêm sản phẩm
         </Button>
       </div>
-
-      {successMsg && (
-        <Alert className="bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 text-emerald-800 dark:text-emerald-300">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
-
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
 
       <Card>
         <CardHeader>
@@ -365,7 +420,7 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-xs"
               />
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Tất cả danh mục" />
                 </SelectTrigger>
@@ -383,8 +438,20 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
         </CardHeader>
         <CardContent>
           {filteredItems.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              Không tìm thấy sản phẩm thương mại nào phù hợp.
+            <div className="py-6">
+              {searchQuery ? (
+                <EmptySearchResult
+                  query={searchQuery}
+                  onClear={() => setSearchQuery("")}
+                />
+              ) : (
+                <EmptyState
+                  title="Chưa có sản phẩm nào"
+                  description="Danh mục này hiện chưa có sản phẩm thương mại hoặc vật tư nào. Hãy tạo sản phẩm đầu tiên."
+                  actionLabel="Thêm sản phẩm"
+                  onAction={openCreateDialog}
+                />
+              )}
             </div>
           ) : (
             <Table>
@@ -415,8 +482,8 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
                           />
                         </div>
                       ) : (
-                        <div className="size-12 rounded-md bg-muted flex items-center justify-center border text-muted-foreground">
-                          <ImageIcon className="size-5" />
+                        <div className="relative size-12 rounded-md overflow-hidden border">
+                          <ImagePlaceholder className="rounded-none border-none min-h-0 h-full w-full p-1" showText={false} />
                         </div>
                       )}
                     </TableCell>
@@ -474,6 +541,37 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
             </Table>
           )}
         </CardContent>
+
+        {/* Pagination Controls */}
+        {metadata && (
+          <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} sản phẩm)
+            </span>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!metadata.hasPrevious}
+                onClick={() => handlePageChange(metadata.page - 1)}
+                className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                <span>Trước</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!metadata.hasNext}
+                onClick={() => handlePageChange(metadata.page + 1)}
+                className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+              >
+                <span>Kế tiếp</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Interactive Add/Edit Dialog */}
@@ -490,9 +588,7 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
 
           <form onSubmit={handleFormSubmit} className="space-y-4 my-2">
             {dialogError && (
-              <Alert variant="destructive">
-                <AlertDescription>{dialogError}</AlertDescription>
-              </Alert>
+              <InlineAlert type="error" title="Lỗi" message={dialogError} className="my-2" />
             )}
 
             <div className="grid grid-cols-2 gap-4">
@@ -716,6 +812,38 @@ export function ShopItemsTable({ initialItems, errorMsg: initialError }: ShopIte
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

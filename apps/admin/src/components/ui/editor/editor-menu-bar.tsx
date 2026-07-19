@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react"
 import { Check, ImageIcon, LinkIcon, Palette, Type, Unlink } from "lucide-react"
+import { fetchApi } from "@/lib/api"
 
 import type { DynamicIconNameType } from "@/types"
 import type { ChainedCommands, Editor } from "@tiptap/react"
@@ -180,24 +181,38 @@ function AlignmentHandler({
 }
 
 function ImageHandler({ editor }: { editor: Editor }) {
-  const [imageSrc, setImageSrc] = useState<string | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
-  function handleFileChange(files: FileList) {
+  async function handleFileChange(files: FileList) {
     if (files.length < 1) return
-    const objectURL = URL.createObjectURL(files[0])
-    setImageSrc(objectURL)
-  }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", files[0])
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    if (editor && imageSrc) {
-      editor.chain().focus().setImage({ src: imageSrc }).run()
-      setImageSrc(null)
+      const res = await fetchApi("/admin/catalog/upload", {
+        method: "POST",
+        body: fd,
+      })
+
+      const payload = await res.json()
+      if (res.status < 400 && payload.data?.url) {
+        editor.chain().focus().setImage({ src: payload.data.url }).run()
+        setIsOpen(false)
+      } else {
+        alert(payload?.message || "Tải ảnh lên thất bại")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Lỗi kết nối khi tải ảnh lên")
+    } finally {
+      setUploading(false)
     }
   }
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -209,25 +224,14 @@ function ImageHandler({ editor }: { editor: Editor }) {
           <ImageIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
-        <form
-          onSubmit={(e) => {
-            e.stopPropagation()
-            handleSubmit(e)
-          }}
-          className="flex justify-center items-center gap-2"
-        >
-          <InputFile onValueChange={handleFileChange} />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            className="shrink-0 h-8 w-8"
-            aria-label="Submit"
-          >
-            <Check className="h-4 w-4" />
-          </Button>
-        </form>
+      <PopoverContent className="w-80 p-3">
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">Tải lên hình ảnh</p>
+          <div className="flex items-center gap-2">
+            <InputFile onValueChange={handleFileChange} disabled={uploading} />
+          </div>
+          {uploading && <p className="text-[10px] text-emerald-600 animate-pulse font-medium">Đang tải ảnh lên...</p>}
+        </div>
       </PopoverContent>
     </Popover>
   )
@@ -235,6 +239,15 @@ function ImageHandler({ editor }: { editor: Editor }) {
 
 function LinkHandler({ editor }: { editor: Editor }) {
   const isLinkActive = editor.isActive("link")
+  const [isOpen, setIsOpen] = useState(false)
+  const [linkUrl, setLinkUrl] = useState("")
+
+  const handleInsert = () => {
+    if (!linkUrl) return
+    editor.chain().focus().setLink({ href: linkUrl }).run()
+    setLinkUrl("")
+    setIsOpen(false)
+  }
 
   return isLinkActive ? (
     <Button
@@ -248,7 +261,12 @@ function LinkHandler({ editor }: { editor: Editor }) {
       <Unlink className="h-4 w-4" />
     </Button>
   ) : (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open)
+      if (open) {
+        setLinkUrl(editor.getAttributes("link").href || "")
+      }
+    }}>
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -260,42 +278,33 @@ function LinkHandler({ editor }: { editor: Editor }) {
           <LinkIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex justify-center items-center gap-2">
-        <p className="shrink-0">Insert link</p>
-        <Input
-          autoFocus
-          type="text"
-          placeholder="https://www.example.com"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              editor
-                .chain()
-                .focus()
-                .setLink({
-                  href: (e.target as HTMLInputElement).value,
-                })
-                .run()
-            }
-          }}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="shrink-0 h-8 w-8"
-          onClick={(e) => {
-            editor
-              .chain()
-              .focus()
-              .setLink({
-                href: (e.target as HTMLInputElement).value,
-              })
-              .run()
-          }}
-          aria-label="Submit"
-        >
-          <Check className="h-4 w-4" />
-        </Button>
+      <PopoverContent className="flex flex-col gap-2 w-80 p-3">
+        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">Chèn liên kết</p>
+        <div className="flex gap-2">
+          <Input
+            autoFocus
+            type="text"
+            placeholder="https://www.example.com"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleInsert()
+              }
+            }}
+            className="h-8 text-xs"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0 h-8 w-8"
+            onClick={handleInsert}
+            aria-label="Submit"
+          >
+            <Check className="h-4 w-4" />
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   )

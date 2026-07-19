@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -8,10 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trash2, Pencil, Plus } from "lucide-react"
+import { Trash2, Pencil, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 interface Tree {
   id: string
@@ -26,6 +27,13 @@ interface Tree {
   carePackageExpiredAt?: string
   protectionPackageCode?: string
   protectionPackageExpiredAt?: string
+  plantedAt?: string
+  healthStatus?: string
+  lastCareDate?: string
+  nextCareDate?: string
+  expectedHarvestAt?: string
+  images?: string[]
+  priceBought?: number
   metadata?: any
 }
 
@@ -38,17 +46,104 @@ interface Bed {
 interface TreesTableProps {
   initialTrees: Tree[]
   beds: Bed[]
+  metadata: {
+    page: number
+    perPage: number
+    totalPage: number
+    count: number
+    hasNext: boolean
+    hasPrevious: boolean
+  } | null
   errorMsg?: string
 }
 
-export function TreesTable({ initialTrees, beds, errorMsg: initialError }: TreesTableProps) {
+export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialError }: TreesTableProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [trees, setTrees] = useState<Tree[]>(initialTrees)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [users, setUsers] = useState<any[]>([])
+
+  // URL query params states
+  const initialSearch = searchParams.get("search") || ""
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
+
+  const statusFilter = searchParams.get("status") || "all"
+
+  // Sync trees on props change
+  useEffect(() => {
+    setTrees(initialTrees)
+  }, [initialTrees])
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetchApi("/admin/user/list")
+        const payload = await res.json()
+        if (res.status < 400) {
+          const list = Array.isArray(payload.data) 
+            ? payload.data 
+            : (payload.data?.data || [])
+          setUsers(list)
+        }
+      } catch (err) {
+        console.error("Error fetching users:", err)
+      }
+    }
+    fetchUsers()
+  }, [])
+
+  const createQueryString = (newParams: Record<string, string | null>) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString())
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value === null || value === "all" || value === "") {
+        updatedSearchParams.delete(key)
+      } else {
+        updatedSearchParams.set(key, value)
+      }
+    }
+    if (!newParams.hasOwnProperty("page")) {
+      updatedSearchParams.set("page", "1")
+    }
+    return updatedSearchParams.toString()
+  }
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchQuery !== currentSearch) {
+        router.push(`${pathname}?${createQueryString({ search: searchQuery })}`)
+      }
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+  }
+
+  const handleStatusFilterChange = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ status: val })}`)
+  }
+
+  const getOwnerName = (userId: string | undefined) => {
+    if (!userId) return "Hệ thống"
+    const matched = users.find((u) => u.id === userId)
+    return matched ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim() : userId
+  }
   
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  // Confirmation Dialog States
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -64,17 +159,17 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
     quantity: 1,
     bedCode: "none",
     status: "active",
-    healthStatus: "Tốt",
+    healthStatus: "healthy",
+    plantedAt: "",
+    lastCareDate: "",
+    nextCareDate: "",
+    expectedHarvestAt: "",
+    priceBought: "",
+    ownerUserId: "",
   })
 
-  // Filter logic
-  const filteredTrees = trees.filter((tree) => {
-    const matchesSearch = tree.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          tree.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (tree.ownerUserId && tree.ownerUserId.toLowerCase().includes(searchQuery.toLowerCase()))
-    const matchesStatus = statusFilter === "all" || tree.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  // Since filtering is done on backend, filteredTrees is just trees state
+  const filteredTrees = trees
 
   const handleOpenCreate = () => {
     setDialogMode("create")
@@ -85,7 +180,13 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
       quantity: 10,
       bedCode: beds[0]?.code || "none",
       status: "active",
-      healthStatus: "Tốt",
+      healthStatus: "healthy",
+      plantedAt: new Date().toISOString().substring(0, 10),
+      lastCareDate: "",
+      nextCareDate: "",
+      expectedHarvestAt: "",
+      priceBought: "0",
+      ownerUserId: "",
     })
     setDialogError("")
     setIsDialogOpen(true)
@@ -100,7 +201,13 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
       quantity: tree.quantity,
       bedCode: tree.bedCode || "none",
       status: tree.status,
-      healthStatus: tree.metadata?.healthStatus || "Tốt",
+      healthStatus: tree.healthStatus || "healthy",
+      plantedAt: tree.plantedAt ? tree.plantedAt.substring(0, 10) : "",
+      lastCareDate: tree.lastCareDate ? tree.lastCareDate.substring(0, 10) : "",
+      nextCareDate: tree.nextCareDate ? tree.nextCareDate.substring(0, 10) : "",
+      expectedHarvestAt: tree.expectedHarvestAt ? tree.expectedHarvestAt.substring(0, 10) : "",
+      priceBought: tree.priceBought !== undefined && tree.priceBought !== null ? String(tree.priceBought) : "",
+      ownerUserId: tree.ownerUserId || "",
     })
     setDialogError("")
     setIsDialogOpen(true)
@@ -118,17 +225,24 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
     setSuccessMsg("")
 
     try {
-      if (dialogMode === "create") {
-        const payload: any = {
-          name: formData.name,
-          ageYear: Number(formData.ageYear),
-          quantity: Number(formData.quantity),
-          metadata: { healthStatus: formData.healthStatus },
-        }
-        if (formData.bedCode !== "none") {
-          payload.bedCode = formData.bedCode
-        }
+      const payload: any = {
+        name: formData.name,
+        ageYear: Number(formData.ageYear),
+        quantity: Number(formData.quantity),
+        healthStatus: formData.healthStatus,
+        plantedAt: formData.plantedAt ? new Date(formData.plantedAt).toISOString() : undefined,
+        lastCareDate: formData.lastCareDate ? new Date(formData.lastCareDate).toISOString() : undefined,
+        nextCareDate: formData.nextCareDate ? new Date(formData.nextCareDate).toISOString() : undefined,
+        expectedHarvestAt: formData.expectedHarvestAt ? new Date(formData.expectedHarvestAt).toISOString() : undefined,
+        priceBought: formData.priceBought ? parseInt(formData.priceBought) : undefined,
+        ownerUserId: formData.ownerUserId || undefined,
+        status: formData.status,
+      }
+      if (formData.bedCode !== "none") {
+        payload.bedCode = formData.bedCode
+      }
 
+      if (dialogMode === "create") {
         const res = await fetchApi("/user/cultivation/trees", {
           method: "POST",
           headers: {
@@ -143,16 +257,9 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
           setTrees((prev) => [dataPayload.data, ...prev])
           setSuccessMsg("Đã trồng thêm cây giống mới thành công!")
           setIsDialogOpen(false)
+          router.refresh()
         }
       } else if (dialogMode === "edit" && selectedTree) {
-        const payload: any = {
-          name: formData.name,
-          ageYear: Number(formData.ageYear),
-          quantity: Number(formData.quantity),
-          status: formData.status,
-          metadata: { ...selectedTree.metadata, healthStatus: formData.healthStatus },
-        }
-
         const res = await fetchApi(`/user/cultivation/trees/${selectedTree.id}`, {
           method: "PUT",
           headers: {
@@ -169,6 +276,7 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
           )
           setSuccessMsg("Cập nhật cây trồng thành công!")
           setIsDialogOpen(false)
+          router.refresh()
         }
       }
     } catch (err) {
@@ -179,10 +287,16 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa cây trồng này khỏi hệ thống?")) return
+  const handleDelete = (id: string) => {
+    const tree = trees.find((t) => t.id === id)
+    setConfirmDialogTitle("Xóa cây trồng này?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn lô cây sâm "${tree?.name || ""}" (${tree?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => () => performDelete(id))
+    setConfirmDialogOpen(true)
+  }
 
-    setDeletingId(id)
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -196,12 +310,14 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
       } else {
         setTrees((prev) => prev.filter((t) => t.id !== id))
         setSuccessMsg("Đã xóa cây trồng thành công!")
+        router.refresh()
       }
     } catch (err) {
       console.error(err)
       setErrorMsg("Lỗi kết nối máy chủ khi xóa")
     } finally {
-      setDeletingId(null)
+      setConfirmDialogOpen(false)
+      setConfirmDialogLoading(false)
     }
   }
 
@@ -219,20 +335,6 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
         </Button>
       </div>
 
-      {successMsg && (
-        <Alert className="bg-emerald-50 text-emerald-800 border-emerald-200">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
-
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
-
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
           <div>
@@ -248,7 +350,7 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-[250px]"
             />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
@@ -281,8 +383,20 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
               <TableBody>
                 {filteredTrees.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={11} className="text-center py-12 text-muted-foreground">
-                      Không tìm thấy cây trồng nào trong hệ thống.
+                    <TableCell colSpan={11} className="py-8">
+                      {searchQuery ? (
+                        <EmptySearchResult
+                          query={searchQuery}
+                          onClear={() => setSearchQuery("")}
+                        />
+                      ) : (
+                        <EmptyState
+                          title="Chưa có cây trồng"
+                          description="Không tìm thấy lô gốc sâm nào trong hệ thống hoặc luống hiện tại. Hãy trồng thêm lô cây mới để bắt đầu theo dõi."
+                          actionLabel="Trồng cây mới"
+                          onAction={handleOpenCreate}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -305,8 +419,8 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
                       <TableCell className="font-semibold text-slate-700 dark:text-slate-300">
                         {tree.quantity} gốc
                       </TableCell>
-                      <TableCell className="font-mono text-xs truncate max-w-[120px]" title={tree.ownerUserId}>
-                        {tree.ownerUserId || "Hệ thống"}
+                      <TableCell className="text-xs truncate max-w-[150px]" title={tree.ownerUserId}>
+                        {getOwnerName(tree.ownerUserId)}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
@@ -373,12 +487,43 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination Controls */}
+          {metadata && (
+            <div className="mt-4 flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} lô gốc sâm)
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasPrevious}
+                  onClick={() => handlePageChange(metadata.page - 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span>Trước</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasNext}
+                  onClick={() => handlePageChange(metadata.page + 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <span>Kế tiếp</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Create / Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
           <form onSubmit={handleSave}>
             <DialogHeader>
               <DialogTitle>
@@ -395,8 +540,8 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
               </div>
             )}
 
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
+            <div className="grid gap-4 py-4 grid-cols-2">
+              <div className="grid gap-2 col-span-2">
                 <Label htmlFor="tree-name">Tên cây giống</Label>
                 <Input
                   id="tree-name"
@@ -481,10 +626,84 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
                     <SelectValue placeholder="Chọn tình trạng sức khỏe" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Tốt">Tốt (Khỏe mạnh)</SelectItem>
-                    <SelectItem value="Bình thường">Bình thường</SelectItem>
-                    <SelectItem value="Cần theo dõi">Cần theo dõi sát (Kém)</SelectItem>
-                    <SelectItem value="Sâu bệnh">Bị nhiễm sâu bệnh</SelectItem>
+                    <SelectItem value="healthy">Khỏe mạnh (Tốt)</SelectItem>
+                    <SelectItem value="diseased">Bị nhiễm sâu bệnh</SelectItem>
+                    <SelectItem value="weak">Cần theo dõi sát (Kém)</SelectItem>
+                    <SelectItem value="dead">Đã chết (Hỏng)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-planted">Ngày xuống giống</Label>
+                <Input
+                  id="tree-planted"
+                  type="date"
+                  value={formData.plantedAt}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, plantedAt: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-expected-harvest">Dự kiến thu hoạch</Label>
+                <Input
+                  id="tree-expected-harvest"
+                  type="date"
+                  value={formData.expectedHarvestAt}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, expectedHarvestAt: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-last-care">Ngày chăm sóc cuối</Label>
+                <Input
+                  id="tree-last-care"
+                  type="date"
+                  value={formData.lastCareDate}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, lastCareDate: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-next-care">Lịch chăm sóc tiếp</Label>
+                <Input
+                  id="tree-next-care"
+                  type="date"
+                  value={formData.nextCareDate}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, nextCareDate: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-price">Giá mua gốc sâm (VND)</Label>
+                <Input
+                  id="tree-price"
+                  type="number"
+                  value={formData.priceBought}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, priceBought: e.target.value }))}
+                  placeholder="Ví dụ: 5000000"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="tree-owner">Khách hàng sở hữu</Label>
+                <Select
+                  value={formData.ownerUserId || "system"}
+                  onValueChange={(val) => setFormData((prev) => ({ ...prev, ownerUserId: val === "system" ? "" : val }))}
+                >
+                  <SelectTrigger id="tree-owner">
+                    <SelectValue placeholder="Chọn khách hàng sở hữu" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="system">Hệ thống (Không có chủ)</SelectItem>
+                    {users.map((u) => {
+                      const name = `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim();
+                      return (
+                        <SelectItem key={u.id} value={u.id}>
+                          {name}
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
               </div>
@@ -506,6 +725,38 @@ export function TreesTable({ initialTrees, beds, errorMsg: initialError }: Trees
           </form>
         </DialogContent>
       </Dialog>
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

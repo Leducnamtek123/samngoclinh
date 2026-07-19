@@ -8,10 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Trash2, Pencil, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 interface Garden {
   id: string
@@ -22,6 +22,16 @@ interface Garden {
   activeBeds: number
   totalTrees: number
   createdAt: string
+  location?: string
+  description?: string
+  area?: number
+  images?: string[]
+  latitude?: number
+  longitude?: number
+  managerName?: string
+  managerPhone?: string
+  establishedAt?: string
+  maxBeds?: number
   metadata?: any
 }
 
@@ -41,6 +51,13 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
   const [deletingBulk, setDeletingBulk] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
+  // Confirmation Dialog States
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
+
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create")
@@ -51,7 +68,15 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
   // Form state
   const [formData, setFormData] = useState({
     name: "",
-    location: "Kon Tum",
+    location: "",
+    description: "",
+    area: "",
+    latitude: "",
+    longitude: "",
+    managerName: "",
+    managerPhone: "",
+    establishedAt: "",
+    maxBeds: "",
   })
 
   // Filter logic
@@ -83,6 +108,14 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
     setFormData({
       name: "",
       location: "Kon Tum",
+      description: "",
+      area: "",
+      latitude: "",
+      longitude: "",
+      managerName: "",
+      managerPhone: "",
+      establishedAt: "",
+      maxBeds: "",
     })
     setDialogError("")
     setIsDialogOpen(true)
@@ -93,7 +126,15 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
     setSelectedGarden(garden)
     setFormData({
       name: garden.name,
-      location: garden.metadata?.location || "Kon Tum",
+      location: garden.location || "",
+      description: garden.description || "",
+      area: garden.area !== undefined && garden.area !== null ? String(garden.area) : "",
+      latitude: garden.latitude !== undefined && garden.latitude !== null ? String(garden.latitude) : "",
+      longitude: garden.longitude !== undefined && garden.longitude !== null ? String(garden.longitude) : "",
+      managerName: garden.managerName || "",
+      managerPhone: garden.managerPhone || "",
+      establishedAt: garden.establishedAt ? garden.establishedAt.substring(0, 10) : "",
+      maxBeds: garden.maxBeds !== undefined && garden.maxBeds !== null ? String(garden.maxBeds) : "",
     })
     setDialogError("")
     setIsDialogOpen(true)
@@ -111,16 +152,26 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
     setSuccessMsg("")
 
     try {
+      const payloadBody = {
+        name: formData.name,
+        location: formData.location || undefined,
+        description: formData.description || undefined,
+        area: formData.area ? parseFloat(formData.area) : undefined,
+        latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
+        longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
+        managerName: formData.managerName || undefined,
+        managerPhone: formData.managerPhone || undefined,
+        establishedAt: formData.establishedAt ? new Date(formData.establishedAt).toISOString() : undefined,
+        maxBeds: formData.maxBeds ? parseInt(formData.maxBeds) : undefined,
+      }
+
       if (dialogMode === "create") {
         const res = await fetchApi("/user/cultivation/gardens", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name: formData.name,
-            metadata: { location: formData.location },
-          }),
+          body: JSON.stringify(payloadBody),
         })
         const payload = await res.json()
         if (res.status >= 400) {
@@ -136,10 +187,7 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            name: formData.name,
-            metadata: { ...selectedGarden.metadata, location: formData.location },
-          }),
+          body: JSON.stringify(payloadBody),
         })
         const payload = await res.json()
         if (res.status >= 400) {
@@ -160,10 +208,16 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa khu vườn này?")) return
+  const handleDelete = (id: string) => {
+    const garden = gardens.find((g) => g.id === id)
+    setConfirmDialogTitle("Xóa khu vườn này?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn khu vườn "${garden?.name || ""}" (${garden?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => () => performDelete(id))
+    setConfirmDialogOpen(true)
+  }
 
-    setDeletingId(id)
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -182,15 +236,21 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
       console.error(err)
       setErrorMsg("Lỗi kết nối máy chủ khi xóa")
     } finally {
-      setDeletingId(null)
+      setConfirmDialogOpen(false)
+      setConfirmDialogLoading(false)
     }
   }
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = () => {
     if (selectedGardenIds.length === 0) return
-    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedGardenIds.length} khu vườn đã chọn?`)) return
+    setConfirmDialogTitle("Xóa các khu vườn đã chọn?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn ${selectedGardenIds.length} khu vườn được chọn khỏi hệ thống. Các khu vườn chứa luống sâm sẽ không bị xóa.`)
+    setConfirmDialogAction(() => performBulkDelete)
+    setConfirmDialogOpen(true)
+  }
 
-    setDeletingBulk(true)
+  const performBulkDelete = async () => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -225,7 +285,8 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
       setErrorMsg("Không thể xóa các khu vườn đã chọn vì chúng vẫn còn chứa luống sâm.")
     }
 
-    setDeletingBulk(false)
+    setConfirmDialogOpen(false)
+    setConfirmDialogLoading(false)
   }
 
   return (
@@ -241,20 +302,6 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
           <Plus className="h-4 w-4" /> Thêm khu vườn
         </Button>
       </div>
-
-      {successMsg && (
-        <Alert className="bg-emerald-50 text-emerald-800 border-emerald-200">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
-
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
 
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
@@ -311,8 +358,20 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
               <TableBody>
                 {filteredGardens.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
-                      Không tìm thấy khu vườn nào.
+                    <TableCell colSpan={10} className="py-8">
+                      {searchQuery ? (
+                        <EmptySearchResult
+                          query={searchQuery}
+                          onClear={() => setSearchQuery("")}
+                        />
+                      ) : (
+                        <EmptyState
+                          title="Chưa có khu vườn nào"
+                          description="Không tìm thấy khu vườn nào trong hệ thống. Hãy tạo vườn đầu tiên để bắt đầu canh tác sâm."
+                          actionLabel="Thêm khu vườn"
+                          onAction={handleOpenCreate}
+                        />
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -329,7 +388,7 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
                         {garden.name}
                       </TableCell>
                       <TableCell className="text-sm">
-                        {garden.metadata?.location || "Kon Tum"}
+                        {garden.location || "Kon Tum"}
                       </TableCell>
                       <TableCell className="font-medium">{garden.totalBeds}</TableCell>
                       <TableCell className="text-emerald-600 dark:text-emerald-400 font-medium">
@@ -378,7 +437,7 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
 
       {/* Create / Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
           <form onSubmit={handleSave}>
             <DialogHeader>
               <DialogTitle>
@@ -395,8 +454,8 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
               </div>
             )}
 
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
+            <div className="grid gap-4 py-4 grid-cols-2">
+              <div className="grid gap-2 col-span-2">
                 <Label htmlFor="garden-name">Tên khu vườn</Label>
                 <Input
                   id="garden-name"
@@ -413,6 +472,85 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
                   value={formData.location}
                   onChange={(e) => setFormData((prev) => ({ ...prev, location: e.target.value }))}
                   placeholder="Kon Tum, Quảng Nam..."
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-area">Diện tích (m²)</Label>
+                <Input
+                  id="garden-area"
+                  type="number"
+                  step="any"
+                  value={formData.area}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, area: e.target.value }))}
+                  placeholder="Ví dụ: 500"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-latitude">Vĩ độ (Latitude)</Label>
+                <Input
+                  id="garden-latitude"
+                  type="number"
+                  step="any"
+                  value={formData.latitude}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, latitude: e.target.value }))}
+                  placeholder="Ví dụ: 14.1234"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-longitude">Kinh độ (Longitude)</Label>
+                <Input
+                  id="garden-longitude"
+                  type="number"
+                  step="any"
+                  value={formData.longitude}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, longitude: e.target.value }))}
+                  placeholder="Ví dụ: 107.5678"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-manager-name">Tên quản lý vườn</Label>
+                <Input
+                  id="garden-manager-name"
+                  value={formData.managerName}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, managerName: e.target.value }))}
+                  placeholder="Ví dụ: Nguyễn Văn A"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-manager-phone">SĐT quản lý vườn</Label>
+                <Input
+                  id="garden-manager-phone"
+                  value={formData.managerPhone}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, managerPhone: e.target.value }))}
+                  placeholder="Ví dụ: 0987654321"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-established">Ngày thành lập</Label>
+                <Input
+                  id="garden-established"
+                  type="date"
+                  value={formData.establishedAt}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, establishedAt: e.target.value }))}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="garden-max-beds">Số luống tối đa</Label>
+                <Input
+                  id="garden-max-beds"
+                  type="number"
+                  value={formData.maxBeds}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, maxBeds: e.target.value }))}
+                  placeholder="Ví dụ: 100"
+                />
+              </div>
+              <div className="grid gap-2 col-span-2">
+                <Label htmlFor="garden-description">Mô tả chi tiết</Label>
+                <Input
+                  id="garden-description"
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Nhập mô tả về đất, khí hậu, các giống sâm..."
                 />
               </div>
             </div>
@@ -433,6 +571,38 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
           </form>
         </DialogContent>
       </Dialog>
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

@@ -9,24 +9,53 @@ export const metadata: Metadata = {
 
 interface Plant {
   id: string
+  code?: string
   name: string
   ageYear: number
   price: number
   stock: number
   status: string
+  images?: string[]
+  description?: string
 }
 
-export default async function ProductsPage() {
+interface ProductsPageProps {
+  params: Promise<{
+    lang: string
+  }>
+  searchParams: Promise<{
+    page?: string
+    perPage?: string
+    search?: string
+    status?: string
+  }>
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const resolvedSearchParams = await searchParams
+  const page = resolvedSearchParams.page || "1"
+  const perPage = resolvedSearchParams.perPage || "10"
+  const search = resolvedSearchParams.search || ""
+  const status = resolvedSearchParams.status || ""
+
   let plants: Plant[] = []
+  let metadata: any = null
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/public/catalog/plants")
+    const queryParams = new URLSearchParams()
+    queryParams.append("page", page)
+    queryParams.append("perPage", perPage)
+    if (search) queryParams.append("search", search)
+    if (status && status !== "all") queryParams.append("status", status)
+
+    const res = await fetchApi(`/public/catalog/plants?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load plants"
     } else {
-      plants = payload.data?.items || []
+      plants = Array.isArray(payload.data) ? payload.data : (payload.data?.items || [])
+      metadata = payload.metadata || null
     }
   } catch (e) {
     console.error("Error fetching plants on server:", e)
@@ -35,7 +64,11 @@ export default async function ProductsPage() {
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <PlantsTable initialPlants={plants} errorMsg={errorMsg} />
+      <PlantsTable 
+        initialPlants={plants} 
+        metadata={metadata}
+        errorMsg={errorMsg} 
+      />
     </div>
   )
 }

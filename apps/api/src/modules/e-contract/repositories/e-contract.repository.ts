@@ -4,10 +4,16 @@ import { Prisma } from '@prisma/client';
 import { EContract } from '@generated/prisma-client';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractUpdateRequestDto } from '@modules/e-contract/dtos/request/e-contract.update.request.dto';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 
 @Injectable()
 export class EContractRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
+    ) {}
 
     async createContract(payload: EContractCreateRequestDto): Promise<EContract> {
         const code = 'CTR' + Math.random().toString(36).substring(2, 11).toUpperCase();
@@ -19,7 +25,14 @@ export class EContractRepository {
                 title: payload.title,
                 content: payload.content,
                 status: 'pending',
+                contractValue: payload.contractValue,
+                paymentStatus: payload.paymentStatus ?? 'unpaid',
                 expiredAt: new Date(payload.expiredAt),
+                contractType: payload.contractType ?? 'purchase',
+                partyA: payload.partyA ?? 'Sâm Ngọc Linh Farm',
+                partyB: payload.partyB ?? null,
+                pdfUrl: payload.pdfUrl ?? null,
+                terms: payload.terms ?? null,
                 metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
             },
         });
@@ -41,6 +54,27 @@ export class EContractRepository {
         return this.databaseService.eContract.findMany({
             where: userId ? { userId } : undefined,
             orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async listContractsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.EContractSelect,
+            Prisma.EContractWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<EContract>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            EContract,
+            Prisma.EContractSelect,
+            Prisma.EContractWhereInput
+        >(this.databaseService.eContract, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
         });
     }
 
@@ -74,7 +108,14 @@ export class EContractRepository {
                 title: payload.title,
                 content: payload.content,
                 status: payload.status,
+                contractValue: payload.contractValue,
+                paymentStatus: payload.paymentStatus,
                 expiredAt: payload.expiredAt ? new Date(payload.expiredAt) : undefined,
+                contractType: payload.contractType,
+                partyA: payload.partyA,
+                partyB: payload.partyB,
+                pdfUrl: payload.pdfUrl,
+                terms: payload.terms,
                 metadata: payload.metadata as Prisma.InputJsonValue,
             },
         });

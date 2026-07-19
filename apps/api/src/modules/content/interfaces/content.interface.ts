@@ -6,4 +6,5 @@ export interface IContentArticleItem {
     publishedAt: string;
     summary: string;
     image?: string;
+    author?: string;
 }

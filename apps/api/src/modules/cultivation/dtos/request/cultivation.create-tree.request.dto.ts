@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsArray, IsDateString, Min } from 'class-validator';
 
 export class CultivationCreateTreeRequestDto {
     @ApiProperty({
@@ -40,8 +40,50 @@ export class CultivationCreateTreeRequestDto {
 
     @ApiProperty({
         required: false,
-        example: { status: 'healthy' },
+        example: { health: 'Tốt' },
     })
     @IsOptional()
     metadata?: Record<string, unknown>;
+
+    @ApiProperty({ required: false, example: '2026-07-19T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    plantedAt?: string;
+
+    @ApiProperty({ required: false, example: 'healthy' })
+    @IsOptional()
+    @IsString()
+    healthStatus?: string;
+
+    @ApiProperty({ required: false, example: '2026-07-19T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    lastCareDate?: string;
+
+    @ApiProperty({ required: false, example: '2026-07-26T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    nextCareDate?: string;
+
+    @ApiProperty({ required: false, example: '2031-07-19T00:00:00.000Z' })
+    @IsOptional()
+    @IsDateString()
+    expectedHarvestAt?: string;
+
+    @ApiProperty({ required: false, example: ['https://example.com/tree.jpg'] })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    images?: string[];
+
+    @ApiProperty({ required: false, example: 5000000 })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
+    priceBought?: number;
+
+    @ApiProperty({ required: false, example: 'user-uuid-123' })
+    @IsOptional()
+    @IsString()
+    ownerUserId?: string;
 }

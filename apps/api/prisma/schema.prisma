@@ -584,15 +584,25 @@ model ContentArticle {
 }
 
 model CultivationGarden {
-  id           String @id @default(uuid())
-  code         String
-  name         String
-  ownerUserId  String?
-  status       String
-  totalBeds    Int      @default(0)
-  activeBeds   Int      @default(0)
-  totalTrees   Int      @default(0)
-  metadata     Json?
+  id            String    @id @default(uuid())
+  code          String
+  name          String
+  ownerUserId   String?
+  status        String
+  totalBeds     Int       @default(0)
+  activeBeds    Int       @default(0)
+  totalTrees    Int       @default(0)
+  metadata      Json?
+  location      String?
+  description   String?
+  area          Float?
+  images        String[]  @default([])
+  latitude      Float?
+  longitude     Float?
+  managerName   String?
+  managerPhone  String?
+  establishedAt DateTime?
+  maxBeds       Int       @default(0)
 
   createdAt DateTime @default(now())
   createdBy String?
@@ -605,15 +615,22 @@ model CultivationGarden {
 }
 
 model CultivationBed {
-  id           String @id @default(uuid())
-  code         String
-  gardenCode   String
-  name         String
-  ageYear      Int
-  treeCount    Int
-  status       String
-  ownerUserId  String?
-  metadata     Json?
+  id               String    @id @default(uuid())
+  code             String
+  gardenCode       String
+  name             String
+  ageYear          Int
+  treeCount        Int
+  status           String
+  ownerUserId      String?
+  metadata         Json?
+  maxTrees         Int       @default(0)
+  width            Float?
+  length           Float?
+  soilType         String?
+  lastFertilizedAt DateTime?
+  lastWateredAt    DateTime?
+  description      String?
 
   createdAt DateTime @default(now())
   createdBy String?
@@ -626,7 +643,7 @@ model CultivationBed {
 }
 
 model CultivationTree {
-  id                         String @id @default(uuid())
+  id                         String    @id @default(uuid())
   code                       String
   bedCode                    String?
   ownerUserId                String?
@@ -639,6 +656,13 @@ model CultivationTree {
   protectionPackageCode      String?
   protectionPackageExpiredAt DateTime?
   metadata                   Json?
+  plantedAt                  DateTime?
+  healthStatus               String    @default("healthy")
+  lastCareDate               DateTime?
+  nextCareDate               DateTime?
+  expectedHarvestAt          DateTime?
+  images                     String[]  @default([])
+  priceBought                Int?      @default(0)
 
   createdAt DateTime @default(now())
   createdBy String?
@@ -717,6 +741,12 @@ model Order {
   discount       Int      @default(0)
   total          Int
   paymentMethod  String?
+  paymentStatus  String   @default("pending")
+  deliveryType   String   @default("shipping")
+  shippingAddress String?
+  customerName   String?
+  customerPhone  String?
+  customerNote   String?
   items          Json
   paidAt         DateTime?
   cancelledAt    DateTime?
@@ -823,17 +853,26 @@ model GardenBooking {
 }
 
 model EContract {
-  id           String @id @default(uuid())
-  code         String
-  userId       String
-  treeCode     String?
-  title        String
-  content      String
-  status       String
-  signedAt     DateTime?
-  expiredAt    DateTime
-  signatureUrl String?
-  metadata     Json?
+  id             String    @id @default(uuid())
+  code           String
+  userId         String
+  treeCode       String?
+  title          String
+  content        String
+  status         String
+  signedAt       DateTime?
+  expiredAt      DateTime
+  signatureUrl   String?
+  contractValue  Int       @default(0)
+  paymentStatus  String    @default("unpaid")
+  isReminderSent Boolean   @default(false)
+  reminderSentAt DateTime?
+  metadata       Json?
+  contractType   String    @default("purchase")
+  partyA         String    @default("Sâm Ngọc Linh Farm")
+  partyB         String?
+  pdfUrl         String?
+  terms          String?
 
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

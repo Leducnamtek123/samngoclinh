@@ -1,22 +1,22 @@
 import type { ConversionFunnelType } from "../types"
 
 export const conversionFunnelData: ConversionFunnelType = {
-  period: "Last month",
+  period: "Tháng này",
   funnelSteps: [
     {
-      name: "Visited Page",
+      name: "Xem sản phẩm sâm",
       value: 15000,
     },
     {
-      name: "Added to Cart",
+      name: "Thêm vào giỏ hàng",
       value: 5000,
     },
     {
-      name: "Initiated Checkout",
+      name: "Đặt cọc / Soạn hợp đồng",
       value: 1000,
     },
     {
-      name: "Completed Purchase",
+      name: "Hoàn tất mua / Ký kết",
       value: 300,
     },
   ],

@@ -64,7 +64,7 @@ export function EngagementByDeviceTable({
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>Engagement by Device</CardTitle>
+        <CardTitle>Tương tác qua Thiết bị</CardTitle>
         <EngagementByDeviceTableToolbar table={table} />
       </CardHeader>
       <CardContent className="p-0">

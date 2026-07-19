@@ -13,10 +13,19 @@ import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/reque
 import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
+import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
+import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
+import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 
 @Injectable()
 export class CultivationRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
+    ) {}
 
     async getTreeAgeGroups(userId: string): Promise<ICultivationTreeAgeItem[]> {
         const groups = await this.databaseService.cultivationTree.groupBy({
@@ -54,9 +63,9 @@ export class CultivationRepository {
         };
     }
 
-    async getBeds(userId: string): Promise<ICultivationBedItem[]> {
+    async getBeds(userId: string, isAdmin?: boolean): Promise<ICultivationBedItem[]> {
         const beds = await this.databaseService.cultivationBed.findMany({
-            where: { ownerUserId: userId },
+            where: isAdmin ? {} : { ownerUserId: userId },
             select: {
                 id: true,
                 code: true,
@@ -81,6 +90,32 @@ export class CultivationRepository {
         }));
     }
 
+    async getBedsPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationBedSelect,
+            Prisma.CultivationBedWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        gardenCode?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationBed>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            CultivationBed,
+            Prisma.CultivationBedSelect,
+            Prisma.CultivationBedWhereInput
+        >(this.databaseService.cultivationBed, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+                ...gardenCode,
+                ...(isAdmin ? {} : { ownerUserId: userId }),
+            },
+        });
+    }
+
     async createGarden(userId: string, payload: CultivationCreateGardenRequestDto): Promise<CultivationGarden> {
         const code = 'garden-' + Math.random().toString(36).substring(2, 11);
         return this.databaseService.cultivationGarden.create({
@@ -92,6 +127,16 @@ export class CultivationRepository {
                 totalBeds: 0,
                 activeBeds: 0,
                 totalTrees: 0,
+                location: payload.location ?? null,
+                description: payload.description ?? null,
+                area: payload.area ?? null,
+                images: payload.images ?? [],
+                latitude: payload.latitude ?? null,
+                longitude: payload.longitude ?? null,
+                managerName: payload.managerName ?? null,
+                managerPhone: payload.managerPhone ?? null,
+                establishedAt: payload.establishedAt ? new Date(payload.establishedAt) : null,
+                maxBeds: payload.maxBeds ?? 0,
                 metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
             },
         });
@@ -109,6 +154,13 @@ export class CultivationRepository {
                     treeCount: payload.treeCount,
                     status: 'active',
                     ownerUserId: userId,
+                    maxTrees: payload.maxTrees ?? 0,
+                    width: payload.width ?? null,
+                    length: payload.length ?? null,
+                    soilType: payload.soilType ?? null,
+                    lastFertilizedAt: payload.lastFertilizedAt ? new Date(payload.lastFertilizedAt) : null,
+                    lastWateredAt: payload.lastWateredAt ? new Date(payload.lastWateredAt) : null,
+                    description: payload.description ?? null,
                     metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
                 },
             });
@@ -128,16 +180,24 @@ export class CultivationRepository {
 
     async createTree(userId: string, payload: CultivationCreateTreeRequestDto): Promise<CultivationTree> {
         const code = 'tree-' + Math.random().toString(36).substring(2, 11);
+        const ownerId = payload.ownerUserId || userId;
         return this.databaseService.$transaction(async (tx) => {
             const tree = await tx.cultivationTree.create({
                 data: {
                     code,
                     bedCode: payload.bedCode ?? null,
-                    ownerUserId: userId,
+                    ownerUserId: ownerId,
                     name: payload.name,
                     ageYear: payload.ageYear,
                     quantity: payload.quantity,
                     status: 'active',
+                    plantedAt: payload.plantedAt ? new Date(payload.plantedAt) : null,
+                    healthStatus: payload.healthStatus ?? 'healthy',
+                    lastCareDate: payload.lastCareDate ? new Date(payload.lastCareDate) : null,
+                    nextCareDate: payload.nextCareDate ? new Date(payload.nextCareDate) : null,
+                    expectedHarvestAt: payload.expectedHarvestAt ? new Date(payload.expectedHarvestAt) : null,
+                    images: payload.images ?? [],
+                    priceBought: payload.priceBought ?? 0,
                     metadata: (payload.metadata ?? {}) as Prisma.InputJsonValue,
                 },
             });
@@ -251,12 +311,22 @@ export class CultivationRepository {
         });
     }
 
-    async updateGarden(id: string, name?: string, metadata?: Record<string, unknown>): Promise<CultivationGarden> {
+    async updateGarden(id: string, payload: CultivationUpdateGardenRequestDto): Promise<CultivationGarden> {
         return this.databaseService.cultivationGarden.update({
             where: { id },
             data: {
-                name,
-                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+                name: payload.name,
+                location: payload.location,
+                description: payload.description,
+                area: payload.area,
+                images: payload.images,
+                latitude: payload.latitude,
+                longitude: payload.longitude,
+                managerName: payload.managerName,
+                managerPhone: payload.managerPhone,
+                establishedAt: payload.establishedAt ? new Date(payload.establishedAt) : undefined,
+                maxBeds: payload.maxBeds,
+                metadata: payload.metadata ? (payload.metadata as Prisma.InputJsonValue) : undefined,
             },
         });
     }
@@ -278,15 +348,52 @@ export class CultivationRepository {
         await this.databaseService.cultivationGarden.delete({ where: { id } });
     }
 
-    async updateBed(id: string, name?: string, ageYear?: number, treeCount?: number, metadata?: Record<string, unknown>): Promise<CultivationBed> {
-        return this.databaseService.cultivationBed.update({
-            where: { id },
-            data: {
-                name,
-                ageYear,
-                treeCount,
-                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
-            },
+    async updateBed(
+        id: string,
+        payload: CultivationUpdateBedRequestDto
+    ): Promise<CultivationBed> {
+        return this.databaseService.$transaction(async (tx) => {
+            const oldBed = await tx.cultivationBed.findUnique({
+                where: { id },
+            });
+
+            if (!oldBed) {
+                throw new Error('Bed not found');
+            }
+
+            const updatedBed = await tx.cultivationBed.update({
+                where: { id },
+                data: {
+                    name: payload.name,
+                    ageYear: payload.ageYear,
+                    treeCount: payload.treeCount,
+                    status: payload.status,
+                    maxTrees: payload.maxTrees,
+                    width: payload.width,
+                    length: payload.length,
+                    soilType: payload.soilType,
+                    lastFertilizedAt: payload.lastFertilizedAt ? new Date(payload.lastFertilizedAt) : undefined,
+                    lastWateredAt: payload.lastWateredAt ? new Date(payload.lastWateredAt) : undefined,
+                    description: payload.description,
+                    metadata: payload.metadata ? (payload.metadata as Prisma.InputJsonValue) : undefined,
+                },
+            });
+
+            if (payload.status && payload.status !== oldBed.status) {
+                if (payload.status === 'active') {
+                    await tx.cultivationGarden.update({
+                        where: { code: oldBed.gardenCode },
+                        data: { activeBeds: { increment: 1 } },
+                    });
+                } else if (oldBed.status === 'active') {
+                    await tx.cultivationGarden.update({
+                        where: { code: oldBed.gardenCode },
+                        data: { activeBeds: { decrement: 1 } },
+                    });
+                }
+            }
+
+            return updatedBed;
         });
     }
 
@@ -319,20 +426,24 @@ export class CultivationRepository {
 
     async updateTree(
         id: string,
-        name?: string,
-        ageYear?: number,
-        quantity?: number,
-        status?: string,
-        metadata?: Record<string, unknown>
+        payload: CultivationUpdateTreeRequestDto
     ): Promise<CultivationTree> {
         return this.databaseService.cultivationTree.update({
             where: { id },
             data: {
-                name,
-                ageYear,
-                quantity,
-                status,
-                metadata: metadata ? (metadata as Prisma.InputJsonValue) : undefined,
+                name: payload.name,
+                ageYear: payload.ageYear,
+                quantity: payload.quantity,
+                status: payload.status,
+                ownerUserId: payload.ownerUserId,
+                plantedAt: payload.plantedAt ? new Date(payload.plantedAt) : undefined,
+                healthStatus: payload.healthStatus,
+                lastCareDate: payload.lastCareDate ? new Date(payload.lastCareDate) : undefined,
+                nextCareDate: payload.nextCareDate ? new Date(payload.nextCareDate) : undefined,
+                expectedHarvestAt: payload.expectedHarvestAt ? new Date(payload.expectedHarvestAt) : undefined,
+                images: payload.images,
+                priceBought: payload.priceBought,
+                metadata: payload.metadata ? (payload.metadata as Prisma.InputJsonValue) : undefined,
             },
         });
     }
@@ -366,21 +477,21 @@ export class CultivationRepository {
         });
     }
 
-    async getGardensList(userId: string): Promise<CultivationGarden[]> {
+    async getGardensList(userId: string, isAdmin?: boolean): Promise<CultivationGarden[]> {
         return this.databaseService.cultivationGarden.findMany({
-            where: { ownerUserId: userId },
+            where: isAdmin ? {} : { ownerUserId: userId },
         });
     }
 
-    async getGardenDetail(id: string, userId: string): Promise<CultivationGarden | null> {
+    async getGardenDetail(id: string, userId: string, isAdmin?: boolean): Promise<CultivationGarden | null> {
         return this.databaseService.cultivationGarden.findFirst({
-            where: { id, ownerUserId: userId },
+            where: isAdmin ? { id } : { id, ownerUserId: userId },
         });
     }
 
-    async getBedDetail(id: string, userId: string): Promise<any | null> {
+    async getBedDetail(id: string, userId: string, isAdmin?: boolean): Promise<any | null> {
         const bed = await this.databaseService.cultivationBed.findFirst({
-            where: { id, ownerUserId: userId },
+            where: isAdmin ? { id } : { id, ownerUserId: userId },
         });
         if (!bed) return null;
         const trees = await this.databaseService.cultivationTree.findMany({
@@ -392,9 +503,9 @@ export class CultivationRepository {
         };
     }
 
-    async getTreeDetail(id: string, userId: string): Promise<any | null> {
+    async getTreeDetail(id: string, userId: string, isAdmin?: boolean): Promise<any | null> {
         const tree = await this.databaseService.cultivationTree.findFirst({
-            where: { id, ownerUserId: userId },
+            where: isAdmin ? { id } : { id, ownerUserId: userId },
         });
         if (!tree) return null;
         const careLogs = await this.databaseService.cultivationCareLog.findMany({
@@ -462,6 +573,31 @@ export class CultivationRepository {
     async listAllTreesAdmin(): Promise<CultivationTree[]> {
         return this.databaseService.cultivationTree.findMany({
             orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async listAllTreesAdminPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationTreeSelect,
+            Prisma.CultivationTreeWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        health?: Record<string, IPaginationEqual>,
+        ownerUserId?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationTree>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            CultivationTree,
+            Prisma.CultivationTreeSelect,
+            Prisma.CultivationTreeWhereInput
+        >(this.databaseService.cultivationTree, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+                ...health,
+                ...ownerUserId,
+            },
         });
     }
 }

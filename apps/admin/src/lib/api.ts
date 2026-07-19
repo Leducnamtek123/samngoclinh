@@ -31,18 +31,17 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     '/promotion',
     '/notification',
     '/identity-verification',
-    '/e-contract',
+    '/contracts',
     '/marketplace',
-    '/contacts'
+    '/contacts',
+    '/backoffice'
   ];
-  const isNeutral = neutralPaths.some(path => {
-    if (path === '/profile') {
-      return endpoint.includes('/profile') && !endpoint.includes('/user/profile');
-    }
-    return endpoint.includes(path);
-  });
+  const isNeutral = neutralPaths.some(path => endpoint.includes(path));
     
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3000/api';
+  const isServer = typeof window === 'undefined';
+  const apiBaseUrl = isServer
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://apis:3000/api')
+    : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api');
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`;
   const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP';
 
@@ -62,7 +61,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   }
 
   const url = `${baseUrl}${endpoint}`;
-
+ 
   return fetch(url, {
     ...options,
     headers,

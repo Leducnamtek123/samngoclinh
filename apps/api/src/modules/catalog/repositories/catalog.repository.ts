@@ -5,17 +5,23 @@ import {
     ICatalogShopItem,
 } from '@modules/catalog/interfaces/catalog.interface';
 
-import { CatalogPlant, CatalogProduct } from '@generated/prisma-client';
+import { CatalogPlant, CatalogProduct, Prisma } from '@generated/prisma-client';
 import {
     CatalogPlantCreateDto,
     CatalogPlantUpdateDto,
     CatalogProductCreateDto,
     CatalogProductUpdateDto,
 } from '../dtos/catalog.admin.dto';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 
 @Injectable()
 export class CatalogRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
+    ) {}
 
     async listPlants(): Promise<ICatalogPlantItem[]> {
         const items = await this.databaseService.catalogPlant.findMany({
@@ -75,6 +81,48 @@ export class CatalogRepository {
             images: item.images,
             description: item.description ?? undefined,
         }));
+    }
+
+    async listPlantsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogPlantSelect,
+            Prisma.CatalogPlantWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogPlant>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            CatalogPlant,
+            Prisma.CatalogPlantSelect,
+            Prisma.CatalogPlantWhereInput
+        >(this.databaseService.catalogPlant, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
+        });
+    }
+
+    async listShopItemsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogProductSelect,
+            Prisma.CatalogProductWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogProduct>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            CatalogProduct,
+            Prisma.CatalogProductSelect,
+            Prisma.CatalogProductWhereInput
+        >(this.databaseService.catalogProduct, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
+        });
     }
 
     async createPlant(data: CatalogPlantCreateDto): Promise<CatalogPlant> {

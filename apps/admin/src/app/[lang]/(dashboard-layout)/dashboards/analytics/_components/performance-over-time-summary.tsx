@@ -25,7 +25,7 @@ export function PerformanceOverTimeSummary({
         </Badge>
         <div className="shrink-0">
           <h3 className="text-sm text-muted-foreground leading-tight">
-            Total Visitors
+            Lượt ghé thăm vườn
           </h3>
           <p className="text-2xl font-semibold">
             {data.totalVisitors.toLocaleString()}
@@ -44,7 +44,7 @@ export function PerformanceOverTimeSummary({
         </Badge>
         <div>
           <h3 className="text-sm text-muted-foreground leading-tight line-clamp-1 break-all">
-            Total Conversions
+            Số cây sâm trồng mới
           </h3>
           <p className="text-2xl font-semibold">
             {data.totalConversions.toLocaleString()}

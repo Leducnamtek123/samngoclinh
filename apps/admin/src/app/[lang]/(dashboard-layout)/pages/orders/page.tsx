@@ -1,9 +1,6 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { fetchApi } from "@/lib/api"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { OrdersTable } from "./_components/orders-table"
 
 export const metadata: Metadata = {
   title: "Quản lý Đơn hàng | Sâm Ngọc Linh Admin",
@@ -18,44 +15,47 @@ interface Order {
   createdAt: string
 }
 
-export default async function OrdersPage() {
+interface OrdersPageProps {
+  params: Promise<{
+    lang: string
+  }>
+  searchParams: Promise<{
+    page?: string
+    perPage?: string
+    search?: string
+    status?: string
+  }>
+}
+
+export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+  const resolvedSearchParams = await searchParams
+  const page = resolvedSearchParams.page || "1"
+  const perPage = resolvedSearchParams.perPage || "10"
+  const search = resolvedSearchParams.search || ""
+  const status = resolvedSearchParams.status || ""
+
   let orders: Order[] = []
+  let metadata: any = null
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/admin/orders")
+    const queryParams = new URLSearchParams()
+    queryParams.append("page", page)
+    queryParams.append("perPage", perPage)
+    if (search) queryParams.append("search", search)
+    if (status && status !== "all") queryParams.append("status", status)
+
+    const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load orders"
     } else {
       orders = Array.isArray(payload.data?.items) ? payload.data.items : (payload.data || [])
+      metadata = payload.metadata || null
     }
   } catch (e) {
     console.error("Error fetching orders:", e)
     errorMsg = "Không thể kết nối đến máy chủ API"
-  }
-
-  const formatVND = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-      case "success":
-        return "default"
-      case "pending":
-      case "processing":
-        return "secondary"
-      case "cancelled":
-      case "failed":
-        return "destructive"
-      default:
-        return "outline"
-    }
   }
 
   return (
@@ -67,63 +67,20 @@ export default async function OrdersPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Danh sách đơn hàng</CardTitle>
-          <CardDescription>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách đơn hàng</h2>
+          <p className="text-xs text-muted-foreground">
             Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời gian tạo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {errorMsg ? (
-            <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
-              {errorMsg}
-            </div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Không tìm thấy đơn hàng nào.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã đơn hàng</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Tổng giá trị</TableHead>
-                  <TableHead className="text-center">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono font-medium">{order.code}</TableCell>
-                    <TableCell>
-                      {new Date(order.createdAt).toLocaleString("vi-VN")}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusBadgeVariant(order.status)}>
-                        {order.status.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-semibold text-primary">
-                      {formatVND(order.total)}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Link
-                        href={`/pages/orders/details?id=${order.id}`}
-                        className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
-                      >
-                        Chi tiết
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+          </p>
+        </div>
+        
+        <OrdersTable 
+          initialOrders={orders} 
+          metadata={metadata} 
+          errorMsg={errorMsg} 
+        />
+      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Cropper from "react-easy-crop"
 import { fetchApi } from "@/lib/api"
@@ -11,12 +12,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Pencil, Plus } from "lucide-react"
+import { Trash2, Pencil, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { InlineAlert, ToastCard, EmptyState, EmptySearchResult, ImagePlaceholder, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
 interface Plant {
   id: string
@@ -72,14 +73,35 @@ async function getCroppedImg(
 
 interface PlantsTableProps {
   initialPlants: Plant[]
+  metadata: {
+    page: number
+    perPage: number
+    totalPage: number
+    count: number
+    hasNext: boolean
+    hasPrevious: boolean
+  } | null
   errorMsg?: string
 }
 
-export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTableProps) {
+export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }: PlantsTableProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [plants, setBeds] = useState<Plant[]>(initialPlants)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+
+  // URL query params states
+  const initialSearch = searchParams.get("search") || ""
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
+
+  const statusFilter = searchParams.get("status") || "all"
   const [ageTab, setAgeTab] = useState("all")
+
+  // Sync plants on props change
+  useEffect(() => {
+    setBeds(initialPlants)
+  }, [initialPlants])
   
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
@@ -88,6 +110,13 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
   // Selection state
   const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([])
   const [deletingBulk, setDeletingBulk] = useState(false)
+
+  // Confirmation Dialog States
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
+  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
+  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -122,16 +151,42 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
     }).format(price)
   }
 
-  // Filter logic
-  const filteredPlants = plants.filter((plant) => {
-    const matchesSearch = plant.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          plant.id.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = statusFilter === "all" || 
-                          (statusFilter === "available" && plant.status === "available") ||
-                          (statusFilter === "harvested" && plant.status !== "available")
-    const matchesAge = ageTab === "all" || plant.ageYear.toString() === ageTab
-    return matchesSearch && matchesStatus && matchesAge
-  })
+  const createQueryString = (newParams: Record<string, string | null>) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString())
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value === null || value === "all" || value === "") {
+        updatedSearchParams.delete(key)
+      } else {
+        updatedSearchParams.set(key, value)
+      }
+    }
+    if (!newParams.hasOwnProperty("page")) {
+      updatedSearchParams.set("page", "1")
+    }
+    return updatedSearchParams.toString()
+  }
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchQuery !== currentSearch) {
+        router.push(`${pathname}?${createQueryString({ search: searchQuery })}`)
+      }
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+  }
+
+  const handleStatusFilterChange = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ status: val })}`)
+  }
+
+  // Since filtering is done on backend, filteredPlants is just plants state
+  const filteredPlants = plants
 
   const handleToggleSelect = (id: string) => {
     setSelectedPlantIds((prev) =>
@@ -150,11 +205,16 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
     }
   }
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = () => {
     if (selectedPlantIds.length === 0) return
-    if (!confirm(`Bạn có chắc chắn muốn xóa ${selectedPlantIds.length} sản phẩm sâm đã chọn?`)) return
+    setConfirmDialogTitle("Xóa các sản phẩm đã chọn?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn ${selectedPlantIds.length} sản phẩm sâm đã chọn khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => performBulkDelete)
+    setConfirmDialogOpen(true)
+  }
 
-    setDeletingBulk(true)
+  const performBulkDelete = async () => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -182,6 +242,7 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
     if (successCount > 0) {
       setBeds((prev) => prev.filter((p) => !selectedPlantIds.includes(p.id)))
       setSuccessMsg(`Đã xóa thành công ${successCount} sản phẩm!`)
+      router.refresh()
     }
 
     if (failCount > 0) {
@@ -189,12 +250,20 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
     }
 
     setSelectedPlantIds([])
-    setDeletingBulk(false)
+    setConfirmDialogOpen(false)
+    setConfirmDialogLoading(false)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return
-    setDeletingId(id)
+  const handleDelete = (id: string) => {
+    const plant = plants.find((p) => p.id === id)
+    setConfirmDialogTitle("Xóa sản phẩm này?")
+    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn sản phẩm "${plant?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
+    setConfirmDialogAction(() => () => performDelete(id))
+    setConfirmDialogOpen(true)
+  }
+
+  const performDelete = async (id: string) => {
+    setConfirmDialogLoading(true)
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -210,12 +279,14 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
         setBeds(plants.filter((p) => p.id !== id))
         setSuccessMsg("Xóa sản phẩm thành công!")
         setSelectedPlantIds((prev) => prev.filter((item) => item !== id))
+        router.refresh()
       }
     } catch (e) {
       console.error(e)
       setErrorMsg("Không thể kết nối đến máy chủ API")
     } finally {
-      setDeletingId(null)
+      setConfirmDialogOpen(false)
+      setConfirmDialogLoading(false)
     }
   }
 
@@ -367,6 +438,7 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
           setBeds((prev) => [payload.data, ...prev])
           setSuccessMsg(`Đã tạo sản phẩm sâm "${formData.name}" thành công!`)
           setIsDialogOpen(false)
+          router.refresh()
         }
       } else {
         if (!selectedPlant) return
@@ -392,6 +464,7 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
           )
           setSuccessMsg(`Cập nhật sản phẩm "${formData.name}" thành công!`)
           setIsDialogOpen(false)
+          router.refresh()
         }
       }
     } catch (err) {
@@ -412,6 +485,18 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
 
   const allFilteredSelected = filteredPlants.length > 0 && filteredPlants.every((p) => selectedPlantIds.includes(p.id))
 
+  if (plants.length === 0 && errorMsg) {
+    return (
+      <div className="py-12">
+        <ErrorState
+          title="Không thể tải dữ liệu sản phẩm sâm"
+          description={errorMsg}
+          onRetry={() => window.location.reload()}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -426,7 +511,6 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
             <Button
               variant="destructive"
               onClick={handleBulkDelete}
-              disabled={deletingBulk}
               className="font-semibold flex items-center gap-2 shadow-sm"
             >
               <Trash2 className="w-4 h-4" />
@@ -443,20 +527,6 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
         </div>
       </div>
 
-      {successMsg && (
-        <Alert className="border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
-
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi xảy ra</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
-
       {/* Search & Filter section */}
       <div className="flex flex-col gap-4 p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
         <h3 className="font-semibold text-lg">Tìm kiếm &amp; Lọc</h3>
@@ -470,7 +540,7 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
             />
           </div>
           <div className="w-full md:w-56">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Tất cả trạng thái" />
               </SelectTrigger>
@@ -512,9 +582,19 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
         </CardHeader>
         <CardContent>
           {filteredPlants.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Không tìm thấy sản phẩm nào khớp với bộ lọc.
-            </div>
+            searchQuery ? (
+              <EmptySearchResult
+                query={searchQuery}
+                onClear={() => setSearchQuery("")}
+              />
+            ) : (
+              <EmptyState
+                title="Chưa có sản phẩm nào"
+                description="Hệ thống chưa ghi nhận sản phẩm sâm Ngọc Linh nào. Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên."
+                actionLabel="Thêm sản phẩm"
+                onAction={openCreateDialog}
+              />
+            )
           ) : (
             <Table>
               <TableHeader>
@@ -554,12 +634,16 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
                       </TableCell>
                       <TableCell>
                         <div className="relative w-12 h-12 rounded-lg overflow-hidden border">
-                          <Image
-                            src={plant.images?.[0] || "/images/logo_ruou_sam.png"}
-                            alt={plant.name}
-                            fill
-                            className="object-cover"
-                          />
+                          {plant.images?.[0] ? (
+                            <Image
+                              src={plant.images[0]}
+                              alt={plant.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <ImagePlaceholder className="rounded-none border-none min-h-0 h-full w-full p-1" showText={false} />
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -617,6 +701,37 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
             </Table>
           )}
         </CardContent>
+
+        {/* Pagination Controls */}
+        {metadata && (
+          <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} sản phẩm)
+            </span>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!metadata.hasPrevious}
+                onClick={() => handlePageChange(metadata.page - 1)}
+                className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                <span>Trước</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!metadata.hasNext}
+                onClick={() => handlePageChange(metadata.page + 1)}
+                className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+              >
+                <span>Kế tiếp</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Dialog Modal for Create & Edit */}
@@ -635,10 +750,7 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
             </DialogHeader>
 
             {dialogError && (
-              <Alert variant="destructive" className="my-3">
-                <AlertTitle>Lỗi</AlertTitle>
-                <AlertDescription>{dialogError}</AlertDescription>
-              </Alert>
+              <InlineAlert type="error" title="Lỗi" message={dialogError} className="my-3" />
             )}
 
             <div className="grid gap-4 py-4">
@@ -823,6 +935,37 @@ export function PlantsTable({ initialPlants, errorMsg: initialError }: PlantsTab
           </div>
         </DialogContent>
       </Dialog>
+      {/* Confirmation Dialog component */}
+      <ConfirmationDialog
+        isOpen={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+        onConfirm={confirmDialogAction}
+        title={confirmDialogTitle}
+        description={confirmDialogDesc}
+        confirmLabel="Xác nhận"
+        cancelLabel="Hủy bỏ"
+        type="danger"
+        isLoading={confirmDialogLoading}
+      />
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

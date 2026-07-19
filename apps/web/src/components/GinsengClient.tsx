@@ -13,7 +13,7 @@ type GinsengClientProps = {
 
 export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClientProps) => {
   const { data: items, isLoading, isError } = useCatalogPlants(initialItems);
-  const { data: banners } = useBanner('products');
+  const { data: banners } = useBanner('ginseng');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAges, setSelectedAges] = useState<number[]>([]);
   const [minPrice, setMinPrice] = useState(50000);

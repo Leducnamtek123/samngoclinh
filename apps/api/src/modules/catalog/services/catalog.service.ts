@@ -1,17 +1,18 @@
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
     ICatalogPlantItem,
     ICatalogShopItem,
 } from '@modules/catalog/interfaces/catalog.interface';
 import { CatalogRepository } from '@modules/catalog/repositories/catalog.repository';
-import { CatalogPlant, CatalogProduct } from '@generated/prisma-client';
+import { CatalogPlant, CatalogProduct, Prisma } from '@generated/prisma-client';
 import {
     CatalogPlantCreateDto,
     CatalogPlantUpdateDto,
     CatalogProductCreateDto,
     CatalogProductUpdateDto,
 } from '../dtos/catalog.admin.dto';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class CatalogService {
@@ -35,6 +36,26 @@ export class CatalogService {
                 items: await this.catalogRepository.listShopItems(),
             },
         };
+    }
+
+    async listPlantsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogPlantSelect,
+            Prisma.CatalogPlantWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogPlant>> {
+        return this.catalogRepository.listPlantsPaginated(pagination, status);
+    }
+
+    async listShopItemsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogProductSelect,
+            Prisma.CatalogProductWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogProduct>> {
+        return this.catalogRepository.listShopItemsPaginated(pagination, status);
     }
 
     async createPlant(data: CatalogPlantCreateDto): Promise<IResponseReturn<CatalogPlant>> {
