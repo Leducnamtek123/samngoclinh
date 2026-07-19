@@ -7,16 +7,18 @@ import {
 import { TrafficSourcesChart } from "./traffic-sources-chart"
 import { TrafficSourcesTable } from "./traffic-sources-table"
 
-export function TrafficSources() {
+export function TrafficSources({ stats }: { stats: any }) {
+  const sources = stats?.trafficSources || trafficSourcesData.sources;
+
   return (
     <DashboardCard
-      title="Traffic Sources"
+      title="Kênh Phân phối Sâm"
       period={trafficSourcesData.period}
       action={<DashboardCardActionsDropdown />}
       size="lg"
     >
-      <TrafficSourcesChart data={trafficSourcesData.sources} />
-      <TrafficSourcesTable data={trafficSourcesData.sources} />
+      <TrafficSourcesChart data={sources} />
+      <TrafficSourcesTable data={sources} />
     </DashboardCard>
   )
 }

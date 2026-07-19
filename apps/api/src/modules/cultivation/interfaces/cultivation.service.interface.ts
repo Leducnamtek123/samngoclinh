@@ -1,4 +1,4 @@
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
 import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.garden.response.dto';
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
@@ -8,7 +8,8 @@ import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/reque
 import { CultivationCreateCareLogRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-care-log.request.dto';
 import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
 import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-booking-status.request.dto';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking, Prisma } from '@generated/prisma-client';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
 import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
@@ -17,7 +18,25 @@ import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/reque
 export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;
-    beds(userId: string): Promise<IResponseReturn<{ items: CultivationBedResponseDto[] }>>;
+    gardensList(userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden[]>>;
+    gardensPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>>;
+    beds(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationBedSelect,
+            Prisma.CultivationBedWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        gardenCode?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationBedResponseDto>>;
     createGarden(userId: string, payload: CultivationCreateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>>;
     createBed(userId: string, payload: CultivationCreateBedRequestDto): Promise<IResponseReturn<CultivationBed>>;
     createTree(userId: string, payload: CultivationCreateTreeRequestDto): Promise<IResponseReturn<CultivationTree>>;
@@ -33,8 +52,23 @@ export interface ICultivationService {
     deleteBed(id: string): Promise<IResponseReturn<void>>;
     updateTree(id: string, payload: CultivationUpdateTreeRequestDto): Promise<IResponseReturn<CultivationTree>>;
     deleteTree(id: string): Promise<IResponseReturn<void>>;
-    gardenDetail(id: string, userId: string): Promise<IResponseReturn<CultivationGarden>>;
-    bedDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
-    treeDetail(id: string, userId: string): Promise<IResponseReturn<any>>;
+    gardenDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden>>;
+    bedDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>>;
+    treeDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>>;
+
+    getBedLocations(bedCode: string): Promise<IResponseReturn<CultivationBedLocation[]>>;
+    generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<any>>;
+    updateBedLocation(id: string, status: string, treeCode?: string): Promise<IResponseReturn<CultivationBedLocation>>;
+    deleteBedLocation(id: string): Promise<IResponseReturn<void>>;
+    listAllTreesAdmin(): Promise<IResponseReturn<CultivationTree[]>>;
+    listAllTreesAdminPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationTreeSelect,
+            Prisma.CultivationTreeWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        health?: Record<string, IPaginationEqual>,
+        ownerUserId?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationTree>>;
 }
 

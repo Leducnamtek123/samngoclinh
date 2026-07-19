@@ -129,6 +129,20 @@ export class PackagesService {
         return { data: { items } };
     }
 
+    async listAllCare(): Promise<IResponseReturn<{ items: CarePackage[] }>> {
+        const items = await this.databaseService.carePackage.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+        return { data: { items } };
+    }
+
+    async listAllProtection(): Promise<IResponseReturn<{ items: ProtectionPackage[] }>> {
+        const items = await this.databaseService.protectionPackage.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+        return { data: { items } };
+    }
+
     // --- User Subscribe Endpoint ---
     async subscribe(userId: string, dto: PackageSubscribeRequestDto): Promise<IResponseReturn<CultivationTree>> {
         // Validate user owns the tree

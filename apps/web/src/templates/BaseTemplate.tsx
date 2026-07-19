@@ -1,57 +1,83 @@
-import { useTranslations } from 'next-intl';
-import { AppConfig } from '@/utils/AppConfig';
-
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;
   rightNav?: React.ReactNode;
   children: React.ReactNode;
 }) => {
-  const t = useTranslations('BaseTemplate');
 
   return (
-    <div className="w-full px-1 text-gray-700 antialiased">
-      <div className="mx-auto max-w-3xl">
-        <header className="border-b border-gray-300">
-          <div className="pt-16 pb-8">
-            <h1 className="text-3xl font-bold text-gray-900">{AppConfig.name}</h1>
-            <h2 className="text-xl">{t('description')}</h2>
+    <div className="w-full text-gray-800 antialiased bg-brand-bg min-h-screen flex flex-col font-sans">
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-50 w-full bg-white/90 border-b border-gray-200/80 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center">
+          {/* Logo & Navigation */}
+          <div className="flex items-center gap-8 md:gap-12">
+            <a href="/" className="flex items-center gap-2.5 group">
+              <img
+                src="/assets/images/logo_ruou_sam.png?v=2"
+                alt="Rượu Sâm Ngọc Linh Logo"
+                className="w-10 h-10 object-contain"
+              />
+              <span className="font-bold text-[22px] tracking-tight text-primary font-display-lg">
+                Rượu Sâm Ngọc Linh
+              </span>
+            </a>
+
+            {/* Menu Links */}
+            <nav className="hidden md:block">
+              <ul className="flex items-center gap-6 text-sm font-semibold text-gray-600">
+                {props.leftNav}
+              </ul>
+            </nav>
           </div>
 
-          <div className="flex justify-between">
-            <nav aria-label={t('main_navigation_label')}>
-              <ul className="flex flex-wrap gap-x-5 text-xl">{props.leftNav}</ul>
-            </nav>
-
-            <nav>
-              <ul className="flex flex-wrap gap-x-5 text-xl">{props.rightNav}</ul>
-            </nav>
+          {/* Right Action Buttons */}
+          <div className="flex items-center gap-4">
+            <ul className="flex items-center gap-4 text-sm font-semibold">
+              {props.rightNav}
+            </ul>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main>{props.children}</main>
+      {/* Main Content (Allow full-width sections) */}
+      <main className="flex-grow w-full">
+        {props.children}
+      </main>
 
-        <footer className="border-t border-gray-300 py-8 text-center text-sm">
-          {t.rich('footer_text', {
-            year: new Date().getFullYear(),
-            name: AppConfig.name,
-            author: () => (
-              <a
-                href="https://nextjs-boilerplate.com"
-                className="text-blue-700 hover:border-b-2 hover:border-blue-700"
-              >
-                Next.js Boilerplate
-              </a>
-            ),
-          })}
-
-          {/*
-           * PLEASE READ THIS SECTION
-           * I'm an indie maker with limited resources and funds, I'll really appreciate if you could have a link to my website.
-           * The link doesn't need to appear on every pages, one link on one page is enough.
-           * For example, in the `About` page. Thank you for your support, it'll mean a lot to me.
-           */}
-        </footer>
-      </div>
+      {/* Footer */}
+      <footer className="w-full bg-primary text-gray-300 border-t border-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div className="md:col-span-2 space-y-6">
+              <span className="font-bold text-2xl text-white tracking-wider font-display-lg block">
+                Rượu Sâm Ngọc Linh
+              </span>
+              <p className="text-sm text-gray-400 max-w-sm leading-relaxed">
+                © {new Date().getFullYear()} Rượu Sâm Ngọc Linh. Nền tảng số hóa và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
+              </p>
+              <div className="flex gap-4 text-secondary">
+                <span className="text-xs text-gray-500">Trụ sở: 123 Đường Nam Trà My, Tỉnh Quảng Nam, Việt Nam. Hotline: 0847 234 234</span>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h5 className="text-white font-bold text-sm">Sản phẩm</h5>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a className="hover:text-secondary transition-colors" href="#">Marketplace</a></li>
+                <li><a className="hover:text-secondary transition-colors" href="#">Vườn kỹ thuật số</a></li>
+                <li><a className="hover:text-secondary transition-colors" href="#">Gói chăm sóc</a></li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h5 className="text-white font-bold text-sm">Hỗ trợ</h5>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a className="hover:text-secondary transition-colors" href="#">Liên hệ</a></li>
+                <li><a className="hover:text-secondary transition-colors" href="#">Chính sách bảo mật</a></li>
+                <li><a className="hover:text-secondary transition-colors" href="#">Điều khoản sử dụng</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

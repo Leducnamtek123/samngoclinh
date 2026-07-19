@@ -1,0 +1,35 @@
+FROM node:24-alpine
+RUN corepack enable
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/package.json
+COPY apps/admin/package.json ./apps/admin/package.json
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/mobile/package.json ./apps/mobile/package.json
+
+RUN set -x && pnpm install --frozen-lockfile --ignore-scripts
+
+COPY . .
+
+# Declare build arguments for Next.js public env variables
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_KEY
+ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_LOGGING_LEVEL
+ENV NEXT_PUBLIC_LOGGING_LEVEL=$NEXT_PUBLIC_LOGGING_LEVEL
+
+# Build the web application
+RUN pnpm --filter next-js-boilerplate build:next
+
+WORKDIR /app/apps/web
+
+EXPOSE 3002
+ENV PORT=3002
+ENV NODE_ENV=production
+
+# Run migrations at startup and then start the server
+CMD ["sh", "-c", "pnpm db:migrate && pnpm start"]

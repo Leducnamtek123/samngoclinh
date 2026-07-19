@@ -17,9 +17,10 @@ export function UniqueVisitors({
         value: data.averageValue,
         percentageChange: data.percentageChange,
       }}
-      title="Unique Visitors"
+      title="Doanh thu sâm (VND)"
       action={<DashboardCardActionsDropdown />}
       chart={<UniqueVisitorsChart data={data.perMonth} />}
+      formatStyle="currency"
     />
   )
 }

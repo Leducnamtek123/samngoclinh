@@ -5,4 +5,6 @@ export interface IContentArticleItem {
     category: 'news' | 'event' | 'guide' | 'faq';
     publishedAt: string;
     summary: string;
+    image?: string;
+    author?: string;
 }

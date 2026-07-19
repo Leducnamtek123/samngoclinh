@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -7,8 +8,6 @@ import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
 
 import type { LocaleType, SignInFormType } from "@/types"
-
-import { userData } from "@/data/user"
 
 import { SignInSchema } from "@/schemas/sign-in-schema"
 
@@ -39,11 +38,42 @@ export function SignInForm() {
     process.env.NEXT_PUBLIC_HOME_PATHNAME ||
     "/"
 
+  useEffect(() => {
+    const token = searchParams.get("token")
+    const refreshToken = searchParams.get("refreshToken")
+    const expiresIn = searchParams.get("expiresIn")
+    if (token) {
+      const autoLogin = async () => {
+        try {
+          const result = await signIn("credentials", {
+            redirect: false,
+            accessToken: token,
+            refreshToken: refreshToken || "",
+            expiresIn: expiresIn || "3600",
+          })
+
+          if (result && result.error) {
+            throw new Error(result.error)
+          }
+
+          router.push(redirectPathname)
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Auto Sign In Failed",
+            description: error instanceof Error ? error.message : undefined,
+          })
+        }
+      }
+      autoLogin()
+    }
+  }, [searchParams, router, redirectPathname])
+
   const form = useForm<SignInFormType>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
-      email: userData.email,
-      password: userData.password,
+      email: "",
+      password: "",
     },
   })
 

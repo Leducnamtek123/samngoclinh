@@ -15,15 +15,15 @@ export function LandingFooter() {
     <footer className="bg-background border-t-[1px] border-sidebar-border">
       <div className="container flex flex-wrap justify-between gap-6 py-6 md:px-6">
         <section className="max-w-prose w-full mb-3 space-y-1.5 md:w-auto">
-          <Link href="/" className="w-fit flex text-foreground font-black mb-6">
+          <Link href="/" className="w-fit flex items-center gap-2 text-foreground font-black mb-6">
             <Image
-              src="/images/icons/shadboard.svg"
-              alt=""
+              src="/images/logo_ruou_sam.png"
+              alt="Logo"
               height={24}
               width={24}
-              className="dark:invert"
+              className="rounded-full object-cover"
             />
-            <span>Shadboard</span>
+            <span>Sâm Ngọc Linh</span>
           </Link>
           <h3 className="font-semibold leading-none tracking-tight">
             Subscribe to our newsletter
@@ -66,25 +66,11 @@ export function LandingFooter() {
             © {currentYear}{" "}
             <a
               href="/"
-              target="_blank"
-              rel="noopener noreferrer"
               className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
             >
-              Shadboard
+              Sâm Ngọc Linh
             </a>
-            .
-          </p>
-          <p className="text-xs text-muted-foreground md:text-sm">
-            Designed & Developed by{" "}
-            <a
-              href="https://github.com/Qualiora"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
-            >
-              Qualiora
-            </a>
-            .
+            . All rights reserved.
           </p>
         </div>
       </div>

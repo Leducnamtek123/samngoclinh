@@ -17,10 +17,10 @@ export function AverageSessionDuration({
         value: data.averageValue,
         percentageChange: data.percentageChange,
       }}
-      title="Avg. Session Duration"
+      title="Tổng số cây sâm"
       action={<DashboardCardActionsDropdown />}
       chart={<AverageSessionDurationChart data={data.perMonth} />}
-      formatStyle="duration"
+      formatStyle="regular"
     />
   )
 }

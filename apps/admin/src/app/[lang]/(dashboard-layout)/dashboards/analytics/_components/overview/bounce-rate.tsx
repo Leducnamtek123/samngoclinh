@@ -13,10 +13,10 @@ export function BounceRate({ data }: { data: OverviewType["bounceRate"] }) {
         value: data.averageValue,
         percentageChange: data.percentageChange,
       }}
-      title="Bounce Rate"
+      title="Hợp đồng điện tử"
       action={<DashboardCardActionsDropdown />}
       chart={<BounceRateChart data={data.perMonth} />}
-      formatStyle="percent"
+      formatStyle="regular"
     />
   )
 }

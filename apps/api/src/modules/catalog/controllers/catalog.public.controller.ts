@@ -1,6 +1,6 @@
 import { Controller, Get, Param, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from '@common/response/decorators/response.decorator';
+import { Response, ResponsePaging } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { CatalogService } from '@modules/catalog/services/catalog.service';
 import {
@@ -9,10 +9,10 @@ import {
     CatalogPublicListPlantsDoc,
     CatalogPublicListShopItemsDoc,
 } from '@modules/catalog/docs/catalog.public.doc';
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
-import { CatalogPlantResponseDto } from '@modules/catalog/dtos/response/catalog.plant.response.dto';
-import { CatalogProductResponseDto } from '@modules/catalog/dtos/response/catalog.product.response.dto';
-import { CatalogPlant, CatalogProduct } from '@generated/prisma-client';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { CatalogPlant, CatalogProduct, Prisma } from '@generated/prisma-client';
+import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @ApiTags('modules.public.catalog')
 @Controller({
@@ -23,23 +23,43 @@ export class CatalogPublicController {
     constructor(private readonly catalogService: CatalogService) {}
 
     @CatalogPublicListPlantsDoc()
-    @Response('catalog.listPlants')
+    @ResponsePaging('catalog.listPlants')
     @ApiKeyProtected()
     @Get('/plants')
-    async listPlants(): Promise<
-        IResponseReturn<{ items: CatalogPlantResponseDto[] }>
-    > {
-        return this.catalogService.listPlants();
+    async listPlants(
+        @PaginationOffsetQuery({
+            availableSearch: ['name', 'code'],
+            availableOrderBy: ['createdAt', 'name', 'price'],
+            defaultPerPage: 10,
+        })
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogPlantSelect,
+            Prisma.CatalogPlantWhereInput
+        >,
+        @PaginationQueryFilterEqualString('status')
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogPlant>> {
+        return this.catalogService.listPlantsPaginated(pagination, status);
     }
 
     @CatalogPublicListShopItemsDoc()
-    @Response('catalog.listShopItems')
+    @ResponsePaging('catalog.listShopItems')
     @ApiKeyProtected()
     @Get('/shop-items')
-    async listShopItems(): Promise<
-        IResponseReturn<{ items: CatalogProductResponseDto[] }>
-    > {
-        return this.catalogService.listShopItems();
+    async listShopItems(
+        @PaginationOffsetQuery({
+            availableSearch: ['name', 'code'],
+            availableOrderBy: ['createdAt', 'name', 'price'],
+            defaultPerPage: 10,
+        })
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CatalogProductSelect,
+            Prisma.CatalogProductWhereInput
+        >,
+        @PaginationQueryFilterEqualString('status')
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CatalogProduct>> {
+        return this.catalogService.listShopItemsPaginated(pagination, status);
     }
 
     @CatalogPublicGetPlantDoc()

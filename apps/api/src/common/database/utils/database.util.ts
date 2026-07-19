@@ -1,31 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@generated/prisma-client';
-import ObjectID from 'bson-objectid';
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 
 /**
- * BSON ObjectID helpers and deep-clone casts to Prisma `JsonObject` types.
+ * UUID helpers and deep-clone casts to Prisma `JsonObject` types.
  */
 @Injectable()
 export class DatabaseUtil {
     checkIdIsValid(id: string): boolean {
-        return ObjectID.isValid(id);
+        return id ? uuidValidate(id) : false;
     }
 
     createId(): string {
-        return ObjectID().toHexString();
+        return uuidv4();
     }
 
     /**
      * Deep-clones `data` and casts it to a Prisma-compatible plain object.
      */
-    toPlainObject<T, N = Prisma.JsonObject>(data: T): N {
+    toPlainObject<T, N = any>(data: T): N {
         return structuredClone(data as unknown) as N;
     }
 
     /**
      * Deep-clones `data` and casts it to a Prisma-compatible plain array.
      */
-    toPlainArray<T, N = Prisma.JsonObject>(data: T): N[] {
-        return structuredClone(data) as N[];
+    toPlainArray<T>(data: T): any {
+        return structuredClone(data);
     }
 }

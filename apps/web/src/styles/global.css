@@ -1,3 +1,12 @@
 @layer theme, base, clerk, components, utilities; /* Ensure Clerk is compatible with Tailwind CSS v4 */
 
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: #1C3F24;
+  --color-primary-hover: #122B18;
+  --color-secondary: #22C55E;
+  --color-secondary-hover: #16A34A;
+  --color-brand-bg: #FCF9F8;
+  --color-brand-surface: #FFFFFF;
+}

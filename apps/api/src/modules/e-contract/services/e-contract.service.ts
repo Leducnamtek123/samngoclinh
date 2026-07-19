@@ -1,8 +1,9 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { IEContractService } from '@modules/e-contract/interfaces/e-contract.service.interface';
 import { EContractRepository } from '@modules/e-contract/repositories/e-contract.repository';
-import { EContract } from '@generated/prisma-client';
+import { EContract, Prisma } from '@generated/prisma-client';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';
 import { EContractRenewRequestDto } from '@modules/e-contract/dtos/request/e-contract.renew.request.dto';
@@ -41,6 +42,16 @@ export class EContractService implements IEContractService {
         return {
             data: contracts,
         };
+    }
+
+    async listContractsPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.EContractSelect,
+            Prisma.EContractWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<EContract>> {
+        return this.eContractRepository.listContractsPaginated(pagination, status);
     }
 
     async signContract(id: string, userId: string, payload: EContractSignRequestDto): Promise<IResponseReturn<EContract>> {

@@ -37,4 +37,56 @@ export class BackofficeOverviewResponseDto {
     })
     @Expose()
     totalArticles: number;
+
+    @ApiProperty({ required: true, example: 5 })
+    @Expose()
+    totalGardens: number;
+
+    @ApiProperty({ required: true, example: 12 })
+    @Expose()
+    totalBeds: number;
+
+    @ApiProperty({ required: true, example: 350 })
+    @Expose()
+    totalTrees: number;
+
+    @ApiProperty({ required: true, example: 45 })
+    @Expose()
+    totalOrders: number;
+
+    @ApiProperty({ required: true, example: 150000000 })
+    @Expose()
+    totalRevenue: number;
+
+    @ApiProperty({ required: true, example: 20 })
+    @Expose()
+    totalContracts: number;
+
+    @ApiProperty({ required: true, example: 15 })
+    @Expose()
+    totalSignedContracts: number;
+
+    @ApiProperty({ required: true, example: 100 })
+    @Expose()
+    totalUsers: number;
+
+    @ApiProperty({ required: false })
+    @Expose()
+    monthlyRevenue?: any[];
+
+    @ApiProperty({ required: false })
+    @Expose()
+    trafficSources?: any[];
+
+    @ApiProperty({ required: false })
+    @Expose()
+    newVsReturning?: any;
+
+    @ApiProperty({ required: false })
+    @Expose()
+    visitorsByCountry?: any[];
+
+    @ApiProperty({ required: false })
+    @Expose()
+    engagementByDevice?: any[];
 }

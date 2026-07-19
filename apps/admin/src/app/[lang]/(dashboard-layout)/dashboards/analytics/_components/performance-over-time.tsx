@@ -39,14 +39,21 @@ function PerformanceOverTimeActionButton() {
   )
 }
 
-export function PerformanceOverTime() {
+export function PerformanceOverTime({ stats }: { stats: any }) {
+  const summary = stats?.monthlyRevenue ? {
+    totalVisitors: stats.monthlyRevenue.reduce((sum: number, r: any) => sum + r.visitors, 0),
+    totalConversions: stats.monthlyRevenue.reduce((sum: number, r: any) => sum + r.conversions, 0),
+  } : performanceOverTimeData.summary;
+
+  const performance = stats?.monthlyRevenue || performanceOverTimeData.performance;
+
   return (
     <DashboardCard
-      title="Performance over Time"
+      title="Tăng trưởng qua Thời gian"
       action={<PerformanceOverTimeActionButton />}
     >
-      <PerformanceOverTimeSummary data={performanceOverTimeData.summary} />
-      <PerformanceOverTimeChart data={performanceOverTimeData.performance} />
+      <PerformanceOverTimeSummary data={summary} />
+      <PerformanceOverTimeChart data={performance} />
     </DashboardCard>
   )
 }

@@ -23,7 +23,7 @@ import { WalletAdminAdjustRequestDto } from '@modules/wallet/dtos/request/wallet
 @ApiTags('modules.admin.wallet')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/wallet',
+    path: '/wallet',
 })
 export class WalletAdminController {
     constructor(private readonly walletService: WalletService) {}

@@ -11,13 +11,13 @@ export function DocsHeader() {
       <div className="container flex justify-between items-center gap-2 p-4">
         <Link href="/docs" className="inline-flex text-foreground font-black">
           <Image
-            src="/images/icons/shadboard.svg"
-            alt=""
+            src="/images/logo_ruou_sam.png"
+            alt="Logo"
             height={24}
             width={24}
-            className="dark:invert"
+            className="rounded-full object-cover"
           />
-          <span>Shadboard</span>
+          <span>Sâm Ngọc Linh Admin</span>
         </Link>
         <DocsCommandMenu buttonClassName="ms-auto" />
         <DocsModeDropdown />

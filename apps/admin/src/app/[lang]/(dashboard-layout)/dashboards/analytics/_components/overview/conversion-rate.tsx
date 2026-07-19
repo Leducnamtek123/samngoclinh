@@ -17,10 +17,10 @@ export function ConversionRate({
         value: data.averageValue,
         percentageChange: data.percentageChange,
       }}
-      title="Conversion Rate"
+      title="Người dùng hệ thống"
       action={<DashboardCardActionsDropdown />}
       chart={<ConversionRateChart data={data.perMonth} />}
-      formatStyle="percent"
+      formatStyle="regular"
     />
   )
 }

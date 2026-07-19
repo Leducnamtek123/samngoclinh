@@ -18,7 +18,7 @@ import {
 @ApiTags('modules.admin.content')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/content',
+    path: '/content',
 })
 export class ContentAdminController {
     constructor(private readonly contentService: ContentService) {}

@@ -25,6 +25,8 @@ import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/us
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
+import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
+import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
     UserUpdateProfilePhotoRequestDto,
@@ -144,6 +146,15 @@ export interface IUserService {
         password,
         from,
     }: UserLoginRequestDto): Promise<IResponseReturn<UserLoginResponseDto>>;
+    sendLoginOtp({
+        phone,
+    }: UserLoginSendOtpRequestDto): Promise<{ otp: string }>;
+    verifyLoginOtp({
+        phone,
+        otp,
+        from,
+        device,
+    }: UserLoginVerifyOtpRequestDto): Promise<IResponseReturn<UserLoginResponseDto>>;
     loginWithSocial(
         email: string,
         loginWith: EnumUserLoginWith,

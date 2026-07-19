@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server"
 
-import { userData } from "@/data/user"
-
 import { SignInSchema } from "@/schemas/sign-in-schema"
 
 export async function POST(req: Request) {
@@ -16,22 +14,65 @@ export async function POST(req: Request) {
   const { email, password } = parsedData.data
 
   try {
-    // If provided email and password match the stored user data
-    if (userData.email !== email || userData.password !== password) {
+    const endpoint = 'http://127.0.0.1:3000/api/v1/public/user/login/credential'
+    const bodyPayload = {
+      email,
+      password,
+      from: 'website',
+      device: {
+        fingerprint: 'admin-web-fingerprint',
+      },
+    }
+
+    const apiRes = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP',
+      },
+      body: JSON.stringify(bodyPayload),
+    })
+
+    const payload = await apiRes.json()
+
+    if (apiRes.status >= 400 || !payload.data?.tokens?.accessToken) {
       return NextResponse.json(
-        { message: "Invalid email or password", email },
-        { status: 401 }
+        { message: payload?.message ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' },
+        { status: apiRes.status }
       )
+    }
+
+    const accessToken = payload.data.tokens.accessToken
+    const refreshToken = payload.data.tokens.refreshToken
+    const expiresIn = payload.data.tokens.expiresIn
+
+    let name = "Admin User"
+    let id = "admin-id"
+    let userEmail = email
+
+    const parts = accessToken.split('.')
+    if (parts.length === 3) {
+      try {
+        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'))
+        id = decodedPayload.userId || id
+        name = decodedPayload.username || name
+        userEmail = decodedPayload.email || userEmail
+      } catch (e) {
+        console.error('Failed to decode JWT token payload:', e)
+      }
     }
 
     // Return success response with user data if credentials are correct
     return NextResponse.json(
       {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        avatar: userData.avatar,
-        status: userData.status,
+        id,
+        name,
+        email: userEmail,
+        avatar: "/images/avatars/male-01.svg",
+        status: "ONLINE",
+        accessToken,
+        refreshToken,
+        expiresIn,
       },
       { status: 200 }
     )

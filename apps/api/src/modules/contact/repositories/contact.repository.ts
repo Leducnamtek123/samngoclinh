@@ -1,10 +1,16 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
-import { ContactRequest } from '@generated/prisma-client';
+import { ContactRequest, Prisma } from '@generated/prisma-client';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 
 @Injectable()
 export class ContactRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
+    ) {}
 
     async create(data: {
         fullName: string;
@@ -28,6 +34,27 @@ export class ContactRepository {
     async listAll(): Promise<ContactRequest[]> {
         return this.databaseService.contactRequest.findMany({
             orderBy: { createdAt: 'desc' },
+        });
+    }
+
+    async listPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.ContactRequestSelect,
+            Prisma.ContactRequestWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<ContactRequest>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            ContactRequest,
+            Prisma.ContactRequestSelect,
+            Prisma.ContactRequestWhereInput
+        >(this.databaseService.contactRequest, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
         });
     }
 

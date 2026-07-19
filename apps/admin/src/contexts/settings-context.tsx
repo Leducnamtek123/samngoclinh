@@ -7,7 +7,7 @@ import type { LocaleType, SettingsType } from "@/types"
 import type { ReactNode } from "react"
 
 export const defaultSettings: SettingsType = {
-  theme: "zinc",
+  theme: "green",
   mode: "system",
   radius: 0.5,
   layout: "vertical",

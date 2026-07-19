@@ -1,0 +1,78 @@
+{
+  "RootLayout": {
+    "home_link": "Trang chủ",
+    "about_link": "Giới thiệu",
+    "counter_link": "Bộ đếm",
+    "portfolio_link": "Danh mục",
+    "sign_in_link": "Đăng nhập",
+    "sign_up_link": "Đăng ký"
+  },
+  "BaseTemplate": {
+    "description": "Rượu Sâm Ngọc Linh",
+    "footer_text": "© {year} {name}.",
+    "main_navigation_label": "Menu chính"
+  },
+  "Index": {
+    "meta_title": "Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
+    "meta_description": "Rượu Sâm Ngọc Linh là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi sản phẩm Rượu Sâm Ngọc Linh thật chỉ bằng điện thoại.",
+    "sponsors_title": "Đối tác",
+    "zap_emoji_label": "Tia sét"
+  },
+  "Counter": {
+    "meta_title": "Bộ đếm",
+    "meta_description": "Ví dụ về hoạt động DB",
+    "security_powered_by": "Bảo mật, phát hiện bot và giới hạn tần suất được hỗ trợ bởi"
+  },
+  "CounterForm": {
+    "presentation": "Bộ đếm được lưu trong cơ sở dữ liệu và được tăng lên theo giá trị bạn cung cấp.",
+    "label_increment": "Tăng thêm",
+    "button_increment": "Tăng",
+    "error_increment_range": "Giá trị phải từ 1 đến 3"
+  },
+  "CurrentCount": {
+    "count": "Số lượng : {count}"
+  },
+  "About": {
+    "meta_title": "Giới thiệu",
+    "meta_description": "Mô tả giới thiệu",
+    "about_paragraph": "Chào mừng bạn đến với trang giới thiệu của chúng tôi! Chúng tôi là một đội ngũ đam mê và tận tâm trong việc phát triển phần mềm.",
+    "translation_powered_by": "Bản dịch được cung cấp bởi"
+  },
+  "Portfolio": {
+    "meta_title": "Danh mục",
+    "meta_description": "Chào mừng bạn đến với trang danh mục của tôi !",
+    "presentation": "Chào mừng đến với trang danh mục của chúng tôi! Ở đây bạn sẽ tìm thấy bộ sưu tập các sản phẩm và thành tựu được chọn lọc cẩn thận.",
+    "portfolio_name": "Danh mục {name}",
+    "error_reporting_powered_by": "Báo cáo lỗi được cung cấp bởi"
+  },
+  "PortfolioSlug": {
+    "meta_title": "Danh mục {slug}",
+    "meta_description": "Mô tả danh mục {slug}",
+    "header": "Danh mục {slug}",
+    "content": "Thiết kế tài liệu truyền thông và nhận diện thương hiệu cho doanh nghiệp. Thiết kế đồng bộ bao gồm logo, tờ rơi, banner và tài sản số.",
+    "code_review_powered_by": "Đánh giá mã nguồn được cung cấp bởi"
+  },
+  "SignIn": {
+    "meta_title": "Đăng nhập",
+    "meta_description": "Đăng nhập vào tài khoản của bạn dễ dàng."
+  },
+  "SignUp": {
+    "meta_title": "Đăng ký",
+    "meta_description": "Tạo tài khoản nhanh chóng qua quy trình đăng ký trực quan."
+  },
+  "Dashboard": {
+    "hello_message": "Xin chào {email}!",
+    "alternative_message": "Cần tính năng nâng cao?",
+    "max_message": "Hoặc cần hệ thống tự lưu trữ auth?"
+  },
+  "DashboardLayout": {
+    "meta_title": "Bảng điều khiển",
+    "meta_description": "Quản lý tài khoản từ bảng điều khiển.",
+    "dashboard_link": "Bảng điều khiển",
+    "user_profile_link": "Quản lý tài khoản",
+    "sign_out": "Đăng xuất"
+  },
+  "LocaleSwitcher": {
+    "change_language": "Thay đổi ngôn ngữ"
+  }
+}

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL, UploadedFile, HttpStatus, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -8,6 +8,12 @@ import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CatalogPlant, CatalogProduct, EnumRoleType } from '@generated/prisma-client';
 import { CatalogService } from '../services/catalog.service';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { FileUploadSingle } from '@common/file/decorators/file.decorator';
+import { IFile } from '@common/file/interfaces/file.interface';
+import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
+import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
+import { RequestRequiredPipe } from '@common/request/pipes/request.required.pipe';
+import { v2 as cloudinary } from 'cloudinary';
 import {
     CatalogPlantCreateDto,
     CatalogPlantUpdateDto,
@@ -26,7 +32,7 @@ import {
 @ApiTags('modules.admin.catalog')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/catalog',
+    path: '/catalog',
 })
 export class CatalogAdminController {
     constructor(private readonly catalogService: CatalogService) {}
@@ -95,5 +101,61 @@ export class CatalogAdminController {
     @Delete('/shop-items/:id')
     async deleteProduct(@Param('id') id: string): Promise<IResponseReturn<CatalogProduct>> {
         return this.catalogService.deleteProduct(id);
+    }
+
+    @Response('catalog.listPlants')
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @FileUploadSingle()
+    @HttpCode(HttpStatus.OK)
+    @Post('/upload')
+    async uploadFile(
+        @UploadedFile(
+            RequestRequiredPipe,
+            FileExtensionPipe([
+                EnumFileExtensionImage.jpeg,
+                EnumFileExtensionImage.png,
+                EnumFileExtensionImage.jpg,
+            ])
+        )
+        file: IFile
+    ): Promise<IResponseReturn<{ url: string }>> {
+        try {
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET,
+            });
+
+            const uploadFromBuffer = (buffer: Buffer): Promise<any> => {
+                return new Promise((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        {
+                            folder: 'samngoclinh',
+                        },
+                        (error, result) => {
+                            if (result) {
+                                resolve(result);
+                            } else {
+                                reject(error);
+                            }
+                        }
+                    );
+                    uploadStream.end(buffer);
+                });
+            };
+
+            const result = await uploadFromBuffer(file.buffer);
+            return {
+                data: {
+                    url: result.secure_url,
+                },
+            };
+        } catch (e: any) {
+            console.error('CLOUDINARY UPLOAD FAILED:', e);
+            throw new Error(`Cloudinary upload failed: ${e?.message || e}`);
+        }
     }
 }

@@ -43,4 +43,18 @@ export class ContentArticleResponseDto {
     })
     @Expose()
     summary: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'https://image-url.com/image.jpg',
+    })
+    @Expose()
+    image?: string;
+
+    @ApiProperty({
+        required: false,
+        example: 'iWE FARM',
+    })
+    @Expose()
+    author?: string;
 }

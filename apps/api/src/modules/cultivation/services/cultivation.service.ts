@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { ICultivationService } from '@modules/cultivation/interfaces/cultivation.service.interface';
 import { CultivationRepository } from '@modules/cultivation/repositories/cultivation.repository';
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
@@ -14,7 +14,8 @@ import { CultivationUpdateBookingStatusRequestDto } from '@modules/cultivation/d
 import { CultivationUpdateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-garden.request.dto';
 import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-bed.request.dto';
 import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
-import { CultivationBed, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
+import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking, Prisma } from '@generated/prisma-client';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class CultivationService implements ICultivationService {
@@ -36,14 +37,41 @@ export class CultivationService implements ICultivationService {
         };
     }
 
-    async beds(userId: string): Promise<IResponseReturn<{ items: CultivationBedResponseDto[] }>> {
-        const items = await this.cultivationRepository.getBeds(userId);
+    async gardensPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>> {
+        return this.cultivationRepository.getGardensPaginated(userId, isAdmin, pagination);
+    }
 
+    async gardensList(userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden[]>> {
+        const gardens = await this.cultivationRepository.getGardensList(userId, isAdmin);
         return {
-            data: {
-                items,
-            },
+            data: gardens,
         };
+    }
+
+    async beds(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationBedSelect,
+            Prisma.CultivationBedWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        gardenCode?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationBedResponseDto>> {
+        return this.cultivationRepository.getBedsPaginated(
+            userId,
+            isAdmin,
+            pagination,
+            status,
+            gardenCode
+        );
     }
 
     async createGarden(userId: string, payload: CultivationCreateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>> {
@@ -121,7 +149,7 @@ export class CultivationService implements ICultivationService {
     }
 
     async updateGarden(id: string, payload: CultivationUpdateGardenRequestDto): Promise<IResponseReturn<CultivationGarden>> {
-        const res = await this.cultivationRepository.updateGarden(id, payload.name, payload.metadata);
+        const res = await this.cultivationRepository.updateGarden(id, payload);
         return { data: res };
     }
 
@@ -131,7 +159,7 @@ export class CultivationService implements ICultivationService {
     }
 
     async updateBed(id: string, payload: CultivationUpdateBedRequestDto): Promise<IResponseReturn<CultivationBed>> {
-        const res = await this.cultivationRepository.updateBed(id, payload.name, payload.ageYear, payload.treeCount, payload.metadata);
+        const res = await this.cultivationRepository.updateBed(id, payload);
         return { data: res };
     }
 
@@ -141,7 +169,7 @@ export class CultivationService implements ICultivationService {
     }
 
     async updateTree(id: string, payload: CultivationUpdateTreeRequestDto): Promise<IResponseReturn<CultivationTree>> {
-        const res = await this.cultivationRepository.updateTree(id, payload.name, payload.ageYear, payload.quantity, payload.status, payload.metadata);
+        const res = await this.cultivationRepository.updateTree(id, payload);
         return { data: res };
     }
 
@@ -150,27 +178,64 @@ export class CultivationService implements ICultivationService {
         return { data: undefined };
     }
 
-    async gardenDetail(id: string, userId: string): Promise<IResponseReturn<CultivationGarden>> {
-        const garden = await this.cultivationRepository.getGardenDetail(id, userId);
+    async gardenDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden>> {
+        const garden = await this.cultivationRepository.getGardenDetail(id, userId, isAdmin);
         if (!garden) {
             throw new NotFoundException('Garden not found');
         }
         return { data: garden };
     }
 
-    async bedDetail(id: string, userId: string): Promise<IResponseReturn<any>> {
-        const bed = await this.cultivationRepository.getBedDetail(id, userId);
+    async bedDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>> {
+        const bed = await this.cultivationRepository.getBedDetail(id, userId, isAdmin);
         if (!bed) {
             throw new NotFoundException('Bed not found');
         }
         return { data: bed };
     }
 
-    async treeDetail(id: string, userId: string): Promise<IResponseReturn<any>> {
-        const tree = await this.cultivationRepository.getTreeDetail(id, userId);
+    async treeDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>> {
+        const tree = await this.cultivationRepository.getTreeDetail(id, userId, isAdmin);
         if (!tree) {
             throw new NotFoundException('Tree not found');
         }
         return { data: tree };
+    }
+
+    async getBedLocations(bedCode: string): Promise<IResponseReturn<CultivationBedLocation[]>> {
+        const res = await this.cultivationRepository.getBedLocations(bedCode);
+        return { data: res };
+    }
+
+    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<any>> {
+        const res = await this.cultivationRepository.generateBedLocations(bedCode, rows, cols);
+        return { data: res };
+    }
+
+    async updateBedLocation(id: string, status: string, treeCode?: string): Promise<IResponseReturn<CultivationBedLocation>> {
+        const res = await this.cultivationRepository.updateBedLocation(id, status, treeCode);
+        return { data: res };
+    }
+
+    async deleteBedLocation(id: string): Promise<IResponseReturn<void>> {
+        await this.cultivationRepository.deleteBedLocation(id);
+        return { data: undefined };
+    }
+
+    async listAllTreesAdmin(): Promise<IResponseReturn<CultivationTree[]>> {
+        const res = await this.cultivationRepository.listAllTreesAdmin();
+        return { data: res };
+    }
+
+    async listAllTreesAdminPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationTreeSelect,
+            Prisma.CultivationTreeWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>,
+        health?: Record<string, IPaginationEqual>,
+        ownerUserId?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<CultivationTree>> {
+        return this.cultivationRepository.listAllTreesAdminPaginated(pagination, status, health, ownerUserId);
     }
 }

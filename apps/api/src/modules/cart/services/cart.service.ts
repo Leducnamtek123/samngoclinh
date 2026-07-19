@@ -78,7 +78,7 @@ export class CartService implements ICartService {
         }
 
         return {
-            data: await this.mapToSummaryDto(cart.items),
+            data: await this.mapToSummaryDto(cart.items as any),
         };
     }
 
@@ -111,7 +111,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items),
+            data: await this.mapToSummaryDto(cart.items as any),
         };
     }
 
@@ -141,7 +141,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items),
+            data: await this.mapToSummaryDto(cart.items as any),
         };
     }
 
@@ -155,7 +155,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items),
+            data: await this.mapToSummaryDto(cart.items as any),
         };
     }
 
@@ -165,7 +165,7 @@ export class CartService implements ICartService {
         const cart = await this.cartRepository.clearCart(userId);
 
         return {
-            data: await this.mapToSummaryDto(cart.items),
+            data: await this.mapToSummaryDto(cart.items as any),
         };
     }
 }

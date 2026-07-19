@@ -1,13 +1,14 @@
 # Dependencies & build output (reinstalled / regenerated inside the image)
-node_modules/
-dist/
-generated/
-.pnpm-store/
-.swc/
-.turbo/
-.parcel-cache/
-.warmup/
-*.tsbuildinfo
+**/node_modules/
+**/dist/
+**/generated/
+**/.pnpm-store/
+**/.swc/
+**/.turbo/
+**/.parcel-cache/
+**/.warmup/
+**/*.tsbuildinfo
+**/.next/
 
 # Generated artifacts
 swagger.json

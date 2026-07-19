@@ -44,7 +44,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="Device Type"
+          title="Loại Thiết bị"
           className="ms-4"
         />
       ),
@@ -58,7 +58,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       id: "sessionDuration",
       accessorKey: "sessionDuration",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Session Duration" />
+        <DataTableColumnHeader column={column} title="Thời lượng Xem" />
       ),
       cell: ({ row }) => {
         const sessionDuration = row.getValue("sessionDuration") as number
@@ -75,7 +75,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       id: "pagesPerSession",
       accessorKey: "pagesPerSession",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Pages per Session" />
+        <DataTableColumnHeader column={column} title="Sản phẩm xem / lần" />
       ),
       cell: ({ row }) => {
         const pagesPerSession = row.getValue("pagesPerSession") as number
@@ -87,7 +87,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       id: "bounceRate",
       accessorKey: "bounceRate",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Bounce Rate (%)" />
+        <DataTableColumnHeader column={column} title="Tỷ lệ Thoát (%)" />
       ),
       cell: ({ row }) => {
         const bounceRate = row.getValue("bounceRate") as number
@@ -99,7 +99,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       id: "userPercentage",
       accessorKey: "userPercentage",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="User Percentage (%)" />
+        <DataTableColumnHeader column={column} title="Tỷ lệ Thành viên (%)" />
       ),
       cell: ({ row }) => {
         const userPercentage = row.getValue("userPercentage") as number
@@ -111,7 +111,7 @@ export const engagementByDeviceTableColumns: ColumnDef<EngagementByDeviceType>[]
       id: "conversionRate",
       accessorKey: "conversionRate",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Conversion Rate (%)" />
+        <DataTableColumnHeader column={column} title="Tỷ lệ Mua hàng (%)" />
       ),
       cell: ({ row }) => {
         const conversionRate = row.getValue("conversionRate") as number

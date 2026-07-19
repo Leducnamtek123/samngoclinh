@@ -24,7 +24,7 @@ import { ProfileAdminUpdateRankRequestDto } from '@modules/profile/dtos/request/
 @ApiTags('modules.admin.profile')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/profile/business',
+    path: '/profile/business',
 })
 export class ProfileAdminController {
     constructor(private readonly profileService: ProfileService) {}

@@ -3,10 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { IContentArticleItem } from '@modules/content/interfaces/content.interface';
 import { ContentArticle, Prisma } from '@prisma/client';
 import { ContentArticleCreateDto, ContentArticleUpdateDto } from '../dtos/content.admin.dto';
+import { PaginationService } from '@common/pagination/services/pagination.service';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 
 @Injectable()
 export class ContentRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly paginationService: PaginationService
+    ) {}
 
     async listArticles(): Promise<IContentArticleItem[]> {
         const items = await this.databaseService.contentArticle.findMany({
@@ -19,6 +25,8 @@ export class ContentRepository {
                 summary: true,
                 publishedAt: true,
                 createdAt: true,
+                coverImage: true,
+                metadata: true,
             },
         });
 
@@ -29,7 +37,30 @@ export class ContentRepository {
             category: item.category as IContentArticleItem['category'],
             publishedAt: (item.publishedAt ?? item.createdAt).toISOString(),
             summary: item.summary,
+            image: item.coverImage || undefined,
+            author: (item.metadata as any)?.authorName || 'iWE FARM',
         }));
+    }
+
+    async listArticlesPaginated(
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.ContentArticleSelect,
+            Prisma.ContentArticleWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<ContentArticle>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            ContentArticle,
+            Prisma.ContentArticleSelect,
+            Prisma.ContentArticleWhereInput
+        >(this.databaseService.contentArticle, {
+            ...params,
+            where: {
+                ...where,
+                ...status,
+            },
+        });
     }
 
     async createArticle(data: ContentArticleCreateDto): Promise<ContentArticle> {
@@ -74,8 +105,8 @@ export class ContentRepository {
     }
 
     async getArticleDetail(idOrSlug: string): Promise<ContentArticle | null> {
-        const isObjectId = /^[0-9a-fA-F]{24}$/.test(idOrSlug);
-        if (isObjectId) {
+        const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(idOrSlug);
+        if (isUuid) {
             return this.databaseService.contentArticle.findUnique({
                 where: { id: idOrSlug },
             });

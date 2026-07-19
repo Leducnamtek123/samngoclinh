@@ -52,7 +52,7 @@ export class MigrationApiKeySeed
 
                     return this.databaseService.apiKey.upsert({
                         where: {
-                            key: apiKey.key,
+                            key: key,
                         },
                         create: {
                             hash: hashed,

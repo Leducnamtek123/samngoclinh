@@ -88,6 +88,8 @@ import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/us
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
+import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
+import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
     UserUpdateProfilePhotoRequestDto,
@@ -925,6 +927,89 @@ export class UserService implements IUserService {
         if (checkPasswordExpired) {
             throw new UserPasswordExpiredException();
         }
+
+        return this.handleLogin(
+            user,
+            device,
+            from,
+            EnumUserLoginWith.credential,
+            this.helperService.dateCreate()
+        );
+    }
+
+    async sendLoginOtp({
+        phone,
+    }: UserLoginSendOtpRequestDto): Promise<{ otp: string }> {
+        const requestLog: IRequestLog =
+            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
+
+        // Find user by phone number
+        const user = await this.userRepository.findOneWithRoleByEmail(phone);
+        if (!user) {
+            throw new UserNotFoundException();
+        } else if (user.status !== EnumUserStatus.active) {
+            throw new UserInactiveForbiddenException();
+        }
+
+        const today = this.helperService.dateCreate();
+        const lastVerification =
+            await this.userRepository.findOneLatestByVerificationMobileNumber(user.id);
+        if (lastVerification) {
+            const canResendAt = this.helperService.dateForward(
+                lastVerification.createdAt,
+                Duration.fromObject({
+                    minutes: this.userUtil.verificationExpiredInMinutes,
+                })
+            );
+
+            if (today < canResendAt) {
+                throw new UserVerificationEmailResendLimitExceededException(
+                    this.helperService.dateDiff(today, canResendAt).minutes
+                );
+            }
+        }
+
+        const smsVerification =
+            this.userUtil.verificationCreateVerification(
+                user.id,
+                EnumVerificationType.mobileNumber
+            );
+
+        await this.userRepository.requestVerificationMobileNumber(
+            user.id,
+            phone,
+            smsVerification,
+            requestLog
+        );
+
+        return { otp: smsVerification.token };
+    }
+
+    async verifyLoginOtp({
+        phone,
+        otp,
+        from,
+        device,
+    }: UserLoginVerifyOtpRequestDto): Promise<IResponseReturn<UserLoginResponseDto>> {
+        const user = await this.userRepository.findOneWithRoleByEmail(phone);
+        if (!user) {
+            throw new UserNotFoundException();
+        } else if (user.status !== EnumUserStatus.active) {
+            throw new UserInactiveForbiddenException();
+        }
+
+        const verification =
+            await this.userRepository.findOneActiveByVerificationMobileNumberToken(
+                user.id,
+                otp
+            );
+
+        if (!verification) {
+            throw new UserTokenInvalidException();
+        }
+
+        // Mark OTP as used
+        await this.userRepository.markVerificationAsUsed(verification.id);
 
         return this.handleLogin(
             user,

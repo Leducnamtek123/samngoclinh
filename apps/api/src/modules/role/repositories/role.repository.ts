@@ -112,7 +112,7 @@ export class RoleRepository {
         return this.databaseService.role.create({
             data: {
                 name: name,
-                abilities: this.databaseUtil.toPlainArray(abilities),
+                abilities: this.databaseUtil.toPlainArray(abilities) as any,
                 ...others,
             },
         });
@@ -125,7 +125,7 @@ export class RoleRepository {
         return this.databaseService.role.update({
             where: { id },
             data: {
-                abilities: this.databaseUtil.toPlainArray(abilities),
+                abilities: this.databaseUtil.toPlainArray(abilities) as any,
                 ...others,
             },
         });

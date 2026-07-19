@@ -29,7 +29,7 @@ import { PromotionAdminUpdateRequestDto } from '@modules/promotion/dtos/request/
 @ApiTags('modules.admin.promotion')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/admin/promotion/campaigns',
+    path: '/promotion/campaigns',
 })
 export class PromotionAdminController {
     constructor(private readonly promotionService: PromotionService) {}

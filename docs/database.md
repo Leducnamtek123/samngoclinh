@@ -241,11 +241,11 @@ The seeded users differ per environment. This is controlled by `migrationUserDat
 
 **User accounts:**
 
-| Email | Name | Role | Password | Country | Environments |
-|-------|------|------|----------|---------|-------------|
-| superadmin@mail.com | Super Admin | superadmin | `aaAA@123` | ID (Indonesia) | all |
-| admin@mail.com | Admin | admin | `aaAA@123` | ID (Indonesia) | all |
-| user@mail.com | User | user | `aaAA@123` | ID (Indonesia) | `local` only |
+| Email               | Name        | Role       | Password   | Country        | Environments |
+| ---------------------| -------------| ------------| ------------| ----------------| --------------|
+| superadmin@mail.com | Super Admin | superadmin | `aaAA@123` | ID (Indonesia) | all          |
+| admin@mail.com      | Admin       | admin      | `aaAA@123` | ID (Indonesia) | all          |
+| user@mail.com       | User        | user       | `aaAA@123` | ID (Indonesia) | `local` only |
 
 ### Feature Flags
 

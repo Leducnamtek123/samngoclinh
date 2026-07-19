@@ -1,0 +1,38 @@
+FROM node:24-alpine
+RUN apk add --no-cache openssl libc6-compat
+RUN corepack enable
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/admin/package.json ./apps/admin/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/mobile/package.json ./apps/mobile/package.json
+
+RUN set -x && pnpm install --frozen-lockfile --ignore-scripts
+
+COPY . .
+
+# Declare build arguments for Next.js public env variables
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_HOME_PATHNAME
+ENV NEXT_PUBLIC_HOME_PATHNAME=$NEXT_PUBLIC_HOME_PATHNAME
+
+# Generate prisma client for admin using local prisma version relative to the apps/admin folder
+RUN pnpm --filter shadboard-nextjs-full-kit exec prisma generate --schema=prisma/schema.prisma
+
+# Copy the generated client to the root node_modules so Next.js can resolve it in the monorepo
+RUN mkdir -p node_modules/.prisma && cp -R apps/admin/node_modules/.prisma/client node_modules/.prisma/
+
+# Build the admin application
+RUN pnpm --filter shadboard-nextjs-full-kit build
+
+WORKDIR /app/apps/admin
+
+EXPOSE 3001
+ENV PORT=3001
+ENV NODE_ENV=production
+
+# Run db push to update SQLite using local prisma version, then start the server
+CMD ["sh", "-c", "pnpm exec prisma db push --accept-data-loss --schema=prisma/schema.prisma && pnpm start"]

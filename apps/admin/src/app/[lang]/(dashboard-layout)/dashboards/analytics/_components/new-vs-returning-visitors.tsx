@@ -4,15 +4,28 @@ import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { NewVsReturningVisitorsChart } from "./new-vs-returning-visitors-chart"
 import { NewVsReturningVisitorsList } from "./new-vs-returning-visitors-list"
 
-export function NewVsReturningVisitors() {
+export function NewVsReturningVisitors({ stats }: { stats: any }) {
+  const visitors = stats?.newVsReturning ? {
+    new: {
+      value: stats.newVsReturning.summary.newVisitors,
+      percentageChange: 0.65,
+      fill: "hsl(var(--chart-1))",
+    },
+    returning: {
+      value: stats.newVsReturning.summary.returningVisitors,
+      percentageChange: 0.35,
+      fill: "hsl(var(--chart-2))",
+    }
+  } : newVsReturningVisitors.visitors;
+
   return (
     <DashboardCard
-      title="New vs. Returning Visitors"
+      title="Khách hàng mới vs. Thường niên"
       size="xs"
       contentClassName="gap-y-3"
     >
-      <NewVsReturningVisitorsChart data={newVsReturningVisitors.visitors} />
-      <NewVsReturningVisitorsList data={newVsReturningVisitors.visitors} />
+      <NewVsReturningVisitorsChart data={visitors} />
+      <NewVsReturningVisitorsList data={visitors} />
     </DashboardCard>
   )
 }

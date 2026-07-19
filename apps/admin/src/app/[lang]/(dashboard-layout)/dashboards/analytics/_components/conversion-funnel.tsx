@@ -10,7 +10,7 @@ import { ConversionFunnelList } from "./conversion-funnel-list"
 export function ConversionFunnel() {
   return (
     <DashboardCard
-      title="Conversion Funnel"
+      title="Phễu Mua hàng & Ký kết"
       period={conversionFunnelData.period}
       action={<DashboardCardActionsDropdown />}
       className="overflow-hidden"

@@ -31,7 +31,7 @@ type FormType = z.infer<typeof FormLayoutsSchema>
 
 export function VerticalFormLayout() {
   const form = useForm<FormType>({
-    resolver: zodResolver(FormLayoutsSchema),
+    resolver: zodResolver(FormLayoutsSchema as any),
   })
 
   const { isSubmitting, isDirty } = form.formState
