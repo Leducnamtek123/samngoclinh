@@ -11,7 +11,7 @@ import { cn, formatNumberToCompact, getInitials } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 export function ProfileHeader({ locale, user }: { locale: LocaleType; user?: any }) {
   const profileUser = user || userData

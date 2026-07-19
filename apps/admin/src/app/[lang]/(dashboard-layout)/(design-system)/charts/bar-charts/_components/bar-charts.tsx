@@ -1,15 +1,8 @@
 "use client"
 
-import {
-  Bar,
-  BarChart,
-  Brush,
-  CartesianGrid,
-  Cell,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -29,6 +22,10 @@ const barChartsData = [
 ]
 
 export function BarCharts() {
+  const recharts = useRecharts();
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Bar, BarChart, Brush, CartesianGrid, Cell, ReferenceLine, XAxis, YAxis } = recharts;
+
   return (
     <section className="conatiner grid gap-4 p-4">
       <Card>
@@ -235,7 +232,7 @@ export function BarCharts() {
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar dataKey="uv" fill="hsl(var(--chart-1))">
                 {barChartsData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="hsl(var(--chart-1))" />
+                  <Cell key={`cell-${entry.name}`} fill="hsl(var(--chart-1))" />
                 ))}
               </Bar>
             </BarChart>

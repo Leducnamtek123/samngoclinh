@@ -73,7 +73,7 @@ export function ResponsiveBreadcrumb() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start">
                         {items.slice(1, -2).map((item, index) => (
-                          <DropdownMenuItem key={index}>
+                          <DropdownMenuItem key={item.href || item.label}>
                             <Link href={item.href ? item.href : "#"}>
                               {item.label}
                             </Link>
@@ -96,7 +96,7 @@ export function ResponsiveBreadcrumb() {
                         <div className="grid gap-1 px-4">
                           {items.slice(1, -2).map((item, index) => (
                             <Link
-                              key={index}
+                              key={item.href || item.label}
                               href={item.href ? item.href : "#"}
                               className="py-1 text-sm"
                             >
@@ -117,7 +117,7 @@ export function ResponsiveBreadcrumb() {
               </>
             ) : null}
             {items.slice(-ITEMS_TO_DISPLAY + 1).map((item, index) => (
-              <BreadcrumbItem key={index}>
+              <BreadcrumbItem key={item.href || item.label}>
                 {item.href ? (
                   <>
                     <BreadcrumbLink

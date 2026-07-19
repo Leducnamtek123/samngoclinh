@@ -14,7 +14,7 @@ import { headerNavigationData } from "../../_data/header-navigation"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn, isActivePathname } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { LanguageDropdown } from "@/components/language-dropdown"
 import { ModeDropdown } from "@/components/mode-dropdown"
 import { LandingSidebar } from "./landing-sidebar"

@@ -11,7 +11,7 @@ import { cn, formatUnreadCount } from "@/lib/utils"
 
 import { useEmailContext } from "../_hooks/use-email-context"
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { DynamicIcon } from "@/components/dynamic-icon"
 
 interface EmailSidebarItemProps {

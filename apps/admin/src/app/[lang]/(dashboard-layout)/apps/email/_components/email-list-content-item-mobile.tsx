@@ -48,37 +48,37 @@ export function EmailListContentItemMoblie({
     <li
       key={email.id}
       className={cn(
-        "flex items-center justify-between gap-1.5 p-1 ps-3 cursor-pointer",
+        "flex items-center justify-between gap-1.5 p-1 ps-3",
         email.read && "bg-muted"
       )}
-      onClick={handleOnClick}
-      onKeyDown={handleOnKeyDown}
-      tabIndex={0}
     >
       <Checkbox
         checked={isSelected}
         onCheckedChange={() => handleToggleSelectEmail(email)}
-        onClick={(e) => e.stopPropagation()}
         aria-label="Select email"
       />
 
-      <div className="flex-1 px-2">
-        <span className="font-bold line-clamp-1 break-all">
+      <button
+        type="button"
+        className="flex-1 text-left px-2 focus-visible:outline-none"
+        onClick={handleOnClick}
+        onKeyDown={handleOnKeyDown}
+      >
+        <span className="block font-bold line-clamp-1 break-all">
           {email.subject}
         </span>
-        <span className="text-muted-foreground line-clamp-1 break-all">
+        <span className="block text-muted-foreground line-clamp-1 break-all">
           From {email.sender.name}
         </span>
-        <span className="text-sm text-muted-foreground">
+        <span className="block text-sm text-muted-foreground">
           {formatDate(email.createdAt)}
         </span>
-      </div>
+      </button>
       <Button
         variant="ghost"
         size="icon"
         className="h-4 w-4"
-        onClick={(e) => {
-          e.stopPropagation()
+        onClick={() => {
           handleToggleStarEmail(email)
         }}
         aria-label={isStarred ? `Unstar email` : `Star email`}
@@ -97,7 +97,6 @@ export function EmailListContentItemMoblie({
           <Button
             variant="ghost"
             size="icon"
-            onClick={(e) => e.stopPropagation()}
             aria-label="More actions"
           >
             <EllipsisVertical className="h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, Suspense } from "react"
+import { useEffect, useState, useCallback, Suspense } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
@@ -52,7 +52,7 @@ function OrderDetailsContent() {
   const [errorMsg, setErrorMsg] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
 
-  const loadOrderDetails = async () => {
+  const loadOrderDetails = useCallback(async () => {
     if (!orderId) {
       setErrorMsg("Không tìm thấy mã đơn hàng")
       setLoading(false)
@@ -73,11 +73,11 @@ function OrderDetailsContent() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [orderId])
 
   useEffect(() => {
     loadOrderDetails()
-  }, [orderId])
+  }, [orderId, loadOrderDetails])
 
   const handleUpdateStatus = async (status: string) => {
     if (!orderId) return
@@ -96,7 +96,6 @@ function OrderDetailsContent() {
         setErrorMsg(payload?.message || "Không thể cập nhật trạng thái đơn hàng")
       } else {
         setSuccessMsg(`Cập nhật trạng thái sang "${status.toUpperCase()}" thành công!`)
-        // Reload details
         await loadOrderDetails()
       }
     } catch (e) {
@@ -104,29 +103,6 @@ function OrderDetailsContent() {
       setErrorMsg("Lỗi khi kết nối đến máy chủ API")
     } finally {
       setUpdating(false)
-    }
-  }
-
-  const formatVND = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-      case "success":
-        return "default"
-      case "pending":
-      case "processing":
-        return "secondary"
-      case "cancelled":
-      case "failed":
-        return "destructive"
-      default:
-        return "outline"
     }
   }
 
@@ -147,7 +123,6 @@ function OrderDetailsContent() {
     return <div className="text-center py-8 text-muted-foreground">Không tìm thấy đơn hàng</div>
   }
 
-  // Safe parse items
   const itemsList = Array.isArray(order.items)
     ? order.items
     : typeof order.items === "string"
@@ -165,7 +140,7 @@ function OrderDetailsContent() {
             </Badge>
           </div>
           <p className="text-muted-foreground font-mono">
-            Mã đơn: {order.code} | Ngày tạo: {new Date(order.createdAt).toLocaleString("vi-VN")}
+            Mã đơn: {order.code} | Ngày tạo: {new Date(order.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
           </p>
         </div>
         <div className="flex gap-2">
@@ -193,188 +168,222 @@ function OrderDetailsContent() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Sản phẩm đã đặt</CardTitle>
-            <CardDescription>Chi tiết danh sách các loại sâm và hàng hóa</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã vật phẩm</TableHead>
-                  <TableHead>Tên sản phẩm</TableHead>
-                  <TableHead className="text-right">Đơn giá</TableHead>
-                  <TableHead className="text-center">Số lượng</TableHead>
-                  <TableHead className="text-right">Thành tiền</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {itemsList.map((item: any, index: number) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-mono text-sm">{item.code}</TableCell>
-                    <TableCell className="font-semibold">{item.name}</TableCell>
-                    <TableCell className="text-right">{formatVND(item.price)}</TableCell>
-                    <TableCell className="text-center">{item.quantity}</TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {formatVND(item.price * item.quantity)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter className="flex flex-col items-end gap-2 border-t pt-4 bg-muted/20">
-            <div className="flex justify-between w-64 text-sm text-muted-foreground">
-              <span>Tạm tính:</span>
-              <span>{formatVND(order.subtotal)}</span>
-            </div>
-            <div className="flex justify-between w-64 text-sm text-muted-foreground">
-              <span>Phí vận chuyển:</span>
-              <span>{formatVND(order.shippingFee)}</span>
-            </div>
-            {order.discount > 0 && (
-              <div className="flex justify-between w-64 text-sm text-destructive font-semibold">
-                <span>Khuyến mãi:</span>
-                <span>-{formatVND(order.discount)}</span>
-              </div>
-            )}
-            <div className="flex justify-between w-64 text-lg font-bold border-t pt-2 mt-2">
-              <span>Tổng thanh toán:</span>
-              <span className="text-emerald-700 dark:text-emerald-400">
-                {formatVND(order.total)}
-              </span>
-            </div>
-          </CardFooter>
-        </Card>
+        <OrderProductsCard order={order} itemsList={itemsList} />
 
         <div className="space-y-6">
-          {order.user && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Thông tin khách hàng</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="flex flex-col gap-1 border-b pb-2">
-                  <span className="text-xs text-muted-foreground">Tên khách hàng:</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{order.user.fullName}</span>
-                </div>
-                <div className="flex flex-col gap-1 border-b pb-2">
-                  <span className="text-xs text-muted-foreground">Số điện thoại:</span>
-                  <span className="font-mono font-semibold text-gray-900 dark:text-gray-100">{order.user.phone}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-muted-foreground">Địa chỉ Email:</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100 break-all">{order.user.email}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Phương thức thanh toán</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Hình thức:</span>
-                <span className="font-semibold uppercase">{order.paymentMethod || "COD"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Trạng thái:</span>
-                <span>
-                  {order.paidAt ? (
-                    <Badge className="bg-emerald-600 text-white font-medium">Đã thanh toán</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-amber-600 border-amber-600 font-medium">Chưa thanh toán</Badge>
-                  )}
-                </span>
-              </div>
-              {order.paidAt && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ngày thanh toán:</span>
-                  <span className="font-mono">{new Date(order.paidAt).toLocaleString("vi-VN")}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Cập nhật trạng thái</CardTitle>
-              <CardDescription>Xử lý quy trình đơn hàng</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {order.status === "pending" && (
-                <>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("paid")}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-                  >
-                    Xác nhận thanh toán
-                  </Button>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("cancelled")}
-                    variant="destructive"
-                    className="w-full font-semibold"
-                  >
-                    Hủy đơn hàng
-                  </Button>
-                </>
-              )}
-
-              {order.status === "paid" && (
-                <>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("shipping")}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                  >
-                    Bắt đầu giao hàng
-                  </Button>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("cancelled")}
-                    variant="destructive"
-                    className="w-full font-semibold"
-                  >
-                    Hủy đơn hàng
-                  </Button>
-                </>
-              )}
-
-              {order.status === "shipping" && (
-                <>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("completed")}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-                  >
-                    Hoàn thành giao hàng
-                  </Button>
-                  <Button
-                    disabled={updating}
-                    onClick={() => handleUpdateStatus("cancelled")}
-                    variant="destructive"
-                    className="w-full font-semibold"
-                  >
-                    Hủy đơn hàng
-                  </Button>
-                </>
-              )}
-
-              {["completed", "cancelled", "refunded"].includes(order.status.toLowerCase()) && (
-                <div className="text-center p-3 bg-muted rounded-md text-xs text-muted-foreground font-medium">
-                  Đơn hàng đã hoàn thành hoặc đã hủy. Không thể thay đổi trạng thái thêm.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {order.user && <CustomerInfoCard user={order.user} />}
+          <PaymentMethodCard order={order} />
+          <OrderStatusUpdateCard order={order} updating={updating} handleUpdateStatus={handleUpdateStatus} />
         </div>
       </div>
     </div>
+  )
+}
+
+function OrderProductsCard({ order, itemsList }: { order: OrderDetail; itemsList: any[] }) {
+  return (
+    <Card className="md:col-span-2">
+      <CardHeader>
+        <CardTitle>Sản phẩm đã đặt</CardTitle>
+        <CardDescription>Chi tiết danh sách các loại sâm và hàng hóa</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Mã vật phẩm</TableHead>
+              <TableHead>Tên sản phẩm</TableHead>
+              <TableHead className="text-right">Đơn giá</TableHead>
+              <TableHead className="text-center">Số lượng</TableHead>
+              <TableHead className="text-right">Thành tiền</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {itemsList.map((item: any) => (
+              <TableRow key={item.code}>
+                <TableCell className="font-mono text-sm">{item.code}</TableCell>
+                <TableCell className="font-semibold">{item.name}</TableCell>
+                <TableCell className="text-right">{formatVND(item.price)}</TableCell>
+                <TableCell className="text-center">{item.quantity}</TableCell>
+                <TableCell className="text-right font-semibold">
+                  {formatVND(item.price * item.quantity)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+      <CardFooter className="flex flex-col items-end gap-2 border-t pt-4 bg-muted/20">
+        <div className="flex justify-between w-64 text-sm text-muted-foreground">
+          <span>Tạm tính:</span>
+          <span>{formatVND(order.subtotal)}</span>
+        </div>
+        <div className="flex justify-between w-64 text-sm text-muted-foreground">
+          <span>Phí vận chuyển:</span>
+          <span>{formatVND(order.shippingFee)}</span>
+        </div>
+        {order.discount > 0 && (
+          <div className="flex justify-between w-64 text-sm text-destructive font-semibold">
+            <span>Khuyến mãi:</span>
+            <span>-{formatVND(order.discount)}</span>
+          </div>
+        )}
+        <div className="flex justify-between w-64 text-lg font-bold border-t pt-2 mt-2">
+          <span>Tổng thanh toán:</span>
+          <span className="text-emerald-700 dark:text-emerald-400">
+            {formatVND(order.total)}
+          </span>
+        </div>
+      </CardFooter>
+    </Card>
+  )
+}
+
+function CustomerInfoCard({ user }: { user: NonNullable<OrderDetail["user"]> }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Thông tin khách hàng</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <div className="flex flex-col gap-1 border-b pb-2">
+          <span className="text-xs text-muted-foreground">Tên khách hàng:</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">{user.fullName}</span>
+        </div>
+        <div className="flex flex-col gap-1 border-b pb-2">
+          <span className="text-xs text-muted-foreground">Số điện thoại:</span>
+          <span className="font-mono font-semibold text-gray-900 dark:text-gray-100">{user.phone}</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground">Địa chỉ Email:</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 break-all">{user.email}</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PaymentMethodCard({ order }: { order: OrderDetail }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Phương thức thanh toán</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Hình thức:</span>
+          <span className="font-semibold uppercase">{order.paymentMethod || "COD"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Trạng thái:</span>
+          <span>
+            {order.paidAt ? (
+              <Badge className="bg-emerald-600 text-white font-medium">Đã thanh toán</Badge>
+            ) : (
+              <Badge variant="outline" className="text-amber-600 border-amber-600 font-medium">Chưa thanh toán</Badge>
+            )}
+          </span>
+        </div>
+        {order.paidAt && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Ngày thanh toán:</span>
+            <span className="font-mono">{new Date(order.paidAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function OrderStatusUpdateCard({
+  order,
+  updating,
+  handleUpdateStatus,
+}: {
+  order: OrderDetail
+  updating: boolean
+  handleUpdateStatus: (status: string) => void
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Cập nhật trạng thái</CardTitle>
+        <CardDescription>Xử lý quy trình đơn hàng</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
+        {order.status === "pending" && (
+          <>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("paid")}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+            >
+              Xác nhận thanh toán
+            </Button>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("cancelled")}
+              variant="destructive"
+              className="w-full font-semibold"
+            >
+              Hủy đơn hàng
+            </Button>
+          </>
+        )}
+
+        {order.status === "paid" && (
+          <>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("shipping")}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              Bắt đầu giao hàng
+            </Button>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("cancelled")}
+              variant="destructive"
+              className="w-full font-semibold"
+            >
+              Hủy đơn hàng
+            </Button>
+          </>
+        )}
+
+        {order.status === "shipping" && (
+          <>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("completed")}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+            >
+              Hoàn thành giao hàng
+            </Button>
+            <Button
+              type="button"
+              disabled={updating}
+              onClick={() => handleUpdateStatus("cancelled")}
+              variant="destructive"
+              className="w-full font-semibold"
+            >
+              Hủy đơn hàng
+            </Button>
+          </>
+        )}
+
+        {["completed", "cancelled", "refunded"].includes(order.status.toLowerCase()) && (
+          <div className="text-center p-3 bg-muted rounded-md text-xs text-muted-foreground font-medium">
+            Đơn hàng đã hoàn thành hoặc đã hủy. Không thể thay đổi trạng thái thêm.
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
@@ -386,4 +395,29 @@ export default function OrderDetailsPage() {
       </Suspense>
     </div>
   )
+}
+
+const vndFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
+const formatVND = (price: number) => {
+  return vndFormatter.format(price)
+}
+
+const getStatusBadgeVariant = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "completed":
+    case "success":
+      return "default"
+    case "pending":
+    case "processing":
+      return "secondary"
+    case "cancelled":
+    case "failed":
+      return "destructive"
+    default:
+      return "outline"
+  }
 }

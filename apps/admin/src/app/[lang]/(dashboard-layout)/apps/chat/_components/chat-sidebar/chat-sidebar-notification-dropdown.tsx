@@ -15,15 +15,16 @@ interface ChatSidebarNotificationDropdownProps {
   setNotifications: (val: string) => void
 }
 
+const NOTIFICATION_OPTIONS = [
+  { value: "ALL_MESSAGES", label: "All Messages" },
+  { value: "ONLY_MENTIONS", label: "Only @mentions" },
+  { value: "NOTHING", label: "Nothing" },
+]
+
 export function ChatSidebarNotificationDropdown({
   notifications,
   setNotifications,
 }: ChatSidebarNotificationDropdownProps) {
-  const options = [
-    { value: "ALL_MESSAGES", label: "All Messages" },
-    { value: "ONLY_MENTIONS", label: "Only @mentions" },
-    { value: "NOTHING", label: "Nothing" },
-  ]
 
   return (
     <DropdownMenuSub>
@@ -36,7 +37,7 @@ export function ChatSidebarNotificationDropdown({
           value={notifications}
           onValueChange={setNotifications}
         >
-          {options.map((option) => (
+          {NOTIFICATION_OPTIONS.map((option) => (
             <DropdownMenuRadioItem key={option.value} value={option.value}>
               {option.label}
             </DropdownMenuRadioItem>

@@ -1,6 +1,5 @@
 import {
   useParams,
-  usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation"
@@ -20,7 +19,6 @@ import { EmailMenuButton } from "./email-menu-button"
 export function EmailListHeader() {
   const { emailState } = useEmailContext()
   const router = useRouter()
-  const pathname = usePathname()
   const params = useParams()
   const searchParams = useSearchParams()
 
@@ -49,7 +47,7 @@ export function EmailListHeader() {
               variant="ghost"
               size="icon"
               onClick={() => {
-                router.push(`${pathname}?page=${pageQuery - 1}`)
+                router.push(`${window.location.pathname}?page=${pageQuery - 1}`)
               }}
               aria-label="Go to previous page"
               disabled={pageQuery <= 1}
@@ -62,7 +60,7 @@ export function EmailListHeader() {
               variant="ghost"
               size="icon"
               onClick={() => {
-                router.push(`${pathname}?page=${pageQuery + 1}`)
+                router.push(`${window.location.pathname}?page=${pageQuery + 1}`)
               }}
               aria-label="Go to next page"
               disabled={pageQuery >= emailState.totalPages}

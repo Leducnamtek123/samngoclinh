@@ -8,7 +8,7 @@ import type { ComponentProps, ReactNode } from "react"
 import { cn, formatOverviewCardValue } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PercentageChangeBadge } from "./percentage-change-badge"
 
-export const cardContentVariants = cva(
+const cardContentVariants = cva(
   "flex flex-col justify-between gap-y-6",
   {
     variants: {

@@ -6,13 +6,12 @@ import type { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 export function Pagination({ className, ...props }: ComponentProps<"nav">) {
   return (
     <nav
       data-slot="pagination"
-      role="navigation"
       className={cn("mx-auto flex w-full justify-center", className)}
       aria-label="pagination"
       {...props}

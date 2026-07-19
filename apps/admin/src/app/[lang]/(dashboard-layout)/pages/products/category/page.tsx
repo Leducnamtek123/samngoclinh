@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ShopItemsTable } from "./_components/shop-items-table"
@@ -65,11 +66,13 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <ShopItemsTable 
-        initialItems={shopItems} 
-        metadata={metadata}
-        errorMsg={errorMsg} 
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách sản phẩm thương mại...</div>}>
+        <ShopItemsTable 
+          initialItems={shopItems} 
+          metadata={metadata}
+          errorMsg={errorMsg} 
+        />
+      </Suspense>
     </div>
   )
 }

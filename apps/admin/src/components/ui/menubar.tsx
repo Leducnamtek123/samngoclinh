@@ -13,13 +13,13 @@ export function MenubarMenu({
   return <MenubarPrimitive.Menu data-slot="menubar-menu" {...props} />
 }
 
-export function MenubarGroup({
+function MenubarGroup({
   ...props
 }: ComponentProps<typeof MenubarPrimitive.Group>) {
   return <MenubarPrimitive.Group data-slot="menubar-group" {...props} />
 }
 
-export function MenubarPortal({
+function MenubarPortal({
   ...props
 }: ComponentProps<typeof MenubarPrimitive.Portal>) {
   return <MenubarPrimitive.Portal data-slot="menubar-portal" {...props} />
@@ -214,7 +214,7 @@ type MenubarLabelProps = ComponentProps<typeof MenubarPrimitive.Label> & {
   inset?: boolean
 }
 
-export function MenubarLabel({
+function MenubarLabel({
   className,
   inset,
   ...props

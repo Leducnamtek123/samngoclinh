@@ -63,8 +63,9 @@ export function CalendarReducer(
       }
 
       // Filter events based on selected categories
+      const tempSelectedCategoriesSet = new Set(tempSelectedCategories)
       const tempSelectedEvents = calendarState.initalEvents.filter((event) =>
-        tempSelectedCategories.includes(
+        tempSelectedCategoriesSet.has(
           event.extendedProps.category as CategoryType
         )
       )

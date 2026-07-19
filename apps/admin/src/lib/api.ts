@@ -1,42 +1,53 @@
-import { getServerSession } from 'next-auth';
 import { getSession } from 'next-auth/react';
-import { authOptions } from '@/configs/next-auth';
 
 export async function getSessionToken() {
   try {
     const isClient = typeof window !== 'undefined';
-    const session = isClient 
-      ? await getSession() 
-      : await getServerSession(authOptions);
-    return (session?.user as any)?.accessToken || null;
+    if (isClient) {
+      const session = await getSession();
+      return (session?.user as any)?.accessToken || null;
+    } else {
+      const getServerSessionToken = (globalThis as any).getServerSessionToken;
+      if (getServerSessionToken) {
+        return await getServerSessionToken();
+      }
+      return null;
+    }
   } catch (error) {
     console.error('Error getting session token:', error);
     return null;
   }
 }
 
+const NEUTRAL_PATHS = [
+  '/catalog',
+  '/orders',
+  '/cultivation',
+  '/banners',
+  '/content',
+  '/settings',
+  '/packages',
+  '/wallet',
+  '/profile',
+  '/promotion',
+  '/notification',
+  '/identity-verification',
+  '/contracts',
+  '/marketplace',
+  '/contacts',
+  '/backoffice'
+];
+
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = await getSessionToken();
   
-  const neutralPaths = [
-    '/catalog',
-    '/orders',
-    '/cultivation',
-    '/banners',
-    '/content',
-    '/settings',
-    '/packages',
-    '/wallet',
-    '/profile',
-    '/promotion',
-    '/notification',
-    '/identity-verification',
-    '/contracts',
-    '/marketplace',
-    '/contacts',
-    '/backoffice'
-  ];
-  const isNeutral = neutralPaths.some(path => endpoint.includes(path));
+  let isNeutral = false;
+  for (const path of NEUTRAL_PATHS) {
+    if (endpoint.includes(path)) {
+      isNeutral = true;
+      break;
+    }
+  }
     
   const isServer = typeof window === 'undefined';
   const apiBaseUrl = isServer

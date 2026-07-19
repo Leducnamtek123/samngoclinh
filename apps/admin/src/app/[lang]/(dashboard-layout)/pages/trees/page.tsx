@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { TreesTable } from "./_components/trees-table"
@@ -63,12 +64,14 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <TreesTable 
-        initialTrees={trees} 
-        beds={beds} 
-        metadata={metadata} 
-        errorMsg={errorMsg} 
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách cây trồng...</div>}>
+        <TreesTable 
+          initialTrees={trees} 
+          beds={beds} 
+          metadata={metadata} 
+          errorMsg={errorMsg} 
+        />
+      </Suspense>
     </div>
   )
 }

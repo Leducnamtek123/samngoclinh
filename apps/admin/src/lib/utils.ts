@@ -45,7 +45,7 @@ export function remToPx(rem: number) {
   return rem * rootFontSize
 }
 
-export function isUrl(text: string) {
+function isUrl(text: string) {
   return z.string().url().safeParse(text).success
 }
 
@@ -84,7 +84,7 @@ export function formatFileSize(bytes: number, decimals: number = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
-export function formatFileType(type: string) {
+function formatFileType(type: string) {
   return type.slice(0, type.lastIndexOf("/"))
 }
 
@@ -99,30 +99,61 @@ export function ratingToPercentage(
   return result
 }
 
+const usdFormatterEn = new Intl.NumberFormat("en", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+})
+
+const vndFormatterVi = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+  maximumFractionDigits: 0,
+})
+
+const percentFormatterEn = new Intl.NumberFormat("en", {
+  style: "percent",
+  maximumFractionDigits: 0,
+})
+
+const percentFormatterVi = new Intl.NumberFormat("vi-VN", {
+  style: "percent",
+  maximumFractionDigits: 0,
+})
+
+const compactFormatterEn = new Intl.NumberFormat("en", {
+  notation: "compact",
+  compactDisplay: "short",
+})
+
+const compactFormatterVi = new Intl.NumberFormat("vi-VN", {
+  notation: "compact",
+  compactDisplay: "short",
+})
+
 export function formatCurrency(
   value: number,
   locales: LocaleType = "en",
   currency: string = "USD"
 ) {
-  return new Intl.NumberFormat(locales, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value)
+  if (locales === "vi" || currency === "VND") {
+    return vndFormatterVi.format(value)
+  }
+  return usdFormatterEn.format(value)
 }
 
 export function formatPercent(value: number, locales: LocaleType = "en") {
-  return new Intl.NumberFormat(locales, {
-    style: "percent",
-    maximumFractionDigits: 0,
-  }).format(value)
+  if (locales === "vi") {
+    return percentFormatterVi.format(value)
+  }
+  return percentFormatterEn.format(value)
 }
 
 export function formatDate(value: string | number | Date) {
   return format(value, "PP")
 }
 
-export function formatRelativeDate(value?: string | number | Date) {
+function formatRelativeDate(value?: string | number | Date) {
   if (!value) return "No Date"
 
   const date = new Date(value)
@@ -197,10 +228,10 @@ export function formatNumberToCompact(
   value: number,
   locales: LocaleType = "en"
 ) {
-  return new Intl.NumberFormat(locales, {
-    notation: "compact",
-    compactDisplay: "short",
-  }).format(value)
+  if (locales === "vi") {
+    return compactFormatterVi.format(value)
+  }
+  return compactFormatterEn.format(value)
 }
 
 export function timeToDate(timeString: string, baseDate = new Date()) {
@@ -290,7 +321,7 @@ export function getDiscountedPrice(
   }
 }
 
-export function isBeforeToday(date: Date) {
+function isBeforeToday(date: Date) {
   // Get the start of today
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
 

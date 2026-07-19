@@ -1,5 +1,6 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import { useDirection } from "@radix-ui/react-direction"
 import Color from "@tiptap/extension-color"
 import Image from "@tiptap/extension-image"
@@ -39,6 +40,11 @@ export function Editor({
 }: EditorProps) {
   const direction = useDirection()
   const isRtl = useIsRtl()
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -93,7 +99,7 @@ export function Editor({
           tippyOptions={{
             duration: 100,
             maxWidth: "98vw",
-            appendTo: document.body,
+            appendTo: mounted ? document.body : undefined,
             zIndex: 50,
           }}
         >

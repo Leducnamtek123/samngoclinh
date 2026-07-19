@@ -60,7 +60,7 @@ export function AvatarFallback({
   )
 }
 
-export const avatarStackVariants = cva(
+const avatarStackVariants = cva(
   "transition duration-300 hover:scale-105 hover:z-10",
   {
     variants: {

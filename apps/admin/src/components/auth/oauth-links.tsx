@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { oauthLinksData } from "@/data/oauth-links"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 export function OAuthLinks() {
   return (

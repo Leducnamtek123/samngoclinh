@@ -63,17 +63,16 @@ export function InputTags({
   }
 
   return (
-    <div
+    <label
       data-slot="input-tags"
       className={cn(
-        "min-h-9 w-full flex flex-wrap gap-2 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        "min-h-9 w-full flex flex-wrap gap-2 rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 cursor-text",
         className
       )}
-      onClick={() => inputRef.current?.focus()}
     >
       {tags.map((tag, index) => (
         <span
-          key={index}
+          key={tag}
           className="inline-flex items-center rounded-full bg-secondary px-3 py-0.5 text-sm font-medium text-secondary-foreground"
         >
           {tag}
@@ -101,7 +100,7 @@ export function InputTags({
         placeholder={tags.length === 0 ? placeholder : ""}
         {...props}
       />
-    </div>
+    </label>
   )
 }
 
@@ -134,10 +133,11 @@ export function InputTagsWithSuggestions({
     }
   }, [open])
 
+  const tagsSet = new Set(tags)
   const filteredSuggestions = suggestions.filter(
     (suggestion) =>
       suggestion.toLowerCase().includes(inputValue.toLowerCase()) &&
-      !tags.includes(suggestion)
+      !tagsSet.has(suggestion)
   )
 
   const addTag = (tag: string) => {
@@ -174,7 +174,7 @@ export function InputTagsWithSuggestions({
         >
           {tags.map((tag, index) => (
             <span
-              key={index}
+              key={tag}
               className="inline-flex items-center rounded-full bg-secondary px-3 py-0.5 text-sm font-medium text-secondary-foreground"
             >
               {tag}

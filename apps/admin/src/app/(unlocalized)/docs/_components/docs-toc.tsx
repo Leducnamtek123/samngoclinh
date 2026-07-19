@@ -75,7 +75,7 @@ function Tree({ items }: { items: TocItem[] }) {
     headers.forEach((header) => observer.observe(header))
 
     return () => {
-      headers.forEach((header) => observer.unobserve(header))
+      observer.disconnect()
       setActiveId("")
     }
   }, [items])

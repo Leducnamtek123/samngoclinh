@@ -65,7 +65,7 @@ export function PaymentMethodForm({
     }
   }, [cardNumber, cardName, expiry, cvc, form])
 
-  function onSubmit(_data: PaymentMethodFormType) {}
+
 
   return (
     <Form {...form}>
@@ -191,3 +191,5 @@ export function PaymentMethodForm({
     </Form>
   )
 }
+
+function onSubmit(_data: PaymentMethodFormType) {}

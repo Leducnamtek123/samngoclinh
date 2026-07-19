@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { BedsTable } from "./_components/beds-table"
@@ -83,12 +84,14 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
 
   return (
     <div className="w-full p-4 md:p-6">
-      <BedsTable 
-        initialBeds={beds} 
-        metadata={metadata}
-        gardens={gardens} 
-        errorMsg={errorMsg} 
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách luống sâm...</div>}>
+        <BedsTable 
+          initialBeds={beds} 
+          metadata={metadata}
+          gardens={gardens} 
+          errorMsg={errorMsg} 
+        />
+      </Suspense>
     </div>
   )
 }

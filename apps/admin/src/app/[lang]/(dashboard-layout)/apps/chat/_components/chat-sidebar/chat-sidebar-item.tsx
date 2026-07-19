@@ -9,7 +9,7 @@ import { cn, formatDistance, getInitials } from "@/lib/utils"
 
 import { useChatContext } from "../../_hooks/use-chat-context"
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { ChatAvatar } from "../chat-avatar"
 
 export function ChatSidebarItem({ chat }: { chat: ChatType }) {
@@ -52,7 +52,7 @@ export function ChatSidebarItem({ chat }: { chat: ChatType }) {
             </span>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <span className="text-xs text-muted-foreground font-semibold">
+            <span className="text-xs text-muted-foreground font-semibold" suppressHydrationWarning>
               {formatDistance(chat.lastMessage?.createdAt ?? new Date())}
             </span>
             {/* Display unread count if available */}

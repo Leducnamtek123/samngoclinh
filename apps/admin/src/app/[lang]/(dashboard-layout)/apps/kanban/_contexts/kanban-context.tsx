@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useReducer, useState } from "react"
+import { useReducer, useState, useMemo } from "react"
+import { KanbanContext } from "../_hooks/use-kanban-context"
 
 import type { ReactNode } from "react"
 import type {
@@ -16,9 +17,7 @@ import { teamMembersData } from "../_data/team-members"
 import { KanbanReducer } from "../_reducers/kanban-reducer"
 
 // Create Kanban context
-export const KanbanContext = createContext<KanbanContextType | undefined>(
-  undefined
-)
+
 
 interface KanbanProviderProps {
   kanbanData: ColumnType[]
@@ -115,31 +114,39 @@ export function KanbanProvider({ kanbanData, children }: KanbanProviderProps) {
     dispatch({ type: "selectTask", task })
   }
 
+  const contextValue = useMemo(() => ({
+    kanbanState,
+    kanbanAddTaskSidebarIsOpen,
+    setKanbanAddTaskSidebarIsOpen,
+    kanbanUpdateTaskSidebarIsOpen,
+    setKanbanUpdateTaskSidebarIsOpen,
+    kanbanAddColumnSidebarIsOpen,
+    setKanbanAddColumnSidebarIsOpen,
+    kanbanUpdateColumnSidebarIsOpen,
+    setKanbanUpdateColumnSidebarIsOpen,
+    handleAddColumn,
+    handleUpdateColumn,
+    handleDeleteColumn,
+    handleAddTask,
+    handleUpdateTask,
+    handleDeleteTask,
+    handleReorderColumns,
+    handleReorderTasks,
+    handleSelectColumn,
+    handleSelectTask,
+  }), [
+    kanbanState,
+    kanbanAddTaskSidebarIsOpen,
+    kanbanUpdateTaskSidebarIsOpen,
+    kanbanAddColumnSidebarIsOpen,
+    kanbanUpdateColumnSidebarIsOpen
+  ])
+
   return (
     <KanbanContext.Provider
-      value={{
-        kanbanState,
-        kanbanAddTaskSidebarIsOpen,
-        setKanbanAddTaskSidebarIsOpen,
-        kanbanUpdateTaskSidebarIsOpen,
-        setKanbanUpdateTaskSidebarIsOpen,
-        kanbanAddColumnSidebarIsOpen,
-        setKanbanAddColumnSidebarIsOpen,
-        kanbanUpdateColumnSidebarIsOpen,
-        setKanbanUpdateColumnSidebarIsOpen,
-        handleAddColumn,
-        handleUpdateColumn,
-        handleDeleteColumn,
-        handleAddTask,
-        handleUpdateTask,
-        handleDeleteTask,
-        handleReorderColumns,
-        handleReorderTasks,
-        handleSelectColumn,
-        handleSelectTask,
-      }}
+      value={contextValue}
     >
       {children}
-    </KanbanContext.Provider>
+      </KanbanContext.Provider>
   )
 }

@@ -56,7 +56,7 @@ export function SignInForm() {
             throw new Error(result.error)
           }
 
-          router.push(redirectPathname)
+          window.location.replace(redirectPathname)
         } catch (error) {
           toast({
             variant: "destructive",

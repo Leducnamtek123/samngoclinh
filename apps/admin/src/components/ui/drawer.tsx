@@ -32,7 +32,7 @@ export function DrawerTrigger({
   )
 }
 
-export function DrawerPortal({
+function DrawerPortal({
   ...props
 }: ComponentProps<typeof DrawerPrimitive.Portal>) {
   return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
@@ -44,7 +44,7 @@ export function DrawerClose({
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
 }
 
-export function DrawerOverlay({
+function DrawerOverlay({
   className,
   ...props
 }: ComponentProps<typeof DrawerPrimitive.Overlay>) {

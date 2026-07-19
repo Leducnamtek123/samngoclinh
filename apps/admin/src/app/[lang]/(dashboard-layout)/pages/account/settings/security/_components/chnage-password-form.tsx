@@ -30,7 +30,6 @@ export function ChangePasswordForm() {
 
   const { isSubmitting } = form.formState
 
-  async function onSubmit(_data: ChangePasswordFormType) {}
 
   return (
     <Form {...form}>
@@ -82,3 +81,6 @@ export function ChangePasswordForm() {
     </Form>
   )
 }
+
+async function onSubmit(_data: ChangePasswordFormType) {}
+

@@ -8,7 +8,7 @@ import type { TaskType } from "../types"
 import { cn } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { CardHeader } from "@/components/ui/card"
 import { KanbanTaskItemActions } from "./kanban-task-item-actions"
 

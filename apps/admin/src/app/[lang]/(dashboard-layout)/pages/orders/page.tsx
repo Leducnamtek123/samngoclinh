@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { OrdersTable } from "./_components/orders-table"
@@ -75,11 +76,13 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </p>
         </div>
         
-        <OrdersTable 
-          initialOrders={orders} 
-          metadata={metadata} 
-          errorMsg={errorMsg} 
-        />
+        <Suspense fallback={<div className="text-center py-8">Đang tải danh sách đơn hàng...</div>}>
+          <OrdersTable 
+            initialOrders={orders} 
+            metadata={metadata} 
+            errorMsg={errorMsg} 
+          />
+        </Suspense>
       </div>
     </div>
   )

@@ -49,7 +49,7 @@ export function NotificationPreferencesForm() {
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-  function onSubmit(_data: NotificationPreferencesFormType) {}
+
 
   return (
     <Form {...form}>
@@ -185,3 +185,5 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
     </DropdownMenu>
   )
 }
+
+function onSubmit(_data: NotificationPreferencesFormType) {}

@@ -1,8 +1,9 @@
 "use client"
 
-import { useContext } from "react"
+import { createContext, useContext } from "react"
+import type { ChatContextType } from "../types"
 
-import { ChatContext } from "../_contexts/chat-context"
+export const ChatContext = createContext<ChatContextType | undefined>(undefined)
 
 export function useChatContext() {
   const context = useContext(ChatContext)

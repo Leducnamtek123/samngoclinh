@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -39,20 +39,13 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [users, setUsers] = useState<User[]>(initialUsers)
-
   // URL query params states
   const initialSearch = searchParams.get("search") || ""
   const [searchVal, setSearchVal] = useState(initialSearch)
 
   const statusFilter = searchParams.get("status") || "all"
 
-  // Sync users list on props change
-  useEffect(() => {
-    setUsers(initialUsers)
-  }, [initialUsers])
-
-  const createQueryString = (newParams: Record<string, string | null>) => {
+  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString())
     for (const [key, value] of Object.entries(newParams)) {
       if (value === null || value === "all" || value === "") {
@@ -65,18 +58,22 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
       updatedSearchParams.set("page", "1")
     }
     return updatedSearchParams.toString()
-  }
+  }, [searchParams])
+
+  const onSearch = useEffectEvent(() => {
+    const currentSearch = searchParams.get("search") || ""
+    if (searchVal !== currentSearch) {
+      router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
+    }
+  })
 
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
-      const currentSearch = searchParams.get("search") || ""
-      if (searchVal !== currentSearch) {
-        router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
-      }
+      onSearch()
     }, 400)
     return () => clearTimeout(handler)
-  }, [searchVal])
+  }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
     router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
@@ -119,7 +116,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
         <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
           {errorMsg}
         </div>
-      ) : users.length === 0 ? (
+      ) : initialUsers.length === 0 ? (
         <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
           Không tìm thấy người dùng nào.
         </div>
@@ -138,7 +135,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
+              {initialUsers.map((user) => (
                 <TableRow key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
                   <TableCell className="font-medium text-slate-800 dark:text-slate-200">{user.name || "-"}</TableCell>
                   <TableCell className="text-slate-600 dark:text-slate-400">{user.username}</TableCell>
@@ -164,7 +161,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                   </TableCell>
                   <TableCell className="text-right text-slate-500">
                     {user.signUpDate || user.createdAt
-                      ? new Date(user.signUpDate || user.createdAt!).toLocaleDateString("vi-VN")
+                      ? new Date(user.signUpDate || user.createdAt!).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
                       : "-"}
                   </TableCell>
                   <TableCell className="text-center">

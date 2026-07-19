@@ -1,8 +1,11 @@
 "use client"
 
-import { useContext } from "react"
+import { createContext, useContext } from "react"
+import type { KanbanContextType } from "../types"
 
-import { KanbanContext } from "../_contexts/kanban-context"
+export const KanbanContext = createContext<KanbanContextType | undefined>(
+  undefined
+)
 
 export function useKanbanContext() {
   const context = useContext(KanbanContext)

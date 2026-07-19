@@ -10,7 +10,7 @@ import {
 
 import type { IconProps, IconType } from "@/types"
 
-export const creditCardIcons: Record<string, IconType> = {
+const creditCardIcons: Record<string, IconType> = {
   visa: SiVisa,
   mastercard: SiMastercard,
   discover: SiDiscover,

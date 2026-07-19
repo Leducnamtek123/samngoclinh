@@ -2,9 +2,19 @@
 
 import { fetchApi } from '@/lib/api';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/configs/next-auth';
+
+async function verifyAuth() {
+  const session = await getServerSession(authOptions);
+  return !!session;
+}
 
 export async function createArticleAction(payload: any) {
   try {
+    if (!(await verifyAuth())) {
+      return { success: false, error: 'Unauthorized. Bạn cần đăng nhập.' };
+    }
     const res = await fetchApi('/admin/content/articles', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -22,6 +32,9 @@ export async function createArticleAction(payload: any) {
 
 export async function updateArticleAction(id: string, payload: any) {
   try {
+    if (!(await verifyAuth())) {
+      return { success: false, error: 'Unauthorized. Bạn cần đăng nhập.' };
+    }
     const res = await fetchApi(`/admin/content/articles/${id}`, {
       method: 'PUT',
       body: JSON.stringify(payload),
@@ -39,6 +52,9 @@ export async function updateArticleAction(id: string, payload: any) {
 
 export async function deleteArticleAction(id: string) {
   try {
+    if (!(await verifyAuth())) {
+      return { success: false, error: 'Unauthorized. Bạn cần đăng nhập.' };
+    }
     const res = await fetchApi(`/admin/content/articles/${id}`, {
       method: 'DELETE',
     });
@@ -55,6 +71,9 @@ export async function deleteArticleAction(id: string) {
 
 export async function updateSettingAction(key: string, value: string) {
   try {
+    if (!(await verifyAuth())) {
+      return { success: false, error: 'Unauthorized. Bạn cần đăng nhập.' };
+    }
     const res = await fetchApi(`/admin/settings/${key}`, {
       method: 'PUT',
       body: JSON.stringify({ value }),

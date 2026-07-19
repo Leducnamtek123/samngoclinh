@@ -37,7 +37,7 @@ export function AccountRecoveryOptionsForm({
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-  function onSubmit(_data: AccountRecoveryOptionsFormType) {}
+
 
   return (
     <Form {...form}>
@@ -107,3 +107,5 @@ export function AccountRecoveryOptionsForm({
     </Form>
   )
 }
+
+function onSubmit(_data: AccountRecoveryOptionsFormType) {}

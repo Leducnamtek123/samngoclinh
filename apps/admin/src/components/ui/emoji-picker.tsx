@@ -11,7 +11,7 @@ import type { ComponentProps, ComponentPropsWithoutRef } from "react"
 import { cn } from "@/lib/utils"
 
 import { useIsDarkMode } from "@/hooks/use-mode"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import {
   Popover,
   PopoverContent,

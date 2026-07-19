@@ -12,12 +12,14 @@ export class ProfileService {
 
         return {
             data: profile ?? {
+                id: userId,
                 fullName: '',
                 email: '',
                 role: '',
                 referralCode: '',
                 rank: '',
                 verified: false,
+                avatarUrl: null,
             },
         };
     }

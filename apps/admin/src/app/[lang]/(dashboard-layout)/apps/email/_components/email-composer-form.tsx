@@ -45,7 +45,7 @@ export function EmailComposerForm() {
 
   const { isSubmitting } = form.formState
 
-  function onSubmit(_data: EmailComposerFormType) {}
+
 
   return (
     <Form {...form}>
@@ -176,3 +176,5 @@ export function EmailComposerForm() {
     </Form>
   )
 }
+
+function onSubmit(_data: EmailComposerFormType) {}

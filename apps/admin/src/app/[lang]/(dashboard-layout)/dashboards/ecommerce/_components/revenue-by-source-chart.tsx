@@ -1,6 +1,8 @@
 "use client"
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { RevenueBySourceType } from "../types"
 
@@ -13,8 +15,14 @@ export function RevenueBySourceChart({
 }: {
   data: RevenueBySourceType["sources"]
 }) {
-  const isRtl = useIsRtl()
+  const recharts = useRecharts();
+    const isRtl = useIsRtl()
   const radius = useRadius()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Bar, BarChart, XAxis, YAxis } = recharts;
+
+
+
 
   const chartData = data.reduce((acc: { [key: string]: number }, source) => {
     acc[source.name.toLocaleLowerCase()] = source.value

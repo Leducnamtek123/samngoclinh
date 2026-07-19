@@ -37,7 +37,7 @@ export function SecurityPreferencesForm({
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-  function onSubmit(_data: SecurityPreferencesFormType) {}
+
 
   return (
     <Form {...form}>
@@ -96,3 +96,5 @@ export function SecurityPreferencesForm({
     </Form>
   )
 }
+
+function onSubmit(_data: SecurityPreferencesFormType) {}

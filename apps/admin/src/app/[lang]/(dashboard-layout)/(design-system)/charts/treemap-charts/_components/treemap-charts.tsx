@@ -1,6 +1,8 @@
 "use client"
 
-import { Treemap } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -19,6 +21,10 @@ const treemapChartsData = [
 ]
 
 export function TreemapCharts() {
+  const recharts = useRecharts();
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Treemap } = recharts;
+
   return (
     <section className="conatiner grid gap-4 p-4">
       <Card>

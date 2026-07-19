@@ -1,27 +1,15 @@
 "use client"
 
-import { createContext, useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
+import { SettingsContext, defaultSettings } from "@/hooks/use-settings"
 import { useCookie } from "react-use"
 
 import type { LocaleType, SettingsType } from "@/types"
 import type { ReactNode } from "react"
 
-export const defaultSettings: SettingsType = {
-  theme: "green",
-  mode: "system",
-  radius: 0.5,
-  layout: "vertical",
-  locale: "en",
-}
 
-export const SettingsContext = createContext<
-  | {
-      settings: SettingsType
-      updateSettings: (newSettings: SettingsType) => void
-      resetSettings: () => void
-    }
-  | undefined
->(undefined)
+
+
 
 export function SettingsProvider({
   locale,
@@ -55,6 +43,8 @@ export function SettingsProvider({
     setSettings(defaultSettings)
   }, [deleteStoredSettings])
 
+  const contextValue = useMemo(() => ({ settings, updateSettings, resetSettings }), [settings, updateSettings, resetSettings])
+
   // Render children only when settings are ready
   if (!settings) {
     return null
@@ -62,9 +52,9 @@ export function SettingsProvider({
 
   return (
     <SettingsContext.Provider
-      value={{ settings, updateSettings, resetSettings }}
+      value={contextValue}
     >
       {children}
-    </SettingsContext.Provider>
+      </SettingsContext.Provider>
   )
 }

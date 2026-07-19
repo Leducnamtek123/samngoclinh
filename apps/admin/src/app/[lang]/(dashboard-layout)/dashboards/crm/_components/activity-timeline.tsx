@@ -1,3 +1,5 @@
+"use client"
+
 import { activityTimelineData } from "../_data/activity-timeline"
 
 import { DatePicker } from "@/components/ui/date-picker"
@@ -10,12 +12,14 @@ export function ActivityTimeline() {
       title="Activity Timeline"
       period={activityTimelineData.period}
       action={
-        <DatePicker
-          value={new Date()}
-          buttonClassName="w-9 [&_>_svg]:text-foreground [&_>_span]:hidden"
-          buttonOptions={{ size: "icon" }}
-          popoverContentOptions={{ align: "end" }}
-        />
+        <div suppressHydrationWarning>
+          <DatePicker
+            value={new Date("2026-07-19")}
+            buttonClassName="w-9 [&_>_svg]:text-foreground [&_>_span]:hidden"
+            buttonOptions={{ size: "icon" }}
+            popoverContentOptions={{ align: "end" }}
+          />
+        </div>
       }
       size="lg"
       contentClassName="pb-0"

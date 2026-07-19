@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { UsersTable } from "./_components/users-table"
@@ -78,11 +79,13 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           </p>
         </div>
         
-        <UsersTable 
-          initialUsers={customers} 
-          metadata={metadata} 
-          errorMsg={errorMsg} 
-        />
+        <Suspense fallback={<div className="text-center py-8">Đang tải danh sách tài khoản...</div>}>
+          <UsersTable 
+            initialUsers={customers} 
+            metadata={metadata} 
+            errorMsg={errorMsg} 
+          />
+        </Suspense>
       </div>
     </div>
   )

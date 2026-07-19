@@ -1,8 +1,11 @@
 "use client"
 
-import { useContext } from "react"
+import { createContext, useContext } from "react"
+import type { CalendarContextType } from "../types"
 
-import { CalendarContext } from "../_contexts/calendar-context"
+export const CalendarContext = createContext<CalendarContextType | undefined>(
+  undefined
+)
 
 export function useCalendarContext() {
   const context = useContext(CalendarContext)

@@ -40,21 +40,7 @@ export function ForgotPasswordForm() {
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-  async function onSubmit(_data: ForgotPasswordFormType) {
-    try {
-      toast({
-        title: "Check your email",
-        description:
-          "We've sent you an email with instructions to reset your password.",
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Something went wrong",
-        description: error instanceof Error ? error.message : undefined,
-      })
-    }
-  }
+
 
   return (
     <Form {...form}>
@@ -98,3 +84,20 @@ export function ForgotPasswordForm() {
     </Form>
   )
 }
+
+async function onSubmit(_data: ForgotPasswordFormType) {
+  try {
+    toast({
+      title: "Check your email",
+      description:
+        "We've sent you an email with instructions to reset your password.",
+    })
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Something went wrong",
+      description: error instanceof Error ? error.message : undefined,
+    })
+  }
+}
+

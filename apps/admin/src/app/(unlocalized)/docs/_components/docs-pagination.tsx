@@ -10,7 +10,7 @@ import { sidebarNavigationData } from "../_data/sidebar-navigation"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 function flattenSidebarNavigation(navs: DocNav[]): DocNav[] {
   return navs.flatMap(({ items, ...rest }) => {

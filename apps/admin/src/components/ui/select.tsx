@@ -51,7 +51,7 @@ export function SelectTrigger({
   )
 }
 
-export function SelectScrollUpButton({
+function SelectScrollUpButton({
   className,
   ...props
 }: ComponentProps<typeof SelectPrimitive.ScrollUpButton>) {
@@ -69,7 +69,7 @@ export function SelectScrollUpButton({
   )
 }
 
-export function SelectScrollDownButton({
+function SelectScrollDownButton({
   className,
   ...props
 }: ComponentProps<typeof SelectPrimitive.ScrollDownButton>) {
@@ -159,7 +159,7 @@ export function SelectItem({
   )
 }
 
-export function SelectSeparator({
+function SelectSeparator({
   className,
   ...props
 }: ComponentProps<typeof SelectPrimitive.Separator>) {

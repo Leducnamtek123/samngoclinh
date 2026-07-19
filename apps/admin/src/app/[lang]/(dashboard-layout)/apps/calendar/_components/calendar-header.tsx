@@ -47,36 +47,7 @@ export function CalendarHeader() {
     }
   }
 
-  // Function to format the title based on the current date and view mode
-  const formatTitle = (date: Date, view: string) => {
-    if (view === "dayGridMonth") {
-      // For month view, display the year and month
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-      })
-    } else if (view === "timeGridWeek" || view === "listWeek") {
-      // For week view, display the range from the start of the week to the end
-      const endDate = new Date(date)
-      endDate.setDate(endDate.getDate() + 6) // Calculate the end date (7 days from start)
-      return `${date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })} - ${endDate.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}`
-    } else {
-      // For day view, display the full date (weekday, month, day, year)
-      return date.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
-    }
-  }
+
 
   return (
     <CardHeader className="justify-between items-center gap-4 space-y-0 md:flex-row">
@@ -145,3 +116,39 @@ export function CalendarHeader() {
     </CardHeader>
   )
 }
+
+// Function to format the title based on the current date and view mode
+const formatTitle = (date: Date, view: string) => {
+  if (view === "dayGridMonth") {
+    // For month view, display the year and month
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      timeZone: "UTC",
+    })
+  } else if (view === "timeGridWeek" || view === "listWeek") {
+    // For week view, display the range from the start of the week to the end
+    const endDate = new Date(date)
+    endDate.setDate(endDate.getDate() + 6) // Calculate the end date (7 days from start)
+    return `${date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    })} - ${endDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    })}`
+  } else {
+    // For day view, display the full date (weekday, month, day, year)
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    })
+  }
+}
+

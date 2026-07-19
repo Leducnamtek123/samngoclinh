@@ -12,7 +12,8 @@ import { headerNavigationData } from "../../_data/header-navigation"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { isActivePathname } from "@/lib/utils"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Sheet,

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 
 import { DynamicIcon } from "../dynamic-icon"
 
-export const starVariants = cva(
+const starVariants = cva(
   "transition-all duration-100 ease-in-out hover:scale-110",
   {
     variants: {
@@ -134,7 +134,7 @@ interface RatingStarProps
   iconName: DynamicIconNameType
 }
 
-export function RatingStar({
+function RatingStar({
   value,
   size,
   variant,

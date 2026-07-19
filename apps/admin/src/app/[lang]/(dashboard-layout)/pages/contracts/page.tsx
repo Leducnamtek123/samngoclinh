@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ContractsManager } from "./_components/contracts-manager"
@@ -71,13 +72,15 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <ContractsManager
-        initialContracts={contracts}
-        users={users}
-        trees={trees}
-        metadata={metadata}
-        errorMsg={errorMsg}
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách hợp đồng...</div>}>
+        <ContractsManager
+          initialContracts={contracts}
+          users={users}
+          trees={trees}
+          metadata={metadata}
+          errorMsg={errorMsg}
+        />
+      </Suspense>
     </div>
   )
 }

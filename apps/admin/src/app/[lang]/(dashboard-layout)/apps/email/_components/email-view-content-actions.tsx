@@ -18,7 +18,7 @@ interface ActionButtonProps extends ComponentProps<typeof Button> {
   label: string
 }
 
-export function ActionButton({
+function ActionButton({
   icon: Icon,
   label,
   ...props

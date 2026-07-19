@@ -10,6 +10,7 @@ export class ProfileRepository {
         const user = await this.databaseService.user.findUnique({
             where: { id: userId },
             select: {
+                id: true,
                 email: true,
                 role: {
                     select: {
@@ -31,16 +32,19 @@ export class ProfileRepository {
                     referralCode: true,
                     rank: true,
                     verified: true,
+                    avatarUrl: true,
                 },
             });
 
         return {
+            id: user.id,
             fullName: businessProfile?.fullName ?? '',
             email: user.email,
             role: user.role.type,
             referralCode: businessProfile?.referralCode ?? '',
             rank: businessProfile?.rank ?? '',
             verified: businessProfile?.verified ?? false,
+            avatarUrl: businessProfile?.avatarUrl,
         };
     }
 

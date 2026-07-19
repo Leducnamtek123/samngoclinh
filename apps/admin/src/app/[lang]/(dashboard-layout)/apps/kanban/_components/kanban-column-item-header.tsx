@@ -7,7 +7,7 @@ import type { ColumnType } from "../types"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { CardHeader, CardTitle } from "@/components/ui/card"
 import { KanbanColumnActions } from "./kanban-column-actions"
 

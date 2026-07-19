@@ -14,24 +14,25 @@ import {
 import { EmailSidebarHeader } from "./email-sidebar-header"
 import { EmailSidebarList } from "./email-sidebar-list"
 
-export function EmailSidebar() {
-  const { isEmailSidebarOpen, setIsEmailSidebarOpen } = useEmailContext()
-  const isMediumOrSmaller = useMedia("(max-width: 767px)")
-
-  // Content to display in the chat sidebar
-  const content = (
+function EmailSidebarContent() {
+  return (
     <>
       <EmailSidebarHeader />
       <EmailSidebarList />
     </>
   )
+}
+
+export function EmailSidebar() {
+  const { isEmailSidebarOpen, setIsEmailSidebarOpen } = useEmailContext()
+  const isMediumOrSmaller = useMedia("(max-width: 767px)")
 
   // Render a persistent sidebar for larger screens
   if (!isMediumOrSmaller) {
     return (
       <aside>
         <Card className="h-full w-72 flex flex-col border border-border">
-          {content}
+          <EmailSidebarContent />
         </Card>
       </aside>
     )
@@ -44,11 +45,13 @@ export function EmailSidebar() {
         <SheetHeader className="sr-only">
           <SheetTitle>Email Sidebar</SheetTitle>
           <SheetDescription>
-            Navigate your emails with ease. Access your inbox, sent items, and
-            custom labels.
+            Access your email folders and categories. Navigate between Inbox,
+            Sent, Drafts, and custom labels.
           </SheetDescription>
         </SheetHeader>
-        {content}
+        <div className="h-full w-72 flex flex-col">
+          <EmailSidebarContent />
+        </div>
       </SheetContent>
     </Sheet>
   )

@@ -34,16 +34,19 @@ export function EventFilters() {
         >
           All
         </DropdownMenuCheckboxItem>
-        {categoriesData.map((category) => (
-          <DropdownMenuCheckboxItem
-            key={category}
-            // Checkbox is checked if the current category is included in the selected categories array
-            checked={calendarState.selectedCategories.includes(category)}
-            onCheckedChange={() => handleSelectCategory(category)}
-          >
-            {category}
-          </DropdownMenuCheckboxItem>
-        ))}
+        {(() => {
+          const selectedSet = new Set(calendarState.selectedCategories)
+          return categoriesData.map((category) => (
+            <DropdownMenuCheckboxItem
+              key={category}
+              // Checkbox is checked if the current category is included in the selected categories array
+              checked={selectedSet.has(category)}
+              onCheckedChange={() => handleSelectCategory(category)}
+            >
+              {category}
+            </DropdownMenuCheckboxItem>
+          ))
+        })()}
       </DropdownMenuContent>
     </DropdownMenu>
   )

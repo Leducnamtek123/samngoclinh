@@ -33,12 +33,7 @@ export function ContactUsForm() {
 
   const { isSubmitting } = form.formState
 
-  async function onSubmit(_data: ContactUsType) {
-    toast({
-      title: "Success",
-      description: "Your message has been sent successfully!",
-    })
-  }
+
 
   return (
     <Form {...form}>
@@ -99,3 +94,11 @@ export function ContactUsForm() {
     </Form>
   )
 }
+
+async function onSubmit(_data: ContactUsType) {
+  toast({
+    title: "Success",
+    description: "Your message has been sent successfully!",
+  })
+}
+

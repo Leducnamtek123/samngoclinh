@@ -14,6 +14,8 @@ import { Plus, Pencil, Trash2 } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
+import { PackageDialog } from "./package-dialog"
+import { CarePackagesList, ProtectionPackagesList } from "./packages-list"
 
 interface CarePackage {
   id: string
@@ -53,98 +55,121 @@ export function PackagesManager({
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
 
-  // Confirmation Dialog States
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [confirmDialogTitle, setConfirmDialogTitle] = useState("")
-  const [confirmDialogDesc, setConfirmDialogDesc] = useState("")
-  const [confirmDialogAction, setConfirmDialogAction] = useState<() => void>(() => {})
-  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false)
-
-  // Dialog State
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [dialogLoading, setDialogLoading] = useState(false)
-  const [dialogError, setDialogError] = useState("")
-  const [selectedPackage, setSelectedPackage] = useState<any | null>(null)
-  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create")
-
-  // Form State
-  const [formData, setFormData] = useState({
-    code: "",
-    name: "",
-    price: 0,
-    durationMonths: 12,
-    coverage: "",
+  // Consolidated Confirmation Dialog State
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    title: string
+    description: string
+    action: () => void
+    loading: boolean
+  }>({
+    isOpen: false,
+    title: "",
     description: "",
-    status: "active",
+    action: () => {},
+    loading: false,
   })
 
-  const formatVND = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
-
-  const handleOpenCreate = () => {
-    setDialogMode("create")
-    setSelectedPackage(null)
-    setFormData({
+  // Consolidated Dialog State
+  const [dialogState, setDialogState] = useState<{
+    isOpen: boolean
+    loading: boolean
+    error: string
+    selectedPackage: any | null
+    mode: "create" | "edit"
+    formData: {
+      code: string
+      name: string
+      price: number
+      durationMonths: number
+      coverage: string
+      description: string
+      status: string
+    }
+  }>({
+    isOpen: false,
+    loading: false,
+    error: "",
+    selectedPackage: null,
+    mode: "create",
+    formData: {
       code: "",
       name: "",
-      price: 100000,
+      price: 0,
       durationMonths: 12,
       coverage: "",
       description: "",
       status: "active",
+    }
+  })
+
+
+
+  const handleOpenCreate = () => {
+    setDialogState({
+      isOpen: true,
+      loading: false,
+      error: "",
+      selectedPackage: null,
+      mode: "create",
+      formData: {
+        code: "",
+        name: "",
+        price: 100000,
+        durationMonths: 12,
+        coverage: "",
+        description: "",
+        status: "active",
+      }
     })
-    setDialogError("")
-    setIsDialogOpen(true)
   }
 
   const handleOpenEdit = (pkg: any) => {
-    setDialogMode("edit")
-    setSelectedPackage(pkg)
-    setFormData({
-      code: pkg.code,
-      name: pkg.name,
-      price: pkg.price,
-      durationMonths: pkg.durationMonths || 12,
-      coverage: pkg.coverage || "",
-      description: pkg.description || "",
-      status: pkg.status,
+    setDialogState({
+      isOpen: true,
+      loading: false,
+      error: "",
+      selectedPackage: pkg,
+      mode: "edit",
+      formData: {
+        code: pkg.code,
+        name: pkg.name,
+        price: pkg.price,
+        durationMonths: pkg.durationMonths || 12,
+        coverage: pkg.coverage || "",
+        description: pkg.description || "",
+        status: pkg.status,
+      }
     })
-    setDialogError("")
-    setIsDialogOpen(true)
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.code.trim() || !formData.name.trim()) {
-      setDialogError("Mã và tên gói không được để trống")
+    if (!dialogState.formData.code.trim() || !dialogState.formData.name.trim()) {
+      setDialogState((prev) => ({ ...prev, error: "Mã và tên gói không được để trống" }))
       return
     }
 
-    setDialogLoading(true)
-    setDialogError("")
+    setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setSuccessMsg("")
 
     try {
       const endpoint = activeTab === "care" ? "/admin/packages/care" : "/admin/packages/protection"
       const bodyPayload: any = {
-        code: formData.code,
-        name: formData.name,
-        price: Number(formData.price),
-        description: formData.description || undefined,
-        status: formData.status,
+        code: dialogState.formData.code,
+        name: dialogState.formData.name,
+        price: Number(dialogState.formData.price),
+        description: dialogState.formData.description || undefined,
+        status: dialogState.formData.status,
       }
 
       if (activeTab === "care") {
-        bodyPayload.durationMonths = Number(formData.durationMonths)
+        bodyPayload.durationMonths = Number(dialogState.formData.durationMonths)
       } else {
-        bodyPayload.coverage = formData.coverage || undefined
+        bodyPayload.coverage = dialogState.formData.coverage || undefined
       }
 
-      if (dialogMode === "create") {
+      if (dialogState.mode === "create") {
         const res = await fetchApi(endpoint, {
           method: "POST",
           headers: {
@@ -154,7 +179,7 @@ export function PackagesManager({
         })
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogError(payload?.message || "Không thể tạo gói dịch vụ")
+          setDialogState((prev) => ({ ...prev, error: payload?.message || "Không thể tạo gói dịch vụ" }))
         } else {
           if (activeTab === "care") {
             setCarePackages((prev) => [payload.data, ...prev])
@@ -162,10 +187,10 @@ export function PackagesManager({
             setProtectionPackages((prev) => [payload.data, ...prev])
           }
           setSuccessMsg("Tạo gói dịch vụ thành công!")
-          setIsDialogOpen(false)
+          setDialogState((prev) => ({ ...prev, isOpen: false }))
         }
-      } else if (dialogMode === "edit" && selectedPackage) {
-        const res = await fetchApi(`${endpoint}/${selectedPackage.id}`, {
+      } else if (dialogState.mode === "edit" && dialogState.selectedPackage) {
+        const res = await fetchApi(`${endpoint}/${dialogState.selectedPackage.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -174,26 +199,26 @@ export function PackagesManager({
         })
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogError(payload?.message || "Không thể cập nhật gói dịch vụ")
+          setDialogState((prev) => ({ ...prev, error: payload?.message || "Không thể cập nhật gói dịch vụ" }))
         } else {
           if (activeTab === "care") {
             setCarePackages((prev) =>
-              prev.map((item) => (item.id === selectedPackage.id ? payload.data : item))
+              prev.map((item) => (item.id === dialogState.selectedPackage!.id ? payload.data : item))
             )
           } else {
             setProtectionPackages((prev) =>
-              prev.map((item) => (item.id === selectedPackage.id ? payload.data : item))
+              prev.map((item) => (item.id === dialogState.selectedPackage!.id ? payload.data : item))
             )
           }
           setSuccessMsg("Cập nhật gói dịch vụ thành công!")
-          setIsDialogOpen(false)
+          setDialogState((prev) => ({ ...prev, isOpen: false }))
         }
       }
     } catch (err) {
       console.error(err)
-      setDialogError("Lỗi kết nối máy chủ")
+      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối máy chủ" }))
     } finally {
-      setDialogLoading(false)
+      setDialogState((prev) => ({ ...prev, loading: false }))
     }
   }
 
@@ -201,14 +226,17 @@ export function PackagesManager({
     const pkg = activeTab === "care" 
       ? carePackages.find((p) => p.id === id) 
       : protectionPackages.find((p) => p.id === id)
-    setConfirmDialogTitle("Xóa gói dịch vụ?")
-    setConfirmDialogDesc(`Hành động này sẽ xóa vĩnh viễn gói dịch vụ "${pkg?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`)
-    setConfirmDialogAction(() => () => performDelete(id))
-    setConfirmDialogOpen(true)
+    setConfirmDialog({
+      isOpen: true,
+      title: "Xóa gói dịch vụ?",
+      description: `Hành động này sẽ xóa vĩnh viễn gói dịch vụ "${pkg?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      action: () => performDelete(id),
+      loading: false,
+    })
   }
 
   const performDelete = async (id: string) => {
-    setConfirmDialogLoading(true)
+    setConfirmDialog((prev) => ({ ...prev, loading: true }))
     setErrorMsg("")
     setSuccessMsg("")
 
@@ -232,340 +260,50 @@ export function PackagesManager({
       console.error(err)
       setErrorMsg("Lỗi hệ thống khi thực hiện xóa.")
     } finally {
-      setConfirmDialogOpen(false)
-      setConfirmDialogLoading(false)
+      setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý Gói dịch vụ</h1>
-          <p className="text-muted-foreground">
-            Cấu hình các gói chăm sóc định kỳ và bảo hiểm/bảo vệ cây giống sâm.
-          </p>
-        </div>
-        <Button onClick={handleOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
-          <Plus className="h-4 w-4" /> Thêm gói mới
-        </Button>
-      </div>
+      <PackagesHeader onOpenCreate={handleOpenCreate} />
 
-      <Tabs
-        defaultValue="care"
-        onValueChange={(val) => {
-          setActiveTab(val as any)
-          setErrorMsg("")
-          setSuccessMsg("")
-        }}
-        className="w-full"
-      >
-        <TabsList className="grid w-full sm:w-[400px] grid-cols-2 mb-4">
-          <TabsTrigger value="care">Gói Chăm Sóc</TabsTrigger>
-          <TabsTrigger value="protection">Gói Bảo Vệ</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="care">
-          <Card className="border-slate-200 shadow-sm dark:border-slate-800">
-            <CardHeader>
-              <CardTitle>Gói Chăm Sóc Định Kỳ</CardTitle>
-              <CardDescription>
-                Cung cấp phân bón, tưới nước và chăm sóc sâm theo định kỳ tháng.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mã gói</TableHead>
-                      <TableHead>Tên gói dịch vụ</TableHead>
-                      <TableHead>Đơn giá</TableHead>
-                      <TableHead>Thời hạn</TableHead>
-                      <TableHead>Mô tả</TableHead>
-                      <TableHead>Trạng thái</TableHead>
-                      <TableHead className="text-right">Thao tác</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {carePackages.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8">
-                          <EmptyState
-                            title="Chưa có gói chăm sóc"
-                            description="Chưa cấu hình gói chăm sóc định kỳ nào trong hệ thống. Hãy tạo gói đầu tiên để tiếp tục."
-                            actionLabel="Thêm gói mới"
-                            onAction={handleOpenCreate}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      carePackages.map((pkg) => (
-                        <TableRow key={pkg.id}>
-                          <TableCell className="font-mono text-xs font-semibold">{pkg.code}</TableCell>
-                          <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
-                            {pkg.name}
-                          </TableCell>
-                          <TableCell className="font-medium text-emerald-600">
-                            {formatVND(pkg.price)}
-                          </TableCell>
-                          <TableCell>{pkg.durationMonths} tháng</TableCell>
-                          <TableCell className="text-sm max-w-[200px] truncate">
-                            {pkg.description || "—"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={pkg.status === "active" ? "default" : "outline"}>
-                              {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleOpenEdit(pkg)}
-                                className="h-8 w-8 text-blue-600"
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDelete(pkg.id)}
-                                className="h-8 w-8 text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="protection">
-          <Card className="border-slate-200 shadow-sm dark:border-slate-800">
-            <CardHeader>
-              <CardTitle>Gói Bảo Vệ & Bảo Hiểm Cây</CardTitle>
-              <CardDescription>
-                Bảo vệ cây giống trước dịch bệnh, rủi ro thiên tai và bồi thường.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Mã gói</TableHead>
-                      <TableHead>Tên gói bảo vệ</TableHead>
-                      <TableHead>Đơn giá</TableHead>
-                      <TableHead>Phạm vi bảo hiểm</TableHead>
-                      <TableHead>Mô tả</TableHead>
-                      <TableHead>Trạng thái</TableHead>
-                      <TableHead className="text-right">Thao tác</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {protectionPackages.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8">
-                          <EmptyState
-                            title="Chưa có gói bảo vệ"
-                            description="Chưa cấu hình gói bảo vệ/bảo hiểm nào trong hệ thống. Hãy tạo gói bảo vệ đầu tiên."
-                            actionLabel="Thêm gói mới"
-                            onAction={handleOpenCreate}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      protectionPackages.map((pkg) => (
-                        <TableRow key={pkg.id}>
-                          <TableCell className="font-mono text-xs font-semibold">{pkg.code}</TableCell>
-                          <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
-                            {pkg.name}
-                          </TableCell>
-                          <TableCell className="font-medium text-emerald-600">
-                            {formatVND(pkg.price)}
-                          </TableCell>
-                          <TableCell className="text-sm">{pkg.coverage || "—"}</TableCell>
-                          <TableCell className="text-sm max-w-[200px] truncate">
-                            {pkg.description || "—"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={pkg.status === "active" ? "default" : "outline"}>
-                              {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleOpenEdit(pkg)}
-                                className="h-8 w-8 text-blue-600"
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDelete(pkg.id)}
-                                className="h-8 w-8 text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <PackagesTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        setErrorMsg={setErrorMsg}
+        setSuccessMsg={setSuccessMsg}
+        carePackages={carePackages}
+        protectionPackages={protectionPackages}
+        handleOpenEdit={handleOpenEdit}
+        handleDelete={handleDelete}
+        handleOpenCreate={handleOpenCreate}
+      />
 
       {/* Create / Edit Modal Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={handleSave}>
-            <DialogHeader>
-              <DialogTitle>
-                {dialogMode === "create" ? "Thêm gói dịch vụ mới" : "Chỉnh sửa gói dịch vụ"}
-              </DialogTitle>
-              <DialogDescription>
-                Nhập thông số cho gói {activeTab === "care" ? "chăm sóc định kỳ" : "bảo hiểm cây sâm"}.
-              </DialogDescription>
-            </DialogHeader>
+      <PackageDialog
+        isOpen={dialogState.isOpen}
+        onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
+        mode={dialogState.mode}
+        formData={dialogState.formData}
+        onChange={(updater) => setDialogState((prev) => ({ ...prev, formData: updater(prev.formData) }))}
+        onSubmit={handleSave}
+        loading={dialogState.loading}
+        error={dialogState.error}
+        activeTab={activeTab}
+      />
 
-            {dialogError && (
-              <div className="my-3 p-3 bg-destructive/15 text-destructive rounded-md text-xs font-medium">
-                {dialogError}
-              </div>
-            )}
-
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="pkg-code">Mã gói dịch vụ</Label>
-                <Input
-                  id="pkg-code"
-                  value={formData.code}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, code: e.target.value }))}
-                  placeholder="Ví dụ: CARE_GOLD, PROT_MAX"
-                  disabled={dialogMode === "edit"}
-                  required
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="pkg-name">Tên gói dịch vụ</Label>
-                <Input
-                  id="pkg-name"
-                  value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ví dụ: Gói Chăm Sóc Vàng"
-                  required
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="pkg-price">Giá tiền (VND)</Label>
-                <Input
-                  id="pkg-price"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, price: Number(e.target.value) }))}
-                  min={0}
-                  required
-                />
-              </div>
-
-              {activeTab === "care" ? (
-                <div className="grid gap-2">
-                  <Label htmlFor="pkg-duration">Thời hạn gói (tháng)</Label>
-                  <Input
-                    id="pkg-duration"
-                    type="number"
-                    value={formData.durationMonths}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, durationMonths: Number(e.target.value) }))}
-                    min={1}
-                    required
-                  />
-                </div>
-              ) : (
-                <div className="grid gap-2">
-                  <Label htmlFor="pkg-coverage">Phạm vi bảo vệ / bồi thường</Label>
-                  <Input
-                    id="pkg-coverage"
-                    value={formData.coverage}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, coverage: e.target.value }))}
-                    placeholder="Ví dụ: Bồi thường 100% khi cây chết"
-                  />
-                </div>
-              )}
-
-              <div className="grid gap-2">
-                <Label htmlFor="pkg-status">Trạng thái hoạt động</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
-                >
-                  <SelectTrigger id="pkg-status">
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Hoạt động (Active)</SelectItem>
-                    <SelectItem value="inactive">Tạm ngưng (Inactive)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="pkg-desc">Mô tả dịch vụ</Label>
-                <Textarea
-                  id="pkg-desc"
-                  value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Mô tả chi tiết quyền lợi dịch vụ..."
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                disabled={dialogLoading}
-              >
-                Hủy
-              </Button>
-              <Button type="submit" disabled={dialogLoading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                {dialogLoading ? "Đang lưu..." : "Lưu thay đổi"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
       {/* Confirmation Dialog */}
       <ConfirmationDialog
-        isOpen={confirmDialogOpen}
-        onClose={() => setConfirmDialogOpen(false)}
-        onConfirm={confirmDialogAction}
-        title={confirmDialogTitle}
-        description={confirmDialogDesc}
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmDialog.action}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
         confirmLabel="Xác nhận"
         cancelLabel="Hủy bỏ"
         type="danger"
-        isLoading={confirmDialogLoading}
+        isLoading={confirmDialog.loading}
       />
 
       {/* Toast notifications */}
@@ -589,4 +327,114 @@ export function PackagesManager({
       </div>
     </div>
   )
+}
+
+interface PackagesHeaderProps {
+  onOpenCreate: () => void
+}
+
+function PackagesHeader({ onOpenCreate }: PackagesHeaderProps) {
+  return (
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Quản lý Gói dịch vụ</h1>
+        <p className="text-muted-foreground">
+          Cấu hình các gói chăm sóc định kỳ và bảo hiểm/bảo vệ cây giống sâm.
+        </p>
+      </div>
+      <Button onClick={onOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+        <Plus className="h-4 w-4" /> Thêm gói mới
+      </Button>
+    </div>
+  )
+}
+
+interface PackagesTabsProps {
+  activeTab: "care" | "protection"
+  setActiveTab: (tab: "care" | "protection") => void
+  setErrorMsg: (msg: string) => void
+  setSuccessMsg: (msg: string) => void
+  carePackages: CarePackage[]
+  protectionPackages: ProtectionPackage[]
+  handleOpenEdit: (pkg: any) => void
+  handleDelete: (id: string) => void
+  handleOpenCreate: () => void
+}
+
+function PackagesTabs({
+  activeTab,
+  setActiveTab,
+  setErrorMsg,
+  setSuccessMsg,
+  carePackages,
+  protectionPackages,
+  handleOpenEdit,
+  handleDelete,
+  handleOpenCreate,
+}: PackagesTabsProps) {
+  return (
+    <Tabs
+      defaultValue="care"
+      onValueChange={(val) => {
+        setActiveTab(val as any)
+        setErrorMsg("")
+        setSuccessMsg("")
+      }}
+      className="w-full"
+    >
+      <TabsList className="grid w-full sm:w-[400px] grid-cols-2 mb-4">
+        <TabsTrigger value="care">Gói Chăm Sóc</TabsTrigger>
+        <TabsTrigger value="protection">Gói Bảo Vệ</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="care">
+        <Card className="border-slate-200 shadow-sm dark:border-slate-800">
+          <CardHeader>
+            <CardTitle>Gói Chăm Sóc Định Kỳ</CardTitle>
+            <CardDescription>
+              Cung cấp phân bón, tưới nước và chăm sóc sâm theo định kỳ tháng.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CarePackagesList
+              packages={carePackages}
+              onEdit={handleOpenEdit}
+              onDelete={handleDelete}
+              onOpenCreate={handleOpenCreate}
+              formatVND={formatVND}
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="protection">
+        <Card className="border-slate-200 shadow-sm dark:border-slate-800">
+          <CardHeader>
+            <CardTitle>Gói Bảo Vệ & Bảo Hiểm Cây</CardTitle>
+            <CardDescription>
+              Bảo vệ cây giống trước dịch bệnh, rủi ro thiên tai và bồi thường.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProtectionPackagesList
+              packages={protectionPackages}
+              onEdit={handleOpenEdit}
+              onDelete={handleDelete}
+              onOpenCreate={handleOpenCreate}
+              formatVND={formatVND}
+            />
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+const vndFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
+const formatVND = (price: number) => {
+  return vndFormatter.format(price)
 }

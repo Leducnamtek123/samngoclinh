@@ -6,7 +6,7 @@ import type { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 export function AlertDialog({
   ...props
@@ -27,7 +27,7 @@ export function AlertDialogTrigger({
   )
 }
 
-export function AlertDialogPortal({
+function AlertDialogPortal({
   ...props
 }: ComponentProps<typeof AlertDialogPrimitive.Portal>) {
   return (
@@ -35,7 +35,7 @@ export function AlertDialogPortal({
   )
 }
 
-export function AlertDialogOverlay({
+function AlertDialogOverlay({
   className,
   ...props
 }: ComponentProps<typeof AlertDialogPrimitive.Overlay>) {

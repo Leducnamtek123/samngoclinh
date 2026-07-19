@@ -168,6 +168,7 @@ function FlagComponent({ country, countryName }: RPNInputPrimitive.FlagProps) {
           src={flagUrl}
           alt={countryName}
           fill
+          sizes="24px"
           className="rounded-sm object-cover"
         />
       )}

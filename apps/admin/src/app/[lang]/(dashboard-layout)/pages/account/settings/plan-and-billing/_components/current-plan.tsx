@@ -79,7 +79,7 @@ export function CurrentPlan() {
           <h4 className="font-semibold mb-2">This Month&apos;s Activity</h4>
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {currentPlanData.activityThisMonth.map((item, index) => (
-              <li key={index} className="flex items-center gap-x-2">
+              <li key={item.label} className="flex items-center gap-x-2">
                 <Badge className="size-12 aspect-square" aria-hidden>
                   <DynamicIcon name={item.iconName} className="size-full" />
                 </Badge>

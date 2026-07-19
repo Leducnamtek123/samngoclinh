@@ -17,7 +17,7 @@ export function VisitorsByCountryItem({
   return (
     <li className="flex items-end justify-between gap-2">
       <div className="shrink-0 relative aspect-square h-12 w-12 bg-muted rounded-md">
-        <Image src={flagUrl} alt="" fill className="rounded-md object-cover" />
+        <Image src={flagUrl} alt="" fill sizes="48px" className="rounded-md object-cover" />
       </div>
       <div className="flex-1">
         <div className="flex items-end justify-between">

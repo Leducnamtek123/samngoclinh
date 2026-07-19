@@ -32,13 +32,13 @@ export function SheetClose({
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
-export function SheetPortal({
+function SheetPortal({
   ...props
 }: ComponentProps<typeof SheetPrimitive.Portal>) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
 }
 
-export function SheetOverlay({
+function SheetOverlay({
   className,
   ...props
 }: ComponentProps<typeof SheetPrimitive.Overlay>) {
@@ -54,7 +54,7 @@ export function SheetOverlay({
   )
 }
 
-export const sheetVariants = cva(
+const sheetVariants = cva(
   "fixed z-50 gap-4 bg-background p-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
   {
     variants: {

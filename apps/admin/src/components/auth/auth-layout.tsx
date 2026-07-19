@@ -68,7 +68,7 @@ interface AuthImageProps extends ComponentProps<"div"> {
   imgSrc: string
 }
 
-export function AuthImage({ className, imgSrc, ...props }: AuthImageProps) {
+function AuthImage({ className, imgSrc, ...props }: AuthImageProps) {
   return (
     <div
       className={cn(
@@ -115,6 +115,6 @@ export function AuthForm({ className, ...props }: ComponentProps<"div">) {
   return <div className={className} {...props} />
 }
 
-export function AuthFooter({ className, ...props }: ComponentProps<"div">) {
+function AuthFooter({ className, ...props }: ComponentProps<"div">) {
   return <div className={cn("grid gap-6", className)} {...props} />
 }

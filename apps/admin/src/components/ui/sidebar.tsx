@@ -283,7 +283,7 @@ export function SidebarTrigger({
   )
 }
 
-export function SidebarRail({ className, ...props }: ComponentProps<"button">) {
+function SidebarRail({ className, ...props }: ComponentProps<"button">) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -308,7 +308,7 @@ export function SidebarRail({ className, ...props }: ComponentProps<"button">) {
   )
 }
 
-export function SidebarInset({ className, ...props }: ComponentProps<"main">) {
+function SidebarInset({ className, ...props }: ComponentProps<"main">) {
   return (
     <main
       data-slot="sidebar-inset"
@@ -322,7 +322,7 @@ export function SidebarInset({ className, ...props }: ComponentProps<"main">) {
   )
 }
 
-export function SidebarInput({
+function SidebarInput({
   className,
   ...props
 }: ComponentProps<typeof Input>) {
@@ -350,7 +350,7 @@ export function SidebarHeader({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
-export function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
+function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="sidebar-footer"
@@ -361,7 +361,7 @@ export function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
-export function SidebarSeparator({
+function SidebarSeparator({
   className,
   ...props
 }: ComponentProps<typeof Separator>) {
@@ -424,7 +424,7 @@ export function SidebarGroupLabel({
 
 type SidebarGroupActionProps = ComponentProps<"button"> & { asChild?: boolean }
 
-export function SidebarGroupAction({
+function SidebarGroupAction({
   className,
   asChild = false,
   ...props
@@ -483,7 +483,7 @@ export function SidebarMenuItem({ className, ...props }: ComponentProps<"li">) {
   )
 }
 
-export const sidebarMenuButtonVariants = cva(
+const sidebarMenuButtonVariants = cva(
   "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
@@ -562,7 +562,7 @@ type SidebarMenuActionProps = ComponentProps<"button"> & {
   showOnHover?: boolean
 }
 
-export function SidebarMenuAction({
+function SidebarMenuAction({
   className,
   asChild = false,
   showOnHover = false,
@@ -591,7 +591,7 @@ export function SidebarMenuAction({
   )
 }
 
-export function SidebarMenuBadge({
+function SidebarMenuBadge({
   className,
   ...props
 }: ComponentProps<"div">) {
@@ -617,7 +617,7 @@ type SidebarMenuSkeletonProps = ComponentProps<"div"> & {
   showIcon?: boolean
 }
 
-export function SidebarMenuSkeleton({
+function SidebarMenuSkeleton({
   className,
   showIcon = false,
   ...props
@@ -668,7 +668,7 @@ export function SidebarMenuSub({ className, ...props }: ComponentProps<"ul">) {
   )
 }
 
-export function SidebarMenuSubItem({ ...props }: ComponentProps<"li">) {
+function SidebarMenuSubItem({ ...props }: ComponentProps<"li">) {
   return <li data-slot="sidebar-menu-sub-item" {...props} />
 }
 
@@ -678,7 +678,7 @@ type SidebarMenuSubButtonProps = ComponentProps<"a"> & {
   isActive?: boolean
 }
 
-export function SidebarMenuSubButton({
+function SidebarMenuSubButton({
   asChild = false,
   size = "md",
   isActive = false,

@@ -8,7 +8,7 @@ import { cn, formatPercent, isNonNegative } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
 
-export const percentageChangeBadgeVariants = cva("gap-0", {
+const percentageChangeBadgeVariants = cva("gap-0", {
   variants: {
     variant: {
       default:

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, Suspense } from "react"
+import { useEffect, useState, useCallback, Suspense } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
@@ -35,7 +35,7 @@ function CustomerDetailsContent() {
   const [errorMsg, setErrorMsg] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
 
-  const loadUserDetails = async () => {
+  const loadUserDetails = useCallback(async () => {
     if (!userId) {
       setErrorMsg("Không tìm thấy mã người dùng")
       setLoading(false)
@@ -56,11 +56,11 @@ function CustomerDetailsContent() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId])
 
   useEffect(() => {
     loadUserDetails()
-  }, [userId])
+  }, [userId, loadUserDetails])
 
   const handleUpdateStatus = async (status: "active" | "blocked") => {
     if (!userId) return

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { AvatarStack } from "@/components/ui/avatar"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { Card } from "@/components/ui/card"
 
 export function Hero() {
@@ -45,7 +45,7 @@ export function Hero() {
 
 function SocialProofBadge() {
   return (
-    <a
+    <Link
       href="/"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
@@ -60,7 +60,7 @@ function SocialProofBadge() {
       />
       Trusted by 1,000+ developers worldwide
       <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-in-out ltr:group-hover:translate-x-0.5 rtl:scale-x-[-1] rtl:group-hover:-translate-x-0.5" />
-    </a>
+    </Link>
   )
 }
 

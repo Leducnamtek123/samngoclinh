@@ -5,7 +5,7 @@ import { footerNavigationData } from "../../_data/footer-navigation"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { Input } from "@/components/ui/input"
 
 export function LandingFooter() {
@@ -64,12 +64,12 @@ export function LandingFooter() {
         <div className="container flex justify-between items-center p-4 md:px-6">
           <p className="text-xs text-muted-foreground md:text-sm">
             © {currentYear}{" "}
-            <a
+            <Link
               href="/"
               className={cn(buttonVariants({ variant: "link" }), "inline p-0")}
             >
               Sâm Ngọc Linh
-            </a>
+            </Link>
             . All rights reserved.
           </p>
         </div>

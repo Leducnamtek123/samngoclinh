@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { PackagesManager } from "./_components/packages-manager"
@@ -35,11 +36,13 @@ export default async function PackagesPage() {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <PackagesManager
-        initialCarePackages={carePackages}
-        initialProtectionPackages={protectionPackages}
-        errorMsg={errorMsg}
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải cấu hình gói dịch vụ...</div>}>
+        <PackagesManager
+          initialCarePackages={carePackages}
+          initialProtectionPackages={protectionPackages}
+          errorMsg={errorMsg}
+        />
+      </Suspense>
     </div>
   )
 }

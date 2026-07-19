@@ -13,7 +13,8 @@ import { ChangePlanSchema } from "../_schemas/change-plan-schema"
 
 import { cn, formatCurrency, getDiscountedPrice } from "@/lib/utils"
 
-import { ButtonLoading, buttonVariants } from "@/components/ui/button"
+import { ButtonLoading } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import {
   Form,
   FormControl,
@@ -47,7 +48,7 @@ export function ChangePlanForm({
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-  function onSubmit(_data: ChangePlanFormType) {}
+
 
   return (
     <Form {...form}>
@@ -135,3 +136,5 @@ export function ChangePlanForm({
     </Form>
   )
 }
+
+function onSubmit(_data: ChangePlanFormType) {}

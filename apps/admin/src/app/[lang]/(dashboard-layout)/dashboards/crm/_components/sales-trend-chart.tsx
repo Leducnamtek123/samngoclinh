@@ -1,13 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
-
+import { useRecharts } from "@/hooks/use-recharts";
 import type { ChartConfig } from "@/components/ui/chart"
 import type { SalesTrendType } from "../types"
-
 import { cn } from "@/lib/utils"
-
 import { useIsRtl } from "@/hooks/use-is-rtl"
 import { useRadius } from "@/hooks/use-radius"
 import { Button } from "@/components/ui/button"
@@ -37,10 +34,13 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function SalesTrendChart({ data }: { data: SalesTrendType }) {
-  const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("lead")
+  const recharts = useRecharts()
   const isRtl = useIsRtl()
   const radius = useRadius()
+  const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("lead")
+
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>
+  const { Bar, BarChart, CartesianGrid, XAxis } = recharts
 
   const { monthly, summary } = data
 

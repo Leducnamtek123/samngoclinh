@@ -173,13 +173,14 @@ export function KanbanUpdateTaskSidebar() {
                       <InputTagsWithSuggestions
                         suggestions={teamMembers.map(({ name }) => name)}
                         tags={field.value.map(({ name }) => name)}
-                        onTagsChange={(tags) =>
+                        onTagsChange={(tags) => {
+                          const tagsSet = new Set(tags)
                           field.onChange(
                             teamMembers.filter((member) =>
-                              tags.includes(member.name)
+                              tagsSet.has(member.name)
                             )
                           )
-                        }
+                        }}
                       />
                     </FormControl>
                     <FormMessage />

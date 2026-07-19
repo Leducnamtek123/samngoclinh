@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useReducer, useState } from "react"
+import { useReducer, useState, useMemo, useCallback } from "react"
+import { CalendarContext } from "../_hooks/calendar-context"
 
 import type { CalendarApi } from "@fullcalendar/core/index.js"
 import type { ReactNode } from "react"
@@ -16,9 +17,7 @@ import { categoriesData } from "../_data/categories"
 import { CalendarReducer } from "../_reducers/calendar-reducer"
 
 // Create Kanban context
-export const CalendarContext = createContext<CalendarContextType | undefined>(
-  undefined
-)
+
 
 export function CalendarProvider({
   events,
@@ -39,51 +38,63 @@ export function CalendarProvider({
   const [eventSidebarIsOpen, setEventSidebarIsOpen] = useState(false)
 
   // Handlers for event actions
-  const handleAddEvent = (event: EventWithoutIdType) => {
+  const handleAddEvent = useCallback((event: EventWithoutIdType) => {
     dispatch({
       type: "addEvent",
       event: { ...event, id: calendarState.events.length.toString() },
     })
-  }
+  }, [calendarState.events.length])
 
-  const handleUpdateEvent = (event: EventType) => {
+  const handleUpdateEvent = useCallback((event: EventType) => {
     dispatch({ type: "updateEvent", event })
-  }
+  }, [])
 
-  const handleDeleteEvent = (eventId: EventType["id"]) => {
+  const handleDeleteEvent = useCallback((eventId: EventType["id"]) => {
     dispatch({ type: "deleteEvent", eventId })
-  }
+  }, [])
 
   // Selection handlers
-  const handleSelectEvent = (event?: EventType) => {
+  const handleSelectEvent = useCallback((event?: EventType) => {
     dispatch({ type: "selectEvent", event: event })
-  }
+  }, [])
 
-  const handleSelectCategory = (category: CategoryType) => {
+  const handleSelectCategory = useCallback((category: CategoryType) => {
     dispatch({ type: "selectCategory", category })
-  }
+  }, [])
 
-  const handleSelectAllCategories = (isSelectAllCategories: boolean) => {
+  const handleSelectAllCategories = useCallback((isSelectAllCategories: boolean) => {
     dispatch({ type: "selectAllCategories", isSelectAllCategories })
-  }
+  }, [])
+
+  const contextValue = useMemo(() => ({
+    calendarState,
+    calendarApi,
+    setCalendarApi,
+    eventSidebarIsOpen,
+    setEventSidebarIsOpen,
+    handleUpdateEvent,
+    handleAddEvent,
+    handleDeleteEvent,
+    handleSelectEvent,
+    handleSelectCategory,
+    handleSelectAllCategories,
+  }), [
+    calendarState,
+    calendarApi,
+    eventSidebarIsOpen,
+    handleUpdateEvent,
+    handleAddEvent,
+    handleDeleteEvent,
+    handleSelectEvent,
+    handleSelectCategory,
+    handleSelectAllCategories,
+  ])
 
   return (
     <CalendarContext.Provider
-      value={{
-        calendarState,
-        calendarApi,
-        setCalendarApi,
-        eventSidebarIsOpen,
-        setEventSidebarIsOpen,
-        handleUpdateEvent,
-        handleAddEvent,
-        handleDeleteEvent,
-        handleSelectEvent,
-        handleSelectCategory,
-        handleSelectAllCategories,
-      }}
+      value={contextValue}
     >
       {children}
-    </CalendarContext.Provider>
+      </CalendarContext.Provider>
   )
 }

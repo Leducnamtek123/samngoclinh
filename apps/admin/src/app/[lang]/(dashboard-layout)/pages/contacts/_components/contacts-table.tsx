@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -58,7 +58,7 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
     setContacts(initialContacts)
   }, [initialContacts])
 
-  const createQueryString = (newParams: Record<string, string | null>) => {
+  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString())
     for (const [key, value] of Object.entries(newParams)) {
       if (value === null || value === "all" || value === "") {
@@ -71,18 +71,22 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
       updatedSearchParams.set("page", "1")
     }
     return updatedSearchParams.toString()
-  }
+  }, [searchParams])
+
+  const onSearch = useEffectEvent(() => {
+    const currentSearch = searchParams.get("search") || ""
+    if (searchVal !== currentSearch) {
+      router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
+    }
+  })
 
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
-      const currentSearch = searchParams.get("search") || ""
-      if (searchVal !== currentSearch) {
-        router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
-      }
+      onSearch()
     }, 400)
     return () => clearTimeout(handler)
-  }, [searchVal])
+  }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
     router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
@@ -114,15 +118,7 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
     }
   }
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleString("vi-VN", {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  }
+
 
   return (
     <div className="space-y-4">
@@ -308,4 +304,15 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
       </Dialog>
     </div>
   )
+}
+
+const formatDate = (dateStr: string) => {
+  return new Date(dateStr).toLocaleString("vi-VN", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Ho_Chi_Minh",
+  })
 }

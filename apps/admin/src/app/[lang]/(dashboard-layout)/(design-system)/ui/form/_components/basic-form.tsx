@@ -31,7 +31,7 @@ export function BasicForm() {
     },
   })
 
-  function onSubmit(_data: z.infer<typeof formSchema>) {}
+
 
   return (
     <Card>
@@ -64,3 +64,5 @@ export function BasicForm() {
     </Card>
   )
 }
+
+function onSubmit(_data: z.infer<typeof formSchema>) {}

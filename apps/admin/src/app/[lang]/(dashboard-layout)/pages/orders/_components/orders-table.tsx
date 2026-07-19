@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -36,20 +36,13 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const [orders, setOrders] = useState<Order[]>(initialOrders)
-
   // URL query params states
   const initialSearch = searchParams.get("search") || ""
   const [searchVal, setSearchVal] = useState(initialSearch)
 
   const statusFilter = searchParams.get("status") || "all"
 
-  // Sync orders list on props change
-  useEffect(() => {
-    setOrders(initialOrders)
-  }, [initialOrders])
-
-  const createQueryString = (newParams: Record<string, string | null>) => {
+  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
     const updatedSearchParams = new URLSearchParams(searchParams.toString())
     for (const [key, value] of Object.entries(newParams)) {
       if (value === null || value === "all" || value === "") {
@@ -62,18 +55,22 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
       updatedSearchParams.set("page", "1")
     }
     return updatedSearchParams.toString()
-  }
+  }, [searchParams])
+
+  const onSearch = useEffectEvent(() => {
+    const currentSearch = searchParams.get("search") || ""
+    if (searchVal !== currentSearch) {
+      router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
+    }
+  })
 
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
-      const currentSearch = searchParams.get("search") || ""
-      if (searchVal !== currentSearch) {
-        router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
-      }
+      onSearch()
     }, 400)
     return () => clearTimeout(handler)
-  }, [searchVal])
+  }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
     router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
@@ -83,28 +80,9 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
     router.push(`${pathname}?${createQueryString({ status: val })}`)
   }
 
-  const formatVND = (price: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price)
-  }
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-      case "success":
-        return "default"
-      case "pending":
-      case "processing":
-        return "secondary"
-      case "cancelled":
-      case "failed":
-        return "destructive"
-      default:
-        return "outline"
-    }
-  }
+
+
 
   return (
     <div className="space-y-4">
@@ -141,7 +119,7 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
         <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
           {errorMsg}
         </div>
-      ) : orders.length === 0 ? (
+      ) : initialOrders.length === 0 ? (
         <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
           Không tìm thấy đơn hàng nào.
         </div>
@@ -158,11 +136,11 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order) => (
+              {initialOrders.map((order) => (
                 <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
                   <TableCell className="font-mono font-medium text-slate-800 dark:text-slate-200">{order.code}</TableCell>
                   <TableCell className="text-slate-500">
-                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString("vi-VN") : "-"}
+                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "-"}
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(order.status)}>
@@ -219,4 +197,29 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
       )}
     </div>
   )
+}
+
+const vndFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
+const formatVND = (price: number) => {
+  return vndFormatter.format(price)
+}
+
+const getStatusBadgeVariant = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "completed":
+    case "success":
+      return "default"
+    case "pending":
+    case "processing":
+      return "secondary"
+    case "cancelled":
+    case "failed":
+      return "destructive"
+    default:
+      return "outline"
+  }
 }

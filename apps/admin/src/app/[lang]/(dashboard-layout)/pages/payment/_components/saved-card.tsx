@@ -4,7 +4,7 @@ import type { PaymentType } from "../types"
 
 import { cn } from "@/lib/utils"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form"
 import { RadioGroupItem } from "@/components/ui/radio-group"
 import { CreditCardBrandIcon } from "@/components/credit-card-brand-icon"

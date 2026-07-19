@@ -1,15 +1,8 @@
 "use client"
 
-import {
-  CartesianGrid,
-  Cell,
-  LabelList,
-  Scatter,
-  ScatterChart,
-  XAxis,
-  YAxis,
-  ZAxis,
-} from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -28,6 +21,10 @@ const scatterChartsData = [
 ]
 
 export function ScatterCharts() {
+  const recharts = useRecharts();
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { CartesianGrid, Cell, LabelList, Scatter, ScatterChart, XAxis, YAxis, ZAxis } = recharts;
+
   return (
     <section className="conatiner grid gap-4 p-4">
       <Card>
@@ -225,9 +222,9 @@ export function ScatterCharts() {
                 content={<ChartTooltipContent />}
               />
               <Scatter name="A school" data={scatterChartsData}>
-                {scatterChartsData.map((_, index) => (
+                {scatterChartsData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${entry.x}-${entry.y}`}
                     fill={`hsl(var(--chart-${(index % 5) + 1}))`}
                   />
                 ))}

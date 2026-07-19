@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { GardensTable } from "./_components/gardens-table"
@@ -71,7 +72,9 @@ export default async function GardensPage({ searchParams }: GardensPageProps) {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <GardensTable initialGardens={gardens} metadata={metadata} errorMsg={errorMsg} />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách vườn...</div>}>
+        <GardensTable initialGardens={gardens} metadata={metadata} errorMsg={errorMsg} />
+      </Suspense>
     </div>
   )
 }

@@ -1,9 +1,11 @@
 "use client"
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { ComponentProps } from "react"
-import type { DotProps } from "recharts"
+
 import type { SalesByCountryType } from "../types"
 
 import { camelCaseToTitleCase, formatCurrency } from "@/lib/utils"
@@ -57,7 +59,12 @@ export function SalesByCountryChart({
 }: {
   data: SalesByCountryType["countries"]
 }) {
-  const isRtl = useIsRtl()
+  const recharts = useRecharts();
+    const isRtl = useIsRtl()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+
+
 
   return (
     <ChartContainer dir="ltr" config={{}} className="aspect-auto h-full w-full">

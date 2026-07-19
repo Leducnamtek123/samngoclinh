@@ -14,23 +14,26 @@ import {
 import { ChatSidebarHeader } from "./chat-sidebar-header"
 import { ChatSidebarList } from "./chat-sidebar-list"
 
-export function ChatSidebar() {
-  const { isChatSidebarOpen, setIsChatSidebarOpen } = useChatContext()
-  const isMediumOrSmaller = useMedia("(max-width: 767px)")
-
-  // Content to display in the chat sidebar
-  const content = (
+function ChatSidebarContent() {
+  return (
     <div className="md:w-72">
       <ChatSidebarHeader />
       <ChatSidebarList />
     </div>
   )
+}
+
+export function ChatSidebar() {
+  const { isChatSidebarOpen, setIsChatSidebarOpen } = useChatContext()
+  const isMediumOrSmaller = useMedia("(max-width: 767px)")
 
   // Render a persistent sidebar for larger screens
   if (!isMediumOrSmaller) {
     return (
       <aside>
-        <Card>{content}</Card>
+        <Card>
+          <ChatSidebarContent />
+        </Card>
       </aside>
     )
   }
@@ -46,7 +49,7 @@ export function ChatSidebar() {
             navigate or start a new chat.
           </SheetDescription>
         </SheetHeader>
-        {content}
+        <ChatSidebarContent />
       </SheetContent>
     </Sheet>
   )

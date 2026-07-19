@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { DynamicIcon } from "../dynamic-icon"
 import { Separator } from "./separator"
 
-export const timelineVariants = cva("grid", {
+const timelineVariants = cva("grid", {
   variants: {
     align: {
       left: "[&>li]:grid-cols-[0_min-content_1fr]",
@@ -44,7 +44,7 @@ export function Timeline({
   )
 }
 
-export const timelineItemVariants = cva("grid items-center gap-x-2", {
+const timelineItemVariants = cva("grid items-center gap-x-2", {
   variants: {
     status: {
       done: "text-foreground",
@@ -160,7 +160,7 @@ export function TimelineDot({
   )
 }
 
-export const timelineContentVariants = cva("row-start-2 row-end-2 pb-8", {
+const timelineContentVariants = cva("row-start-2 row-end-2 pb-8", {
   variants: {
     side: {
       start: "col-start-3 col-end-4 me-auto text-start",
@@ -189,7 +189,7 @@ export function TimelineContent({
   )
 }
 
-export const timelineHeadingVariants = cva(
+const timelineHeadingVariants = cva(
   "row-start-1 row-end-1 line-clamp-1 max-w-full truncate",
   {
     variants: {

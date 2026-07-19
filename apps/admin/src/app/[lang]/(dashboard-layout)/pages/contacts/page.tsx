@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ContactsTable } from "./_components/contacts-table"
@@ -60,11 +61,13 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
         </p>
       </div>
 
-      <ContactsTable 
-        initialContacts={contacts} 
-        metadata={metadata} 
-        errorMsg={errorMsg} 
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách liên hệ...</div>}>
+        <ContactsTable 
+          initialContacts={contacts} 
+          metadata={metadata} 
+          errorMsg={errorMsg} 
+        />
+      </Suspense>
     </div>
   )
 }

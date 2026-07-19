@@ -8,7 +8,8 @@ import { notificationData } from "@/data/notifications"
 import { cn, formatDistance, formatUnreadCount } from "@/lib/utils"
 
 import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { Card, CardFooter } from "@/components/ui/card"
 import {
   Popover,

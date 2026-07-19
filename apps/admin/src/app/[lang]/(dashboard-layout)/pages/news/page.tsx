@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { NewsManager } from "./_components/news-manager"
@@ -65,11 +66,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <NewsManager 
-        initialArticles={articles} 
-        metadata={metadata}
-        errorMsg={errorMsg} 
-      />
+      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách bài viết...</div>}>
+        <NewsManager 
+          initialArticles={articles} 
+          metadata={metadata}
+          errorMsg={errorMsg} 
+        />
+      </Suspense>
     </div>
   )
 }

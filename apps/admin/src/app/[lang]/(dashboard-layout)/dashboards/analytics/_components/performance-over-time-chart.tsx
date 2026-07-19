@@ -1,6 +1,8 @@
 "use client"
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { PerformanceOverTimeType } from "../types"
 
@@ -16,7 +18,12 @@ export function PerformanceOverTimeChart({
 }: {
   data: PerformanceOverTimeType["performance"]
 }) {
-  const isRtl = useIsRtl()
+  const recharts = useRecharts();
+    const isRtl = useIsRtl()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+
+
 
   return (
     <ChartContainer config={{}} className="aspect-auto h-full w-full">

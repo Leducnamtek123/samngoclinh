@@ -26,19 +26,19 @@ export function DialogTrigger({
   )
 }
 
-export function DialogPortal({
+function DialogPortal({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
-export function DialogClose({
+function DialogClose({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
-export function DialogOverlay({
+function DialogOverlay({
   className,
   ...props
 }: ComponentProps<typeof DialogPrimitive.Overlay>) {

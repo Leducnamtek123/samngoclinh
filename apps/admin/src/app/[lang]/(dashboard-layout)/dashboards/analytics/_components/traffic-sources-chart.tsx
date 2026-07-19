@@ -1,6 +1,8 @@
 "use client"
 
-import { RadialBar, RadialBarChart } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { ChartConfig } from "@/components/ui/chart"
 import type { TrafficSourcesType } from "../types"
@@ -23,7 +25,12 @@ export function TrafficSourcesChart({
 }: {
   data: TrafficSourcesType["sources"]
 }) {
-  const radius = useRadius()
+  const recharts = useRecharts();
+    const radius = useRadius()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { RadialBar, RadialBarChart } = recharts;
+
+
 
   return (
     <ChartContainer config={chartConfig} className="aspect-square h-52 mx-auto">

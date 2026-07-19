@@ -36,7 +36,7 @@ export function UserDropdown({
 
   const name = user?.name || userData?.name
   const email = user?.email || userData?.email
-  const avatar = user?.avatar || userData?.avatar
+  const avatar = user ? user.avatar : userData?.avatar
 
   return (
     <DropdownMenu>
@@ -48,8 +48,8 @@ export function UserDropdown({
           aria-label="User"
         >
           <Avatar className="size-9">
-            <AvatarImage src={avatar} alt="" />
-            <AvatarFallback className="bg-transparent">
+            {avatar && <AvatarImage src={avatar} alt="" />}
+            <AvatarFallback className="bg-emerald-600 text-white font-semibold text-xs">
               {name && getInitials(name)}
             </AvatarFallback>
           </Avatar>
@@ -58,8 +58,8 @@ export function UserDropdown({
       <DropdownMenuContent forceMount>
         <DropdownMenuLabel className="flex gap-2">
           <Avatar>
-            <AvatarImage src={avatar} alt="Avatar" />
-            <AvatarFallback className="bg-transparent">
+            {avatar && <AvatarImage src={avatar} alt="Avatar" />}
+            <AvatarFallback className="bg-emerald-600 text-white font-semibold text-sm">
               {name && getInitials(name)}
             </AvatarFallback>
           </Avatar>

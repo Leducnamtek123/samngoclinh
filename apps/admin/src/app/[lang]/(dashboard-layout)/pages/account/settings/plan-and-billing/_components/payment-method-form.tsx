@@ -40,7 +40,7 @@ export function PaymentMethodForm() {
   const { isSubmitting } = form.formState
   const creditCardBrandName = getCreditCardBrandName(cardNumber || "")
 
-  function onSubmit(_data: PaymentMethodFormType) {}
+
 
   return (
     <Form {...form}>
@@ -249,3 +249,5 @@ export function PaymentMethodForm() {
     </Form>
   )
 }
+
+function onSubmit(_data: PaymentMethodFormType) {}

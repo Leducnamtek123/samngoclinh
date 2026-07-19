@@ -46,22 +46,7 @@ export function CalendarContent() {
   }, [calendarApi, setCalendarApi])
 
   // Function to parse and transform an event from FullCalendar's internal event representation to a structured format
-  const parseEvent = (event: EventImpl): EventType => {
-    return {
-      id: event.id,
-      ...(event.url && { url: event.url }), // Include URL property if it exists
-      title: event.title,
-      allDay: event.allDay,
-      start: event.start || new Date(),
-      end: event.end || event.start || new Date(),
-      extendedProps: {
-        category: event.extendedProps.category,
-        ...(event.extendedProps.description && {
-          description: event.extendedProps.description,
-        }), // Include description if it exists in the extended properties
-      },
-    }
-  }
+
 
   const handleDateClick = (date: DateInput) => {
     if (calendarApi) {
@@ -100,10 +85,7 @@ export function CalendarContent() {
   )
 
   // Custom class names for event styling
-  const eventClassNames = () => [
-    "h-[1.62rem] pt-px px-1 rounded-md",
-    "hover:[&_td]:bg-accent/60!", // Styling for hover state on table cells
-  ]
+
 
   return (
     <FullCalendar
@@ -128,3 +110,25 @@ export function CalendarContent() {
     />
   )
 }
+
+const parseEvent = (event: EventImpl): EventType => {
+  return {
+    id: event.id,
+    ...(event.url && { url: event.url }),
+    title: event.title,
+    allDay: event.allDay,
+    start: event.start || new Date(),
+    end: event.end || event.start || new Date(),
+    extendedProps: {
+      category: event.extendedProps.category,
+      ...(event.extendedProps.description && {
+        description: event.extendedProps.description,
+      }),
+    },
+  }
+}
+
+const eventClassNames = () => [
+  "h-[1.62rem] pt-px px-1 rounded-md",
+  "hover:[&_td]:bg-accent/60!",
+]

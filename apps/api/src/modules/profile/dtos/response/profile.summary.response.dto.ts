@@ -4,6 +4,13 @@ import { Expose } from 'class-transformer';
 export class ProfileSummaryResponseDto {
     @ApiProperty({
         required: true,
+        example: 'user-uuid',
+    })
+    @Expose()
+    id: string;
+
+    @ApiProperty({
+        required: true,
         example: 'CÔNG TY CỔ PHẦN DƯỢC LIỆU TRÀ LINH',
     })
     @Expose()
@@ -43,4 +50,11 @@ export class ProfileSummaryResponseDto {
     })
     @Expose()
     verified: boolean;
+
+    @ApiProperty({
+        required: false,
+        example: 'https://example.com/avatar.jpg',
+    })
+    @Expose()
+    avatarUrl?: string | null;
 }

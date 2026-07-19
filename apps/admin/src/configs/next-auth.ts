@@ -119,9 +119,9 @@ export const authOptions: NextAuthOptions = {
 
             return {
               id: payload.data.id,
-              name: payload.data.name || payload.data.username || "Admin",
+              name: payload.data.fullName || payload.data.name || payload.data.username || "Admin",
               email: payload.data.email,
-              avatar: "/images/avatars/male-01.svg",
+              avatar: payload.data.avatarUrl || null,
               status: "ONLINE",
               accessToken: credentials.accessToken,
               refreshToken: credentials.refreshToken,
@@ -172,9 +172,9 @@ export const authOptions: NextAuthOptions = {
 
           return {
             id: profilePayload.data?.id || "admin-id",
-            name: profilePayload.data?.name || profilePayload.data?.username || "Admin",
+            name: profilePayload.data?.fullName || profilePayload.data?.name || profilePayload.data?.username || "Admin",
             email: profilePayload.data?.email || credentials.email,
-            avatar: "/images/avatars/male-01.svg",
+            avatar: profilePayload.data?.avatarUrl || null,
             status: "ONLINE",
             accessToken,
             refreshToken,
@@ -238,4 +238,12 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+}
+
+if (typeof window === 'undefined') {
+  (globalThis as any).getServerSessionToken = async () => {
+    const { getServerSession } = require("next-auth");
+    const session = await getServerSession(authOptions);
+    return (session?.user as any)?.accessToken || null;
+  };
 }

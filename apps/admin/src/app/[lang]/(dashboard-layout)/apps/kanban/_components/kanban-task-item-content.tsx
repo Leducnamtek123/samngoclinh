@@ -10,19 +10,20 @@ interface KanbanTaskItemContentProps {
 }
 
 export function KanbanTaskItemContent({ task }: KanbanTaskItemContentProps) {
-  // Get all media attachments (images & videos)
-  const mediaAttachments = task.attachments
-    .filter(
-      (attachment) =>
-        attachment.type.includes("image") || attachment.type.includes("video")
-    )
-    .map((attachment) => ({
-      src: attachment.url,
-      alt: attachment.name || "Task attachment",
-      type: attachment.type.includes("video")
-        ? ("VIDEO" as const)
-        : ("IMAGE" as const),
-    }))
+  const mediaAttachments = task.attachments.flatMap((attachment) => {
+    if (attachment.type.includes("image") || attachment.type.includes("video")) {
+      return [
+        {
+          src: attachment.url,
+          alt: attachment.name || "Task attachment",
+          type: attachment.type.includes("video")
+            ? ("VIDEO" as const)
+            : ("IMAGE" as const),
+        }
+      ]
+    }
+    return []
+  })
 
   return (
     <CardContent>

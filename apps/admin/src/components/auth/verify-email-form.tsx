@@ -13,7 +13,7 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { Form } from "@/components/ui/form"
 
 export function VerifyEmailForm() {
@@ -27,33 +27,7 @@ export function VerifyEmailForm() {
 
   const locale = params.lang as LocaleType
 
-  async function onSubmit(data: VerifyEmailFormType) {
-    try {
-      const response = await fetch("/api/auth/verify-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
 
-      if (!response.ok) {
-        throw new Error("Failed to send verification email")
-      }
-
-      toast({
-        title: "Check your email",
-        description:
-          "We've sent you an email with instructions to verify your email address.",
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Something went wrong",
-        description: error instanceof Error ? error.message : undefined,
-      })
-    }
-  }
 
   return (
     <Form {...form}>
@@ -77,3 +51,32 @@ export function VerifyEmailForm() {
     </Form>
   )
 }
+
+async function onSubmit(data: VerifyEmailFormType) {
+  try {
+    const response = await fetch("/api/auth/verify-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to send verification email")
+    }
+
+    toast({
+      title: "Check your email",
+      description:
+        "We've sent you an email with instructions to verify your email address.",
+    })
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Something went wrong",
+      description: error instanceof Error ? error.message : undefined,
+    })
+  }
+}
+

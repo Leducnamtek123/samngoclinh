@@ -1,6 +1,7 @@
 import { SiGithub } from "react-icons/si"
+import Link from "next/link"
 
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { Card } from "@/components/ui/card"
 
 export function ReadyToBuildCTA() {
@@ -15,12 +16,12 @@ export function ReadyToBuildCTA() {
             Get started with our administration dashboard panel.
           </p>
         </div>
-        <a
+        <Link
           href="/dashboards/analytics"
           className={buttonVariants({ size: "lg" })}
         >
           Get Started
-        </a>
+        </Link>
       </Card>
     </section>
   )

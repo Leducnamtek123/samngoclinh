@@ -1,6 +1,8 @@
 "use client"
 
-import { Cell, Pie, PieChart } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -19,6 +21,10 @@ const pieChartsData = [
 ]
 
 export function PieCharts() {
+  const recharts = useRecharts();
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Cell, Pie, PieChart } = recharts;
+
   return (
     <section className="conatiner grid gap-4 p-4">
       <Card>
@@ -126,9 +132,9 @@ export function PieCharts() {
                 fill="hsl(var(--chart-1))"
                 dataKey="value"
               >
-                {pieChartsData.map((_, index) => (
+                {pieChartsData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${entry.name}`}
                     fill={`hsl(var(--chart-${(index % 5) + 1}))`}
                   />
                 ))}
@@ -155,9 +161,9 @@ export function PieCharts() {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {pieChartsData.map((_, index) => (
+                {pieChartsData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${entry.name}`}
                     fill={`hsl(var(--chart-${(index % 5) + 1}))`}
                   />
                 ))}
@@ -188,10 +194,13 @@ export function PieCharts() {
                 fill="hsl(var(--chart-1))"
                 dataKey="value"
               >
-                {pieChartsData.map((_, index) => (
+                {[
+                  { name: "A", value: 80 },
+                  { name: "B", value: 20 },
+                ].map((entry) => (
                   <Cell
-                    key={`cell-${index}`}
-                    fill={`hsl(var(--chart-${(index % 2) + 1}))`}
+                    key={`cell-${entry.name}`}
+                    fill={`hsl(var(--chart-${entry.name === "A" ? 1 : 2}))`}
                   />
                 ))}
               </Pie>

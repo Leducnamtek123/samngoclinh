@@ -1,6 +1,8 @@
 "use client"
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { NewVsReturningVisitorsType } from "../types"
 
@@ -13,8 +15,14 @@ export function NewVsReturningVisitorsChart({
 }: {
   data: NewVsReturningVisitorsType["visitors"]
 }) {
-  const radius = useRadius()
+  const recharts = useRecharts();
+    const radius = useRadius()
   const isRtl = useIsRtl()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Bar, BarChart, XAxis, YAxis } = recharts;
+
+
+
 
   // Transform `data` into an array format suitable for Recharts
   const chartData = [{ new: data.new.value, returning: data.returning.value }]

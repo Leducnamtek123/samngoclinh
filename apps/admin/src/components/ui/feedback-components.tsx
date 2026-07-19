@@ -32,6 +32,29 @@ interface InlineAlertProps {
   className?: string
 }
 
+const INLINE_ALERT_STYLES = {
+  success: {
+    wrapper: "bg-emerald-50 border-emerald-200/80 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-850/30",
+    icon: <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
+    action: "text-emerald-700 hover:text-emerald-900 dark:text-emerald-300",
+  },
+  warning: {
+    wrapper: "bg-amber-50 border-amber-200/80 text-amber-800 dark:bg-amber-950/20 dark:border-amber-850/30",
+    icon: <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
+    action: "text-emerald-700 hover:text-emerald-900 dark:text-emerald-300",
+  },
+  error: {
+    wrapper: "bg-red-50 border-red-200/80 text-red-800 dark:bg-red-950/20 dark:border-red-850/30",
+    icon: <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />,
+    action: "text-red-700 hover:text-red-900 dark:text-red-300",
+  },
+  info: {
+    wrapper: "bg-blue-50 border-blue-200/80 text-blue-800 dark:bg-blue-950/20 dark:border-blue-850/30",
+    icon: <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />,
+    action: "text-blue-700 hover:text-blue-900 dark:text-blue-300",
+  },
+};
+
 export function InlineAlert({
   type,
   title,
@@ -41,30 +64,7 @@ export function InlineAlert({
   onClose,
   className,
 }: InlineAlertProps) {
-  const styles = {
-    success: {
-      wrapper: "bg-emerald-50 border-emerald-200/80 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-850/30",
-      icon: <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
-      action: "text-emerald-700 hover:text-emerald-900 dark:text-emerald-300",
-    },
-    warning: {
-      wrapper: "bg-amber-50 border-amber-200/80 text-amber-800 dark:bg-amber-950/20 dark:border-amber-850/30",
-      icon: <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
-      action: "text-amber-700 hover:text-amber-900 dark:text-amber-300",
-    },
-    error: {
-      wrapper: "bg-red-50 border-red-200/80 text-red-800 dark:bg-red-950/20 dark:border-red-850/30",
-      icon: <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />,
-      action: "text-red-700 hover:text-red-900 dark:text-red-300",
-    },
-    info: {
-      wrapper: "bg-blue-50 border-blue-200/80 text-blue-800 dark:bg-blue-950/20 dark:border-blue-850/30",
-      icon: <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />,
-      action: "text-blue-700 hover:text-blue-900 dark:text-blue-300",
-    },
-  }
-
-  const currentStyle = styles[type]
+  const currentStyle = INLINE_ALERT_STYLES[type]
 
   return (
     <div
@@ -82,7 +82,7 @@ export function InlineAlert({
       {(actionLabel && onAction) || onClose ? (
         <div className="flex items-center gap-3 ml-auto flex-shrink-0">
           {actionLabel && onAction && (
-            <button
+            <button type="button"
               onClick={onAction}
               className={cn("text-xs font-bold uppercase tracking-wider hover:underline", currentStyle.action)}
             >
@@ -90,7 +90,7 @@ export function InlineAlert({
             </button>
           )}
           {onClose && (
-            <button onClick={onClose} className="opacity-75 hover:opacity-100 transition-opacity">
+            <button type="button" onClick={onClose} aria-label="Đóng" className="opacity-75 hover:opacity-100 transition-opacity">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -112,6 +112,33 @@ interface ToastCardProps {
   className?: string
 }
 
+const TOAST_CARD_STYLES = {
+  success: {
+    bg: "bg-emerald-50/80 dark:bg-emerald-950/10",
+    border: "border-emerald-200 dark:border-emerald-900/30",
+    iconContainer: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400",
+    icon: <CheckCircle className="h-5 w-5" />,
+  },
+  error: {
+    bg: "bg-red-50/80 dark:bg-red-950/10",
+    border: "border-red-200 dark:border-red-900/30",
+    iconContainer: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400",
+    icon: <AlertCircle className="h-5 w-5" />,
+  },
+  warning: {
+    bg: "bg-amber-50/80 dark:bg-amber-950/10",
+    border: "border-amber-200 dark:border-amber-900/30",
+    iconContainer: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400",
+    icon: <AlertTriangle className="h-5 w-5" />,
+  },
+  info: {
+    bg: "bg-blue-50/80 dark:bg-blue-950/10",
+    border: "border-blue-200 dark:border-blue-900/30",
+    iconContainer: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400",
+    icon: <Info className="h-5 w-5" />,
+  },
+};
+
 export function ToastCard({
   type,
   title,
@@ -120,34 +147,7 @@ export function ToastCard({
   onClose,
   className,
 }: ToastCardProps) {
-  const styles = {
-    success: {
-      bg: "bg-emerald-50/80 dark:bg-emerald-950/10",
-      border: "border-emerald-200 dark:border-emerald-900/30",
-      iconContainer: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400",
-      icon: <CheckCircle className="h-5 w-5" />,
-    },
-    error: {
-      bg: "bg-red-50/80 dark:bg-red-950/10",
-      border: "border-red-200 dark:border-red-900/30",
-      iconContainer: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400",
-      icon: <AlertCircle className="h-5 w-5" />,
-    },
-    warning: {
-      bg: "bg-amber-50/80 dark:bg-amber-950/10",
-      border: "border-amber-200 dark:border-amber-900/30",
-      iconContainer: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400",
-      icon: <AlertTriangle className="h-5 w-5" />,
-    },
-    info: {
-      bg: "bg-blue-50/80 dark:bg-blue-950/10",
-      border: "border-blue-200 dark:border-blue-900/30",
-      iconContainer: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400",
-      icon: <Info className="h-5 w-5" />,
-    },
-  }
-
-  const currentStyle = styles[type]
+  const currentStyle = TOAST_CARD_STYLES[type]
 
   return (
     <div
@@ -167,8 +167,9 @@ export function ToastCard({
         <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-none">{timeString}</p>
       </div>
       {onClose && (
-        <button
+        <button type="button"
           onClick={onClose}
+          aria-label="Đóng"
           className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 transition-colors flex-shrink-0"
         >
           <X className="h-4 w-4" />
@@ -221,7 +222,7 @@ export function NotificationCenter({
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      <button
+      <button type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
       >
@@ -242,7 +243,7 @@ export function NotificationCenter({
             </div>
             <div className="flex gap-2">
               {onMarkAllAsRead && unreadCount > 0 && (
-                <button
+                <button type="button"
                   onClick={onMarkAllAsRead}
                   className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
                 >
@@ -250,7 +251,7 @@ export function NotificationCenter({
                 </button>
               )}
               {onClearAll && notifications.length > 0 && (
-                <button
+                <button type="button"
                   onClick={onClearAll}
                   className="text-xs font-semibold text-slate-400 hover:text-slate-600 hover:underline"
                 >
@@ -287,6 +288,14 @@ export function NotificationCenter({
                     key={item.id}
                     onClick={() => {
                       if (onNotificationClick) onNotificationClick(item.id)
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        if (onNotificationClick) onNotificationClick(item.id)
+                      }
                     }}
                     className={cn(
                       "p-4 flex gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 cursor-pointer transition-colors relative",
@@ -354,7 +363,7 @@ export function EmptyState({
       <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">{title}</h4>
       <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm leading-relaxed">{description}</p>
       {actionLabel && onAction && (
-        <button
+        <button type="button"
           onClick={onAction}
           className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2 shadow-sm"
         >
@@ -400,7 +409,7 @@ export function EmptySearchResult({
         . Vui lòng thử lại với từ khóa khác.
       </p>
       {onClear && (
-        <button onClick={onClear} className="text-emerald-700 dark:text-emerald-400 hover:underline font-semibold text-sm">
+        <button type="button" onClick={onClear} className="text-emerald-700 dark:text-emerald-400 hover:underline font-semibold text-sm">
           Xóa bộ lọc tìm kiếm
         </button>
       )}
@@ -438,13 +447,7 @@ interface AvatarPlaceholderProps {
 }
 
 export function AvatarPlaceholder({ name, className }: AvatarPlaceholderProps) {
-  const getInitials = (fullName: string) => {
-    const parts = fullName.trim().split(" ")
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    }
-    return fullName.substring(0, 2).toUpperCase()
-  }
+
 
   const initials = name ? getInitials(name) : ""
 
@@ -463,7 +466,7 @@ export function AvatarPlaceholder({ name, className }: AvatarPlaceholderProps) {
 // ==========================================
 // 8. SKELETON LOADING
 // ==========================================
-export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
@@ -548,7 +551,7 @@ export function ErrorState({
       <h4 className="font-semibold text-lg text-red-600 dark:text-red-400 mb-2">{title}</h4>
       <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm leading-relaxed">{description}</p>
       {onRetry && (
-        <button
+        <button type="button"
           onClick={onRetry}
           className="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2"
         >
@@ -608,7 +611,7 @@ export function OfflineState({ onReconnect, className }: OfflineStateProps) {
         </p>
       </div>
       {onReconnect && (
-        <button
+        <button type="button"
           onClick={onReconnect}
           className="text-xs font-bold uppercase tracking-wider text-amber-800 hover:text-amber-950 dark:text-amber-400 hover:underline flex-shrink-0"
         >
@@ -664,12 +667,14 @@ export function ConfirmationDialog({
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
         onClick={onClose}
+        role="presentation"
       />
 
       {/* Dialog Box */}
       <div className="relative w-full max-w-md bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 z-10 animate-scale-up">
-        <button
+        <button type="button"
           onClick={onClose}
+          aria-label="Đóng"
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
         >
           <X className="h-5 w-5" />
@@ -693,7 +698,7 @@ export function ConfirmationDialog({
         </div>
 
         <div className="flex gap-3 justify-end mt-8">
-          <button
+          <button type="button"
             onClick={onClose}
             disabled={isLoading}
             className="px-5 py-2 rounded-lg font-semibold text-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-350 transition-colors disabled:opacity-50"
@@ -701,6 +706,7 @@ export function ConfirmationDialog({
             {cancelLabel}
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={isLoading}
             className={cn(
@@ -808,4 +814,12 @@ export function SuccessAnimation({ className }: { className?: string }) {
       `}</style>
     </div>
   )
+}
+
+const getInitials = (fullName: string) => {
+  const parts = fullName.trim().split(" ")
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+  return fullName.substring(0, 2).toUpperCase()
 }

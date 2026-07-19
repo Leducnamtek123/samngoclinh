@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useReducer, useState } from "react"
+import { useReducer, useState, useMemo } from "react"
+import { ChatContext } from "../_hooks/use-chat-context"
 
 import type { FileType } from "@/types"
 import type { ReactNode } from "react"
@@ -9,7 +10,7 @@ import type { ChatContextType, ChatType } from "../types"
 import { ChatReducer } from "../_reducers/chat-reducer"
 
 // Create Kanban context
-export const ChatContext = createContext<ChatContextType | undefined>(undefined)
+
 
 export function ChatProvider({
   chatsData,
@@ -50,20 +51,22 @@ export function ChatProvider({
     dispatch({ type: "selectChat", chat })
   }
 
+  const contextValue = useMemo(() => ({
+    chatState,
+    isChatSidebarOpen,
+    setIsChatSidebarOpen,
+    handleSelectChat,
+    handleAddTextMessage,
+    handleAddImagesMessage,
+    handleAddFilesMessage,
+    handleSetUnreadCount,
+  }), [chatState, isChatSidebarOpen])
+
   return (
     <ChatContext.Provider
-      value={{
-        chatState,
-        isChatSidebarOpen,
-        setIsChatSidebarOpen,
-        handleSelectChat,
-        handleAddTextMessage,
-        handleAddImagesMessage,
-        handleAddFilesMessage,
-        handleSetUnreadCount,
-      }}
+      value={contextValue}
     >
       {children}
-    </ChatContext.Provider>
+      </ChatContext.Provider>
   )
 }

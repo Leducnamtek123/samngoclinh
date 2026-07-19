@@ -1,6 +1,8 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { useRecharts } from "@/hooks/use-recharts";
+
+
 
 import type { ChartConfig } from "@/components/ui/chart"
 import type { ComponentProps } from "react"
@@ -43,8 +45,14 @@ export function RevenueTrendChart({
 }: {
   data: RevenueTrendType["revenueTrends"]
 }) {
-  const radius = useRadius()
+  const recharts = useRecharts();
+    const radius = useRadius()
   const isRtl = useIsRtl()
+  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const { Bar, BarChart, CartesianGrid, XAxis } = recharts;
+
+
+
 
   return (
     <ChartContainer config={chartConfig} className="aspect-auto grow w-full">
