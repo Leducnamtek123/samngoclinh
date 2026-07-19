@@ -13,6 +13,7 @@ import {
   login as apiLogin,
   logout as apiLogout,
   setUnauthorizedHandler,
+  verifyLoginOtp,
 } from '../api/auth';
 import { clearSession, loadSession, saveSession } from '../api/storage';
 
@@ -29,7 +30,17 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  // Đăng nhập: gọi backend, lưu token, rồi lấy hồ sơ để hiển thị.
+  // Từ cặp token -> lưu, lấy hồ sơ, cập nhật state. Dùng chung cho mọi cách đăng nhập.
+  const establishSession = async ({ accessToken, refreshToken }) => {
+    // Lưu token trước để fetchProfile() (đi qua interceptor) đọc được từ storage.
+    await saveSession({ token: accessToken, refreshToken, user: null });
+    setToken(accessToken);
+    const profile = await fetchProfile();
+    await saveSession({ token: accessToken, refreshToken, user: profile });
+    setUser(profile);
+  };
+
+  // Đăng nhập bằng email/mật khẩu.
   const signIn = async ({ email, password }) => {
     const res = await apiLogin({ email, password });
     if (res.isTwoFactorEnable && !res.accessToken) {
@@ -37,12 +48,13 @@ export function AuthProvider({ children }) {
       err.code = 'TWO_FACTOR_REQUIRED';
       throw err;
     }
-    // Lưu token trước để fetchProfile() (đi qua interceptor) đọc được từ storage.
-    await saveSession({ token: res.accessToken, refreshToken: res.refreshToken, user: null });
-    setToken(res.accessToken);
-    const profile = await fetchProfile();
-    await saveSession({ token: res.accessToken, refreshToken: res.refreshToken, user: profile });
-    setUser(profile);
+    await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
+  };
+
+  // Đăng nhập bằng OTP số điện thoại.
+  const signInWithOtp = async ({ phone, otp }) => {
+    const res = await verifyLoginOtp({ phone, otp });
+    await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
   };
 
   const signOut = async () => {
@@ -86,6 +98,7 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: !!token,
       signIn,
+      signInWithOtp,
       signOut,
       changePassword,
     }),

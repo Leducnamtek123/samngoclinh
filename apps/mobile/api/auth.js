@@ -6,7 +6,8 @@
 //  - Interceptor (withAuth): gặp 401 -> tự refresh -> retry 1 lần -> vẫn fail thì đăng xuất.
 //  - Mọi endpoint yêu cầu header x-api-key (@ApiKeyProtected) và trả về vỏ chuẩn { statusCode, message, data }.
 
-import { API_BASE_URL, API_KEY } from './config';
+import { API_BASE_URL, API_KEY, USE_MOCK_API } from './config';
+import { mockRequest } from './mockBackend';
 import { getDeviceInfo } from './device';
 import { getRefreshToken, getToken, updateTokens } from './storage';
 
@@ -33,6 +34,8 @@ export class HttpError extends Error {
 // KHÔNG kèm interceptor — dùng trực tiếp cho endpoint public (login, refresh, forgot/reset)
 // hoặc bên trong withAuth cho endpoint cần token.
 async function apiRequest(path, { method = 'GET', body, token } = {}) {
+  if (USE_MOCK_API) return mockRequest(path, method, body);
+
   const headers = { Accept: 'application/json' };
   if (API_KEY) headers['x-api-key'] = API_KEY;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -124,6 +127,32 @@ export async function login({ email, password }) {
     accessToken: data.tokens?.accessToken ?? null,
     refreshToken: data.tokens?.refreshToken ?? null,
   };
+}
+
+// Gửi mã OTP đăng nhập tới số điện thoại. (@note backend thật chưa có endpoint này — hiện chỉ chạy ở chế độ mock.)
+export async function sendLoginOtp({ phone }) {
+  return apiRequest('/user/login/otp/request', { method: 'POST', body: { phone } });
+}
+
+// Xác nhận OTP -> trả cặp token như login. (@note backend thật chưa có endpoint này.)
+export async function verifyLoginOtp({ phone, otp }) {
+  const device = await getDeviceInfo();
+  const data = await apiRequest('/user/login/otp/verify', {
+    method: 'POST',
+    body: { phone, otp, from: 'mobile', device },
+  });
+  return {
+    accessToken: data.tokens?.accessToken ?? null,
+    refreshToken: data.tokens?.refreshToken ?? null,
+  };
+}
+
+// Đăng ký tài khoản bằng email. (Backend thật /user/sign-up còn cần countryId, marketing, cookies.)
+export async function register({ name, email, password, inviteCode }) {
+  return apiRequest('/user/sign-up', {
+    method: 'POST',
+    body: { name, email, password, inviteCode, from: 'mobile' },
+  });
 }
 
 // Hồ sơ người dùng hiện tại. Đi qua interceptor nên token hết hạn sẽ tự refresh.
