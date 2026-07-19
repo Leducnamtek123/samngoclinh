@@ -477,6 +477,28 @@ export class CultivationRepository {
         });
     }
 
+    async getGardensPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>> {
+        const { where, ...params } = pagination;
+        return this.paginationService.offset<
+            CultivationGarden,
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >(this.databaseService.cultivationGarden, {
+            ...params,
+            where: {
+                ...where,
+                ...(isAdmin ? {} : { ownerUserId: userId }),
+            },
+        });
+    }
+
     async getGardensList(userId: string, isAdmin?: boolean): Promise<CultivationGarden[]> {
         return this.databaseService.cultivationGarden.findMany({
             where: isAdmin ? {} : { ownerUserId: userId },

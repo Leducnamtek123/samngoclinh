@@ -37,6 +37,17 @@ export class CultivationService implements ICultivationService {
         };
     }
 
+    async gardensPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>> {
+        return this.cultivationRepository.getGardensPaginated(userId, isAdmin, pagination);
+    }
+
     async gardensList(userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden[]>> {
         const gardens = await this.cultivationRepository.getGardensList(userId, isAdmin);
         return {

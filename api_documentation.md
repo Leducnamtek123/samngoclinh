@@ -155,12 +155,12 @@ Khi chạy dự án cục bộ, bạn có thể truy cập các tài liệu chi 
 | **DELETE** | `/api/admin/contracts/{id}` | Hủy/Xóa hợp đồng |
 
 ### Quản lý Người dùng & Quyền (Users & Roles)
-| Method | Path | Mô tả / Chức năng |
-| :--- | :--- | :--- |
-| **GET** | `/api/v1/admin/user/list` | Xem danh sách thành viên |
-| **POST** | `/api/v1/admin/user/create` | Tạo mới tài khoản người dùng |
-| **PATCH** | `/api/v1/admin/user/update/{userId}/status` | Khóa/Mở khóa tài khoản thành viên |
-| **GET** | `/api/v1/admin/role/list` | Xem danh sách các vai trò (Role) trong hệ thống |
+| Method    | Path                                        | Mô tả / Chức năng                               |
+| :----------| :--------------------------------------------| :------------------------------------------------|
+| **GET**   | `/api/v1/admin/user/list`                   | Xem danh sách thành viên                        |
+| **POST**  | `/api/v1/admin/user/create`                 | Tạo mới tài khoản người dùng                    |
+| **PATCH** | `/api/v1/admin/user/update/{userId}/status` | Khóa/Mở khóa tài khoản thành viên               |
+| **GET**   | `/api/v1/admin/role/list`                   | Xem danh sách các vai trò (Role) trong hệ thống |
 
 ---
 

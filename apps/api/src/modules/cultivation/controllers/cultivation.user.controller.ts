@@ -84,6 +84,33 @@ export class CultivationUserController {
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
+    @ResponsePaging('cultivation.gardens')
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/gardens/paginated')
+    async gardensPaginated(
+        @UserCurrent() user: IUser,
+        @PaginationOffsetQuery({
+            availableSearch: ['name', 'code', 'location'],
+            availableOrderBy: ['createdAt', 'name', 'code', 'totalBeds', 'activeBeds', 'totalTrees'],
+            defaultPerPage: 10,
+        })
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>> {
+        const isAdmin = user.role.type === EnumRoleType.admin || user.role.type === EnumRoleType.superAdmin;
+        return this.cultivationService.gardensPaginated(user.id, isAdmin, pagination);
+    }
+
     @Get('/gardens/list')
     async gardensList(
         @UserCurrent() user: IUser

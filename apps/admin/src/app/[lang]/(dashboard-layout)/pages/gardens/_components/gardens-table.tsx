@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Pencil, Plus } from "lucide-react"
+import { Trash2, Pencil, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 
@@ -37,14 +38,65 @@ interface Garden {
 
 interface GardensTableProps {
   initialGardens: Garden[]
+  metadata: {
+    page: number
+    perPage: number
+    totalPage: number
+    count: number
+    hasNext: boolean
+    hasPrevious: boolean
+  } | null
   errorMsg?: string
 }
 
-export function GardensTable({ initialGardens, errorMsg: initialError }: GardensTableProps) {
+export function GardensTable({ initialGardens, metadata, errorMsg: initialError }: GardensTableProps) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [gardens, setGardens] = useState<Garden[]>(initialGardens)
-  const [searchQuery, setSearchQuery] = useState("")
+
+  // URL search query param state
+  const initialSearch = searchParams.get("search") || ""
+  const [searchVal, setSearchVal] = useState(initialSearch)
+
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
+
+  // Sync state with props
+  useEffect(() => {
+    setGardens(initialGardens)
+  }, [initialGardens])
+
+  const createQueryString = (newParams: Record<string, string | null>) => {
+    const updatedSearchParams = new URLSearchParams(searchParams.toString())
+    for (const [key, value] of Object.entries(newParams)) {
+      if (value === null || value === "all" || value === "") {
+        updatedSearchParams.delete(key)
+      } else {
+        updatedSearchParams.set(key, value)
+      }
+    }
+    if (!newParams.hasOwnProperty("page")) {
+      updatedSearchParams.set("page", "1")
+    }
+    return updatedSearchParams.toString()
+  }
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get("search") || ""
+      if (searchVal !== currentSearch) {
+        router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
+      }
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchVal])
+
+  const handlePageChange = (newPage: number) => {
+    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+  }
   
   // Selection state
   const [selectedGardenIds, setSelectedGardenIds] = useState<string[]>([])
@@ -80,10 +132,7 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
   })
 
   // Filter logic
-  const filteredGardens = gardens.filter((garden) => {
-    return garden.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-           garden.code.toLowerCase().includes(searchQuery.toLowerCase())
-  })
+  const filteredGardens = gardens
 
   const handleToggleSelect = (id: string) => {
     setSelectedGardenIds((prev) =>
@@ -314,8 +363,8 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Input
               placeholder="Tìm kiếm vườn..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
               className="max-w-[250px]"
             />
             {selectedGardenIds.length > 0 && (
@@ -359,10 +408,10 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
                 {filteredGardens.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={10} className="py-8">
-                      {searchQuery ? (
+                      {searchVal ? (
                         <EmptySearchResult
-                          query={searchQuery}
-                          onClear={() => setSearchQuery("")}
+                          query={searchVal}
+                          onClear={() => setSearchVal("")}
                         />
                       ) : (
                         <EmptyState
@@ -432,6 +481,37 @@ export function GardensTable({ initialGardens, errorMsg: initialError }: Gardens
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination Controls */}
+          {metadata && (
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between mt-4 rounded-b-md">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} khu vườn)
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasPrevious}
+                  onClick={() => handlePageChange(metadata.page - 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                  <span>Trước</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!metadata.hasNext}
+                  onClick={() => handlePageChange(metadata.page + 1)}
+                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
+                >
+                  <span>Kế tiếp</span>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

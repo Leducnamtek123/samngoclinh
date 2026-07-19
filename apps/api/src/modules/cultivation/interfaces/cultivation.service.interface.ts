@@ -19,6 +19,14 @@ export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;
     gardensList(userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden[]>>;
+    gardensPaginated(
+        userId: string,
+        isAdmin: boolean,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.CultivationGardenSelect,
+            Prisma.CultivationGardenWhereInput
+        >
+    ): Promise<IResponsePagingReturn<CultivationGarden>>;
     beds(
         userId: string,
         isAdmin: boolean,
