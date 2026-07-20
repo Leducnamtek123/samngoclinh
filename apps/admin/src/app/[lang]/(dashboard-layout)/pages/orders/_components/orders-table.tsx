@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
+import { useState, useEffect, useCallback } from "react"
+import { useEvent } from "@/hooks/use-event"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { ToastCard } from "@/components/ui/feedback-components"
 
 interface Order {
   id: string
@@ -36,6 +38,14 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  const [localError, setLocalError] = useState(errorMsg || "")
+
+  useEffect(() => {
+    if (errorMsg) {
+      setLocalError(errorMsg)
+    }
+  }, [errorMsg])
+
   // URL query params states
   const initialSearch = searchParams.get("search") || ""
   const [searchVal, setSearchVal] = useState(initialSearch)
@@ -57,7 +67,7 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
     return updatedSearchParams.toString()
   }, [searchParams])
 
-  const onSearch = useEffectEvent(() => {
+  const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
     if (searchVal !== currentSearch) {
       router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
@@ -89,18 +99,18 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
       {/* Search & Filter Controls */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm kiếm mã đơn..."
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
-            className="w-full h-10 text-sm pl-9 bg-white dark:bg-slate-900 border-slate-200"
+            className="w-full h-10 text-sm pl-9 bg-background border border-input"
           />
         </div>
 
         <div className="w-full sm:w-48">
           <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-            <SelectTrigger className="h-10 text-sm bg-white dark:bg-slate-900 border-slate-200">
+            <SelectTrigger className="h-10 text-sm bg-background border border-input">
               <SelectValue placeholder="Trạng thái" />
             </SelectTrigger>
             <SelectContent>
@@ -115,18 +125,14 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
         </div>
       </div>
 
-      {errorMsg ? (
-        <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
-          {errorMsg}
-        </div>
-      ) : initialOrders.length === 0 ? (
-        <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+      {initialOrders.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground border border-dashed rounded-xl bg-muted/10">
           Không tìm thấy đơn hàng nào.
         </div>
       ) : (
-        <div className="border border-slate-200/60 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs bg-white dark:bg-slate-900">
+        <div className="border border-border rounded-xl overflow-hidden shadow-xs bg-card">
           <Table>
-            <TableHeader className="bg-slate-50/75 dark:bg-slate-900/50">
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Mã đơn hàng</TableHead>
                 <TableHead>Ngày tạo</TableHead>
@@ -137,13 +143,22 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
             </TableHeader>
             <TableBody>
               {initialOrders.map((order) => (
-                <TableRow key={order.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                  <TableCell className="font-mono font-medium text-slate-800 dark:text-slate-200">{order.code}</TableCell>
-                  <TableCell className="text-slate-500">
+                <TableRow key={order.id} className="hover:bg-muted/30">
+                  <TableCell className="font-mono font-medium">{order.code}</TableCell>
+                  <TableCell className="text-muted-foreground">
                     {order.createdAt ? new Date(order.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "-"}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(order.status)}>
+                    <Badge
+                      variant="outline"
+                      className={
+                        order.status.toLowerCase() === "completed" || order.status.toLowerCase() === "success"
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold hover:bg-emerald-500/15"
+                          : order.status.toLowerCase() === "pending" || order.status.toLowerCase() === "processing"
+                          ? "bg-amber-500/10 text-amber-600 border-transparent font-semibold hover:bg-amber-500/15"
+                          : "bg-red-500/10 text-red-650 border-transparent font-semibold hover:bg-red-500/15"
+                      }
+                    >
                       {order.status.toUpperCase()}
                     </Badge>
                   </TableCell>
@@ -165,8 +180,8 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
 
           {/* Pagination Controls */}
           {metadata && (
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
                 Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} đơn hàng)
               </span>
               <div className="flex items-center gap-1.5">
@@ -195,6 +210,18 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
           )}
         </div>
       )}
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {localError && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={localError}
+            onClose={() => setLocalError("")}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -206,20 +233,4 @@ const vndFormatter = new Intl.NumberFormat("vi-VN", {
 
 const formatVND = (price: number) => {
   return vndFormatter.format(price)
-}
-
-const getStatusBadgeVariant = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case "completed":
-    case "success":
-      return "default"
-    case "pending":
-    case "processing":
-      return "secondary"
-    case "cancelled":
-    case "failed":
-      return "destructive"
-    default:
-      return "outline"
-  }
 }

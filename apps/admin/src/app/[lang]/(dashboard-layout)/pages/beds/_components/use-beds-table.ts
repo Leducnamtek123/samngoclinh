@@ -854,8 +854,11 @@ export function useBedsTable(
   const emptyCount = locations.filter((loc) => loc.status === "empty").length
   const plantedCount = locations.filter((loc) => loc.status === "planted").length
 
+  const filteredBeds = beds
+
   return {
     beds,
+    filteredBeds,
     setBeds,
     searchVal,
     setSearchVal,

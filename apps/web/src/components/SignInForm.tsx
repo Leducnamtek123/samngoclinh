@@ -114,7 +114,7 @@ export default function SignInForm() {
 
       // Redirect to homepage or admin panel based on role email
       if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
-        window.location.href = `http://localhost:3001/en?token=${data.token}&refreshToken=${data.refreshToken || ''}&expiresIn=${data.expiresIn || 3600}`;
+        window.location.href = `http://localhost:3003/en?token=${data.token}&refreshToken=${data.refreshToken || ''}&expiresIn=${data.expiresIn || 3600}`;
       } else {
         window.location.href = '/';
       }

@@ -154,7 +154,14 @@ export function TreesList({
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={tree.status === "active" ? "default" : "outline"}>
+                    <Badge
+                      variant="outline"
+                      className={
+                        tree.status === "active"
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold"
+                          : "bg-slate-500/10 text-slate-600 border-transparent font-semibold"
+                      }
+                    >
                       {tree.status === "active" ? "Đang trồng" : tree.status}
                     </Badge>
                   </TableCell>

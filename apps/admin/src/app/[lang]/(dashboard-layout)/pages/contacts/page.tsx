@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ContactsTable } from "./_components/contacts-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý Liên hệ | Sâm Ngọc Linh Admin",
@@ -61,7 +62,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
         </p>
       </div>
 
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách liên hệ...</div>}>
+      <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
         <ContactsTable 
           initialContacts={contacts} 
           metadata={metadata} 

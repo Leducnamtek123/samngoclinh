@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useEvent } from "@/hooks/use-event"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Search, Eye, Mail, Phone, User, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+import { ToastCard } from "@/components/ui/feedback-components"
 import { fetchApi } from "@/lib/api"
 
 interface ContactRequest {
@@ -39,6 +41,14 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const [localError, setLocalError] = useState(errorMsg || "")
+
+  useEffect(() => {
+    if (errorMsg) {
+      setLocalError(errorMsg)
+    }
+  }, [errorMsg])
 
   const [contacts, setContacts] = useState<ContactRequest[]>(initialContacts)
 
@@ -73,7 +83,7 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
     return updatedSearchParams.toString()
   }, [searchParams])
 
-  const onSearch = useEffectEvent(() => {
+  const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
     if (searchVal !== currentSearch) {
       router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
@@ -125,18 +135,18 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
       {/* Search & Filter Controls */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Tìm tên, email, tiêu đề..."
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
-            className="w-full h-10 text-sm pl-9 bg-white dark:bg-slate-900 border-slate-200"
+            className="w-full h-10 text-sm pl-9 bg-background border border-input"
           />
         </div>
 
         <div className="w-full sm:w-48">
           <Select value={isReadFilter} onValueChange={handleReadFilterChange}>
-            <SelectTrigger className="h-10 text-sm bg-white dark:bg-slate-900 border-slate-200">
+            <SelectTrigger className="h-10 text-sm bg-background border border-input">
               <SelectValue placeholder="Đọc / Chưa đọc" />
             </SelectTrigger>
             <SelectContent>
@@ -148,18 +158,14 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
         </div>
       </div>
 
-      {errorMsg ? (
-        <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive">
-          {errorMsg}
-        </div>
-      ) : contacts.length === 0 ? (
-        <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+      {contacts.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground border border-dashed rounded-xl bg-muted/10">
           Chưa có yêu cầu liên hệ nào được gửi đến.
         </div>
       ) : (
-        <div className="border border-slate-200/60 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs bg-white dark:bg-slate-900">
+        <div className="border border-border rounded-xl overflow-hidden shadow-xs bg-card">
           <Table>
-            <TableHeader className="bg-slate-50/75 dark:bg-slate-900/50">
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>Trạng thái</TableHead>
                 <TableHead>Khách hàng</TableHead>
@@ -173,7 +179,14 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
               {contacts.map((contact) => (
                 <TableRow key={contact.id} className={!contact.isRead ? "bg-muted/40 font-medium" : ""}>
                   <TableCell>
-                    <Badge variant={contact.isRead ? "secondary" : "default"} className={!contact.isRead ? "bg-blue-600 text-white" : ""}>
+                    <Badge
+                      variant="outline"
+                      className={
+                        contact.isRead
+                          ? "bg-slate-500/10 text-slate-600 border-transparent font-semibold"
+                          : "bg-blue-500/10 text-blue-600 border-transparent font-semibold"
+                      }
+                    >
                       {contact.isRead ? "Đã đọc" : "Chưa đọc"}
                     </Badge>
                   </TableCell>
@@ -189,7 +202,7 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
                   <TableCell className="max-w-xs truncate">
                     {contact.subject}
                   </TableCell>
-                  <TableCell className="text-xs text-slate-500">
+                  <TableCell className="text-xs text-muted-foreground">
                     {formatDate(contact.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
@@ -210,8 +223,8 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
 
           {/* Pagination Controls */}
           {metadata && (
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
                 Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} tin nhắn)
               </span>
               <div className="flex items-center gap-1.5">
@@ -302,6 +315,18 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {localError && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={localError}
+            onClose={() => setLocalError("")}
+          />
+        )}
+      </div>
     </div>
   )
 }

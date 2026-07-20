@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, Suspense } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
+import { DetailsSkeleton } from "@/components/ui/loading-skeletons"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import type { LocaleType } from "@/types"
 import { Badge } from "@/components/ui/badge"
@@ -107,7 +108,7 @@ function OrderDetailsContent() {
   }
 
   if (loading) {
-    return <div className="text-center py-8 text-muted-foreground">Đang tải chi tiết đơn hàng...</div>
+    return <DetailsSkeleton />
   }
 
   if (errorMsg && !order) {
@@ -390,7 +391,7 @@ function OrderStatusUpdateCard({
 export default function OrderDetailsPage() {
   return (
     <div className="container p-4 md:p-6 mx-auto">
-      <Suspense fallback={<div className="text-center py-8">Đang tải...</div>}>
+      <Suspense fallback={<DetailsSkeleton />}>
         <OrderDetailsContent />
       </Suspense>
     </div>

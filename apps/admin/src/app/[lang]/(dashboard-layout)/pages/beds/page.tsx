@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { BedsTable } from "./_components/beds-table"
+import { BedsSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Luống | Sâm Ngọc Linh Admin",
@@ -13,17 +14,24 @@ interface Bed {
   code: string
   gardenCode: string
   name: string
-  ageYear: number
-  treeCount: number
   status: string
-  createdAt: string
-  maxTrees?: number
+  soilType?: string
   width?: number
   length?: number
-  soilType?: string
-  lastFertilizedAt?: string
+  maxTrees?: number
+  treeCount: number
+  activeTrees?: number
   lastWateredAt?: string
+  lastFertilizedAt?: string
+  ageYear: number
   description?: string
+  createdAt?: string
+}
+
+interface Garden {
+  id: string
+  code: string
+  name: string
 }
 
 interface BedsPageProps {
@@ -42,18 +50,17 @@ interface BedsPageProps {
 export default async function BedsPage({ searchParams }: BedsPageProps) {
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
-  const perPage = resolvedSearchParams.perPage || "10"
+  const perPage = resolvedSearchParams.perPage || "20"
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
   const gardenCode = resolvedSearchParams.gardenCode || ""
 
   let beds: Bed[] = []
   let metadata: any = null
-  let gardens: any[] = []
+  let gardens: Garden[] = []
   let errorMsg = ""
 
   try {
-    // Build query params
     const queryParams = new URLSearchParams()
     queryParams.append("page", page)
     queryParams.append("perPage", perPage)
@@ -61,17 +68,15 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
     if (status && status !== "all") queryParams.append("status", status)
     if (gardenCode && gardenCode !== "all") queryParams.append("gardenCode", gardenCode)
 
-    // Fetch beds
-    const bedsRes = await fetchApi(`/user/cultivation/beds?${queryParams.toString()}`)
-    const bedsPayload = await bedsRes.json()
-    if (bedsRes.status >= 400) {
-      errorMsg = bedsPayload?.message || "Không thể tải danh sách luống sâm"
+    const res = await fetchApi(`/user/cultivation/beds?${queryParams.toString()}`)
+    const payload = await res.json()
+    if (res.status >= 400) {
+      errorMsg = payload?.message || "Failed to load beds"
     } else {
-      beds = Array.isArray(bedsPayload.data) ? bedsPayload.data : []
-      metadata = bedsPayload.metadata || null
+      beds = Array.isArray(payload.data?.items) ? payload.data.items : (payload.data || [])
+      metadata = payload.metadata || null
     }
 
-    // Fetch gardens
     const gardensRes = await fetchApi("/user/cultivation/gardens/list")
     const gardensPayload = await gardensRes.json()
     if (gardensRes.status < 400) {
@@ -84,12 +89,12 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
 
   return (
     <div className="w-full p-4 md:p-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách luống sâm...</div>}>
+      <Suspense fallback={<BedsSkeleton />}>
         <BedsTable 
           initialBeds={beds} 
           metadata={metadata}
-          gardens={gardens} 
-          errorMsg={errorMsg} 
+          gardens={gardens}
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

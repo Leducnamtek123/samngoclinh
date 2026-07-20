@@ -2,6 +2,8 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { PackagesManager } from "./_components/packages-manager"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export const metadata: Metadata = {
   title: "Cấu hình gói dịch vụ | Sâm Ngọc Linh Admin",
@@ -36,7 +38,44 @@ export default async function PackagesPage() {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải cấu hình gói dịch vụ...</div>}>
+      <Suspense fallback={
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-border">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-8 w-24 rounded-lg" />
+            </div>
+            <div className="space-y-4 animate-pulse">
+              <Card>
+                <CardHeader className="space-y-2">
+                  <Skeleton className="h-6 w-36" />
+                  <Skeleton className="h-4 w-28" />
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-5/6" />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          <div className="space-y-4 animate-pulse">
+            <div className="flex justify-between items-center pb-2 border-b border-border">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-8 w-24 rounded-lg" />
+            </div>
+            <Card>
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-6 w-36" />
+                <Skeleton className="h-4 w-28" />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-5/6" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      }>
         <PackagesManager
           initialCarePackages={carePackages}
           initialProtectionPackages={protectionPackages}

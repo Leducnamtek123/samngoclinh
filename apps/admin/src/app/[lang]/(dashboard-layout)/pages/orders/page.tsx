@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { OrdersTable } from "./_components/orders-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý Đơn hàng | Sâm Ngọc Linh Admin",
@@ -13,7 +14,7 @@ interface Order {
   code: string
   status: string
   total: number
-  createdAt: string
+  createdAt?: string
 }
 
 interface OrdersPageProps {
@@ -49,9 +50,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load orders"
+      errorMsg = payload?.message || "Failed to fetch orders"
     } else {
-      orders = Array.isArray(payload.data?.items) ? payload.data.items : (payload.data || [])
+      orders = Array.isArray(payload.data) ? payload.data : []
       metadata = payload.metadata || null
     }
   } catch (e) {
@@ -68,7 +69,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+      <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
           <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách đơn hàng</h2>
           <p className="text-xs text-muted-foreground">
@@ -76,7 +77,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           </p>
         </div>
         
-        <Suspense fallback={<div className="text-center py-8">Đang tải danh sách đơn hàng...</div>}>
+        <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
           <OrdersTable 
             initialOrders={orders} 
             metadata={metadata} 

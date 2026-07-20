@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { UsersTable } from "./_components/users-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý Người dùng | Sâm Ngọc Linh Admin",
@@ -71,7 +72,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+      <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
           <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách tài khoản</h2>
           <p className="text-xs text-muted-foreground">
@@ -79,7 +80,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
           </p>
         </div>
         
-        <Suspense fallback={<div className="text-center py-8">Đang tải danh sách tài khoản...</div>}>
+        <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
           <UsersTable 
             initialUsers={customers} 
             metadata={metadata} 

@@ -71,18 +71,6 @@ export function GardensTable({ initialGardens, metadata, errorMsg: initialError 
 
   const selectedGardenIdsSet = new Set(selectedGardenIds)
 
-  if (gardens.length === 0 && errorMsg) {
-    return (
-      <div className="py-12">
-        <ErrorState
-          title="Không thể tải dữ liệu khu vườn"
-          description={errorMsg}
-          onRetry={() => window.location.reload()}
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

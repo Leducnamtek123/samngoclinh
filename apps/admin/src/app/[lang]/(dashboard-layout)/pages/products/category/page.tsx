@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ShopItemsTable } from "./_components/shop-items-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Sản phẩm Thương mại | Sâm Ngọc Linh Admin",
@@ -66,7 +67,7 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách sản phẩm thương mại...</div>}>
+      <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <ShopItemsTable 
           initialItems={shopItems} 
           metadata={metadata}

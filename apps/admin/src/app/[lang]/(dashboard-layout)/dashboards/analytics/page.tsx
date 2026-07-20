@@ -13,6 +13,7 @@ import { Overview } from "./_components/overview"
 import { PerformanceOverTime } from "./_components/performance-over-time"
 import { TrafficSources } from "./_components/traffic-sources"
 import { VisitorsByCountry } from "./_components/visitors-by-country"
+import { AnalyticsToastError } from "./_components/analytics-toast-error"
 
 export const metadata: Metadata = {
   title: "Bảng điều khiển | Sâm Ngọc Linh Admin",
@@ -81,11 +82,7 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      {errorMsg && (
-        <div className="rounded-md bg-destructive/15 p-4 text-sm text-destructive font-medium">
-          {errorMsg} (Hiển thị dữ liệu tạm thời)
-        </div>
-      )}
+      <AnalyticsToastError errorMsg={errorMsg} />
 
       {/* Cần xử lý khẩn cấp (KYC pending) */}
       {stats.totalPendingApprovals > 0 && (

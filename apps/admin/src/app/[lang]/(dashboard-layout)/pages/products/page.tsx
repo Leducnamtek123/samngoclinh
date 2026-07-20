@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { PlantsTable } from "./_components/plants-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý Sản phẩm | Sâm Ngọc Linh Admin",
@@ -10,14 +11,14 @@ export const metadata: Metadata = {
 
 interface Plant {
   id: string
-  code?: string
+  code: string
   name: string
   ageYear: number
   price: number
-  stock: number
   status: string
-  images?: string[]
+  createdAt: string
   description?: string
+  images?: string[]
 }
 
 interface ProductsPageProps {
@@ -28,7 +29,6 @@ interface ProductsPageProps {
     page?: string
     perPage?: string
     search?: string
-    status?: string
   }>
 }
 
@@ -37,7 +37,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
-  const status = resolvedSearchParams.status || ""
 
   let plants: Plant[] = []
   let metadata: any = null
@@ -48,7 +47,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     queryParams.append("page", page)
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("status", status)
 
     const res = await fetchApi(`/public/catalog/plants?${queryParams.toString()}`)
     const payload = await res.json()
@@ -65,7 +63,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách sản phẩm...</div>}>
+      <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <PlantsTable 
           initialPlants={plants} 
           metadata={metadata}

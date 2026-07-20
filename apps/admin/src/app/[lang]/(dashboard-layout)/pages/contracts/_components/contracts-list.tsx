@@ -104,7 +104,14 @@ export function ContractsList({
                     {formatVND(contract.contractValue)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={contract.paymentStatus === "paid" ? "default" : "secondary"}>
+                    <Badge
+                      variant="outline"
+                      className={
+                        contract.paymentStatus === "paid"
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold"
+                          : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
+                      }
+                    >
                       {contract.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
                     </Badge>
                   </TableCell>

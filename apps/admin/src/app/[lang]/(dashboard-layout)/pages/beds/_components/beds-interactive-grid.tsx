@@ -330,12 +330,12 @@ function BedsGridCanvas({
 }: BedsGridCanvasProps) {
 
   return (
-    <div className="flex-1 bg-slate-950 rounded-xl relative overflow-hidden group select-none shadow-inner border border-slate-900">
+    <div className="flex-1 bg-slate-50 dark:bg-slate-950 rounded-xl relative overflow-hidden group select-none shadow-inner border border-slate-200 dark:border-slate-900">
       {locations.length === 0 ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 bg-slate-900/90 text-slate-400">
-          <SlidersHorizontal className="h-8 w-8 text-slate-500 mb-3 animate-pulse" />
-          <h4 className="text-xs font-bold text-slate-200">Chưa có ô lưới vị trí</h4>
-          <p className="text-[10px] text-slate-450 max-w-[280px] mt-1.5 leading-relaxed">
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 bg-white/95 dark:bg-slate-900/95 text-slate-500 dark:text-slate-400">
+          <SlidersHorizontal className="h-8 w-8 text-slate-400 dark:text-slate-500 mb-3 animate-pulse" />
+          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Chưa có ô lưới vị trí</h4>
+          <p className="text-[10px] text-slate-600 dark:text-slate-400 max-w-[280px] mt-1.5 leading-relaxed">
             Bạn cần khởi tạo sơ đồ dòng/cột để kéo thả quản lý cây sâm Ngọc Linh tại luống này.
           </p>
           <div className="flex items-center gap-1.5 mt-4">
@@ -345,16 +345,16 @@ function BedsGridCanvas({
               max="20"
               value={gridRows}
               onChange={(e) => setGridRows(Number(e.target.value))}
-              className="w-14 h-8 bg-slate-800 border-slate-700 text-center text-xs font-semibold text-white"
+              className="w-14 h-8 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-center text-xs font-semibold text-slate-850 dark:text-white"
             />
-            <span className="text-slate-600 text-xs">x</span>
+            <span className="text-slate-400 dark:text-slate-600 text-xs">x</span>
             <Input
               type="number"
               min="2"
               max="25"
               value={gridCols}
               onChange={(e) => setGridCols(Number(e.target.value))}
-              className="w-14 h-8 bg-slate-800 border-slate-700 text-center text-xs font-semibold text-white"
+              className="w-14 h-8 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-center text-xs font-semibold text-slate-850 dark:text-white"
             />
             <Button onClick={handleGenerateGrid} size="sm" className="bg-emerald-600 hover:bg-emerald-700 h-8 text-[10px] font-bold text-white px-3">
               Khởi tạo lưới
@@ -383,7 +383,7 @@ function BedsGridCanvas({
                 gridTemplateRows: `repeat(${Math.max(...locations.map((l) => l.row)) + 1}, minmax(0, 1fr))`,
                 gridTemplateColumns: `repeat(${Math.max(...locations.map((l) => l.col)) + 1}, minmax(0, 1fr))`,
               }}
-              className="grid gap-2 p-12 pointer-events-auto bg-slate-900/20 rounded-2xl border border-slate-900/60"
+              className="grid gap-2 p-12 pointer-events-auto bg-slate-100/50 dark:bg-slate-900/20 rounded-2xl border border-slate-200/80 dark:border-slate-900/60"
             >
               {locations.map((loc) => {
                 const isVisible = filteredLocations.some((fl) => fl.id === loc.id)
@@ -421,28 +421,28 @@ function BedsGridCanvas({
                     style={{ opacity: isVisible ? 1 : 0.15 }}
                     className={`w-12 h-12 rounded-lg border flex flex-col items-center justify-center relative cursor-pointer select-none transition-all grid-cell-btn ${
                       isSelected
-                        ? "bg-emerald-600 border-white ring-2 ring-emerald-500/50 shadow-md scale-105"
+                        ? "bg-emerald-600 border-white dark:border-slate-950 ring-2 ring-emerald-500/50 shadow-md scale-105 text-white"
                         : loc.status === "planted"
                         ? tree?.healthStatus === "sick"
-                          ? "bg-amber-600/90 border-amber-400 hover:border-amber-300"
+                          ? "bg-amber-50 dark:bg-amber-650/90 border-amber-250 dark:border-amber-400 hover:border-amber-400 text-amber-800 dark:text-amber-100"
                           : tree?.healthStatus === "dead"
-                          ? "bg-red-900/90 border-red-700 hover:border-red-500"
-                          : "bg-emerald-950/80 border-emerald-800/80 hover:border-emerald-600"
-                        : "bg-slate-900/80 border-slate-800 hover:border-slate-700"
+                          ? "bg-red-50 dark:bg-red-950/90 border-red-250 dark:border-red-700 hover:border-red-400 text-red-800 dark:text-red-100"
+                          : "bg-emerald-50 dark:bg-emerald-950/80 border-emerald-250 dark:border-emerald-800/80 hover:border-emerald-400 text-emerald-800 dark:text-emerald-100"
+                        : "bg-white dark:bg-slate-900/80 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-400 dark:text-slate-500"
                     }`}
                   >
                     {loc.status === "planted" ? (
                       <>
-                        <Leaf className={`h-4.5 w-4.5 ${isSelected ? "text-white" : tree?.healthStatus === "sick" ? "text-amber-250" : "text-emerald-400"}`} />
-                        <span className="text-[7px] font-mono font-bold mt-1 text-slate-200">
+                        <Leaf className={`h-4.5 w-4.5 ${isSelected ? "text-white" : tree?.healthStatus === "sick" ? "text-amber-600 dark:text-amber-250" : tree?.healthStatus === "dead" ? "text-red-650 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`} />
+                        <span className={`text-[7px] font-mono font-bold mt-1 ${isSelected ? "text-white" : "text-slate-700 dark:text-slate-200"}`}>
                           {loc.treeCode?.slice(-3)}
                         </span>
                       </>
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
                     )}
 
-                    <span className="absolute bottom-0.5 right-0.5 text-[5px] text-slate-500 font-mono">
+                    <span className="absolute bottom-0.5 right-0.5 text-[5px] text-slate-400 dark:text-slate-500 font-mono">
                       {loc.row + 1},{loc.col + 1}
                     </span>
                   </div>
@@ -487,16 +487,16 @@ function BedsGridCanvas({
       )}
 
       {locations.length > 0 && (
-        <div className="absolute bottom-4 right-4 bg-slate-900/90 border border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5 shadow-xl z-20">
-          <Button size="icon" variant="ghost" onClick={zoomOut} className="h-7 w-7 text-slate-400 hover:text-white">
+        <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5 flex items-center gap-1.5 shadow-xl z-20">
+          <Button size="icon" variant="ghost" onClick={zoomOut} className="h-7 w-7 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">
             <ZoomOut className="h-3.5 w-3.5" />
           </Button>
-          <span className="text-[10px] font-bold font-mono text-slate-400 w-10 text-center">{zoomScale}%</span>
-          <Button size="icon" variant="ghost" onClick={zoomIn} className="h-7 w-7 text-slate-400 hover:text-white">
+          <span className="text-[10px] font-bold font-mono text-slate-500 dark:text-slate-400 w-10 text-center">{zoomScale}%</span>
+          <Button size="icon" variant="ghost" onClick={zoomIn} className="h-7 w-7 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">
             <ZoomIn className="h-3.5 w-3.5" />
           </Button>
-          <div className="w-[1px] h-4 bg-slate-800 mx-0.5"></div>
-          <Button size="icon" variant="ghost" onClick={zoomReset} className="h-7 w-7 text-slate-400 hover:text-white" title="Đặt lại hiển thị">
+          <div className="w-[1px] h-4 bg-slate-200 dark:bg-slate-800 mx-0.5"></div>
+          <Button size="icon" variant="ghost" onClick={zoomReset} className="h-7 w-7 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white" title="Đặt lại hiển thị">
             <Maximize2 className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -657,26 +657,26 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
           Phân bổ mật độ & Sức khỏe
         </h4>
         <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="bg-slate-50 rounded-lg p-2.5 border">
-            <span className="text-slate-400 text-[10px] block">MẬT ĐỘ Ô ĐẤT LƯỚI</span>
-            <span className="font-bold text-base text-slate-700 mt-1 block">
+          <div className="bg-slate-50 dark:bg-slate-800/40 rounded-lg p-2.5 border border-slate-150 dark:border-slate-800/60">
+            <span className="text-slate-400 dark:text-slate-500 text-[10px] block">MẬT ĐỘ Ô ĐẤT LƯỚI</span>
+            <span className="font-bold text-base text-slate-700 dark:text-slate-300 mt-1 block">
               {plantedCount} / {totalGridCells || 80} ô
             </span>
           </div>
-          <div className="bg-slate-50 rounded-lg p-2.5 border">
-            <span className="text-slate-400 text-[10px] block">SỐ LƯỢNG Ô ĐẤT TRỐNG</span>
-            <span className="font-bold text-base text-slate-755 mt-1 block">
+          <div className="bg-slate-50 dark:bg-slate-800/40 rounded-lg p-2.5 border border-slate-150 dark:border-slate-800/60">
+            <span className="text-slate-400 dark:text-slate-500 text-[10px] block">SỐ LƯỢNG Ô ĐẤT TRỐNG</span>
+            <span className="font-bold text-base text-slate-700 dark:text-slate-300 mt-1 block">
               {emptyCount} ô trống
             </span>
           </div>
-          <div className="bg-emerald-50 text-emerald-800 rounded-lg p-2.5 border border-emerald-100">
-            <span className="text-emerald-500 text-[10px] block font-bold">KHỎE MẠNH (HEALTHY)</span>
+          <div className="bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-350 rounded-lg p-2.5 border border-emerald-100/80 dark:border-emerald-900/50">
+            <span className="text-emerald-600 dark:text-emerald-500 text-[10px] block font-bold">KHỎE MẠNH (HEALTHY)</span>
             <span className="font-bold text-base mt-1 block">
               {plantedCount - sickCount - deadCount} cây sâm
             </span>
           </div>
-          <div className="bg-red-50 text-red-800 rounded-lg p-2.5 border border-red-100">
-            <span className="text-red-500 text-[10px] block font-bold">CẦN CHĂM SÓC / HẠI</span>
+          <div className="bg-red-50/50 dark:bg-red-950/20 text-red-800 dark:text-red-350 rounded-lg p-2.5 border border-red-100/80 dark:border-red-900/50">
+            <span className="text-red-650 dark:text-red-500 text-[10px] block font-bold">CẦN CHĂM SÓC / HẠI</span>
             <span className="font-bold text-base mt-1 block">
               {sickCount + deadCount} cây sâm
             </span>
@@ -714,20 +714,20 @@ function BedsLogsTab({ tableData }: { tableData: any }) {
 
   return (
     <div className="flex-1 bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-xxs flex flex-col">
-      <div className="p-3 border-b bg-slate-50/50 flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-600">Nhật ký lịch sử canh tác luống</span>
+      <div className="p-3 border-b bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between border-slate-100 dark:border-slate-800">
+        <span className="text-xs font-bold text-slate-650 dark:text-slate-350">Nhật ký lịch sử canh tác luống</span>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         {loading ? (
-          <div className="text-center py-12 text-slate-405 font-bold">Đang tải lịch sử...</div>
+          <div className="text-center py-12 text-slate-500 dark:text-slate-400 font-bold">Đang tải lịch sử...</div>
         ) : logs.length === 0 ? (
-          <div className="text-center py-12 text-slate-400 font-semibold text-xs">Chưa ghi nhận hoạt động chăm sóc nào tại luống này.</div>
+          <div className="text-center py-12 text-slate-400 dark:text-slate-500 font-semibold text-xs">Chưa ghi nhận hoạt động chăm sóc nào tại luống này.</div>
         ) : (
           <div className="space-y-4 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100 dark:before:bg-slate-800">
             {logs.map((log) => (
               <div key={log.id} className="relative pl-6 text-xs">
                 <div className="absolute left-[9px] top-1.5 w-2 h-2 rounded-full bg-emerald-600 ring-4 ring-white dark:ring-slate-950"></div>
-                <div className="flex justify-between items-center text-slate-400 mb-1">
+                <div className="flex justify-between items-center text-slate-400 dark:text-slate-500 mb-1">
                   <span className="font-bold text-slate-700 dark:text-slate-350 text-xs">
                     {log.title || "Chăm sóc định kỳ"}
                   </span>
@@ -735,9 +735,9 @@ function BedsLogsTab({ tableData }: { tableData: any }) {
                     {new Date(log.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                   </span>
                 </div>
-                <p className="text-slate-550 dark:text-slate-400 leading-relaxed font-medium">{log.description}</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-medium">{log.description}</p>
                 {log.treeCode && (
-                  <span className="inline-block bg-slate-100 text-slate-800 font-mono text-[8px] font-bold px-1.5 py-0.5 rounded mt-1">
+                  <span className="inline-block bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-mono text-[8px] font-bold px-1.5 py-0.5 rounded mt-1 border border-slate-200 dark:border-slate-700">
                     Cây: {log.treeCode}
                   </span>
                 )}

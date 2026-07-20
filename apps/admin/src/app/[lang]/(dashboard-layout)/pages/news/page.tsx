@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { NewsManager } from "./_components/news-manager"
 
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
+
 export const metadata: Metadata = {
   title: "Quản lý Tin tức | Sâm Ngọc Linh Admin",
   description: "Quản lý các bài viết tin tức, hướng dẫn và kiến thức cho dự án sâm Ngọc Linh",
@@ -66,7 +68,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách bài viết...</div>}>
+      <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <NewsManager 
           initialArticles={articles} 
           metadata={metadata}

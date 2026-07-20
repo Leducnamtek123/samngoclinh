@@ -116,7 +116,14 @@ export function GardensList({
                   {garden.totalTrees.toLocaleString("vi-VN")} cây
                 </TableCell>
                 <TableCell>
-                  <Badge variant={garden.status === "active" ? "default" : "outline"}>
+                  <Badge
+                    variant="outline"
+                    className={
+                      garden.status === "active"
+                        ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold"
+                        : "bg-slate-500/10 text-slate-600 border-transparent font-semibold"
+                    }
+                  >
                     {garden.status === "active" ? "Hoạt động" : garden.status}
                   </Badge>
                 </TableCell>

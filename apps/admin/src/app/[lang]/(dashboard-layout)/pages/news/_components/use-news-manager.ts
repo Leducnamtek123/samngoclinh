@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback, experimental_useEffectEvent as useEffectEvent } from "react"
+import { useState, useEffect, useCallback } from "react"
+import { useEvent } from "@/hooks/use-event"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { fetchApi } from "@/lib/api"
 
@@ -126,7 +127,7 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
     return updatedSearchParams.toString()
   }, [searchParams])
 
-  const onSearch = useEffectEvent(() => {
+  const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
     if (searchQuery !== currentSearch) {
       router.push(`${pathname}?${createQueryString({ search: searchQuery })}`)

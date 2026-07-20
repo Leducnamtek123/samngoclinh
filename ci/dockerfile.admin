@@ -30,8 +30,8 @@ RUN pnpm --filter shadboard-nextjs-full-kit build
 
 WORKDIR /app/apps/admin
 
-EXPOSE 3001
-ENV PORT=3001
+EXPOSE 3003
+ENV PORT=3003
 ENV NODE_ENV=production
 
 # Run db push to update SQLite using local prisma version, then start the server

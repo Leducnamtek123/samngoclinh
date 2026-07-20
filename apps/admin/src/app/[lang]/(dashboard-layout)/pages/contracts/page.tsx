@@ -2,10 +2,38 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { ContractsManager } from "./_components/contracts-manager"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý hợp đồng | Sâm Ngọc Linh Admin",
   description: "Quản lý hợp đồng điện tử ký gửi sâm Ngọc Linh",
+}
+
+interface Contract {
+  id: string
+  contractCode: string
+  userId: string
+  userEmail?: string
+  treeId: string
+  treeCode?: string
+  contractValue: number
+  paymentStatus: string
+  status: string
+  signedAt?: string
+  expiredAt: string
+  createdAt: string
+}
+
+interface User {
+  id: string
+  name?: string
+  email: string
+}
+
+interface Tree {
+  id: string
+  code: string
+  name: string
 }
 
 interface ContractsPageProps {
@@ -16,7 +44,6 @@ interface ContractsPageProps {
     page?: string
     perPage?: string
     search?: string
-    status?: string
   }>
 }
 
@@ -25,42 +52,37 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
-  const status = resolvedSearchParams.status || ""
 
-  let contracts: any[] = []
-  let users: any[] = []
-  let trees: any[] = []
+  let contracts: Contract[] = []
+  let users: User[] = []
+  let trees: Tree[] = []
   let metadata: any = null
   let errorMsg = ""
 
   try {
-    // 1. Fetch paginated contracts
-    const contractQueryParams = new URLSearchParams()
-    contractQueryParams.append("page", page)
-    contractQueryParams.append("perPage", perPage)
-    if (search) contractQueryParams.append("search", search)
-    if (status && status !== "all") contractQueryParams.append("status", status)
+    const queryParams = new URLSearchParams()
+    queryParams.append("page", page)
+    queryParams.append("perPage", perPage)
+    if (search) queryParams.append("search", search)
 
-    const contractsRes = await fetchApi(`/admin/contracts?${contractQueryParams.toString()}`)
-    const contractsPayload = await contractsRes.json()
-    if (contractsRes.status >= 400) {
-      errorMsg = contractsPayload?.message || "Không thể tải danh sách hợp đồng"
+    const res = await fetchApi(`/admin/contracts?${queryParams.toString()}`)
+    const payload = await res.json()
+    if (res.status >= 400) {
+      errorMsg = payload?.message || "Không thể tải danh sách hợp đồng"
     } else {
-      contracts = Array.isArray(contractsPayload.data) ? contractsPayload.data : []
-      metadata = contractsPayload.metadata || null
+      contracts = Array.isArray(payload.data?.items)
+        ? payload.data.items
+        : payload.data || []
+      metadata = payload.metadata || null
     }
 
-    // 2. Fetch users for dropdown (limit 100 to show complete selection list)
-    const usersRes = await fetchApi("/admin/user/list?perPage=100")
+    const usersRes = await fetchApi("/admin/user/list?page=1&perPage=500")
     const usersPayload = await usersRes.json()
     if (usersRes.status < 400) {
-      users = Array.isArray(usersPayload.data)
-        ? usersPayload.data
-        : usersPayload.data?.data || []
+      users = Array.isArray(usersPayload.data) ? usersPayload.data : []
     }
 
-    // 3. Fetch trees for dropdown
-    const treesRes = await fetchApi("/user/cultivation/trees/admin-list")
+    const treesRes = await fetchApi("/admin/cultivation/trees/paginated?page=1&perPage=500")
     const treesPayload = await treesRes.json()
     if (treesRes.status < 400) {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []
@@ -72,7 +94,7 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách hợp đồng...</div>}>
+      <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
         <ContractsManager
           initialContracts={contracts}
           users={users}

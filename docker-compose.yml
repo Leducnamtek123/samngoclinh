@@ -203,11 +203,11 @@ services:
                 - NEXT_PUBLIC_HOME_PATHNAME=/dashboards/analytics
         hostname: admin
         ports:
-            - 3001:3001
+            - 3003:3003
         env_file:
             - apps/admin/.env
         environment:
-            - PORT=3001
+            - PORT=3003
             - API_URL=http://apis:3000/api
             - INTERNAL_API_URL=http://apis:3000/api
         depends_on:

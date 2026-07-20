@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
 import { TreesTable } from "./_components/trees-table"
+import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
   title: "Quản lý cây trồng | Sâm Ngọc Linh Admin",
@@ -64,7 +65,7 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <Suspense fallback={<div className="text-center py-8">Đang tải danh sách cây trồng...</div>}>
+      <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
         <TreesTable 
           initialTrees={trees} 
           beds={beds} 

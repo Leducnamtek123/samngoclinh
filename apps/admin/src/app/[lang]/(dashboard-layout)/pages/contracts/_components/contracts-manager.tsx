@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ToastCard } from "@/components/ui/feedback-components"
 import { Bell, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { ContractDialog } from "./contract-dialog"
 import { ContractsList } from "./contracts-list"
@@ -100,19 +101,7 @@ export function ContractsManager({
         handleOpenCreate={handleOpenCreate}
       />
 
-      {successMsg && (
-        <Alert className="bg-emerald-50 text-emerald-800 border-emerald-200">
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
 
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
 
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
@@ -276,6 +265,25 @@ function ContractsPagination({ metadata, handlePageChange }: ContractsPagination
           <ChevronRight className="h-3.5 w-3.5" />
         </Button>
       </div>
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -292,13 +300,13 @@ const formatVND = (value: number) => {
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "pending":
-      return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Chờ ký kết</Badge>
+      return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-transparent font-semibold">Chờ ký kết</Badge>
     case "signed":
-      return <Badge variant="default" className="bg-emerald-500 text-white">Đã ký</Badge>
+      return <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-transparent font-semibold">Đã ký</Badge>
     case "expired":
-      return <Badge variant="secondary" className="bg-slate-200 text-slate-700">Hết hạn</Badge>
+      return <Badge variant="outline" className="bg-slate-500/10 text-slate-600 border-transparent font-semibold">Hết hạn</Badge>
     case "terminated":
-      return <Badge variant="destructive">Đã hủy</Badge>
+      return <Badge variant="outline" className="bg-red-500/10 text-red-650 border-transparent font-semibold">Đã hủy</Badge>
     default:
       return <Badge variant="outline">{status}</Badge>
   }

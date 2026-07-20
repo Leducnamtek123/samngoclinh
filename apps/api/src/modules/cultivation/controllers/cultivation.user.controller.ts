@@ -74,16 +74,6 @@ export class CultivationUserController {
         return this.cultivationService.gardens(userId);
     }
 
-    @Response('cultivation.gardens')
-    @RoleProtected(
-        EnumRoleType.superAdmin,
-        EnumRoleType.admin,
-        EnumRoleType.provider,
-        EnumRoleType.user
-    )
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
     @ResponsePaging('cultivation.gardens')
     @RoleProtected(
         EnumRoleType.superAdmin,
@@ -111,6 +101,16 @@ export class CultivationUserController {
         return this.cultivationService.gardensPaginated(user.id, isAdmin, pagination);
     }
 
+    @Response('cultivation.gardens')
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.provider,
+        EnumRoleType.user
+    )
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
     @Get('/gardens/list')
     async gardensList(
         @UserCurrent() user: IUser

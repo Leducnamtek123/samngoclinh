@@ -7,6 +7,7 @@ import { BedsLeftSidebar } from "./beds-left-sidebar"
 import { BedFormDialog, BedsOtherDialogs } from "./beds-dialogs"
 import { BedsRightSidebar } from "./beds-right-sidebar"
 import { BedsInteractiveGrid } from "./beds-interactive-grid"
+import { BedsSkeleton } from "@/components/ui/loading-skeletons"
 import type { Bed, Garden } from "./use-beds-table"
 
 interface BedsTableProps {
@@ -147,7 +148,7 @@ function BedsTableContent({ initialBeds, metadata, gardens, errorMsg: initialErr
 
 export function BedsTable(props: BedsTableProps) {
   return (
-    <Suspense fallback={<div className="text-center py-12">Đang tải quản lý luống sâm...</div>}>
+    <Suspense fallback={<BedsSkeleton />}>
       <BedsTableContent {...props} />
     </Suspense>
   )

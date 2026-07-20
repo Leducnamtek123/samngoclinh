@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { ToastCard } from "@/components/ui/feedback-components"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Pencil, Trash2, Plus, Upload, Image as ImageIcon, Check, Loader2 } from "lucide-react"
@@ -89,20 +90,7 @@ export function BannersManager({ initialBanners, errorMsg: initialError }: Banne
         </Button>
       </div>
 
-      {errorMsg && (
-        <Alert variant="destructive">
-          <AlertTitle>Lỗi tải dữ liệu</AlertTitle>
-          <AlertDescription>{errorMsg}</AlertDescription>
-        </Alert>
-      )}
 
-      {successMsg && (
-        <Alert className="bg-emerald-50 text-emerald-800 border-emerald-200">
-          <Check className="h-4 w-4 text-emerald-600" />
-          <AlertTitle>Thành công</AlertTitle>
-          <AlertDescription>{successMsg}</AlertDescription>
-        </Alert>
-      )}
 
       <BannersTable
         sortedBanners={sortedBanners}
@@ -146,6 +134,25 @@ export function BannersManager({ initialBanners, errorMsg: initialError }: Banne
         onCropComplete={handleCropComplete}
         handleCropSave={handleCropSave}
       />
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }
