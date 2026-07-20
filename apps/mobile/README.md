@@ -42,7 +42,7 @@ Lưu ý địa chỉ khi chạy thiết bị/emulator:
 
 ## Chạy dev
 
-Yêu cầu Node 20 (xem `.nvmrc`).
+Yêu cầu Node 24.11.0 (xem `.nvmrc`).
 
 ```bash
 cd apps/mobile
