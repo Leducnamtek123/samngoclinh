@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:24.11.0-alpine
 LABEL maintainer="andrechristikan@gmail.com"
 
 WORKDIR /app
