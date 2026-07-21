@@ -103,7 +103,7 @@ This boilerplate is perfect for:
 - [x] Device awareness, Geo Location with `geoip-lite`
 - [x] Notification System includes silent, inApp, push, and email.
 - [x] Activity Log records successful user activities with `@ActivityLog`
-- [x] Optional HashiCorp Vault integration for secret management ([docs/vault.md][ref-doc-vault])
+- [x] Optional HashiCorp Vault integration for secret management ([apps/api/docs/vault.md][ref-doc-vault])
 
 ### Next Features
 
@@ -111,7 +111,7 @@ This boilerplate is perfect for:
 - [ ] Login with biometrics (fingerprint or face detection)
 - [ ] Login with passkey
 - [ ] Login with Github SSO
-- [ ] Analytics Dashboard (Docs is provided at [docs/analytics.md][ref-doc-analytics])
+- [ ] Analytics Dashboard (Docs is provided at [apps/api/docs/analytics.md][ref-doc-analytics])
 - [ ] Multi-Tenant Architecture
 - [ ] Verification Mobile Number, whatsapp or/and sms
 - [ ] Versioning System (Force frontend to update, especially mobile)
@@ -386,31 +386,31 @@ If you find this project helpful and would like to support its development, plea
 
 <!-- DOCS LINKS -->
 
-[ref-doc-activity-log]: docs/activity-log.md
-[ref-doc-authentication]: docs/authentication.md
-[ref-doc-authorization]: docs/authorization.md
-[ref-doc-cache]: docs/cache.md
-[ref-doc-configuration]: docs/configuration.md
-[ref-doc-database]: docs/database.md
-[ref-doc-environment]: docs/environment.md
-[ref-doc-feature-flag]: docs/feature-flag.md
-[ref-doc-file-upload]: docs/file-upload.md
-[ref-doc-handling-error]: docs/handling-error.md
-[ref-doc-installation]: docs/installation.md
-[ref-doc-logger]: docs/logger.md
-[ref-doc-message]: docs/message.md
-[ref-doc-notification]: docs/notification.md
-[ref-doc-pagination]: docs/pagination.md
-[ref-doc-project-structure]: docs/project-structure.md
-[ref-doc-queue]: docs/queue.md
-[ref-doc-request-validation]: docs/request-validation.md
-[ref-doc-response]: docs/response.md
-[ref-doc-security-and-middleware]: docs/security-and-middleware.md
-[ref-doc-third-party-integration]: docs/third-party-integration.md
-[ref-doc-presign]: docs/presign.md
-[ref-doc-term-policy]: docs/term-policy.md
-[ref-doc-two-factor]: docs/two-factor.md
-[ref-doc-analytics]: docs/analytics.md
-[ref-doc-vault]: docs/vault.md
+[ref-doc-activity-log]: apps/api/docs/activity-log.md
+[ref-doc-authentication]: apps/api/docs/authentication.md
+[ref-doc-authorization]: apps/api/docs/authorization.md
+[ref-doc-cache]: apps/api/docs/cache.md
+[ref-doc-configuration]: apps/api/docs/configuration.md
+[ref-doc-database]: apps/api/docs/database.md
+[ref-doc-environment]: apps/api/docs/environment.md
+[ref-doc-feature-flag]: apps/api/docs/feature-flag.md
+[ref-doc-file-upload]: apps/api/docs/file-upload.md
+[ref-doc-handling-error]: apps/api/docs/handling-error.md
+[ref-doc-installation]: apps/api/docs/installation.md
+[ref-doc-logger]: apps/api/docs/logger.md
+[ref-doc-message]: apps/api/docs/message.md
+[ref-doc-notification]: apps/api/docs/notification.md
+[ref-doc-pagination]: apps/api/docs/pagination.md
+[ref-doc-project-structure]: apps/api/docs/project-structure.md
+[ref-doc-queue]: apps/api/docs/queue.md
+[ref-doc-request-validation]: apps/api/docs/request-validation.md
+[ref-doc-response]: apps/api/docs/response.md
+[ref-doc-security-and-middleware]: apps/api/docs/security-and-middleware.md
+[ref-doc-third-party-integration]: apps/api/docs/third-party-integration.md
+[ref-doc-presign]: apps/api/docs/presign.md
+[ref-doc-term-policy]: apps/api/docs/term-policy.md
+[ref-doc-two-factor]: apps/api/docs/two-factor.md
+[ref-doc-analytics]: apps/api/docs/analytics.md
+[ref-doc-vault]: apps/api/docs/vault.md
 [ref-doc-contributing]: CONTRIBUTING.md
-[ref-doc-doc]: docs/doc.md
+[ref-doc-doc]: apps/api/docs/doc.md
