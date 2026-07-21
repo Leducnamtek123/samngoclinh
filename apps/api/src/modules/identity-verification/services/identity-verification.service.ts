@@ -32,6 +32,7 @@ export class IdentityVerificationService implements IIdentityVerificationService
                     ? (latest.status as 'pending' | 'verified' | 'rejected')
                     : 'unsubmitted',
                 required: ['cccd_front', 'cccd_back', 'face_video'],
+                rejectionReason: latest?.status === 'rejected' ? (latest.note ?? undefined) : undefined,
             },
         };
     }

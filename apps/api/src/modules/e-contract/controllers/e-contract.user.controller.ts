@@ -1,4 +1,6 @@
-import { Body, Controller, Get, Param, Post, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, VERSION_NEUTRAL } from '@nestjs/common';
+import { Request } from 'express';
+import { getClientIp } from '@supercharge/request-ip';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -65,9 +67,11 @@ export class EContractUserController {
     async signMyContract(
         @Param('id') id: string,
         @AuthJwtPayload('userId') userId: string,
-        @Body() body: EContractSignRequestDto
+        @Body() body: EContractSignRequestDto,
+        @Req() req: Request
     ): Promise<IResponseReturn<EContract>> {
-        return this.eContractService.signContract(id, userId, body);
+        const clientIp = getClientIp(req) ?? undefined;
+        return this.eContractService.signContract(id, userId, body, clientIp);
     }
 
     @EContractUserRenewDoc()

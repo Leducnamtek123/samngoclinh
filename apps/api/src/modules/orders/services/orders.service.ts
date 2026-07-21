@@ -2,7 +2,9 @@ import {
     BadRequestException,
     Injectable,
     NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { IOrdersService } from '@modules/orders/interfaces/orders.service.interface';
 import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
@@ -272,6 +274,29 @@ export class OrdersService implements IOrdersService {
         }
 
         const isSuccess = payload.status.toUpperCase() === 'SUCCESS';
+
+        if (isSuccess && payload.amount !== order.total) {
+            throw new BadRequestException({
+                statusCode: 400,
+                message: `Payment amount ${payload.amount} does not match order total ${order.total}`,
+            });
+        }
+
+        const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
+        if (webhookSecret && payload.signature) {
+            const rawData = `${payload.orderCode}|${payload.amount}|${payload.status}|${payload.gatewayRef}`;
+            const expectedSig = crypto
+                .createHmac('sha256', webhookSecret)
+                .update(rawData)
+                .digest('hex');
+
+            if (payload.signature !== expectedSig) {
+                throw new UnauthorizedException({
+                    statusCode: 401,
+                    message: 'Invalid webhook signature',
+                });
+            }
+        }
 
         const updatedOrder = await this.databaseService.$transaction(
             async tx => {

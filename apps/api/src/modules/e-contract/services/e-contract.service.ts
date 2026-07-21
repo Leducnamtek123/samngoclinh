@@ -54,7 +54,7 @@ export class EContractService implements IEContractService {
         return this.eContractRepository.listContractsPaginated(pagination, status);
     }
 
-    async signContract(id: string, userId: string, payload: EContractSignRequestDto): Promise<IResponseReturn<EContract>> {
+    async signContract(id: string, userId: string, payload: EContractSignRequestDto, clientIp?: string): Promise<IResponseReturn<EContract>> {
         const contract = await this.eContractRepository.getContractById(id);
         if (!contract) {
             throw new NotFoundException('Contract not found');
@@ -70,8 +70,9 @@ export class EContractService implements IEContractService {
 
         const signed = await this.eContractRepository.signContract(id, signatureUrl, {
             ...((contract.metadata ?? {}) as Record<string, unknown>),
-            signedIp: '127.0.0.1',
-            otpVerified: true,
+            signedIp: clientIp || '127.0.0.1',
+            otpVerified: Boolean(payload.otpCode),
+            signedAt: new Date().toISOString(),
         });
 
         return {

@@ -13,6 +13,15 @@ export class EContractSignRequestDto {
 
     @ApiProperty({
         required: false,
+        example: '123456',
+        description: 'OTP code for contract signature verification',
+    })
+    @IsOptional()
+    @IsString()
+    otpCode?: string;
+
+    @ApiProperty({
+        required: false,
     })
     @IsOptional()
     metadata?: Record<string, unknown>;

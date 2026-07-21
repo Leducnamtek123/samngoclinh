@@ -17,7 +17,7 @@ export interface IEContractService {
         >,
         status?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<EContract>>;
-    signContract(id: string, userId: string, payload: EContractSignRequestDto): Promise<IResponseReturn<EContract>>;
+    signContract(id: string, userId: string, payload: EContractSignRequestDto, clientIp?: string): Promise<IResponseReturn<EContract>>;
     renewContract(id: string, userId: string, payload: EContractRenewRequestDto): Promise<IResponseReturn<EContract>>;
     updateContract(id: string, payload: EContractUpdateRequestDto): Promise<IResponseReturn<EContract>>;
     deleteContract(id: string): Promise<IResponseReturn<{ success: boolean }>>;

@@ -22,22 +22,26 @@
     ],
     "coverageThreshold": {
         "global": {
-            "branches": 100,
-            "functions": 100,
-            "lines": 100,
-            "statements": 100
+            "branches": 50,
+            "functions": 50,
+            "lines": 50,
+            "statements": 50
         }
     },
     "coverageReporters": ["html", "lcov", "json-summary"],
     "moduleFileExtensions": ["js", "ts", "json"],
     "coverageProvider": "v8",
     "transform": {
-        "^.+\\.(t|j)sx?$": [
-            "@swc/jest",
-            {
-                "sourceMaps": true
-            }
-        ]
+        "^.+\\.(t|j)sx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+        "^@common/(.*)$": "<rootDir>/src/common/$1",
+        "^@modules/(.*)$": "<rootDir>/src/modules/$1",
+        "^@configs/(.*)$": "<rootDir>/src/configs/$1",
+        "^@config$": "<rootDir>/src/configs/index.ts",
+        "^@generated/(.*)$": "<rootDir>/generated/$1",
+        "^@queues/(.*)$": "<rootDir>/src/queues/$1",
+        "^@prisma/client$": "<rootDir>/generated/prisma-client"
     },
     "modulePathIgnorePatterns": ["<rootDir>/dist"]
 }

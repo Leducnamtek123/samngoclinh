@@ -16,4 +16,11 @@ export class IdentityVerificationStatusResponseDto {
     })
     @Expose()
     required: string[];
+
+    @ApiProperty({
+        required: false,
+        example: 'Ảnh CCCD bị mờ, vui lòng chụp lại',
+    })
+    @Expose()
+    rejectionReason?: string;
 }
