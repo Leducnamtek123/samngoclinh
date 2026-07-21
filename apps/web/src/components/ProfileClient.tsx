@@ -30,8 +30,7 @@ export const ProfileClient = ({
   const { data: wallet, isLoading: walletLoading } = useWalletSummary(initialWallet);
   const { data: trees, isLoading: treesLoading } = useCultivationTrees(initialTrees);
 
-  const isLoading = profileLoading || businessLoading || walletLoading || treesLoading;
-  const isError = profileError || !profile;
+  const isError = profileError || (!profileLoading && !profile);
 
   // Active tab state styling helper
   const tabClass = (current: string) =>
@@ -40,25 +39,6 @@ export const ProfileClient = ({
         ? 'border-secondary text-secondary'
         : 'border-transparent text-gray-500 hover:text-gray-800'
     }`;
-
-  if (isLoading) {
-    return (
-      <div className="max-w-4xl mx-auto py-16 px-4 space-y-8 animate-pulse">
-        {/* Header Shimmer */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 flex items-center gap-6">
-          <div className="w-20 h-20 bg-gray-200 rounded-full"></div>
-          <div className="space-y-3 flex-1">
-            <div className="h-6 bg-gray-200 rounded-lg w-1/3"></div>
-            <div className="h-4 bg-gray-200 rounded-lg w-1/2"></div>
-          </div>
-        </div>
-        {/* Navigation Shimmer */}
-        <div className="bg-white border border-gray-200 rounded-xl h-12"></div>
-        {/* Content Shimmer */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 h-64"></div>
-      </div>
-    );
-  }
 
   if (isError) {
     return (
@@ -80,46 +60,64 @@ export const ProfileClient = ({
     );
   }
 
-  const fullName = profile.fullName || 'Nhà đầu tư';
-  const email = profile.email;
-  const rank = profile.rank || 'Đồng';
-  const referralCode = profile.referralCode || '6D544T';
+  const fullName = profile?.fullName || 'Nhà đầu tư';
+  const email = profile?.email || '';
+  const rank = profile?.rank || 'Đồng';
+  const referralCode = profile?.referralCode || '6D544T';
 
   return (
     <div className="w-full bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Main Header Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-            {/* Avatar Circle */}
-            <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-3xl font-bold shadow-sm shadow-primary/20">
-              {fullName.charAt(0).toUpperCase()}
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 font-display-lg">
-                {fullName}
-              </h1>
-              <p className="text-sm text-gray-500 font-medium">{email}</p>
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 pt-1 justify-center sm:justify-start">
-                <span className="bg-primary/10 text-primary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                  Khách hàng
-                </span>
-                <span className="bg-secondary/15 text-secondary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                  Hạng {rank}
-                </span>
-                <span className="bg-gray-100 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full">
-                  Mã giới thiệu: {referralCode}
-                </span>
+        {profileLoading || !profile ? (
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6 animate-pulse">
+            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left w-full">
+              <div className="w-20 h-20 bg-gray-200 rounded-full flex-shrink-0"></div>
+              <div className="space-y-2 flex-1 w-full">
+                <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto sm:mx-0"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto sm:mx-0"></div>
+                <div className="flex flex-wrap gap-2 pt-1 justify-center sm:justify-start">
+                  <div className="h-6 bg-gray-200 rounded-full w-20"></div>
+                  <div className="h-6 bg-gray-200 rounded-full w-24"></div>
+                  <div className="h-6 bg-gray-200 rounded-full w-28"></div>
+                </div>
               </div>
             </div>
+            <div className="h-10 bg-gray-200 rounded-lg w-28 flex-shrink-0"></div>
           </div>
+        ) : (
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+              {/* Avatar Circle */}
+              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-3xl font-bold shadow-sm shadow-primary/20">
+                {fullName.charAt(0).toUpperCase()}
+              </div>
 
-          <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-lg text-sm shadow-sm transition-colors">
-            Chỉnh sửa
-          </button>
-        </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 font-display-lg">
+                  {fullName}
+                </h1>
+                <p className="text-sm text-gray-500 font-medium">{email}</p>
+                {/* Badges */}
+                <div className="flex flex-wrap gap-2 pt-1 justify-center sm:justify-start">
+                  <span className="bg-primary/10 text-primary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Khách hàng
+                  </span>
+                  <span className="bg-secondary/15 text-secondary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Hạng {rank}
+                  </span>
+                  <span className="bg-gray-100 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full">
+                    Mã giới thiệu: {referralCode}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-lg text-sm shadow-sm transition-colors">
+              Chỉnh sửa
+            </button>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto flex scrollbar-thin">
@@ -149,34 +147,59 @@ export const ProfileClient = ({
         {/* Tab Contents */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
           {tabs === 'info' && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-bold text-gray-900">Thông tin cá nhân</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <div className="space-y-1">
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Họ và tên</span>
-                  <p className="text-sm font-semibold text-gray-800">{fullName}</p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
-                  <p className="text-sm font-semibold text-gray-800">{email}</p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>
-                  <div className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span>{profile.verified ? 'Đã xác minh' : 'Hoạt động'}</span>
+            profileLoading ? (
+              <div className="space-y-6 animate-pulse">
+                <div className="h-5 bg-gray-200 rounded w-1/4"></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="space-y-2">
+                      <div className="h-3.5 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-4.5 bg-gray-200 rounded w-2/3"></div>
+                    </div>
+                  ))}
+                  <div className="space-y-2">
+                    <div className="h-3.5 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-4.5 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 </div>
-                {business && (
-                  <div className="space-y-1">
-                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Số điện thoại liên kết</span>
-                    <p className="text-sm font-semibold text-gray-800">{business.phone || 'Chưa liên kết'}</p>
-                  </div>
-                )}
               </div>
-            </div>
+            ) : (
+              <div className="space-y-6">
+                <h3 className="text-lg font-bold text-gray-900">Thông tin cá nhân</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Họ và tên</span>
+                    <p className="text-sm font-semibold text-gray-800">{fullName}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
+                    <p className="text-sm font-semibold text-gray-800">{email}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>
+                    <div className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>{profile?.verified ? 'Đã xác minh' : 'Hoạt động'}</span>
+                    </div>
+                  </div>
+                  {businessLoading ? (
+                    <div className="space-y-2 animate-pulse">
+                      <div className="h-3.5 bg-gray-200 rounded w-1/3"></div>
+                      <div className="h-4.5 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  ) : (
+                    business && (
+                      <div className="space-y-1">
+                        <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Số điện thoại liên kết</span>
+                        <p className="text-sm font-semibold text-gray-800">{business.phone || 'Chưa liên kết'}</p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )
           )}
 
           {tabs === 'orders' && (
@@ -207,27 +230,57 @@ export const ProfileClient = ({
               </div>
 
               {/* Stats sub-cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-secondary/5 border border-secondary/15 rounded-xl p-5 flex flex-col justify-between">
-                  <span className="text-xs font-bold text-secondary uppercase tracking-wider">Ví Điểm Số</span>
-                  <h4 className="text-3xl font-black text-secondary mt-2">
-                    {wallet?.balancePoint?.toLocaleString('vi-VN') || 0}
-                  </h4>
-                  <p className="text-[10px] text-gray-500 mt-1">Điểm khả dụng (Điểm Sâm)</p>
+              {walletLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-100/50 border border-gray-200 rounded-xl p-5 h-28 animate-pulse flex flex-col justify-between">
+                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 mt-2"></div>
+                    <div className="h-2.5 bg-gray-200 rounded w-2/3 mt-2"></div>
+                  </div>
+                  <div className="bg-gray-100/50 border border-gray-200 rounded-xl p-5 h-28 animate-pulse flex flex-col justify-between">
+                    <div className="h-3 bg-gray-200 rounded w-1/3"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 mt-2"></div>
+                    <div className="h-2.5 bg-gray-200 rounded w-2/3 mt-2"></div>
+                  </div>
                 </div>
-                <div className="bg-primary/5 border border-primary/15 rounded-xl p-5 flex flex-col justify-between">
-                  <span className="text-xs font-bold text-primary uppercase tracking-wider">Cây giống sở hữu</span>
-                  <h4 className="text-3xl font-black text-primary mt-2">
-                    {wallet?.treesOwned || 0} Cây
-                  </h4>
-                  <p className="text-[10px] text-gray-500 mt-1">Cây giống kỹ thuật số trên hệ thống</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-secondary/5 border border-secondary/15 rounded-xl p-5 flex flex-col justify-between">
+                    <span className="text-xs font-bold text-secondary uppercase tracking-wider">Ví Điểm Số</span>
+                    <h4 className="text-3xl font-black text-secondary mt-2">
+                      {wallet?.balancePoint?.toLocaleString('vi-VN') || 0}
+                    </h4>
+                    <p className="text-[10px] text-gray-500 mt-1">Điểm khả dụng (Điểm Sâm)</p>
+                  </div>
+                  <div className="bg-primary/5 border border-primary/15 rounded-xl p-5 flex flex-col justify-between">
+                    <span className="text-xs font-bold text-primary uppercase tracking-wider">Cây giống sở hữu</span>
+                    <h4 className="text-3xl font-black text-primary mt-2">
+                      {wallet?.treesOwned || 0} Cây
+                    </h4>
+                    <p className="text-[10px] text-gray-500 mt-1">Cây giống kỹ thuật số trên hệ thống</p>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Trees owned list */}
               <div className="space-y-4">
                 <h4 className="font-bold text-gray-900 text-sm">Danh sách cây giống chi tiết</h4>
-                {!trees || trees.length === 0 ? (
+                {treesLoading ? (
+                  <div className="border border-gray-150 rounded-xl divide-y divide-gray-100 overflow-hidden bg-gray-50/30">
+                    {[1, 2].map((n) => (
+                      <div key={n} className="px-5 py-4 flex items-center justify-between animate-pulse">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 bg-gray-200 rounded-lg"></div>
+                          <div className="space-y-2">
+                            <div className="h-3.5 bg-gray-200 rounded w-48"></div>
+                            <div className="h-2.5 bg-gray-200 rounded w-24"></div>
+                          </div>
+                        </div>
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : !trees || trees.length === 0 ? (
                   <p className="text-sm text-gray-500">Bạn chưa sở hữu cây sâm Ngọc Linh nào.</p>
                 ) : (
                   <div className="border border-gray-150 rounded-xl divide-y divide-gray-100 overflow-hidden bg-gray-50/30">
@@ -279,7 +332,7 @@ export const ProfileClient = ({
                 <p className="text-xs text-gray-400 font-medium">Quản lý trạng thái xác minh thông tin cá nhân</p>
               </div>
 
-              {profile.verified ? (
+              {!profileLoading && profile?.verified ? (
                 <div className="bg-emerald-50/50 border border-emerald-200 text-emerald-800 p-5 rounded-xl space-y-3">
                   <div className="flex items-center gap-2 font-bold text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">

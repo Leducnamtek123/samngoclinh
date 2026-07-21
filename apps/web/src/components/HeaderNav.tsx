@@ -27,7 +27,7 @@ export const HeaderNav = () => {
     const loadCategories = async () => {
       try {
         const data = await fetchApiClient('/public/content/articles');
-        const items = data.data?.items || [];
+        const items = data.data || [];
         const uniqueCategories: string[] = Array.from(
           new Set(items.map((item: any) => item.category).filter(Boolean))
         ) as string[];

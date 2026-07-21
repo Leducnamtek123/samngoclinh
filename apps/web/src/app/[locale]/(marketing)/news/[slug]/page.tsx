@@ -33,7 +33,7 @@ async function getRelatedArticles(category: string, currentSlug: string) {
       return [];
     }
     const json = await res.json();
-    const all = json.data?.items || [];
+    const all = json.data || [];
     return all
       .filter((a: any) => a.category === category && a.slug !== currentSlug)
       .slice(0, 3);

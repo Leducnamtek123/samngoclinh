@@ -82,7 +82,7 @@ export default async function ContractsPage({ searchParams }: ContractsPageProps
       users = Array.isArray(usersPayload.data) ? usersPayload.data : []
     }
 
-    const treesRes = await fetchApi("/admin/cultivation/trees/paginated?page=1&perPage=500")
+    const treesRes = await fetchApi("/admin/cultivation/trees?page=1&perPage=500")
     const treesPayload = await treesRes.json()
     if (treesRes.status < 400) {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []

@@ -72,7 +72,9 @@ export function ContractsManager({
   const {
     filteredContracts,
     successMsg,
+    setSuccessMsg,
     errorMsg,
+    setErrorMsg,
     searchQuery,
     setSearchQuery,
     statusFilter,
@@ -150,6 +152,26 @@ export function ContractsManager({
         users={users}
         trees={trees}
       />
+
+      {/* Toast notifications */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
+        {successMsg && (
+          <ToastCard
+            type="success"
+            title="Thành công"
+            description={successMsg}
+            onClose={() => setSuccessMsg("")}
+          />
+        )}
+        {errorMsg && (
+          <ToastCard
+            type="error"
+            title="Lỗi xảy ra"
+            description={errorMsg}
+            onClose={() => setErrorMsg("")}
+          />
+        )}
+      </div>
     </div>
   )
 }
@@ -264,25 +286,6 @@ function ContractsPagination({ metadata, handlePageChange }: ContractsPagination
           <span>Kế tiếp</span>
           <ChevronRight className="h-3.5 w-3.5" />
         </Button>
-      </div>
-      {/* Toast notifications */}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
-        {successMsg && (
-          <ToastCard
-            type="success"
-            title="Thành công"
-            description={successMsg}
-            onClose={() => setSuccessMsg("")}
-          />
-        )}
-        {errorMsg && (
-          <ToastCard
-            type="error"
-            title="Lỗi xảy ra"
-            description={errorMsg}
-            onClose={() => setErrorMsg("")}
-          />
-        )}
       </div>
     </div>
   )

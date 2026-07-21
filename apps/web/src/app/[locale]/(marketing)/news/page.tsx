@@ -26,7 +26,7 @@ async function getArticles() {
       return [];
     }
     const json = await res.json();
-    return json.data?.items || [];
+    return json.data || [];
   } catch (error) {
     console.error('Error fetching articles:', error);
     return [];

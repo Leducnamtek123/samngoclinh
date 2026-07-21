@@ -31,7 +31,7 @@ async function getArticles() {
       return [];
     }
     const json = await res.json();
-    return json.data?.items || [];
+    return json.data || [];
   } catch (error) {
     console.error('Error fetching articles:', error);
     return [];
@@ -252,8 +252,8 @@ export default async function Index(props: IndexPageProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {latestArticles.slice(0, 3).map((article: any, idx: number) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {latestArticles.slice(0, 4).map((article: any, idx: number) => (
               <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between">
                 <div>
                   <div className="h-52 overflow-hidden bg-gray-100 relative p-3">
@@ -312,7 +312,7 @@ export default async function Index(props: IndexPageProps) {
               href="/news" 
               className="inline-flex items-center gap-2 border border-gray-300 hover:border-secondary hover:text-secondary text-primary px-8 py-3 rounded-lg text-sm font-bold transition-all"
             >
-              <span>Xem tất cả sự kiện</span>
+              <span>Xem tất cả</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
@@ -347,9 +347,6 @@ export default async function Index(props: IndexPageProps) {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16 space-y-2">
-            <span className="text-emerald-700 font-extrabold tracking-widest text-[11px] uppercase flex items-center justify-center gap-1.5">
-              <span>🍃</span> LIÊN HỆ VỚI CHÚNG TÔI <span>🍃</span>
-            </span>
             <h2 className="text-4xl font-extrabold text-primary font-display-lg pt-1">
               Liên hệ với chúng tôi
             </h2>
@@ -483,6 +480,36 @@ export default async function Index(props: IndexPageProps) {
               </div>
 
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Banner Section */}
+      <section className="bg-[#43a047] py-16 px-4 sm:px-6 lg:px-8 text-center text-white relative overflow-hidden">
+        <div className="max-w-4xl mx-auto space-y-5 relative z-10">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg">
+            Bắt đầu hành trình trồng cây của bạn ngay hôm nay
+          </h2>
+          <p className="text-white/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
+            Tham gia cùng hàng nghìn khách hàng đã tin tưởng iWE FARM. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/products"
+              className="inline-flex items-center justify-center bg-white text-[#43a047] hover:text-emerald-700 font-semibold px-8 py-3.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
+            >
+              <span>Mua sắm ngay</span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                strokeWidth={2.5} 
+                stroke="currentColor" 
+                className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
           </div>
         </div>
       </section>

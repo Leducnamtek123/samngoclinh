@@ -251,13 +251,13 @@ The seeded users differ per environment. This is controlled by `migrationUserDat
 
 Five feature flags are created to control authentication and user features:
 
-| Key | Description | Enabled | Rollout | Metadata |
-|-----|-------------|---------|---------|----------|
-| `loginWithGoogle` | Enable login with Google | ✅ Yes | 100% | `signUpAllowed: true` |
-| `loginWithApple` | Enable login with Apple | ✅ Yes | 100% | `signUpAllowed: true` |
-| `loginWithCredential` | Enable login with Credential | ✅ Yes | 100% | - |
-| `signUp` | Enable user sign up | ✅ Yes | 100% | - |
-| `changePassword` | Enable change password feature | ✅ Yes | 100% | `forgotAllowed: true` |
+| Key                   | Description                    | Enabled | Rollout | Metadata              |
+| -----------------------| --------------------------------| ---------| ---------| -----------------------|
+| `loginWithGoogle`     | Enable login with Google       | ✅ Yes   | 100%    | `signUpAllowed: true` |
+| `loginWithApple`      | Enable login with Apple        | ✅ Yes   | 100%    | `signUpAllowed: true` |
+| `loginWithCredential` | Enable login with Credential   | ✅ Yes   | 100%    | -                     |
+| `signUp`              | Enable user sign up            | ✅ Yes   | 100%    | -                     |
+| `changePassword`      | Enable change password feature | ✅ Yes   | 100%    | `forgotAllowed: true` |
 
 All features are enabled by default with 100% rollout for development convenience.
 
