@@ -16,7 +16,6 @@
         "dev": "pnpm run start:dev",
         "preinstall": "npx only-allow pnpm",
         "prebuild": "rimraf dist",
-        "prepare": "husky",
         "clean": "rimraf dist && rimraf node_modules && pnpm store prune",
         "generate:keys": "node scripts/generate-keys.ts",
         "format": "prettier --write '{src,test}/**/*.{ts,json,yml,yaml}' && prettier --write '*.{ts,json,yml,yaml,mjs}'",
