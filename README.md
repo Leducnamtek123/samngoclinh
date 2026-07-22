@@ -1,416 +1,154 @@
-[![Contributors][ack-contributors-shield]][ref-ack-contributors]
-[![Forks][ack-forks-shield]][ref-ack-forks]
-[![Stargazers][ack-stars-shield]][ref-ack-stars]
-[![Issues][ack-issues-shield]][ref-ack-issues]
-[![MIT License][ack-license-shield]][ref-ack-license]
+# Sâm Ngọc Linh (iWE FARM)
 
-[![NestJs][nestjs-shield]][ref-nestjs]
-[![NodeJs][nodejs-shield]][ref-nodejs]
-[![Typescript][typescript-shield]][ref-typescript]
-[![MongoDB][mongodb-shield]][ref-mongodb]
-[![JWT][jwt-shield]][ref-jwt]
-[![Jest][jest-shield]][ref-jest]
-[![PNPM][pnpm-shield]][ref-pnpm]
-[![Docker][docker-shield]][ref-docker]
+Monorepo đa nền tảng cho hệ sinh thái iWE FARM: backend API, trang quản trị, web
+marketing và ứng dụng di động. Quản lý bằng PNPM workspace + Turborepo.
 
-<p align="center">
-  <a href="https://vismarttech.com" target="blank">
-    <img src="https://vismarttech.com/logo.png" width="300" alt="Vi Smart Tech Logo" />
-  </a>
-</p>
+## Nền tảng (`apps/`)
 
-# Vi Smart Tech Workspace 🔥 🚀
+| Thư mục | Nền tảng | Stack chính | Cổng dev |
+|---|---|---|---|
+| [`apps/api`](apps/api) | Backend API | NestJS v11, Prisma → PostgreSQL, Redis, BullMQ, JWT ES256/ES512 | 3000 |
+| [`apps/admin`](apps/admin) | Trang quản trị | Next.js (App Router), Prisma | 3003 |
+| [`apps/web`](apps/web) | Web marketing | Next.js (App Router), Drizzle | 3002 |
+| [`apps/mobile`](apps/mobile) | Ứng dụng di động | Expo / React Native (iOS · Android · Web) | Expo |
 
-[Vi Smart Tech Workspace][ref-ack] is a [NestJs v11.x][ref-nestjs] & [Next.js][ref-nestjs] monorepo setup for Vismarttech company, built with JWT, OAuth (Google & Apple), OTP, TOTP/2FA, and RBAC. Powered by Prisma, works with any database. Repository Design Pattern and Modular. Production-ready.
+## Yêu cầu
 
-_You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with following this link_
+| Công cụ | Phiên bản |
+|---|---|
+| Node.js | ≥ 24.11.0 |
+| PNPM | ≥ 10.25 |
+| Docker + Docker Compose | (cho hạ tầng của API: PostgreSQL, Redis) |
 
-### Ideal For
-
-This boilerplate is perfect for:
-
-- 🏢 **Enterprise Applications** - Full-featured auth system with RBAC and audit logging
-- 🔐 **Authentication Services** - Ready-to-use JWT, OAuth, and 2FA implementation
-- 📱 **Mobile App Backends** - RESTful API with social login support
-- 🌐 **Multi-tenant SaaS** - Role-based access control and policy management
-- 🚀 **Microservices** - Stateful sessions with Redis and async job processing
-- 💼 **Startup MVPs** - Production-ready foundation to ship faster
-
-
-## Table of Contents
-
-- [ACK NestJs Boilerplate 🔥 🚀](#ack-nestjs-boilerplate--)
-    - [Ideal For](#ideal-for)
-  - [Table of Contents](#table-of-contents)
-  - [Important](#important)
-  - [TODO](#todo)
-    - [Next Features](#next-features)
-    - [Drop Features](#drop-features)
-    - [Test](#test)
-  - [Prerequisites](#prerequisites)
-  - [Build with](#build-with)
-  - [Objective](#objective)
-  - [Features](#features)
-    - [🎯 Architecture Highlights](#-architecture-highlights)
-    - [🔐 Authentication \& Security](#-authentication--security)
-    - [📊 Database \& Storage](#-database--storage)
-    - [⚡ Performance \& Optimization](#-performance--optimization)
-    - [🛠 Development Experience](#-development-experience)
-    - [📡 Integrations \& Monitoring](#-integrations--monitoring)
-    - [🔔 Notifications](#-notifications)
-    - [📝 Testing \& Documentation](#-testing--documentation)
-  - [Quick Start](#quick-start)
-  - [Change DB with Minimal Effort](#change-db-with-minimal-effort)
-    - [Supported Databases](#supported-databases)
-  - [Installation](#installation)
-  - [License](#license)
-  - [Contribute](#contribute)
-  - [Contact](#contact)
-    - [Support This Project](#support-this-project)
-
-## Important
-
-- Stateful Authorization, using `redis-session` and `JWT`.
-- Must run MongoDB as a `replication set` for `database transactions`.
-- If you change the environment value of `APP_ENV` to `production`, it will disable Documentation.
-- When using multiple protection decorators, they must be applied in the correct order:
-    ```typescript
-    @ExampleDoc()
-    @TermPolicyAcceptanceProtected(...)
-    @PolicyAbilityProtected({...})
-    @RoleProtected(...)
-    @ActivityLog(...)
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @FeatureFlagProtected(...)
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Get('/some-endpoint')
-    ```
-- Since version `8.0.0`, the project uses the `ES256` algorithm for Access Token, and `ES512` for Refresh Token.
-- Since version `8.0.0`, the project uses prisma `6.19` for handle database.
-- Since version `8.0.0`, the project uses pnpm for package manager.
-- **Strict null convention** — `undefined` is only allowed in Request DTO optional fields; all other layers use `T | null`.
-
-## TODO
-
-- [x] Change enum name to use PascalCase
-- [x] 2FA with TOTP Authentication (eg: Google Authenticator)
-- [x] Recovery Codes Method
-- [x] Add TOTP Authentication Protected to reset password, change password, and regenerate backup codes endpoints
-- [x] Add import and export endpoint with presign upload
-- [x] Add migration script to migrate AWS S3 Policy for public and private, include config for presign expiration
-- [x] Device awareness, Geo Location with `geoip-lite`
-- [x] Notification System includes silent, inApp, push, and email.
-- [x] Activity Log records successful user activities with `@ActivityLog`
-- [x] Optional HashiCorp Vault integration for secret management ([apps/api/docs/vault.md][ref-doc-vault])
-
-### Next Features
-
-- [ ] Activity Log bidirectional and self-activity logging
-- [ ] Login with biometrics (fingerprint or face detection)
-- [ ] Login with passkey
-- [ ] Login with Github SSO
-- [ ] Analytics Dashboard (Docs is provided at [apps/api/docs/analytics.md][ref-doc-analytics])
-- [ ] Multi-Tenant Architecture
-- [ ] Verification Mobile Number, whatsapp or/and sms
-- [ ] Versioning System (Force frontend to update, especially mobile)
-
-### Drop Features
-
-- Sliding session (Example: 7d expires for a refresh token, can be extends until x day. if not action in 7d then need to re-login)
-
-### Test
-- [ ] Unit test
-- [ ] Integration Test
-- [ ] E2E Test
-- [ ] Stress Test For Benchmark/Performance
-- [ ] Load Test For Benchmark/Performance
-
-
-## Prerequisites
-
-I assume that everyone who comes here is a **`programmer with intermediate knowledge`**. To get the most out of this project, here's what you should understand:
-
-1. **[NestJs Fundamentals][ref-nestjs]** - Main framework with decorators, modules, services, and dependency injection
-2. **[TypeScript][ref-typescript]** - Strong typing, interfaces, generics, and advanced TypeScript features
-3. **[Prisma ORM][ref-prisma]** - Modern database toolkit for schema design, migrations, and type-safe queries
-4. **[MongoDB][ref-mongodb]** - NoSQL database concepts, especially **replication sets** for transactions
-5. **[Redis][ref-redis]** - Caching strategies, session storage, and queue management
-6. **Repository Design Pattern** - Data access layer abstraction for maintainable code
-7. **SOLID Principles** - Clean code architecture and dependency management
-8. **Queue Systems** - Background job processing with [BullMQ][ref-bullmq]
-9. **Optional. [Docker][ref-docker]** - Containerization for running the project
-10. **Optional. Microservice Architecture** - Understanding distributed systems concepts
-
-## Build with
-
-The project is built using the following technologies and versions. We always strive to use the latest stable versions to ensure security, performance, and access to modern features:
-
-| Name           | Version  |
-| -------------- | -------- |
-| NestJs         | v11.x    |
-| NodeJs         | v24.11.x |
-| TypeScript     | v6.0.x   |
-| Prisma         | v6.19.x  |
-| MongoDB        | v8.0.x   |
-| Redis          | v8.0.x   |
-| Docker         | v28.5.x  |
-| Docker Compose | v2.40.x  |
-
-For more information see [package.json][ref-package-json]
-
-## Objective
-
-- Easy to maintain
-- NestJs Habit
-- Component based / modular folder structure
-- Stateful authentication and authorization
-- Repository Design Pattern
-- Follow Community Guidelines
-- Follow The Twelve-Factor App
-
-## Features
-
-### 🎯 Architecture Highlights
-
-- **Repository Pattern** - Clean data access abstraction
-- **SOLID Principles** - Maintainable and testable codebase  
-- **Modular Structure** - Component-based folder organization
-- **12-Factor App** - Cloud-native best practices
-- **Production Ready** - Enterprise-grade security and scalability
-
-### 🔐 Authentication & Security
-Production-ready authentication system with multiple strategies and security layers.
-
-- **JWT Authentication** - ES256 for Access Token, ES512 for Refresh Token with automatic rotation
-- **Stateful Sessions** - Redis-backed sessions with token revocation support
-- **Social Login** - Google OAuth and Apple Sign In integration
-- **Two-Factor Authentication** - TOTP-based 2FA with backup recovery codes
-- **RBAC & Policies** - Fine-grained role and permission system
-- **API Key Protection** - Secure external API access control
-- **Rate Limiting** - DDoS protection with configurable throttling
-- **Security Headers** - Helmet integration for HTTP security
-
-### 📊 Database & Storage
-Modern ORM with NoSQL database and file storage capabilities.
-
-- **Prisma ORM** - Type-safe database toolkit with migrations
-- **MongoDB** - NoSQL database with transaction support (replica set required)
-- **Redis Caching** - Multi-level caching strategies for performance
-- **AWS S3 Integration** - File storage with presigned URLs
-- **Repository Pattern** - Clean separation of data access layer
-
-### ⚡ Performance & Optimization
-Built for speed and scalability from day one.
-
-- **Background Jobs** - BullMQ queue system for async processing
-- **Response Compression** - Automatic gzip/deflate compression
-- **SWC Compiler** - 20x faster than TypeScript compiler
-- **Pagination** - Server-side pagination with cursor support
-- **Feature Flags** - Dynamic feature rollout with A/B testing
-
-### 🛠 Development Experience
-Developer-friendly tooling and best practices.
-
-- **NestJS 11.x** - Latest framework version with full TypeScript support
-- **Swagger/OpenAPI 3** - Interactive API documentation
-- **API Versioning** - URL-based versioning (default v1)
-- **Request Validation** - Automatic validation with class-validator
-- **Error Handling** - Standardized error responses with i18n
-- **Hot Reload** - Fast development with SWC
-- **Code Quality** - ESLint, Prettier, Husky pre-commit hooks
-- **Database Seeding** - Commander-based data population
-
-### 📡 Integrations & Monitoring
-Enterprise-grade integrations for production readiness.
-
-- **Sentry** - Error tracking and performance monitoring
-- **AWS SES** - Transactional email delivery
-- **Activity Logging** - Comprehensive audit trail
-- **Health Checks** - System monitoring endpoints
-- **Multi-language Support** - i18n with `x-custom-lang` header
-- **HashiCorp Vault** - Optional secret management, syncs `.env` ([docs][ref-doc-vault])
-
-### 🔔 Notifications
-Multi-channel notification system for user engagement.
-
-- **Multi-Channel Delivery** - Email, push, in-app, and silent notifications
-- **User Preferences** - Per-type and per-channel opt-in/out settings
-- **AWS SES Email Templates** - Handlebars-based email templates synced to SES
-- **Firebase FCM Push** - Push notifications with multicast support and token cleanup
-- **Queue-Based Processing** - Reliable async delivery with BullMQ
-
-📖 See [Notification Documentation][ref-doc-notification] for detailed setup and usage.
-
-### 📝 Testing & Documentation
-Comprehensive testing framework and documentation.
-
-- **Jest Testing** - Unit, integration, and e2e test setup
-- **Swagger UI** - Auto-generated API documentation
-- **Detailed Docs** - 20+ documentation files covering all features
-- **Docker Support** - Complete containerization with docker-compose
-
-## Quick Start
+Cài toàn bộ workspace từ gốc repo:
 
 ```bash
-# Clone repository
-git clone https://github.com/andrechristikan/ack-nestjs-boilerplate
-
-# Install dependencies
 pnpm install
-
-# Setup environment
-cp .env.example .env
-
-# Run with Docker
-docker-compose up -d
-
-# Access API
-open http://localhost:3000/docs
 ```
 
-## Change DB with Minimal Effort
+## Chạy từng nền tảng
 
-Thanks to **Repository Pattern** and **Prisma ORM**, switching databases requires minimal code changes. The abstraction layer isolates database logic from business logic.
+> Cài dependencies một lần từ gốc: `pnpm install`. Mọi lệnh dưới đây chạy trong thư mục của từng app.
 
-### Supported Databases
+---
 
-| Database | Best For | Transaction Support |
-|----------|----------|---------------------|
-| **MongoDB** | Document-based, flexible schema | ✅ Yes (replica set) |
-| **PostgreSQL** | Relational Database, reliability | ✅ Yes |
+### 1. Backend API — `apps/api`
 
-**Other supported databases:** MySQL, SQLite, SQL Server, CockroachDB
+**Stack:** NestJS v11 · Prisma → PostgreSQL · Redis · BullMQ · JWT ES256/ES512.
+Hạ tầng (PostgreSQL, Redis, JWKS) chạy bằng Docker; API chạy trên host (hot reload).
 
-**Migration typically requires:**
-- Updating `prisma/schema.prisma` provider
-- Adjusting ID strategy (ObjectId → UUID). Update DatabaseService Code.
-- Running `npx prisma migrate dev`
-- Running `pnpm migration:seed`
+```bash
+# 1. Tạo .env
+cd apps/api
+cp .env.example .env
 
-**Business logic stays unchanged** - services, controllers, and authentication work as-is.
+# 2. Sinh khóa JWT (ES256/ES512), ghi thẳng vào .env
+pnpm generate:keys --direct-insert
 
-For detailed migration guides, see [Database Documentation][ref-doc-database].
+# 3. Bật hạ tầng (CHỈ service backend — tránh build admin/web)
+cd ../..
+docker-compose up -d postgres redis jwks-server redis-bullboard
 
-## Installation
+# 4. Prisma client + đẩy schema + seed dữ liệu
+cd apps/api
+pnpm db:generate
+pnpm migration:fresh
 
-For detailed installation instructions (both default and Docker-based), please refer to the [Installation][ref-doc-installation].
+# 5. Chạy API (hot reload)
+pnpm start:dev
+```
 
-## License
+| | |
+|---|---|
+| API base | `http://localhost:3000` (route dạng `/api/v1/...`) |
+| Swagger | `http://localhost:3000/docs` |
+| BullMQ dashboard | `http://localhost:3010` (admin / admin123) |
+| PostgreSQL | host cổng **5435** → container 5432 |
 
-This project is licensed under the [MIT License][ref-ack-license].
+> Mọi endpoint yêu cầu header `x-api-key` (`@ApiKeyProtected`). Khóa local đã seed nằm trong `docker-compose.yml`.
 
-## Contribute
+---
 
-Welcome contributions! Please read [CONTRIBUTING.md][ref-doc-contributing] for guidelines on how to get started.
+### 2. Trang quản trị — `apps/admin`
 
-## Contact
+**Stack:** Next.js (App Router) · Prisma → **SQLite** (DB file cục bộ, không cần Docker).
 
-**Andre Christi Kan**  
-📧 [andrechristikan@gmail.com][ref-author-email]
+```bash
+cd apps/admin
+cp .env.example .env      # DATABASE_URL mặc định = file:./dev.db
+pnpm migrate              # tạo schema vào SQLite (prisma migrate dev)
+pnpm dev                  # http://localhost:3003
+```
 
-[![Github][github-shield]][ref-author-github]
-[![LinkedIn][linkedin-shield]][ref-author-linkedin]
+Env chính (trong `.env.example`): `DATABASE_URL`, `API_URL` / `NEXT_PUBLIC_API_URL` (trỏ tới backend), `NEXTAUTH_URL`, `NEXTAUTH_SECRET`.
 
-### Support This Project
+---
 
-If you find this project helpful and would like to support its development, please consider giving it a ⭐ **star** on GitHub or buying me a ☕ **coffee**!
+### 3. Web marketing — `apps/web`
 
-**Buy me a coffee** ☕
+**Stack:** Next.js (App Router) · Drizzle → **PostgreSQL**. Chưa có `.env.example`, phải tự tạo `.env`.
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://ko-fi.com/andrechristikan' target='_blank'>
-    <img src='https://cdn.ko-fi.com/cdn/kofi3.png?v=3' alt='Buy Me a Coffee at ko-fi.com' width='200'/>
-  </a>
-</div>
+Bắt buộc: `DATABASE_URL`. Tùy chọn: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` + `CLERK_SECRET_KEY` (đăng nhập), `ARCJET_KEY`, `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_API_KEY`.
 
-**Or support via PayPal** 💳
+```bash
+cd apps/web
+echo 'DATABASE_URL=postgresql://postgres:postgres123@localhost:5435/vismarttech' > .env
+```
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://www.paypal.me/andrechristikan' target='_blank'>
-    <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' alt='Donate with PayPal' />
-  </a>
-</div>
+- **Windows:** `pnpm dev` — tự bật DB Postgres cục bộ (pglite, cổng 5433) + Next tại `http://localhost:3002`.
+- **macOS / Linux:** script `dev` dùng `cmd.exe` nên **không chạy được**. Trỏ `DATABASE_URL` tới Postgres thật (vd container `postgres` của API ở cổng 5435), rồi:
 
+  ```bash
+  pnpm db:migrate      # áp migration bằng drizzle-kit
+  pnpm dev:next        # Next tại http://localhost:3002
+  ```
 
-<!-- REFERENCES -->
+---
 
-<!-- BADGE LINKS -->
+### 4. Ứng dụng di động — `apps/mobile`
 
-[ack-contributors-shield]: https://img.shields.io/github/contributors/Leducnamtek123/samngoclinh?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/Leducnamtek123/samngoclinh?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/Leducnamtek123/samngoclinh?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/Leducnamtek123/samngoclinh?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/Leducnamtek123/samngoclinh?style=for-the-badge
-[nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-[nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-[typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-[jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-[jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-[docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
+**Stack:** Expo / React Native (iOS · Android · Web). Kết nối API qua `/api/v1` + header `x-api-key`.
 
-<!-- CONTACTS -->
+```bash
+cd apps/mobile
+pnpm install
+pnpm start                # Expo Dev Tools: a (Android), i (iOS), w (web)
+```
 
-[ref-author-linkedin]: https://vismarttech.com
-[ref-author-email]: mailto:support@vismarttech.com
-[ref-author-github]: https://github.com/Leducnamtek123
+Cấu hình backend trong [`apps/mobile/app.json`](apps/mobile/app.json) → `expo.extra` (hoặc biến `EXPO_PUBLIC_*`):
 
-<!-- Repo LINKS -->
+| Khóa | Ý nghĩa |
+|---|---|
+| `apiBaseUrl` | Mặc định `http://localhost:3000`. Thiết bị thật: IP LAN máy chạy backend; Android emulator: `http://10.0.2.2:3000`; iOS sim / web: `localhost`. |
+| `apiKey` | Khóa `x-api-key` dạng `key:secret`. |
+| `useMockApi` | Mặc định **bật** để app chạy được khi chưa có backend (mock toàn bộ auth). Đặt `false` để gọi API thật. |
 
-[ref-ack]: https://github.com/Leducnamtek123/samngoclinh
-[ref-ack-issues]: https://github.com/Leducnamtek123/samngoclinh/issues
-[ref-ack-stars]: https://github.com/Leducnamtek123/samngoclinh/stargazers
-[ref-ack-forks]: https://github.com/Leducnamtek123/samngoclinh/network/members
-[ref-ack-contributors]: https://github.com/Leducnamtek123/samngoclinh/graphs/contributors
-[ref-ack-license]: LICENSE.md
+> Nếu package lệch với Expo SDK: `npx expo install --fix`.
 
-<!-- THIRD PARTY -->
+## Cấu trúc
 
-[ref-nestjs]: http://nestjs.com
-[ref-prisma]: https://www.prisma.io
-[ref-mongodb]: https://docs.mongodb.com/
-[ref-redis]: https://redis.io
-[ref-bullmq]: https://bullmq.io
-[ref-nodejs]: https://nodejs.org/
-[ref-typescript]: https://www.typescriptlang.org/
-[ref-docker]: https://docs.docker.com
-[ref-pnpm]: https://pnpm.io
-[ref-package-json]: package.json
-[ref-jwt]: https://jwt.io
-[ref-jest]: https://jestjs.io/docs/getting-started
+```
+.
+├── apps/
+│   ├── api/          # NestJS backend (Prisma/PostgreSQL, Redis, BullMQ)
+│   ├── admin/        # Next.js admin dashboard
+│   ├── web/          # Next.js web marketing
+│   └── mobile/       # Expo / React Native
+├── ci/               # Dockerfile các app, JWKS server, Vault
+├── docker-compose.yml
+├── turbo.json
+└── pnpm-workspace.yaml
+```
 
-<!-- DOCS LINKS -->
+## Lệnh ở gốc (Turborepo)
 
-[ref-doc-activity-log]: apps/api/docs/activity-log.md
-[ref-doc-authentication]: apps/api/docs/authentication.md
-[ref-doc-authorization]: apps/api/docs/authorization.md
-[ref-doc-cache]: apps/api/docs/cache.md
-[ref-doc-configuration]: apps/api/docs/configuration.md
-[ref-doc-database]: apps/api/docs/database.md
-[ref-doc-environment]: apps/api/docs/environment.md
-[ref-doc-feature-flag]: apps/api/docs/feature-flag.md
-[ref-doc-file-upload]: apps/api/docs/file-upload.md
-[ref-doc-handling-error]: apps/api/docs/handling-error.md
-[ref-doc-installation]: apps/api/docs/installation.md
-[ref-doc-logger]: apps/api/docs/logger.md
-[ref-doc-message]: apps/api/docs/message.md
-[ref-doc-notification]: apps/api/docs/notification.md
-[ref-doc-pagination]: apps/api/docs/pagination.md
-[ref-doc-project-structure]: apps/api/docs/project-structure.md
-[ref-doc-queue]: apps/api/docs/queue.md
-[ref-doc-request-validation]: apps/api/docs/request-validation.md
-[ref-doc-response]: apps/api/docs/response.md
-[ref-doc-security-and-middleware]: apps/api/docs/security-and-middleware.md
-[ref-doc-third-party-integration]: apps/api/docs/third-party-integration.md
-[ref-doc-presign]: apps/api/docs/presign.md
-[ref-doc-term-policy]: apps/api/docs/term-policy.md
-[ref-doc-two-factor]: apps/api/docs/two-factor.md
-[ref-doc-analytics]: apps/api/docs/analytics.md
-[ref-doc-vault]: apps/api/docs/vault.md
-[ref-doc-contributing]: CONTRIBUTING.md
-[ref-doc-doc]: apps/api/docs/doc.md
+```bash
+pnpm dev         # chạy dev tất cả app có script dev
+pnpm build       # build toàn bộ
+pnpm lint        # lint toàn bộ
+pnpm typecheck   # typecheck toàn bộ
+```
+
+## Tài liệu
+
+- Backend API: xem [`apps/api/docs/`](apps/api/docs) (index tại [`apps/api/docs/readme.md`](apps/api/docs/readme.md)).
