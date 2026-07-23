@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { SignInSchema } from "@/schemas/sign-in-schema"
+import { API_KEY } from "@/lib/api-key"
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP',
+        'x-api-key': API_KEY,
       },
       body: JSON.stringify(bodyPayload),
     })

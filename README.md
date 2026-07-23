@@ -38,16 +38,20 @@ pnpm install
 Hạ tầng (PostgreSQL, Redis, JWKS) chạy bằng Docker; API chạy trên host (hot reload).
 
 ```bash
-# 1. Tạo .env
+# 1. Tạo .env + điền các secret bắt buộc (đang để trống trong .env.example)
 cd apps/api
 cp .env.example .env
+# APP_ENCRYPTION_SECRET_KEY: chuỗi 32–64 ký tự (openssl rand -hex 24 -> 48 ký tự)
+sed -i "s|^APP_ENCRYPTION_SECRET_KEY=.*|APP_ENCRYPTION_SECRET_KEY=$(openssl rand -hex 24)|" .env
+sed -i "s|^AUTH_TWO_FACTOR_ENCRYPTION_KEY=.*|AUTH_TWO_FACTOR_ENCRYPTION_KEY=$(openssl rand -hex 16)|" .env
+sed -i "s|^AUTH_TWO_FACTOR_ISSUER=.*|AUTH_TWO_FACTOR_ISSUER=Sam Ngoc Linh|" .env
 
 # 2. Sinh khóa JWT (ES256/ES512), ghi thẳng vào .env
 pnpm generate:keys --direct-insert
 
-# 3. Bật hạ tầng (CHỈ service backend — tránh build admin/web)
+# 3. Bật hạ tầng (admin/web/apis gate bằng Docker profile → up mặc định chỉ chạy hạ tầng)
 cd ../..
-docker-compose up -d postgres redis jwks-server redis-bullboard
+docker compose up -d
 
 # 4. Prisma client + đẩy schema + seed dữ liệu
 cd apps/api
@@ -67,6 +71,12 @@ pnpm start:dev
 
 > Mọi endpoint yêu cầu header `x-api-key` (`@ApiKeyProtected`). Khóa local đã seed nằm trong `docker-compose.yml`.
 
+> `APP_ENCRYPTION_SECRET_KEY` là khóa mã hoá AES dài **32–64 ký tự**; sinh bằng `openssl rand -hex 24` (48 ký tự) hoặc `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"`. `AUTH_TWO_FACTOR_ENCRYPTION_KEY` cũng là khóa ngẫu nhiên (không chặn độ dài trên), `AUTH_TWO_FACTOR_ISSUER` là tên hiển thị trong app Authenticator. Bỏ trống các biến này → API báo `Env Variable Invalid` khi khởi động.
+
+> `apis`, `admin`, `web` là **opt-in** qua Docker profile nên `docker compose up -d` mặc định chỉ dựng hạ tầng (`postgres`, `redis`, `jwks-server`, `redis-bullboard`). Muốn chạy chúng trong Docker: `docker compose --profile admin up -d` (tương tự `web`, `apis`); thông thường admin/web chạy local bằng `pnpm dev` (mục 2–3).
+>
+> Compose (v2.3.3) validate mọi `env_file` khi parse và chưa hỗ trợ `required: false`, nên các service Docker trỏ tới file luôn tồn tại: `apis` → `apps/api/.env` (tạo ở bước 1), `admin`/`web` → `.env.example` (đã commit). Nhờ vậy `docker compose up -d` chạy được ngay sau bước 1, không cần tạo `.env` cho admin/web. `jwks-server` đọc khóa JWKS từ `apps/api/keys/` (sinh ở bước 2).
+
 ---
 
 ### 2. Trang quản trị — `apps/admin`
@@ -75,12 +85,28 @@ pnpm start:dev
 
 ```bash
 cd apps/admin
-cp .env.example .env      # DATABASE_URL mặc định = file:./dev.db
-pnpm migrate              # tạo schema vào SQLite (prisma migrate dev)
-pnpm dev                  # http://localhost:3003
+cp .env.example .env       # DATABASE_URL mặc định = file:./dev.db
+pnpm exec prisma generate  # sinh Prisma Client (fix "@prisma/client did not initialize yet")
+pnpm migrate               # tạo schema vào SQLite (prisma migrate dev)
+pnpm dev                   # http://localhost:3003
 ```
 
+> **Lỗi `@prisma/client did not initialize yet`** (kể cả sau khi `prisma generate`): do `prisma/schema.prisma` đặt `output = "../node_modules/.prisma/client"`. Trên pnpm monorepo, `@prisma/client` bị hoist lên root nên tìm client trong `.pnpm` store, còn `output` lại đẩy client sinh ra vào `apps/admin/node_modules/.prisma/client` → không khớp, nạp phải stub.
+>
+> Sửa gọn nhất: **bỏ dòng `output`** trong `apps/admin/prisma/schema.prisma` (để Prisma sinh đúng vị trí pnpm), rồi `pnpm exec prisma generate` và khởi động lại `pnpm dev`. Nếu buộc phải giữ `output`, tạm thời copy client thật sang `.pnpm` store: `cp -r node_modules/.prisma/client/. ../../node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/` (mất tác dụng sau mỗi `pnpm install`).
+
 Env chính (trong `.env.example`): `DATABASE_URL`, `API_URL` / `NEXT_PUBLIC_API_URL` (trỏ tới backend), `NEXTAUTH_URL`, `NEXTAUTH_SECRET`.
+
+> **Tài khoản đăng nhập** (http://localhost:3003): admin xác thực qua API nên dùng **user đã seed trong `apps/api`** (`pnpm migration:fresh`) — mật khẩu chung `aaAA@123`:
+>
+> | Email | Vai trò |
+> |---|---|
+> | `admin@mail.com` | admin |
+> | `superadmin@mail.com` | superadmin |
+> | `provider@mail.com` | provider |
+> | `user@mail.com` | user (chỉ ở `APP_ENV=local`) |
+>
+> Cần API chạy ở `localhost:3000` + đã seed. Đây là tài khoản seed cho dev — đổi/xoá khi lên production. Nguồn: `apps/api/src/migration/data/migration.user.data.ts`.
 
 ---
 
