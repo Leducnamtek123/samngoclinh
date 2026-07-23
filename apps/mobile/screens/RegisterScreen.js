@@ -151,6 +151,10 @@ export default function RegisterScreen({ navigation }) {
               Đăng Nhập
             </Text>
           </Text>
+
+          <Pressable hitSlop={8} onPress={() => navigation.navigate('Home', { screen: 'Home' })}>
+            <Text style={styles.guest}>Tiếp tục không đăng nhập</Text>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -234,6 +238,13 @@ const styles = StyleSheet.create({
 
   footer: { textAlign: 'center', color: colors.textMuted, fontSize: 15, marginTop: spacing.xl },
   footerLink: { color: colors.primary, fontWeight: '800' },
+  guest: {
+    color: colors.primary,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: spacing.md,
+  },
 
   pressed: { opacity: 0.85 },
 });

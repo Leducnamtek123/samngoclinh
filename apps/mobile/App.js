@@ -31,7 +31,7 @@ const linking = {
 };
 
 function RootNavigator() {
-  const { isAuthenticated, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (
@@ -41,34 +41,29 @@ function RootNavigator() {
     );
   }
 
+  // Khách vào thẳng Home (duyệt tự do); các màn auth chỉ được đẩy lên khi cần
+  // (bấm hành động mua hàng -> Login). Trạng thái đăng nhập phản ánh trong từng màn qua useAuth.
   return (
-    <Stack.Navigator>
-      {isAuthenticated ? (
-        <>
-          <Stack.Screen name="Home" component={MainTabs} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="ChangePassword"
-            component={ChangePasswordScreen}
-            options={{ title: 'Đổi mật khẩu', headerShadowVisible: false }}
-          />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="ForgotPassword"
-            component={ForgotPasswordScreen}
-            options={{ title: '', headerShadowVisible: false }}
-          />
-          <Stack.Screen
-            name="ResetPassword"
-            component={ResetPasswordScreen}
-            options={{ title: '', headerShadowVisible: false }}
-          />
-        </>
-      )}
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={MainTabs} options={{ headerShown: false }} />
+      <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ title: '', headerShadowVisible: false }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
+        options={{ title: '', headerShadowVisible: false }}
+      />
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePasswordScreen}
+        options={{ title: 'Đổi mật khẩu', headerShadowVisible: false }}
+      />
       <Stack.Screen
         name="ComingSoon"
         component={ComingSoonScreen}

@@ -32,11 +32,12 @@ export default function LoginScreen({ navigation }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const run = async (fn) => {
+  const run = async (fn, after) => {
     setError('');
     setLoading(true);
     try {
       await fn();
+      after?.();
     } catch (e) {
       setError(e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
     } finally {
@@ -44,9 +45,15 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // Sau khi đăng nhập xong: đóng màn Login, quay lại chỗ đang thao tác (vd giỏ hàng); nếu không có thì về Home.
+  const closeAfterAuth = () => {
+    if (navigation.canGoBack()) navigation.goBack();
+    else navigation.navigate('Home');
+  };
+
   const onEmailLogin = () => {
     if (!email.trim() || !password) return setError('Vui lòng nhập email và mật khẩu.');
-    run(() => signIn({ email: email.trim().toLowerCase(), password }));
+    run(() => signIn({ email: email.trim().toLowerCase(), password }), closeAfterAuth);
   };
 
   const onSendOtp = () => {
@@ -59,7 +66,7 @@ export default function LoginScreen({ navigation }) {
 
   const onVerifyOtp = () => {
     if (!otp.trim()) return setError('Vui lòng nhập mã OTP.');
-    run(() => signInWithOtp({ phone: phone.trim(), otp: otp.trim() }));
+    run(() => signInWithOtp({ phone: phone.trim(), otp: otp.trim() }), closeAfterAuth);
   };
 
   const switchMode = (next) => {
@@ -194,6 +201,10 @@ export default function LoginScreen({ navigation }) {
                 Đăng ký
               </Text>
             </Text>
+
+            <Pressable hitSlop={8} onPress={() => navigation.navigate('Home', { screen: 'Home' })}>
+              <Text style={styles.guest}>Tiếp tục không đăng nhập</Text>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -323,6 +334,13 @@ const styles = StyleSheet.create({
 
   footer: { textAlign: 'center', color: colors.textMuted, fontSize: 15, marginTop: spacing.md },
   footerLink: { color: colors.primary, fontWeight: '800' },
+  guest: {
+    color: colors.primary,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: spacing.lg,
+  },
 
   pressed: { opacity: 0.85 },
 });

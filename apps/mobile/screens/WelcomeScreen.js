@@ -38,10 +38,7 @@ export default function WelcomeScreen({ navigation }) {
             <Text style={styles.btnOutlineText}>Đăng ký</Text>
           </Pressable>
 
-          <Pressable
-            hitSlop={8}
-            onPress={() => navigation.navigate('ComingSoon', { title: 'Chế độ khách' })}
-          >
+          <Pressable hitSlop={8} onPress={() => navigation.navigate('Home', { screen: 'Home' })}>
             <Text style={styles.guest}>Tiếp tục không đăng nhập</Text>
           </Pressable>
         </View>
