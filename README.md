@@ -17,10 +17,24 @@ marketing và ứng dụng di động. Quản lý bằng PNPM workspace + Turbor
 | Công cụ | Phiên bản |
 |---|---|
 | Node.js | ≥ 24.11.0 |
-| PNPM | ≥ 10.25 |
+| PNPM | ≥ 10.25 (repo ghim `pnpm@10.29.2`) |
 | Docker + Docker Compose | (cho hạ tầng của API: PostgreSQL, Redis) |
 
-Cài toàn bộ workspace từ gốc repo:
+### Bật PNPM (một lần)
+
+PNPM được quản lý qua **Corepack** (đi kèm Node ≥ 16). Nếu gặp `pnpm: command not found`:
+
+```bash
+corepack enable pnpm      # bật shim pnpm (dùng nvm thì không cần sudo)
+```
+
+Corepack sẽ tự tải đúng phiên bản pnpm mà repo ghim khi bạn chạy lệnh trong thư mục dự án.
+Nếu Corepack không có sẵn: `npm install -g corepack@latest` rồi chạy lại lệnh trên
+(hoặc cài thẳng `npm install -g pnpm@10`).
+
+### Cài dependencies
+
+Từ gốc repo:
 
 ```bash
 pnpm install
