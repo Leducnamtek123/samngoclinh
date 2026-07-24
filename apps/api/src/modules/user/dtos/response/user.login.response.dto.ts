@@ -14,6 +14,15 @@ export class UserLoginResponseDto {
     isTwoFactorEnable: boolean;
 
     @ApiProperty({
+        description:
+            'True when logged in with a temporary/expired password; client must force a password change',
+        example: false,
+        required: false,
+    })
+    @Expose()
+    mustChangePassword?: boolean;
+
+    @ApiProperty({
         required: false,
         type: AuthTokenResponseDto,
         description: 'Provides access and refresh tokens upon successful login',

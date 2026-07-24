@@ -5,6 +5,7 @@ import {
     OnModuleInit,
     UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { OrdersService } from '@modules/orders/services/orders.service';
 import { DatabaseService } from '@common/database/services/database.service';
 import { SepayWebhookDto } from '@modules/sepay/dtos/sepay-webhook.dto';
@@ -24,7 +25,8 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
     constructor(
         private readonly ordersService: OrdersService,
         private readonly databaseService: DatabaseService,
-        private readonly paymentGatewayRegistry: PaymentGatewayRegistry
+        private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
+        private readonly configService: ConfigService
     ) {}
 
     onModuleInit() {
@@ -42,9 +44,16 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             where: { key: 'sepay_account_name' },
         });
 
-        const accountNumber = dbAcc?.value || process.env.SEPAY_BANK_ACCOUNT || '';
-        const bankBrand = dbBank?.value || process.env.SEPAY_BANK_BRAND || 'MBBank';
-        const accountName = dbName?.value || process.env.SEPAY_ACCOUNT_NAME || '';
+        const accountNumber =
+            dbAcc?.value ||
+            this.configService.get<string>('sepay.bankAccount') ||
+            '';
+        const bankBrand =
+            dbBank?.value || this.configService.get<string>('sepay.bankBrand')!;
+        const accountName =
+            dbName?.value ||
+            this.configService.get<string>('sepay.accountName') ||
+            '';
 
         const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
             accountNumber
@@ -65,7 +74,9 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
 
 
     verifyWebhookAuth(authHeader?: string): boolean {
-        const expectedSecret = process.env.SEPAY_WEBHOOK_API_KEY;
+        const expectedSecret = this.configService.get<string>(
+            'sepay.webhookApiKey'
+        );
         if (!expectedSecret) {
             return true;
         }

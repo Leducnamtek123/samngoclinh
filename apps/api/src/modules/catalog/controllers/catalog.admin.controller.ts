@@ -6,6 +6,7 @@ import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decora
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CatalogPlant, CatalogProduct, EnumRoleType } from '@generated/prisma-client';
+import { ConfigService } from '@nestjs/config';
 import { CatalogService } from '../services/catalog.service';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { FileUploadSingle } from '@common/file/decorators/file.decorator';
@@ -35,7 +36,10 @@ import {
     path: '/catalog',
 })
 export class CatalogAdminController {
-    constructor(private readonly catalogService: CatalogService) {}
+    constructor(
+        private readonly catalogService: CatalogService,
+        private readonly configService: ConfigService
+    ) {}
 
     @CatalogAdminCreatePlantDoc()
     @Response('catalog.create')
@@ -124,9 +128,15 @@ export class CatalogAdminController {
     ): Promise<IResponseReturn<{ url: string }>> {
         try {
             cloudinary.config({
-                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-                api_key: process.env.CLOUDINARY_API_KEY,
-                api_secret: process.env.CLOUDINARY_API_SECRET,
+                cloud_name:
+                    this.configService.get<string>('cloudinary.cloudName') ??
+                    undefined,
+                api_key:
+                    this.configService.get<string>('cloudinary.apiKey') ??
+                    undefined,
+                api_secret:
+                    this.configService.get<string>('cloudinary.apiSecret') ??
+                    undefined,
             });
 
             const uploadFromBuffer = (buffer: Buffer): Promise<any> => {

@@ -1,7 +1,16 @@
-import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
-export class UserForgotPasswordRequestDto extends PickType(
-    UserLoginRequestDto,
-    ['email'] as const
-) {}
+export class UserForgotPasswordRequestDto {
+    @ApiProperty({
+        description: 'Email hoặc số điện thoại của tài khoản',
+        required: true,
+        maxLength: 100,
+    })
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(100)
+    @Transform(({ value }) => value.trim().toLowerCase())
+    email: string;
+}

@@ -1,5 +1,5 @@
 // Đăng nhập — chuyển đổi Email / Số điện thoại (OTP), kèm đăng nhập Google/Apple.
-// OTP hiện chạy ở chế độ mock (backend thật chưa có endpoint OTP đăng nhập).
+// OTP là ĐĂNG NHẬP (không phải đăng ký): chỉ dùng cho user đã tồn tại + đã gắn số điện thoại.
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -36,8 +36,8 @@ export default function LoginScreen({ navigation }) {
     setError('');
     setLoading(true);
     try {
-      await fn();
-      after?.();
+      const result = await fn();
+      after?.(result);
     } catch (e) {
       setError(e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
     } finally {
@@ -53,7 +53,13 @@ export default function LoginScreen({ navigation }) {
 
   const onEmailLogin = () => {
     if (!email.trim() || !password) return setError('Vui lòng nhập email và mật khẩu.');
-    run(() => signIn({ email: email.trim().toLowerCase(), password }), closeAfterAuth);
+    run(
+      () => signIn({ email: email.trim().toLowerCase(), password }),
+      (res) => {
+        if (res?.mustChangePassword) navigation.navigate('ChangePassword');
+        else closeAfterAuth();
+      }
+    );
   };
 
   const onSendOtp = () => {

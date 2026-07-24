@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import IconField from '../components/IconField';
 import { register } from '../api/auth';
+import { resolveDefaultCountryId } from '../api/country';
 import { colors, spacing } from '../utils/theme';
 
 export default function RegisterScreen({ navigation }) {
@@ -26,22 +27,22 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [invite, setInvite] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
     if (!email.trim()) return setError('Vui lòng nhập email.');
-    if (password.length < 6) return setError('Mật khẩu tối thiểu 6 ký tự.');
+    if (password.length < 8) return setError('Mật khẩu tối thiểu 8 ký tự.');
     if (password !== confirm) return setError('Mật khẩu nhập lại không khớp.');
     setError('');
     setLoading(true);
     try {
+      const countryId = await resolveDefaultCountryId();
       await register({
         name: name.trim() || undefined,
         email: email.trim().toLowerCase(),
         password,
-        inviteCode: invite.trim() || undefined,
+        countryId,
       });
       Alert.alert('Đăng ký thành công', 'Bạn có thể đăng nhập ngay bây giờ.', [
         { text: 'Đăng nhập', onPress: () => navigation.navigate('Login') },
@@ -94,7 +95,7 @@ export default function RegisterScreen({ navigation }) {
               icon="lock-closed-outline"
               value={password}
               onChangeText={setPassword}
-              placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+              placeholder="Mật khẩu (tối thiểu 8 ký tự)"
               secureTextEntry
             />
             <IconField
@@ -103,15 +104,6 @@ export default function RegisterScreen({ navigation }) {
               onChangeText={setConfirm}
               placeholder="Nhập lại mật khẩu"
               secureTextEntry
-            />
-
-            <Text style={styles.inviteLabel}>Mã mời (nếu có)</Text>
-            <IconField
-              icon="gift-outline"
-              value={invite}
-              onChangeText={setInvite}
-              placeholder="Mã mời (nếu có)"
-              autoCapitalize="characters"
             />
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -198,13 +190,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 3 },
-  },
-  inviteLabel: {
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginTop: spacing.lg,
   },
   error: { color: colors.danger, fontSize: 14, marginTop: spacing.md },
 

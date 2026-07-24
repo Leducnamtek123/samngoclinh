@@ -87,6 +87,8 @@ pnpm start:dev
 
 > `APP_ENCRYPTION_SECRET_KEY` là khóa mã hoá AES dài **32–64 ký tự**; sinh bằng `openssl rand -hex 24` (48 ký tự) hoặc `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"`. `AUTH_TWO_FACTOR_ENCRYPTION_KEY` cũng là khóa ngẫu nhiên (không chặn độ dài trên), `AUTH_TWO_FACTOR_ISSUER` là tên hiển thị trong app Authenticator. Bỏ trống các biến này → API báo `Env Variable Invalid` khi khởi động.
 
+> Đăng nhập bằng **số điện thoại** cần thêm `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` (để verify Firebase ID token). Không cấu hình thì các luồng khác vẫn chạy, chỉ login-bằng-SĐT là lỗi.
+
 > `apis`, `admin`, `web` là **opt-in** qua Docker profile nên `docker compose up -d` mặc định chỉ dựng hạ tầng (`postgres`, `redis`, `jwks-server`, `redis-bullboard`). Muốn chạy chúng trong Docker: `docker compose --profile admin up -d` (tương tự `web`, `apis`); thông thường admin/web chạy local bằng `pnpm dev` (mục 2–3).
 >
 > Compose (v2.3.3) validate mọi `env_file` khi parse và chưa hỗ trợ `required: false`, nên các service Docker trỏ tới file luôn tồn tại: `apis` → `apps/api/.env` (tạo ở bước 1), `admin`/`web` → `.env.example` (đã commit). Nhờ vậy `docker compose up -d` chạy được ngay sau bước 1, không cần tạo `.env` cho admin/web. `jwks-server` đọc khóa JWKS từ `apps/api/keys/` (sinh ở bước 2).
@@ -173,6 +175,8 @@ Cấu hình backend trong [`apps/mobile/app.json`](apps/mobile/app.json) → `ex
 | `useMockApi` | Mặc định **bật** để app chạy được khi chưa có backend (mock toàn bộ auth). Đặt `false` để gọi API thật. |
 
 > Nếu package lệch với Expo SDK: `npx expo install --fix`.
+
+> Đăng nhập/đăng ký bằng **số điện thoại** dùng Firebase Phone Auth: mobile gửi OTP qua Firebase → backend verify ID token. Cần cấu hình Firebase project (mobile SDK) + `FIREBASE_*` env ở backend.
 
 ## Cấu trúc
 
