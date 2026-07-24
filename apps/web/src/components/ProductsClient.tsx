@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
@@ -12,6 +13,7 @@ type ProductsClientProps = {
 };
 
 export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
+  const t = useTranslations('products');
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
   const { data: banners } = useBanner('products');
   const [searchTerm, setSearchTerm] = useState('');

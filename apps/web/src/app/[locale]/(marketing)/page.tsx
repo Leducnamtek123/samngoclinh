@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
 import { HomepageBannerSlider } from './HomepageBannerSlider';
@@ -71,6 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Index(props: IndexPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
+  const t = await getTranslations('homepage');
 
   const [articles, bannerImages] = await Promise.all([
     getArticles(),
@@ -158,20 +159,20 @@ export default async function Index(props: IndexPageProps) {
             {/* Middle Column: Text Information */}
             <div className="lg:col-span-4 space-y-6 text-left animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <span className="text-secondary font-bold tracking-widest uppercase text-xs block">
-                VỀ CHÚNG TÔI
+                {t('aboutUsBadge')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight font-display-lg">
-                Hành trình gìn giữ <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-emerald-500 to-secondary animate-gradient-text">tinh hoa Việt</span>
+                {t('aboutTitle')}
               </h2>
               <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                Chúng tôi tâm huyết gìn giữ và phát huy giá trị của Sâm Ngọc Linh – báu vật của đại ngàn, kết hợp cùng bí quyết truyền thống để tạo ra những sản phẩm rượu sâm chất lượng, mang lại giá trị thật cho cộng đồng.
+                {t('aboutDesc')}
               </p>
               <div>
                 <Link 
                   href="/about" 
                   className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-secondary-hover transition-colors group/link"
                 >
-                  <span>Tìm hiểu thêm</span>
+                  <span>{t('learnMore')}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/link:translate-x-1 duration-300">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                   </svg>
@@ -191,7 +192,7 @@ export default async function Index(props: IndexPageProps) {
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">10+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">Năm kinh nghiệm</p>
+                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('yearsExperience')}</p>
                 </div>
               </div>
 
@@ -205,7 +206,7 @@ export default async function Index(props: IndexPageProps) {
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">1500m+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">Độ cao vùng trồng</p>
+                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('altitude')}</p>
                 </div>
               </div>
 
@@ -218,7 +219,7 @@ export default async function Index(props: IndexPageProps) {
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">5000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">Khách hàng tin dùng</p>
+                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('happyCustomers')}</p>
                 </div>
               </div>
 
@@ -231,7 +232,7 @@ export default async function Index(props: IndexPageProps) {
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">100.000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">Chai rượu cung cấp</p>
+                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('bottlesSupplied')}</p>
                 </div>
               </div>
 
@@ -245,10 +246,10 @@ export default async function Index(props: IndexPageProps) {
         <section className="py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border-t border-gray-100">
           <div className="text-center mb-16 space-y-3">
             <h2 className="text-3xl font-extrabold text-primary font-display-lg">
-              Thông tin mới nhất
+              {t('latestNews')}
             </h2>
             <p className="text-gray-500 text-sm max-w-2xl mx-auto font-medium">
-              Cập nhật những thông tin mới nhất về các sự kiện, khuyến mãi và kiến thức chăm sóc cây trồng.
+              {t('latestNewsDesc')}
             </p>
           </div>
 

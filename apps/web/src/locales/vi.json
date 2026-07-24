@@ -75,6 +75,19 @@
   "LocaleSwitcher": {
     "change_language": "Thay đổi ngôn ngữ"
   },
+  "homepage": {
+    "aboutUsBadge": "VỀ CHÚNG TÔI",
+    "aboutTitle": "Hành trình gìn giữ tinh hoa Việt",
+    "aboutDesc": "Chúng tôi tâm huyết gìn giữ và phát huy giá trị của Sâm Ngọc Linh – báu vật của đại ngàn, kết hợp cùng bí quyết truyền thống để tạo ra những sản phẩm rượu sâm chất lượng, mang lại giá trị thật cho cộng đồng.",
+    "learnMore": "Tìm hiểu thêm",
+    "yearsExperience": "Năm kinh nghiệm",
+    "altitude": "Độ cao vùng trồng",
+    "happyCustomers": "Khách hàng tin dùng",
+    "bottlesSupplied": "Chai rượu cung cấp",
+    "latestNews": "Thông tin mới nhất",
+    "latestNewsDesc": "Cập nhật các tin tức, hoạt động và bài viết mới nhất về Sâm Ngọc Linh",
+    "readMore": "Đọc tiếp"
+  },
   "nav": {
     "home": "Trang chủ",
     "promotions": "Khuyến mãi",

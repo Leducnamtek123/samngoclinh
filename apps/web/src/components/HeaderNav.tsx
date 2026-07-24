@@ -1,25 +1,25 @@
 'use client';
 
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/libs/I18nNavigation';
 import { useEffect, useState } from 'react';
 import { fetchApiClient } from '@/libs/ApiClient';
 
-const categoryLabels: Record<string, string> = {
-  'news': 'Tin tức',
-  'event': 'Sự kiện',
-  'guide': 'Hướng dẫn sử dụng app',
-  'faq': 'Kiến thức'
-};
-
-const getCategoryLabel = (category: string) => {
-  return categoryLabels[category] || category;
-};
-
 export const HeaderNav = () => {
+  const tNav = useTranslations('nav');
+  const tCat = useTranslations('categories');
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCategory = searchParams?.get('category') || '';
+
+  const getCategoryLabel = (category: string) => {
+    try {
+      return tCat(category as any);
+    } catch {
+      return category;
+    }
+  };
 
   const [categories, setCategories] = useState<string[]>([]);
 
@@ -66,7 +66,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          Trang chủ
+          {tNav('home')}
         </Link>
       </li>
 
@@ -88,7 +88,7 @@ export const HeaderNav = () => {
           >
             <path fillRule="evenodd" d="M12 2.25c-1.2 0-2.228.755-2.625 1.812A3.75 3.75 0 0 0 3.75 7.5v.75H12V2.25Zm1.5 0v6h8.25v-.75a3.75 3.75 0 0 0-5.625-3.438A2.625 2.625 0 0 0 13.5 2.25ZM3 9.75h18v2.25H3V9.75Zm0 3.75h8.25v8.25H4.5A1.5 1.5 0 0 1 3 20.25v-6.75Zm9.75 8.25V13.5H21v6.75a1.5 1.5 0 0 1-1.5 1.5h-6.75Z" clipRule="evenodd" />
           </svg>
-          <span>Khuyến mãi</span>
+          <span>{tNav('promotions')}</span>
         </Link>
       </li>
 
@@ -102,7 +102,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          Trồng sâm
+          {tNav('planting')}
         </Link>
       </li>
 
@@ -116,7 +116,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          Cửa hàng
+          {tNav('shop')}
         </Link>
       </li>
 
@@ -129,7 +129,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          <span>Thông tin</span>
+          <span>{tNav('info')}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -152,7 +152,7 @@ export const HeaderNav = () => {
                 : 'text-gray-700 hover:bg-emerald-50/50 hover:text-primary rounded-xl'
             }`}
           >
-            Tất cả
+            {tNav('all')}
           </Link>
           {categories.map((cat) => (
             <Link
@@ -180,7 +180,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          Ký gửi
+          {tNav('consignment')}
         </Link>
       </li>
 
@@ -194,7 +194,7 @@ export const HeaderNav = () => {
               : 'text-gray-600 border-transparent hover:text-primary hover:border-primary/20'
           }`}
         >
-          Giới thiệu
+          {tNav('about')}
         </Link>
       </li>
     </>

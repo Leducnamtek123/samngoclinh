@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
@@ -12,6 +13,7 @@ type GinsengClientProps = {
 };
 
 export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClientProps) => {
+  const t = useTranslations('products');
   const { data: items, isLoading, isError } = useCatalogPlants(initialItems);
   const { data: banners } = useBanner('ginseng');
   const [searchTerm, setSearchTerm] = useState('');

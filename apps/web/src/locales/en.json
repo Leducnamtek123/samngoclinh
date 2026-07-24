@@ -75,6 +75,19 @@
   "LocaleSwitcher": {
     "change_language": "Change Language"
   },
+  "homepage": {
+    "aboutUsBadge": "ABOUT US",
+    "aboutTitle": "Preserving Vietnamese Heritage",
+    "aboutDesc": "Dedicated to preserving and promoting the true value of Ngoc Linh Ginseng – treasure of the highlands – combined with traditional recipes to craft premium products for the community.",
+    "learnMore": "Learn More",
+    "yearsExperience": "Years of Experience",
+    "altitude": "Cultivation Altitude",
+    "happyCustomers": "Happy Customers",
+    "bottlesSupplied": "Bottles Supplied",
+    "latestNews": "Latest News & Updates",
+    "latestNewsDesc": "Stay updated with the latest events, articles and activities about Ngoc Linh Ginseng",
+    "readMore": "Read More"
+  },
   "nav": {
     "home": "Home",
     "promotions": "Promotions",
