@@ -35,6 +35,12 @@ export const ProfileClient = ({
 }: ProfileClientProps) => {
   const [tabs, setTabs] = useState(initialTab);
 
+  useEffect(() => {
+    if (initialTab) {
+      setTabs(initialTab);
+    }
+  }, [initialTab]);
+
   // Queries
   const { data: profile, isLoading: profileLoading, isError: profileError, refetch: refetchProfile } = useProfileMe(initialProfile);
   const { data: business } = useProfileBusiness(initialBusiness);
@@ -201,13 +207,6 @@ export const ProfileClient = ({
     window.location.href = `/${locale}/sign-in?reason=session_expired`;
   };
 
-  // Active tab state styling helper
-  const tabClass = (current: string) =>
-    `flex-1 py-3.5 text-center font-bold text-sm border-b-2 transition-all whitespace-nowrap px-4 cursor-pointer ${
-      tabs === current
-        ? 'border-secondary text-secondary'
-        : 'border-transparent text-gray-500 hover:text-gray-800'
-    }`;
 
   if (isError) {
     return (
@@ -260,90 +259,24 @@ export const ProfileClient = ({
       )}
 
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Main Header Card */}
-        {profileLoading || !profile ? (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6 animate-pulse">
-            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left w-full">
-              <div className="w-20 h-20 bg-gray-200 rounded-full flex-shrink-0"></div>
-              <div className="space-y-2 flex-1 w-full">
-                <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto sm:mx-0"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto sm:mx-0"></div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6">
-            <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center text-white text-3xl font-bold shadow-sm shadow-primary/20">
-                {fullName.charAt(0).toUpperCase()}
-              </div>
-
-              <div className="space-y-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 font-display-lg">
-                  {fullName}
-                </h1>
-                <p className="text-sm text-gray-500 font-medium">{email}</p>
-
-                <div className="flex flex-wrap gap-2 pt-1 justify-center sm:justify-start">
-                  <span className="bg-primary/10 text-primary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    Khách hàng
-                  </span>
-                  <span className="bg-secondary/15 text-secondary text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    Hạng {rank}
-                  </span>
-                  <button
-                    onClick={() => handleCopyText(referralCode, 'Mã giới thiệu')}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full transition-colors flex items-center gap-1"
-                  >
-                    <span>Mã giới thiệu: {referralCode}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsEditModalOpen(true)}
-              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-lg text-sm shadow-sm transition-colors"
-            >
-              Chỉnh sửa
-            </button>
-          </div>
-        )}
-
-        {/* Tab Navigation */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto flex items-center scrollbar-none flex-nowrap min-w-0">
-          <button onClick={() => setTabs('info')} className={tabClass('info')}>
-            Thông tin
-          </button>
-          <button onClick={() => setTabs('orders')} className={tabClass('orders')}>
-            Đơn hàng
-          </button>
-          <button onClick={() => setTabs('assets')} className={tabClass('assets')}>
-            Tài sản
-          </button>
-          <button onClick={() => setTabs('address')} className={tabClass('address')}>
-            Địa chỉ
-          </button>
-          <button onClick={() => setTabs('pin')} className={tabClass('pin')}>
-            Mã PIN
-          </button>
-          <button onClick={() => setTabs('kyc')} className={tabClass('kyc')}>
-            Căn cước
-          </button>
-          <button onClick={() => setTabs('referral')} className={tabClass('referral')}>
-            Giới thiệu
-          </button>
-        </div>
-
         {/* Tab Contents */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
           {/* TAB 1: INFO */}
           {tabs === 'info' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-3">Thông tin cá nhân</h3>
+              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                <div>
+                  <h3 className="text-xl font-extrabold text-gray-900 font-display-lg">Thông tin cá nhân</h3>
+                  <p className="text-xs text-gray-400 font-medium">Quản lý hồ sơ và chi tiết tài khoản của bạn</p>
+                </div>
+                <button
+                  onClick={() => setIsEditModalOpen(true)}
+                  className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2 rounded-lg text-xs shadow-sm transition-colors"
+                >
+                  Chỉnh sửa
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                 <div className="space-y-1">
                   <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Họ và tên</span>
@@ -352,6 +285,22 @@ export const ProfileClient = ({
                 <div className="space-y-1">
                   <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
                   <p className="text-sm font-semibold text-gray-800">{email}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Hạng tài khoản</span>
+                  <p className="text-sm font-semibold text-secondary">Hạng {rank}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Mã giới thiệu</span>
+                  <button
+                    onClick={() => handleCopyText(referralCode, 'Mã giới thiệu')}
+                    className="text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors inline-flex items-center gap-1.5 mt-0.5"
+                  >
+                    <span>{referralCode}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>

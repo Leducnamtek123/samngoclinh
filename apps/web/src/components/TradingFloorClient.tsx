@@ -34,7 +34,7 @@ export const TradingFloorClient = ({ locale, isLoggedIn }: TradingFloorClientPro
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
-              Ký gửi
+              Mua Bán Cây
             </span>
             <span className="flex h-2.5 w-2.5 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -136,7 +136,7 @@ export const TradingFloorClient = ({ locale, isLoggedIn }: TradingFloorClientPro
                 </div>
               ) : displayListings.length === 0 ? (
                 <div className="text-center py-12 text-gray-400 font-medium text-xs">
-                  Chưa có lệnh ký gửi nào trên sàn giao dịch.
+                  Chưa có lệnh mua bán cây nào trên sàn giao dịch.
                 </div>
               ) : (
                 /* Listings table list */

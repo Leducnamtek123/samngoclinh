@@ -170,7 +170,7 @@ export const HeaderNav = () => {
         </div>
       </li>
 
-      {/* Ký gửi */}
+      {/* Mua bán cây */}
       <li>
         <Link
           href="/trading-floor"

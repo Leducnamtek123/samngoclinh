@@ -38,7 +38,7 @@ export default function SignInForm() {
       case 'trading-floor':
         return {
           title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để tham gia Sàn ký gửi.',
+          description: 'Bạn cần đăng nhập để tham gia Sàn mua bán cây.',
         };
       case 'cart':
         return {
