@@ -38,10 +38,21 @@ export class OrdersService implements IOrdersService {
         };
     }
 
-    private buildSepayQrInfo(code: string, amount: number) {
-        const accountNumber = process.env.SEPAY_BANK_ACCOUNT || '038100012345';
-        const bankBrand = process.env.SEPAY_BANK_BRAND || 'MBBank';
-        const accountName = process.env.SEPAY_ACCOUNT_NAME || 'CONG TY CP SAM NGOC LINH';
+    private async buildSepayQrInfo(code: string, amount: number) {
+        const dbAcc = await this.databaseService.systemSetting.findUnique({
+            where: { key: 'sepay_bank_account' },
+        });
+        const dbBank = await this.databaseService.systemSetting.findUnique({
+            where: { key: 'sepay_bank_brand' },
+        });
+        const dbName = await this.databaseService.systemSetting.findUnique({
+            where: { key: 'sepay_account_name' },
+        });
+
+        const accountNumber = dbAcc?.value || process.env.SEPAY_BANK_ACCOUNT || '';
+        const bankBrand = dbBank?.value || process.env.SEPAY_BANK_BRAND || 'MBBank';
+        const accountName = dbName?.value || process.env.SEPAY_ACCOUNT_NAME || '';
+
         const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
             accountNumber
         )}&bank=${encodeURIComponent(bankBrand)}&amount=${amount}&des=${encodeURIComponent(
@@ -72,7 +83,7 @@ export class OrdersService implements IOrdersService {
         }
 
         const paymentQr = order.status === 'pending'
-            ? this.buildSepayQrInfo(order.code, order.total)
+            ? await this.buildSepayQrInfo(order.code, order.total)
             : undefined;
 
         return {
@@ -82,6 +93,7 @@ export class OrdersService implements IOrdersService {
             },
         };
     }
+
 
 
     async checkout(
@@ -263,10 +275,11 @@ export class OrdersService implements IOrdersService {
                 paidAt: order.paidAt,
                 cancelledAt: order.cancelledAt,
                 createdAt: order.createdAt,
-                paymentQr: this.buildSepayQrInfo(order.code, order.total),
+                paymentQr: await this.buildSepayQrInfo(order.code, order.total),
             },
         };
     }
+
 
 
     async handlePaymentWebhook(
