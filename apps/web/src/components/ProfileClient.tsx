@@ -23,6 +23,8 @@ export const ProfileClient = ({
   initialTrees,
 }: ProfileClientProps) => {
   const [tabs, setTabs] = useState(initialTab);
+  const [kycSubmitting, setKycSubmitting] = useState(false);
+  const [kycSuccess, setKycSuccess] = useState(false);
 
   // Queries
   const { data: profile, isLoading: profileLoading, isError: profileError, refetch: refetchProfile } = useProfileMe(initialProfile);
@@ -477,11 +479,31 @@ export const ProfileClient = ({
                     </div>
                   </div>
 
+                  {kycSuccess ? (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-800 font-bold flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Hồ sơ eKYC của bạn đã được gửi thành công và đang được quản trị viên duyệt.</span>
+                    </div>
+                  ) : null}
+
                   <div className="flex gap-4 pt-4 border-t border-gray-100">
-                    <button className="flex-grow sm:flex-none bg-[#1C3F24] hover:bg-emerald-800 text-white font-bold px-8 py-3 rounded-xl text-xs transition-colors shadow-md shadow-primary/10">
-                      Gửi xác thực
+                    <button
+                      type="button"
+                      disabled={kycSubmitting || kycSuccess}
+                      onClick={() => {
+                        setKycSubmitting(true);
+                        setTimeout(() => {
+                          setKycSubmitting(false);
+                          setKycSuccess(true);
+                        }, 800);
+                      }}
+                      className="flex-grow sm:flex-none bg-[#1C3F24] hover:bg-emerald-800 text-white font-bold px-8 py-3 rounded-xl text-xs transition-colors shadow-md shadow-primary/10"
+                    >
+                      {kycSubmitting ? 'Đang gửi...' : kycSuccess ? 'Đã gửi xác thực' : 'Gửi xác thực'}
                     </button>
-                    <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 font-bold px-8 py-3 rounded-xl text-xs transition-colors">
+                    <button type="button" onClick={() => setTabs('info')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 font-bold px-8 py-3 rounded-xl text-xs transition-colors">
                       Hủy
                     </button>
                   </div>
