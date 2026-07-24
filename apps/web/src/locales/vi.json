@@ -74,5 +74,66 @@
   },
   "LocaleSwitcher": {
     "change_language": "Thay đổi ngôn ngữ"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "promotions": "Khuyến mãi",
+    "planting": "Trồng sâm",
+    "shop": "Cửa hàng",
+    "info": "Thông tin",
+    "all": "Tất cả",
+    "consignment": "Ký gửi",
+    "about": "Giới thiệu",
+    "cart": "Giỏ hàng",
+    "profile": "Tài khoản",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "signOut": "Đăng xuất"
+  },
+  "categories": {
+    "news": "Tin tức",
+    "event": "Sự kiện",
+    "guide": "Hướng dẫn sử dụng",
+    "faq": "Kiến thức"
+  },
+  "products": {
+    "title": "Danh Sách Sản Phẩm & Gói Sâm",
+    "subtitle": "Khám phá các củ sâm Ngọc Linh chuẩn nguồn gốc và các dòng rượu sâm cao cấp",
+    "all": "Tất cả",
+    "plants": "Cây / Củ Sâm",
+    "liquor": "Rượu Sâm",
+    "package": "Gói Chăm Sóc",
+    "buyNow": "Mua Ngay",
+    "addToCart": "Thêm Giỏ Hàng",
+    "details": "Xem Chi Tiết",
+    "price": "Giá bán",
+    "age": "Độ tuổi",
+    "years": "năm",
+    "origin": "Xuất xứ",
+    "originLocation": "Đắk Tô - Tu Mơ Rông, Quảng Nam"
+  },
+  "cart": {
+    "title": "Giỏ Hàng Của Bạn",
+    "empty": "Giỏ hàng hiện tại đang trống",
+    "checkout": "Thanh Toán Đơn Hàng",
+    "total": "Tổng Tiền",
+    "subtotal": "Tạm Tính",
+    "shipping": "Phí Vận Chuyển",
+    "free": "Miễn Phí",
+    "quantity": "Số Lượng",
+    "product": "Sản Phẩm",
+    "payWithSePay": "Thanh toán VietQR (SePay)",
+    "confirmOrder": "Xác Nhận Đặt Hàng"
+  },
+  "trace": {
+    "title": "Truy Xuất Nguồn Gốc Sâm Ngọc Linh",
+    "subtitle": "Xác minh nguồn gốc, nhật ký canh tác và chứng nhận kiểm định",
+    "treeCode": "Mã Cây Sâm",
+    "bed": "Luống Sâm",
+    "garden": "Vườn Sâm",
+    "careLogs": "Nhật Ký Chăm Sóc",
+    "date": "Ngày",
+    "action": "Hoạt động",
+    "verified": "Đã Kiểm Định Chuẩn Sâm Ngọc Linh"
   }
 }
