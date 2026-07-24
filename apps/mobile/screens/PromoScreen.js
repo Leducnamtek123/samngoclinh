@@ -8,12 +8,17 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
 import { promoPlants, promoSlotsLeft } from '../data/mock';
+import { useAuth } from '../context/AuthContext';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 export default function PromoScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { isAuthenticated } = useAuth();
+  const requireAuth = useRequireAuth();
   const [showSupport, setShowSupport] = useState(true);
 
-  const eligible = false;
+  const onClaim = () =>
+    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Nhận cây sâm 1 năm' }));
 
   return (
     <View style={styles.root}>
@@ -38,7 +43,7 @@ export default function PromoScreen({ navigation }) {
             Chọn cây sâm 1 năm phù hợp, hoàn tất gói chăm sóc và bảo vệ cây để nhận ưu đãi dành riêng
             cho tài khoản đủ điều kiện.
           </Text>
-          {!eligible ? (
+          {!isAuthenticated ? (
             <View style={styles.notice}>
               <Text style={styles.noticeText}>
                 Bạn cần đăng nhập bằng tài khoản đã xác nhận ID để nhận ưu đãi.
@@ -50,7 +55,7 @@ export default function PromoScreen({ navigation }) {
 
         <View style={styles.grid}>
           {promoPlants.map((item) => (
-            <PromoCard key={item.id} item={item} eligible={eligible} />
+            <PromoCard key={item.id} item={item} isAuthenticated={isAuthenticated} onClaim={onClaim} />
           ))}
         </View>
       </ScrollView>
@@ -69,7 +74,7 @@ export default function PromoScreen({ navigation }) {
   );
 }
 
-function PromoCard({ item, eligible }) {
+function PromoCard({ item, isAuthenticated, onClaim }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardArt}>
@@ -83,11 +88,8 @@ function PromoCard({ item, eligible }) {
         <Text style={styles.cardName}>{item.name}</Text>
         <Text style={styles.cardNote}>{item.note}</Text>
         <Text style={styles.cardPrice}>{groupThousands(item.price)} đ</Text>
-        <Pressable
-          disabled={!eligible}
-          style={({ pressed }) => [styles.cta, pressed && eligible && styles.pressed]}
-        >
-          <Text style={styles.ctaText}>{eligible ? 'Nhận cây' : 'Chưa đủ điều kiện'}</Text>
+        <Pressable onPress={onClaim} style={({ pressed }) => [styles.cta, pressed && styles.pressed]}>
+          <Text style={styles.ctaText}>{isAuthenticated ? 'Nhận cây' : 'Đăng nhập để nhận'}</Text>
         </Pressable>
       </View>
     </View>

@@ -3,6 +3,7 @@ import type { NextAuthOptions } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 
 import { db } from "@/lib/prisma"
+import { API_KEY } from "@/lib/api-key"
 import CredentialsProvider from "next-auth/providers/credentials"
 
 // Extend NextAuth's Session and User interfaces to include custom properties
@@ -52,7 +53,7 @@ async function refreshAccessToken(token: any) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP",
+        "x-api-key": API_KEY,
         "Authorization": `Bearer ${token.refreshToken}`,
       },
     })
@@ -107,7 +108,7 @@ export const authOptions: NextAuthOptions = {
               method: "GET",
               headers: {
                 "Authorization": `Bearer ${credentials.accessToken}`,
-                "x-api-key": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP",
+                "x-api-key": API_KEY,
               },
             })
 
@@ -138,7 +139,7 @@ export const authOptions: NextAuthOptions = {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "x-api-key": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP",
+              "x-api-key": API_KEY,
             },
             body: JSON.stringify({
               email: credentials.email,
@@ -164,7 +165,7 @@ export const authOptions: NextAuthOptions = {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${accessToken}`,
-              "x-api-key": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP",
+              "x-api-key": API_KEY,
             },
           })
 

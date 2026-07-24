@@ -57,10 +57,10 @@ const SECTIONS = [
 ];
 
 export default function ProfileScreen({ navigation }) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAuthenticated } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const name = user?.name || 'Người dùng';
+  const name = isAuthenticated ? user?.name || 'Người dùng' : 'Khách';
 
   const openItem = (item) => {
     if (item.screen) return navigation.navigate(item.screen);
@@ -106,46 +106,61 @@ export default function ProfileScreen({ navigation }) {
             <Ionicons name="person" size={54} color="#fff" />
           </View>
           <Text style={styles.name}>{name}</Text>
-          <View style={styles.badges}>
-            <View style={styles.tierBadge}>
-              <Text style={styles.tierText}>{user?.tier || 'Đồng'}</Text>
+          {isAuthenticated ? (
+            <View style={styles.badges}>
+              <View style={styles.tierBadge}>
+                <Text style={styles.tierText}>{user?.tier || 'Đồng'}</Text>
+              </View>
+              <View style={styles.levelBadge}>
+                <Text style={styles.levelText}>Cấp {user?.level ?? 1}</Text>
+              </View>
             </View>
-            <View style={styles.levelBadge}>
-              <Text style={styles.levelText}>Cấp {user?.level ?? 1}</Text>
-            </View>
-          </View>
+          ) : null}
         </View>
 
-        {SECTIONS.map((section) => (
-          <View key={section.title}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            {section.items.map((item) => (
-              <Row key={item.label} item={item} onPress={() => openItem(item)} />
+        {isAuthenticated ? (
+          <>
+            {SECTIONS.map((section) => (
+              <View key={section.title}>
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+                {section.items.map((item) => (
+                  <Row key={item.label} item={item} onPress={() => openItem(item)} />
+                ))}
+              </View>
             ))}
-          </View>
-        ))}
 
-        <Pressable
-          style={({ pressed }) => [styles.card, styles.rowSolo, pressed && styles.pressed]}
-          onPress={onSignOut}
-        >
-          <Ionicons name="log-out-outline" size={24} color={colors.primary} />
-          <Text style={styles.soloLabel}>Đăng Xuất</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
-        </Pressable>
+            <Pressable
+              style={({ pressed }) => [styles.card, styles.rowSolo, pressed && styles.pressed]}
+              onPress={onSignOut}
+            >
+              <Ionicons name="log-out-outline" size={24} color={colors.primary} />
+              <Text style={styles.soloLabel}>Đăng Xuất</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+            </Pressable>
 
-        <Text style={[styles.sectionTitle, styles.dangerTitle]}>Vùng nguy hiểm</Text>
-        <Pressable
-          style={({ pressed }) => [styles.card, styles.row, pressed && styles.pressed]}
-          onPress={onDelete}
-        >
-          <Ionicons name="lock-closed-outline" size={22} color={colors.danger} />
-          <View style={styles.rowText}>
-            <Text style={[styles.rowLabel, { color: colors.danger }]}>Xóa tài khoản</Text>
-            <Text style={styles.rowDesc}>Xóa vĩnh viễn tài khoản của bạn</Text>
-          </View>
-          <Ionicons name="trash-outline" size={22} color={colors.danger} />
-        </Pressable>
+            <Text style={[styles.sectionTitle, styles.dangerTitle]}>Vùng nguy hiểm</Text>
+            <Pressable
+              style={({ pressed }) => [styles.card, styles.row, pressed && styles.pressed]}
+              onPress={onDelete}
+            >
+              <Ionicons name="lock-closed-outline" size={22} color={colors.danger} />
+              <View style={styles.rowText}>
+                <Text style={[styles.rowLabel, { color: colors.danger }]}>Xóa tài khoản</Text>
+                <Text style={styles.rowDesc}>Xóa vĩnh viễn tài khoản của bạn</Text>
+              </View>
+              <Ionicons name="trash-outline" size={22} color={colors.danger} />
+            </Pressable>
+          </>
+        ) : (
+          <Pressable
+            style={({ pressed }) => [styles.card, styles.rowSolo, pressed && styles.pressed]}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Ionicons name="log-in-outline" size={24} color={colors.primary} />
+            <Text style={styles.soloLabel}>Đăng nhập / Đăng ký</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
+          </Pressable>
+        )}
       </ScrollView>
 
       <SupportButton />

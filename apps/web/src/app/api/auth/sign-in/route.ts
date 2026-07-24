@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { Env } from '@/libs/Env';
+
 export async function POST(request: Request) {
   try {
     const { email, password, type, phone, otp } = await request.json();
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP',
+        'x-api-key': Env.API_KEY,
       },
       body: JSON.stringify(bodyPayload),
     });

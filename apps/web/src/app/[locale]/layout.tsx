@@ -53,7 +53,7 @@ export default async function RootLayout(props: {
 
   return (
     <html lang={locale}>
-      <body>
+      <body suppressHydrationWarning>
         <NextIntlClientProvider>
           {props.children}
         </NextIntlClientProvider>

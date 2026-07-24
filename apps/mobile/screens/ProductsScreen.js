@@ -8,9 +8,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
 import { products } from '../data/mock';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 export default function ProductsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const requireAuth = useRequireAuth();
   const [query, setQuery] = useState('');
   const [showSupport, setShowSupport] = useState(true);
 
@@ -18,6 +20,10 @@ export default function ProductsScreen({ navigation }) {
     const q = query.trim().toLowerCase();
     return q ? products.filter((p) => p.name.toLowerCase().includes(q)) : products;
   }, [query]);
+
+  // Hành động mua hàng: khách -> Login; đã đăng nhập -> mở màn tương ứng (hiện là placeholder).
+  const onAddToCart = () => requireAuth(() => navigation.navigate('ComingSoon', { title: 'Giỏ hàng' }));
+  const onBuyNow = () => requireAuth(() => navigation.navigate('ComingSoon', { title: 'Thanh toán' }));
 
   return (
     <View style={styles.root}>
@@ -27,7 +33,9 @@ export default function ProductsScreen({ navigation }) {
         </Pressable>
         <Text style={styles.headerTitle}>Tất cả sản phẩm</Text>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <Pressable hitSlop={8} onPress={onAddToCart}>
+            <Ionicons name="cart-outline" size={24} color="#fff" />
+          </Pressable>
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>
@@ -54,7 +62,9 @@ export default function ProductsScreen({ navigation }) {
           </View>
         }
         ListEmptyComponent={<Text style={styles.empty}>Không tìm thấy sản phẩm phù hợp.</Text>}
-        renderItem={({ item }) => <ProductCard item={item} />}
+        renderItem={({ item }) => (
+          <ProductCard item={item} onAddToCart={onAddToCart} onBuyNow={onBuyNow} />
+        )}
       />
 
       {showSupport ? (
@@ -71,7 +81,7 @@ export default function ProductsScreen({ navigation }) {
   );
 }
 
-function ProductCard({ item }) {
+function ProductCard({ item, onAddToCart, onBuyNow }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardArt}>
@@ -84,10 +94,16 @@ function ProductCard({ item }) {
         <Text style={styles.cardPrice}>{groupThousands(item.price)}đ</Text>
         <Text style={styles.cardSold}>Đã bán {item.sold}</Text>
         <View style={styles.actions}>
-          <Pressable style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}>
+          <Pressable
+            onPress={onAddToCart}
+            style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+          >
             <Ionicons name="cart-outline" size={20} color={colors.textMuted} />
           </Pressable>
-          <Pressable style={({ pressed }) => [styles.buyBtn, pressed && styles.pressed]}>
+          <Pressable
+            onPress={onBuyNow}
+            style={({ pressed }) => [styles.buyBtn, pressed && styles.pressed]}
+          >
             <Text style={styles.buyText}>Mua ngay</Text>
           </Pressable>
         </View>
