@@ -113,7 +113,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
         {/* Dropdown Menu Card */}
         {isOpen && (
-          <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
             {/* User Info Header */}
             <div className="px-5 py-2.5 border-b border-gray-100">
               <p className="font-extrabold text-gray-900 text-sm">{fullName}</p>

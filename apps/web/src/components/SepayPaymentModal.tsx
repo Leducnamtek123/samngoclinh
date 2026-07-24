@@ -69,8 +69,8 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity animate-fade-in">
-      <div className="relative w-full max-w-lg overflow-hidden bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 sm:p-8 space-y-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md transition-opacity animate-fade-in">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-gray-100 p-4 sm:p-8 space-y-5 sm:space-y-6">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -122,7 +122,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
                 <img
                   src={paymentInfo.qrUrl}
                   alt={`VietQR Thanh toán SePay - ${paymentInfo.orderCode}`}
-                  className="w-56 h-56 object-contain rounded-lg"
+                  className="w-44 h-44 sm:w-56 sm:h-56 object-contain rounded-lg"
                 />
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 bg-emerald-100/70 px-3 py-1 rounded-full">

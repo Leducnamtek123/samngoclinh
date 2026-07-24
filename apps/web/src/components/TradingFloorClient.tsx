@@ -91,7 +91,7 @@ export const TradingFloorClient = ({ locale, isLoggedIn }: TradingFloorClientPro
           <div className="lg:col-span-8 space-y-6">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
               {/* Table Sub-header tabs */}
-              <div className="flex border-b border-gray-200 px-6 py-4 bg-gray-50/50">
+              <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none flex-nowrap border-b border-gray-200 px-4 sm:px-6 py-4 bg-gray-50/50 min-w-0">
                 <button className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />

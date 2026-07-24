@@ -314,7 +314,7 @@ export const ProfileClient = ({
         )}
 
         {/* Tab Navigation */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto flex scrollbar-thin">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto flex items-center scrollbar-none flex-nowrap min-w-0">
           <button onClick={() => setTabs('info')} className={tabClass('info')}>
             Thông tin
           </button>
@@ -851,7 +851,7 @@ export const ProfileClient = ({
       {/* Edit Profile Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3">Chỉnh sửa thông tin cá nhân</h3>
             <div className="space-y-3 text-xs">
               <div>
