@@ -96,32 +96,10 @@ export const ProfileClient = ({
             ? res
             : [];
 
-          setUserOrders(
-            list.length > 0
-              ? list
-              : [
-                  {
-                    id: 'ORD-882910',
-                    code: 'DH882910',
-                    createdAt: '2026-07-20',
-                    totalAmount: 2850000,
-                    status: 'PENDING',
-                    items: [{ name: 'Rượu Sâm Ngọc Linh Hạ Thổ 500ml', quantity: 1, price: 2850000 }],
-                  },
-                ],
-          );
+          setUserOrders(list);
         })
         .catch(() => {
-          setUserOrders([
-            {
-              id: 'ORD-882910',
-              code: 'DH882910',
-              createdAt: '2026-07-20',
-              totalAmount: 2850000,
-              status: 'PENDING',
-              items: [{ name: 'Rượu Sâm Ngọc Linh Hạ Thổ 500ml', quantity: 1, price: 2850000 }],
-            },
-          ]);
+          setUserOrders([]);
         })
         .finally(() => setOrdersLoading(false));
     }
@@ -134,18 +112,10 @@ export const ProfileClient = ({
       if (saved) {
         setAddresses(JSON.parse(saved));
       } else {
-        setAddresses([
-          {
-            id: 'ADDR-1',
-            name: 'Nguyễn Văn A',
-            phone: '0987654321',
-            address: 'Số 123 Đường Nam Trà My, Tỉnh Quảng Nam',
-            isDefault: true,
-          },
-        ]);
+        setAddresses([]);
       }
     } catch {
-      // Ignore errors
+      setAddresses([]);
     }
   }, []);
 
@@ -275,7 +245,7 @@ export const ProfileClient = ({
   const fullName = profile?.fullName || 'Nhà đầu tư';
   const email = profile?.email || 'user@mail.com';
   const rank = profile?.rank || 'Đồng';
-  const referralCode = profile?.referralCode || '6D544T';
+  const referralCode = profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
 
   return (
     <div className="w-full bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8 relative">
