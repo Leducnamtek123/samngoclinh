@@ -155,6 +155,15 @@ pnpm install
 pnpm start                # Expo Dev Tools: a (Android), i (iOS), w (web)
 ```
 
+**Chạy qua tunnel** (test trên điện thoại thật qua internet, không cần chung wifi):
+
+```bash
+pnpm add -D @expo/ngrok@^4.1.3   # gói tunnel — chỉ cài 1 lần
+pnpm tunnel                      # = expo start --tunnel; quét QR bằng Expo Go
+```
+
+> Tunnel chỉ expose Metro bundler (JS), **không** expose backend. Giữ `useMockApi: true` để app chạy đầy đủ bằng mock. Nếu cần gọi API thật trên máy thật, tunnel luôn backend (`ngrok http 3000`) rồi đặt `expo.extra.apiBaseUrl` = URL public đó.
+
 Cấu hình backend trong [`apps/mobile/app.json`](apps/mobile/app.json) → `expo.extra` (hoặc biến `EXPO_PUBLIC_*`):
 
 | Khóa | Ý nghĩa |
