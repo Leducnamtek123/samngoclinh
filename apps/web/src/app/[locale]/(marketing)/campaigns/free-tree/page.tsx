@@ -134,8 +134,11 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
         
         {/* Warning / Note banner */}
         <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 max-w-4xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="text-sm font-semibold">
-            📢 {note}
+          <div className="text-sm font-semibold flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07" />
+            </svg>
+            <span>{note}</span>
           </div>
           <div className="flex flex-wrap gap-2 text-xs font-bold">
             <span className="flex items-center gap-1.5 bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-full">

@@ -293,9 +293,12 @@ export const ProfileClient = ({
                   </span>
                   <button
                     onClick={() => handleCopyText(referralCode, 'Mã giới thiệu')}
-                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full transition-colors"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-600 text-[11px] font-semibold px-3 py-1 rounded-full transition-colors flex items-center gap-1"
                   >
-                    Mã giới thiệu: {referralCode} 📋
+                    <span>Mã giới thiệu: {referralCode}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -476,9 +479,12 @@ export const ProfileClient = ({
                         </div>
                         <Link
                           href={`/trace/${tree.code || `SAM-0${idx + 1}`}`}
-                          className="bg-white border border-primary text-primary hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                          className="bg-white border border-primary text-primary hover:bg-primary hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
                         >
-                          Truy xuất QR 🔍
+                          <span>Truy xuất QR</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
                         </Link>
                       </div>
                     ))}
@@ -705,7 +711,13 @@ export const ProfileClient = ({
                         {frontImagePreview ? (
                           <img src={frontImagePreview} alt="Mặt trước" className="max-h-32 object-contain rounded-lg" />
                         ) : (
-                          <span className="text-xs text-gray-500 font-bold">Tải ảnh mặt trước lên 📷</span>
+                          <span className="text-xs text-gray-500 font-bold flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Tải ảnh mặt trước lên
+                          </span>
                         )}
                       </label>
                     </div>
@@ -725,7 +737,13 @@ export const ProfileClient = ({
                         {backImagePreview ? (
                           <img src={backImagePreview} alt="Mặt sau" className="max-h-32 object-contain rounded-lg" />
                         ) : (
-                          <span className="text-xs text-gray-500 font-bold">Tải ảnh mặt sau lên 📷</span>
+                          <span className="text-xs text-gray-500 font-bold flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Tải ảnh mặt sau lên
+                          </span>
                         )}
                       </label>
                     </div>
@@ -778,9 +796,12 @@ export const ProfileClient = ({
                     </div>
                     <button
                       onClick={() => handleCopyText(referralCode, 'Mã giới thiệu')}
-                      className="bg-primary hover:bg-primary-hover text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm"
+                      className="bg-primary hover:bg-primary-hover text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm flex items-center gap-1.5"
                     >
-                      Sao chép mã 📋
+                      <span>Sao chép mã</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
                     </button>
                   </div>
 
@@ -790,9 +811,12 @@ export const ProfileClient = ({
                     </span>
                     <button
                       onClick={() => handleCopyText(`http://localhost:3002/${locale}/sign-up?ref=${referralCode}`, 'Đường dẫn chia sẻ')}
-                      className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold px-5 py-2 rounded-xl text-xs transition-colors"
+                      className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold px-5 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5"
                     >
-                      Sao chép link 🔗
+                      <span>Sao chép link</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
                     </button>
                   </div>
                 </div>
