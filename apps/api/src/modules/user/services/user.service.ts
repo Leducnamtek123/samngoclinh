@@ -19,7 +19,6 @@ import { UserBlockedInvalidException } from '@modules/user/exceptions/user.block
 import { UserEmailAlreadyVerifiedException } from '@modules/user/exceptions/user.email-already-verified.exception';
 import { UserEmailExistException } from '@modules/user/exceptions/user.email-exist.exception';
 import { UserEmailNotVerifiedException } from '@modules/user/exceptions/user.email-not-verified.exception';
-import { UserForgotPasswordRequestLimitExceededException } from '@modules/user/exceptions/user.forgot-password-request-limit-exceeded.exception';
 import { UserImportEmailExistException } from '@modules/user/exceptions/user.import-email-exist.exception';
 import { UserInactiveForbiddenException } from '@modules/user/exceptions/user.inactive-forbidden.exception';
 import { UserMobileNumberExistException } from '@modules/user/exceptions/user.mobile-number-exist.exception';
@@ -29,7 +28,6 @@ import { UserNotFoundException } from '@modules/user/exceptions/user.not-found.e
 import { UserNotFoundForbiddenException } from '@modules/user/exceptions/user.not-found-forbidden.exception';
 import { UserNotSelfException } from '@modules/user/exceptions/user.not-self.exception';
 import { UserPasswordAttemptMaxException } from '@modules/user/exceptions/user.password-attempt-max.exception';
-import { UserPasswordExpiredException } from '@modules/user/exceptions/user.password-expired.exception';
 import { UserPasswordMustNewException } from '@modules/user/exceptions/user.password-must-new.exception';
 import { UserPasswordNotMatchException } from '@modules/user/exceptions/user.password-not-match.exception';
 import { UserPasswordNotSetException } from '@modules/user/exceptions/user.password-not-set.exception';
@@ -48,6 +46,7 @@ import {
 } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
 import { FileService } from '@common/file/services/file.service';
+import { FirebaseService } from '@common/firebase/services/firebase.service';
 import { HelperService } from '@common/helper/services/helper.service';
 import {
     IPaginationEqual,
@@ -84,11 +83,11 @@ import {
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
 import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.request.dto';
-import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
 import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
+import { UserLoginFirebaseRequestDto } from '@modules/user/dtos/request/user.login-firebase.request.dto';
 import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
@@ -169,7 +168,8 @@ export class UserService implements IUserService {
         private readonly authTwoFactorUtil: AuthTwoFactorUtil,
         private readonly configService: ConfigService,
         private readonly databaseUtil: DatabaseUtil,
-        private readonly requestStoreService: RequestStoreService
+        private readonly requestStoreService: RequestStoreService,
+        private readonly firebaseService: FirebaseService
     ) {
         this.userRoleName =
             this.configService.get<string>('user.default.role')!;
@@ -194,12 +194,6 @@ export class UserService implements IUserService {
             throw new UserBlockedForbiddenException();
         } else if (user.status !== EnumUserStatus.active) {
             throw new UserInactiveForbiddenException();
-        }
-
-        const checkPasswordExpired: boolean =
-            this.authUtil.checkPasswordExpired(user.passwordExpired);
-        if (checkPasswordExpired) {
-            throw new UserPasswordExpiredException();
         }
 
         if (requiredVerified === true && user.isVerified !== true) {
@@ -922,12 +916,6 @@ export class UserService implements IUserService {
 
         await this.userRepository.resetPasswordAttempt(user.id);
 
-        const checkPasswordExpired: boolean =
-            this.authUtil.checkPasswordExpired(user.passwordExpired!);
-        if (checkPasswordExpired) {
-            throw new UserPasswordExpiredException();
-        }
-
         return this.handleLogin(
             user,
             device,
@@ -1077,6 +1065,67 @@ export class UserService implements IUserService {
             device,
             from,
             loginWith,
+            this.helperService.dateCreate()
+        );
+    }
+
+    async loginWithFirebase({
+        idToken,
+        from,
+        device,
+    }: UserLoginFirebaseRequestDto): Promise<
+        IResponseReturn<UserLoginResponseDto>
+    > {
+        const requestLog: IRequestLog =
+            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
+
+        let phoneNumber: string | undefined;
+        try {
+            const decoded = await this.firebaseService.verifyIdToken(idToken);
+            phoneNumber = decoded.phone_number;
+        } catch {
+            throw new UserTokenInvalidException();
+        }
+
+        if (!phoneNumber) {
+            throw new UserTokenInvalidException();
+        }
+
+        let user = await this.userRepository.findOneWithRoleByEmail(
+            phoneNumber
+        );
+
+        if (!user) {
+            const [role, country] = await Promise.all([
+                this.roleRepository.existByName(this.userRoleName),
+                this.countryRepository.existByAlpha2Code(this.userCountryName),
+            ]);
+            if (!role) {
+                throw new RoleNotFoundException();
+            } else if (!country) {
+                throw new CountryNotFoundException();
+            }
+
+            const randomUsername = this.userUtil.createRandomUsername();
+            user = await this.userRepository.createByFirebasePhone(
+                phoneNumber,
+                randomUsername,
+                role.id,
+                country.id,
+                from,
+                requestLog
+            );
+        }
+
+        if (user.status !== EnumUserStatus.active) {
+            throw new UserInactiveForbiddenException();
+        }
+
+        return this.handleLogin(
+            user,
+            device,
+            from,
+            EnumUserLoginWith.credential,
             this.helperService.dateCreate()
         );
     }
@@ -1302,131 +1351,50 @@ export class UserService implements IUserService {
         const requestLog: IRequestLog =
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
 
-        const user = await this.userRepository.findOneActiveByEmail(email);
-        if (!user) {
-            throw new UserNotFoundException();
-        }
-
-        const lastForgotPassword =
-            await this.userRepository.findOneLatestByForgotPassword(user.id);
-        if (lastForgotPassword) {
-            const today = this.helperService.dateCreate();
-            const canResendAt = this.helperService.dateForward(
-                lastForgotPassword.createdAt,
-                Duration.fromObject({
-                    minutes: this.userUtil.forgotResendInMinutes,
-                })
-            );
-
-            if (today < canResendAt) {
-                throw new UserForgotPasswordRequestLimitExceededException(
-                    this.helperService.dateDiff(today, canResendAt).minutes
-                );
-            }
-        }
-
-        try {
-            const resetPassword = this.userUtil.forgotPasswordCreate(user.id);
-
-            await this.userRepository.forgotPassword(
-                user.id,
-                email,
-                resetPassword,
-                requestLog
-            );
-
-            await this.notificationUtil.sendForgotPassword(user.id, {
-                expiredAt: this.helperService.dateFormatToIso(
-                    resetPassword.expiredAt
-                ),
-                link: resetPassword.encryptedLink,
-                reference: resetPassword.reference,
-                expiredInMinutes: resetPassword.expiredInMinutes,
-                resendInMinutes: resetPassword.resendInMinutes,
-            });
-
+        // Không lộ email/phone có đăng ký hay không: luôn trả thành công. Chỉ sinh + gửi mật khẩu tạm
+        // khi user active và có email THẬT (bỏ qua email placeholder của tài khoản đăng ký bằng SĐT).
+        const user = await this.userRepository.findOneWithRoleByEmail(email);
+        if (
+            !user ||
+            user.status !== EnumUserStatus.active ||
+            !user.email ||
+            user.email.endsWith('@phone.iwefarm.local')
+        ) {
             return;
-        } catch (err: unknown) {
-            throw new AppUnknownException(err);
-        }
-    }
-
-    async resetPassword({
-        newPassword,
-        token,
-        backupCode,
-        code,
-        method,
-    }: UserForgotPasswordResetRequestDto): Promise<void> {
-        const requestLog: IRequestLog =
-            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
-
-        const hashedToken = this.userUtil.hashedToken(token);
-        const resetPassword =
-            await this.userRepository.findOneActiveByForgotPasswordToken(
-                hashedToken
-            );
-        if (!resetPassword) {
-            throw new UserNotFoundException();
-        }
-
-        const passwordHistories =
-            await this.passwordHistoryRepository.findActiveUser(
-                resetPassword.userId
-            );
-        const passwordCheck = this.authUtil.checkPasswordPeriod(
-            passwordHistories,
-            newPassword
-        );
-        if (passwordCheck) {
-            throw new UserPasswordMustNewException(
-                this.authUtil.getPasswordPeriodInDays()
-            );
-        }
-
-        let twoFactorVerified: IAuthTwoFactorVerifyResult | undefined;
-        if (resetPassword.user.twoFactor?.enabled) {
-            twoFactorVerified = await this.handleTwoFactorValidation(
-                resetPassword.user,
-                {
-                    code,
-                    backupCode,
-                    method,
-                }
-            );
         }
 
         try {
-            const sessions = await this.sessionRepository.findActive(
-                resetPassword.userId
-            );
+            const passwordString = this.authUtil.createPasswordRandom();
             const password = this.authUtil.createPassword(
-                resetPassword.userId,
-                newPassword
+                user.id,
+                passwordString,
+                { temporary: true }
             );
 
-            await Promise.all([
-                this.userRepository.resetPassword(
-                    resetPassword.userId,
-                    resetPassword.id,
+            const sessions = await this.sessionRepository.findActive(user.id);
+            const [updated] = await Promise.all([
+                this.userRepository.updatePasswordByAdmin(
+                    user.id,
                     password,
-                    requestLog
+                    requestLog,
+                    user.id
                 ),
-                this.sessionUtil.deleteAllLogins(
-                    resetPassword.userId,
-                    sessions
-                ),
-                twoFactorVerified
-                    ? this.userRepository.verifyTwoFactor(
-                          resetPassword.userId,
-                          twoFactorVerified,
-                          requestLog
-                      )
-                    : Promise.resolve(),
+                this.sessionUtil.deleteAllLogins(user.id, sessions),
             ]);
 
-            // @note: send email after all creation
-            await this.notificationUtil.sendResetPassword(resetPassword.userId);
+            await this.notificationUtil.sendTemporaryPasswordByAdmin(
+                updated.id,
+                {
+                    password: password.passwordEncrypted,
+                    passwordCreatedAt: this.helperService.dateFormatToIso(
+                        password.passwordCreated
+                    ),
+                    passwordExpiredAt: this.helperService.dateFormatToIso(
+                        password.passwordExpired
+                    ),
+                },
+                user.id
+            );
 
             return;
         } catch (err: unknown) {
@@ -1549,6 +1517,9 @@ export class UserService implements IUserService {
                 data: {
                     isTwoFactorEnable: false,
                     tokens,
+                    mustChangePassword: this.authUtil.checkPasswordExpired(
+                        user.passwordExpired
+                    ),
                 },
             };
         }

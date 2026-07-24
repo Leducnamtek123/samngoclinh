@@ -14,19 +14,19 @@ import {
     AuthPublicLoginSocialGoogleDoc,
     UserPublicForgotPasswordDoc,
     UserPublicLoginCredentialDoc,
+    UserPublicLoginFirebaseDoc,
     UserPublicLoginSetupTwoFactorDoc,
     UserPublicLoginVerifyTwoFactorDoc,
-    UserPublicResetPasswordDoc,
     UserPublicSendEmailVerificationDoc,
     UserPublicSignUpDoc,
     UserPublicVerifyEmailDoc,
 } from '@modules/user/docs/user.public.doc';
 import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
-import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserLoginSetupTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-setup-two-factor.request.dto';
 import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
+import { UserLoginFirebaseRequestDto } from '@modules/user/dtos/request/user.login-firebase.request.dto';
 import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
 import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
@@ -84,6 +84,17 @@ export class UserPublicController {
         @Body() body: UserLoginVerifyOtpRequestDto
     ): Promise<IResponseReturn<UserLoginResponseDto>> {
         return this.userService.verifyLoginOtp(body);
+    }
+
+    @UserPublicLoginFirebaseDoc()
+    @Response('user.loginFirebase')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/login/firebase')
+    async loginFirebase(
+        @Body() body: UserLoginFirebaseRequestDto
+    ): Promise<IResponseReturn<UserLoginResponseDto>> {
+        return this.userService.loginWithFirebase(body);
     }
 
     @AuthPublicLoginSocialGoogleDoc()
@@ -165,18 +176,6 @@ export class UserPublicController {
         @Body() body: UserForgotPasswordRequestDto
     ): Promise<void> {
         return this.userService.forgotPassword(body);
-    }
-
-    @UserPublicResetPasswordDoc()
-    @Response('user.resetPassword')
-    @FeatureFlagProtected('changePassword.forgotAllowed')
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Patch('/password/reset')
-    async reset(
-        @Body() body: UserForgotPasswordResetRequestDto
-    ): Promise<void> {
-        return this.userService.resetPassword(body);
     }
 
     @UserPublicLoginVerifyTwoFactorDoc()

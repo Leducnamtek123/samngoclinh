@@ -48,6 +48,7 @@ import {
     EnumRoleType,
     EnumTermPolicyStatus,
     EnumTermPolicyType,
+    EnumUserLoginFrom,
     EnumUserLoginWith,
     EnumUserSignUpFrom,
     EnumUserSignUpWith,
@@ -1253,6 +1254,128 @@ export class UserRepository {
                     },
                     createdBy: userId,
                     deletedAt: null,
+                    activityLogs: {
+                        create: {
+                            action: EnumActivityLogAction.userCreated,
+                            description: this.activityLogUtil.getDescription(
+                                EnumActivityLogAction.userCreated
+                            ),
+                            ipAddress,
+                            userAgent:
+                                this.databaseUtil.toPlainObject(userAgent),
+                            geoLocation:
+                                this.databaseUtil.toPlainObject(geoLocation),
+                            createdBy: userId,
+                        },
+                    },
+                    notificationSettings: {
+                        createMany: {
+                            data: Object.values(EnumNotificationChannel)
+                                .map(channel =>
+                                    Object.values(EnumNotificationType).map(
+                                        type => ({
+                                            channel,
+                                            type,
+                                            isActive: true,
+                                        })
+                                    )
+                                )
+                                .flat(),
+                        },
+                    },
+                    twoFactor: {
+                        create: {
+                            enabled: false,
+                            requiredSetup: false,
+                            createdBy: userId,
+                        },
+                    },
+                },
+                include: {
+                    role: true,
+                    twoFactor: true,
+                },
+            }),
+            ...termPolicies.map(termPolicy =>
+                this.databaseService.termPolicyUserAcceptance.create({
+                    data: {
+                        userId,
+                        termPolicyId: termPolicy.id,
+                        createdBy: userId,
+                    },
+                })
+            ),
+        ]);
+
+        return user;
+    }
+
+    async createByFirebasePhone(
+        phoneNumber: string,
+        username: string,
+        roleId: string,
+        countryId: string,
+        from: EnumUserLoginFrom,
+        { ipAddress, userAgent, geoLocation }: IRequestLog
+    ): Promise<IUser> {
+        const userId = this.databaseUtil.createId();
+        const verifiedAt = this.helperService.dateCreate();
+        const signUpFrom =
+            from === EnumUserLoginFrom.mobile
+                ? EnumUserSignUpFrom.mobile
+                : EnumUserSignUpFrom.website;
+
+        // @note number lưu full digits (kèm country code) để findOneWithRoleByEmail(endsWith) khớp lần đăng nhập sau
+        const number = phoneNumber.replace(/[^0-9]/g, '');
+        // @note email bắt buộc ở schema; user đăng ký bằng SĐT dùng email placeholder, đổi được ở profile sau
+        const placeholderEmail = `${number}@phone.iwefarm.local`;
+
+        const termPolicies = await this.databaseService.termPolicy.findMany({
+            where: {
+                type: {
+                    in: [
+                        EnumTermPolicyType.termsOfService,
+                        EnumTermPolicyType.privacy,
+                    ],
+                },
+                status: EnumTermPolicyStatus.published,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        const [user] = await this.databaseService.$transaction([
+            this.databaseService.user.create({
+                data: {
+                    id: userId,
+                    email: placeholderEmail,
+                    countryId,
+                    roleId,
+                    signUpFrom,
+                    signUpWith: EnumUserSignUpWith.credential,
+                    username,
+                    isVerified: true,
+                    verifiedAt,
+                    status: EnumUserStatus.active,
+                    termPolicy: {
+                        [EnumTermPolicyType.cookies]: false,
+                        [EnumTermPolicyType.marketing]: false,
+                        [EnumTermPolicyType.privacy]: true,
+                        [EnumTermPolicyType.termsOfService]: true,
+                    },
+                    createdBy: userId,
+                    deletedAt: null,
+                    mobileNumbers: {
+                        create: {
+                            countryId,
+                            phoneCode: '84',
+                            number,
+                            isVerified: true,
+                            verifiedAt,
+                            createdBy: userId,
+                        },
+                    },
                     activityLogs: {
                         create: {
                             action: EnumActivityLogAction.userCreated,

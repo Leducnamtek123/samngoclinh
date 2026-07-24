@@ -8,18 +8,19 @@ const MOCK_TOKENS = { accessToken: 'mock-access-token', refreshToken: 'mock-refr
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const ROUTES = {
-  'POST /user/login/credential': () => ({ tokens: MOCK_TOKENS, isTwoFactorEnable: false }),
-  'POST /user/login/otp/request': () => ({ sent: true }),
-  'POST /user/login/otp/verify': () => ({ tokens: MOCK_TOKENS }),
-  'POST /user/refresh': () => ({ ...MOCK_TOKENS }),
-  'GET /user/profile': () => ({ ...mockUser }),
-  'POST /user/sign-up': () => ({}),
-  'PATCH /user/verify/email': () => ({}),
-  'POST /user/send/email': () => ({}),
-  'POST /user/password/forgot': () => ({}),
-  'PATCH /user/password/reset': () => ({}),
-  'PATCH /user/change-password': () => ({}),
-  'POST /user/logout': () => ({}),
+  'POST /public/user/login/credential': () => ({ tokens: MOCK_TOKENS, isTwoFactorEnable: false }),
+  'POST /public/user/login/otp/send': () => ({ otp: '123456' }),
+  'POST /public/user/login/otp/verify': () => ({ tokens: MOCK_TOKENS }),
+  'POST /public/user/sign-up': () => ({}),
+  'POST /public/user/password/forgot': () => ({}),
+  'PATCH /public/user/password/reset': () => ({}),
+  'GET /public/country/list': () => [
+    { id: 'mock-country-vn', name: 'Việt Nam', alpha2Code: 'VN', alpha3Code: 'VNM', phoneCode: ['84'] },
+  ],
+  'POST /shared/user/refresh': () => ({ ...MOCK_TOKENS }),
+  'GET /shared/user/profile': () => ({ ...mockUser }),
+  'PATCH /shared/user/change-password': () => ({}),
+  'POST /shared/user/logout': () => ({}),
 };
 
 export async function mockRequest(path, method = 'GET', body) {

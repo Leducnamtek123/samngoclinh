@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { createPrivateKey } from 'crypto';
 import * as firebaseAdmin from 'firebase-admin';
 import { App as FirebaseApp } from 'firebase-admin/app';
+import { Auth, DecodedIdToken } from 'firebase-admin/auth';
 import { Messaging } from 'firebase-admin/messaging';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class FirebaseService implements IFirebaseService, OnModuleInit {
 
     private app: FirebaseApp | null = null;
     private messaging: Messaging | null = null;
+    private auth: Auth | null = null;
 
     constructor(
         private readonly configService: ConfigService,
@@ -71,6 +73,7 @@ export class FirebaseService implements IFirebaseService, OnModuleInit {
             });
 
             this.messaging = firebaseAdmin.messaging(this.app);
+            this.auth = firebaseAdmin.auth(this.app);
 
             this.logger.log('Firebase Admin SDK initialized successfully');
         } catch (error: unknown) {
@@ -80,6 +83,14 @@ export class FirebaseService implements IFirebaseService, OnModuleInit {
 
     isInitialized(): boolean {
         return !!this.app && !!this.messaging;
+    }
+
+    async verifyIdToken(idToken: string): Promise<DecodedIdToken> {
+        if (!this.auth) {
+            throw new Error('Firebase Auth not initialized');
+        }
+
+        return this.auth.verifyIdToken(idToken);
     }
 
     private isInvalidTokenError(error: { code?: string } | null): boolean {

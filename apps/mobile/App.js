@@ -10,22 +10,19 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
-import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import { colors } from './utils/theme';
 
 const Stack = createNativeStackNavigator();
 
-// Deep link đặt lại mật khẩu từ email: samngoclinh://reset-password?token=abc
-// (token -> route.params.token). Scheme khớp app.json.
+// Deep link cơ bản (không dùng cho reset mật khẩu — reset gửi mật khẩu tạm qua email).
 const linking = {
   prefixes: ['samngoclinh://'],
   config: {
     screens: {
       Login: 'login',
       ForgotPassword: 'forgot-password',
-      ResetPassword: 'reset-password',
     },
   },
 };
@@ -52,11 +49,6 @@ function RootNavigator() {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}
-        options={{ title: '', headerShadowVisible: false }}
-      />
-      <Stack.Screen
-        name="ResetPassword"
-        component={ResetPasswordScreen}
         options={{ title: '', headerShadowVisible: false }}
       />
       <Stack.Screen

@@ -49,6 +49,7 @@ export function AuthProvider({ children }) {
       throw err;
     }
     await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
+    return { mustChangePassword: !!res.mustChangePassword };
   };
 
   // Đăng nhập bằng OTP số điện thoại.
@@ -102,6 +103,8 @@ export function AuthProvider({ children }) {
       signOut,
       changePassword,
     }),
+    // Các hàm đóng gói trên setState setter + import ổn định nên không cần vào deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [token, user, loading]
   );
 

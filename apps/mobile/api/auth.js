@@ -76,7 +76,7 @@ async function refreshAccessToken() {
       const rt = await getRefreshToken();
       if (!rt) throw new HttpError(401, 'Phiên đăng nhập đã hết hạn', 'SESSION_EXPIRED');
       // Backend nhận refresh token dưới dạng Bearer (@AuthJwtRefreshProtected).
-      const tokens = await apiRequest('/user/refresh', { method: 'POST', token: rt });
+      const tokens = await apiRequest('/shared/user/refresh', { method: 'POST', token: rt });
       await updateTokens({ token: tokens.accessToken, refreshToken: tokens.refreshToken });
       return tokens.accessToken;
     })();
@@ -118,7 +118,7 @@ async function withAuth(call) {
 // Đăng nhập bằng email/mật khẩu. Trả về cặp token (nếu chưa bật 2FA).
 export async function login({ email, password }) {
   const device = await getDeviceInfo();
-  const data = await apiRequest('/user/login/credential', {
+  const data = await apiRequest('/public/user/login/credential', {
     method: 'POST',
     body: { email, password, from: 'mobile', device },
   });
@@ -126,18 +126,19 @@ export async function login({ email, password }) {
     isTwoFactorEnable: !!data.isTwoFactorEnable,
     accessToken: data.tokens?.accessToken ?? null,
     refreshToken: data.tokens?.refreshToken ?? null,
+    mustChangePassword: !!data.mustChangePassword,
   };
 }
 
-// Gửi mã OTP đăng nhập tới số điện thoại. (@note backend thật chưa có endpoint này — hiện chỉ chạy ở chế độ mock.)
+// Gửi mã OTP đăng nhập tới số điện thoại (chỉ cho user đã tồn tại + đã gắn số). Dev trả kèm { otp }.
 export async function sendLoginOtp({ phone }) {
-  return apiRequest('/user/login/otp/request', { method: 'POST', body: { phone } });
+  return apiRequest('/public/user/login/otp/send', { method: 'POST', body: { phone } });
 }
 
-// Xác nhận OTP -> trả cặp token như login. (@note backend thật chưa có endpoint này.)
+// Xác nhận OTP -> trả cặp token như login.
 export async function verifyLoginOtp({ phone, otp }) {
   const device = await getDeviceInfo();
-  const data = await apiRequest('/user/login/otp/verify', {
+  const data = await apiRequest('/public/user/login/otp/verify', {
     method: 'POST',
     body: { phone, otp, from: 'mobile', device },
   });
@@ -147,33 +148,29 @@ export async function verifyLoginOtp({ phone, otp }) {
   };
 }
 
-// Đăng ký tài khoản bằng email. (Backend thật /user/sign-up còn cần countryId, marketing, cookies.)
-export async function register({ name, email, password, inviteCode }) {
-  return apiRequest('/user/sign-up', {
+// Đăng ký bằng email. Backend bắt buộc countryId + marketing + cookies (cờ đồng ý, không phải HTTP cookie).
+// Không gửi inviteCode vì backend forbidNonWhitelisted. countryId lấy từ resolveDefaultCountryId() ở màn hình.
+export async function register({ name, email, password, countryId }) {
+  return apiRequest('/public/user/sign-up', {
     method: 'POST',
-    body: { name, email, password, inviteCode, from: 'mobile' },
+    body: { email, name, password, countryId, marketing: false, cookies: true, from: 'mobile' },
   });
 }
 
 // Hồ sơ người dùng hiện tại. Đi qua interceptor nên token hết hạn sẽ tự refresh.
 export async function fetchProfile() {
-  return withAuth((token) => apiRequest('/user/profile', { token }));
+  return withAuth((token) => apiRequest('/shared/user/profile', { token }));
 }
 
-// Yêu cầu gửi email khôi phục mật khẩu.
+// Quên mật khẩu: gửi email/SĐT tài khoản; backend gửi mật khẩu tạm qua email (nếu tồn tại). Luôn trả 200.
 export async function requestPasswordReset({ email }) {
-  return apiRequest('/user/password/forgot', { method: 'POST', body: { email } });
-}
-
-// Đặt lại mật khẩu bằng token từ link email.
-export async function resetPassword({ token, newPassword }) {
-  return apiRequest('/user/password/reset', { method: 'PATCH', body: { token, newPassword } });
+  return apiRequest('/public/user/password/forgot', { method: 'POST', body: { email } });
 }
 
 // Đổi mật khẩu khi đã đăng nhập.
 export async function changePassword({ oldPassword, newPassword }) {
   return withAuth((token) =>
-    apiRequest('/user/change-password', {
+    apiRequest('/shared/user/change-password', {
       method: 'PATCH',
       body: { oldPassword, newPassword },
       token,
@@ -186,10 +183,15 @@ export async function logout() {
   try {
     const token = await getToken();
     if (!token) return;
-    await apiRequest('/user/logout', { method: 'POST', token });
+    await apiRequest('/shared/user/logout', { method: 'POST', token });
   } catch {
     // bỏ qua — đăng xuất cục bộ vẫn tiếp tục
   }
+}
+
+// Gọi endpoint PUBLIC (không cần token). Dùng cho danh mục công khai (country...).
+export async function apiPublic(path, options = {}) {
+  return apiRequest(path, options);
 }
 
 // Gọi API cần xác thực (đã bọc interceptor refresh). Dùng cho các API nghiệp vụ sau này.

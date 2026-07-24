@@ -3,12 +3,12 @@ import { CountryRequestDto } from '@modules/country/dtos/request/country.request
 
 const countryData = [
     {
-        name: 'Indonesia',
-        alpha2Code: 'ID',
-        alpha3Code: 'IDN',
-        phoneCode: ['62'],
+        name: 'Vietnam',
+        alpha2Code: 'VN',
+        alpha3Code: 'VNM',
+        phoneCode: ['84'],
         continent: 'Asia',
-        timezone: 'Asia/Jakarta',
+        timezone: 'Asia/Ho_Chi_Minh',
     },
 ];
 

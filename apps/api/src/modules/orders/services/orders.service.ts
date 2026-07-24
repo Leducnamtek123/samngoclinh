@@ -19,6 +19,7 @@ import { PaginationService } from '@common/pagination/services/pagination.servic
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrdersService implements IOrdersService {
@@ -26,7 +27,8 @@ export class OrdersService implements IOrdersService {
         private readonly ordersRepository: OrdersRepository,
         private readonly databaseService: DatabaseService,
         private readonly paginationService: PaginationService,
-        private readonly paymentGatewayRegistry: PaymentGatewayRegistry
+        private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
+        private readonly configService: ConfigService
     ) {}
 
     async list(
@@ -305,7 +307,9 @@ export class OrdersService implements IOrdersService {
             });
         }
 
-        const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
+        const webhookSecret = this.configService.get<string>(
+            'payment.webhookSecret'
+        );
         if (webhookSecret && payload.signature) {
             const rawData = `${payload.orderCode}|${payload.amount}|${payload.status}|${payload.gatewayRef}`;
             const expectedSig = crypto

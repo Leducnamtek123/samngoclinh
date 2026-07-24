@@ -14,7 +14,7 @@ export default function ForgotPasswordScreen({ navigation }) {
 
   const onSubmit = async () => {
     if (!email.trim()) {
-      setError('Vui lòng nhập email.');
+      setError('Vui lòng nhập email hoặc số điện thoại.');
       return;
     }
     setError('');
@@ -33,24 +33,24 @@ export default function ForgotPasswordScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <Text style={styles.title}>Quên mật khẩu</Text>
       <Text style={styles.desc}>
-        Nhập email tài khoản, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
+        Nhập email hoặc số điện thoại tài khoản. Chúng tôi sẽ gửi mật khẩu tạm qua email.
       </Text>
 
       {sent ? (
         <View style={styles.sentBox}>
           <Text style={styles.sentText}>
-            Nếu email tồn tại, bạn sẽ nhận được liên kết đặt lại mật khẩu trong ít phút.
+            Nếu tài khoản tồn tại, mật khẩu tạm đã được gửi qua email. Hãy đăng nhập bằng mật khẩu
+            tạm, sau đó hệ thống sẽ yêu cầu bạn đặt mật khẩu mới.
           </Text>
-          <PrimaryButton title="Nhập mã đặt lại" onPress={() => navigation.navigate('ResetPassword')} />
+          <PrimaryButton title="Về đăng nhập" onPress={() => navigation.navigate('Login')} />
         </View>
       ) : (
         <>
           <FormField
-            label="Email"
+            label="Email hoặc số điện thoại"
             value={email}
             onChangeText={setEmail}
             placeholder="you@example.com"
-            keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
           />
