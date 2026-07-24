@@ -42,7 +42,7 @@ export default async function middleware(request: NextRequest) {
   const getLocale = (path: string) => {
     const match = path.match(/^\/([^/]+)/u);
     const firstSegment = match ? match[1] : '';
-    return ['en', 'vi'].includes(firstSegment || '') ? firstSegment : 'vi';
+    return ['vi', 'en'].includes(firstSegment || '') ? firstSegment : 'vi';
   };
 
   if (isProtectedRoute(pathname)) {

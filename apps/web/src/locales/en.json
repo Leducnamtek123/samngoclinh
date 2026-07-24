@@ -4,44 +4,44 @@
     "about_link": "About",
     "counter_link": "Counter",
     "portfolio_link": "Portfolio",
-    "sign_in_link": "Sign in",
-    "sign_up_link": "Sign up"
+    "sign_in_link": "Sign In",
+    "sign_up_link": "Sign Up"
   },
   "BaseTemplate": {
-    "description": "Rượu Sâm Ngọc Linh",
-    "footer_text": "© {year} {name}. Made with <author></author>.",
-    "main_navigation_label": "Main navigation"
+    "description": "Ngoc Linh Ginseng Liquor",
+    "footer_text": "© {year} {name}.",
+    "main_navigation_label": "Main Navigation"
   },
   "Index": {
-    "meta_title": "Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
-    "meta_description": "Rượu Sâm Ngọc Linh là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi sản phẩm Rượu Sâm Ngọc Linh thật chỉ bằng điện thoại.",
-    "sponsors_title": "Sponsors",
-    "zap_emoji_label": "Zap"
+    "meta_title": "Ngoc Linh Ginseng Liquor | Digital Value Chain",
+    "meta_description": "First app in Vietnam enabling you to buy, own, care for, and trace genuine Ngoc Linh Ginseng products.",
+    "sponsors_title": "Partners",
+    "zap_emoji_label": "Lightning"
   },
   "Counter": {
     "meta_title": "Counter",
-    "meta_description": "An example of DB operation",
+    "meta_description": "DB activity example",
     "security_powered_by": "Security, bot detection and rate limiting powered by"
   },
   "CounterForm": {
-    "presentation": "The counter is stored in the database and incremented by the value you provide.",
-    "label_increment": "Increment by",
+    "presentation": "The counter is stored in the database and incremented by the value provided by you.",
+    "label_increment": "Increment",
     "button_increment": "Increment",
     "error_increment_range": "Value must be between 1 and 3"
   },
   "CurrentCount": {
-    "count": "Count: {count}"
+    "count": "Count : {count}"
   },
   "About": {
     "meta_title": "About",
-    "meta_description": "About page description",
-    "about_paragraph": "Welcome to our About page! We are a team of passionate individuals dedicated to creating amazing software.",
+    "meta_description": "About description",
+    "about_paragraph": "Welcome to our about page! We are a passionate and dedicated team in developing software.",
     "translation_powered_by": "Translation powered by"
   },
   "Portfolio": {
     "meta_title": "Portfolio",
-    "meta_description": "Welcome to my portfolio page!",
-    "presentation": "Welcome to my portfolio page! Here you will find a carefully curated collection of my work and accomplishments. Through this portfolio, I'm to showcase my expertise, creativity, and the value I can bring to your projects.",
+    "meta_description": "Welcome to my portfolio page !",
+    "presentation": "Welcome to our portfolio page! Here you will find a carefully curated collection of products and achievements.",
     "portfolio_name": "Portfolio {name}",
     "error_reporting_powered_by": "Error reporting powered by"
   },
@@ -49,30 +49,104 @@
     "meta_title": "Portfolio {slug}",
     "meta_description": "Portfolio {slug} description",
     "header": "Portfolio {slug}",
-    "content": "Created a set of promotional materials and branding elements for a corporate event. Crafted a visually unified theme, encompassing a logo, posters, banners, and digital assets. Integrated the client's brand identity while infusing it with a contemporary and innovative approach.",
+    "content": "Designing brand identity and communication collateral for businesses. Synchronized design including logo, flyer, banner, and digital assets.",
     "code_review_powered_by": "Code review powered by"
   },
   "SignIn": {
-    "meta_title": "Sign in",
-    "meta_description": "Seamlessly sign in to your account with our user-friendly login process."
+    "meta_title": "Sign In",
+    "meta_description": "Sign in to your account easily."
   },
   "SignUp": {
-    "meta_title": "Sign up",
-    "meta_description": "Effortlessly create an account through our intuitive sign-up process."
+    "meta_title": "Sign Up",
+    "meta_description": "Create an account quickly through an intuitive process."
   },
   "Dashboard": {
     "hello_message": "Hello {email}!",
-    "alternative_message": "Need advanced features? Multi-tenancy & Teams, Roles & Permissions, Shadcn UI, End-to-End Typesafety with oRPC, Stripe Payment, Light / Dark mode. Try <url></url>.",
-    "max_message": "Or, need a Self-hosted auth stack (Better Auth)? Try <url></url>."
+    "alternative_message": "Need advanced features?",
+    "max_message": "Or need self-hosted auth?"
   },
   "DashboardLayout": {
     "meta_title": "Dashboard",
-    "meta_description": "Manage your account from the dashboard.",
+    "meta_description": "Manage your account from dashboard.",
     "dashboard_link": "Dashboard",
-    "user_profile_link": "Manage your account",
-    "sign_out": "Sign out"
+    "user_profile_link": "Manage Account",
+    "sign_out": "Sign Out"
   },
   "LocaleSwitcher": {
-    "change_language": "Change language"
+    "change_language": "Change Language"
+  },
+  "homepage": {
+    "aboutUsBadge": "ABOUT US",
+    "aboutTitle": "Preserving Vietnamese Heritage",
+    "aboutDesc": "Dedicated to preserving and promoting the true value of Ngoc Linh Ginseng – treasure of the highlands – combined with traditional recipes to craft premium products for the community.",
+    "learnMore": "Learn More",
+    "yearsExperience": "Years of Experience",
+    "altitude": "Cultivation Altitude",
+    "happyCustomers": "Happy Customers",
+    "bottlesSupplied": "Bottles Supplied",
+    "latestNews": "Latest News & Updates",
+    "latestNewsDesc": "Stay updated with the latest events, articles and activities about Ngoc Linh Ginseng",
+    "readMore": "Read More"
+  },
+  "nav": {
+    "home": "Home",
+    "promotions": "Promotions",
+    "planting": "Plant Ginseng",
+    "shop": "Shop",
+    "info": "News & Info",
+    "all": "All",
+    "consignment": "Buy & Sell Trees",
+    "about": "About Us",
+    "cart": "Cart",
+    "profile": "Profile",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "categories": {
+    "news": "News",
+    "event": "Events",
+    "guide": "App Guide",
+    "faq": "Knowledge"
+  },
+  "products": {
+    "title": "Products & Ginseng Packages",
+    "subtitle": "Discover verified Ngoc Linh ginseng plants and premium ginseng liquor",
+    "all": "All",
+    "plants": "Ginseng Plants",
+    "liquor": "Ginseng Liquor",
+    "package": "Care Packages",
+    "buyNow": "Buy Now",
+    "addToCart": "Add To Cart",
+    "details": "View Details",
+    "price": "Price",
+    "age": "Age",
+    "years": "years",
+    "origin": "Origin",
+    "originLocation": "Dak To - Tu Mo Rong, Quang Nam"
+  },
+  "cart": {
+    "title": "Your Shopping Cart",
+    "empty": "Your cart is currently empty",
+    "checkout": "Checkout",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "quantity": "Quantity",
+    "product": "Product",
+    "payWithSePay": "VietQR Payment (SePay)",
+    "confirmOrder": "Confirm Order"
+  },
+  "trace": {
+    "title": "Ngoc Linh Ginseng Traceability",
+    "subtitle": "Verify origin, cultivation care logs, and test certificates",
+    "treeCode": "Plant Code",
+    "bed": "Ginseng Bed",
+    "garden": "Ginseng Garden",
+    "careLogs": "Care Logs",
+    "date": "Date",
+    "action": "Action",
+    "verified": "Certified Genuine Ngoc Linh Ginseng"
   }
 }

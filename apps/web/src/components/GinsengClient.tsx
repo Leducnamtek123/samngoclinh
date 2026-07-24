@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { addToCart } from '@/utils/cart';
 
 type GinsengClientProps = {
   locale: string;
@@ -12,6 +14,7 @@ type GinsengClientProps = {
 };
 
 export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClientProps) => {
+  const t = useTranslations('products');
   const { data: items, isLoading, isError } = useCatalogPlants(initialItems);
   const { data: banners } = useBanner('ginseng');
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,10 +22,23 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   const [minPrice, setMinPrice] = useState(50000);
   const [maxPrice, setMaxPrice] = useState(1000000);
 
-  const handleAction = (e: React.MouseEvent) => {
+  const handleBuyItem = (e: React.MouseEvent, item: any, redirect = true) => {
     if (!isLoggedIn) {
       e.preventDefault();
       window.location.href = `/${locale}/sign-in?reason=ginseng`;
+      return;
+    }
+    e.preventDefault();
+    addToCart({
+      id: item.id || `GINSENG-${item.name}`,
+      name: item.name,
+      price: item.price,
+      image: item.image || '/images/products/product_ginseng_bottle_1.png',
+      category: 'Ginseng',
+    });
+
+    if (redirect) {
+      window.location.href = `/${locale}/cart`;
     }
   };
 
@@ -120,7 +136,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                       onChange={() => setSelectedAges([])}
                       className="rounded border-gray-300 text-[#1C3F24] focus:ring-[#1C3F24] w-4 h-4 cursor-pointer"
                     />
-                    <span>Tất cả</span>
+                    <span>{t('all')}</span>
                   </label>
                   {[
                     { label: '1 năm', value: 1 },
@@ -284,20 +300,20 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
 
                       {/* Actions side-by-side with shopping cart icon inside the Buy Now button */}
                       <div className="flex gap-2.5 pt-2">
-                        <a
-                          href="/cart"
-                          onClick={handleAction}
-                          className="flex items-center justify-center gap-2 flex-1 bg-[#1C3F24] hover:bg-[#1C3F24]/90 text-white py-2.5 rounded-lg font-bold transition-all text-xs active:scale-98 shadow-xs"
+                        <button
+                          onClick={(e) => handleBuyItem(e, item, true)}
+                          className="flex items-center justify-center gap-2 flex-1 bg-[#1C3F24] hover:bg-[#1C3F24]/90 text-white py-2.5 rounded-lg font-bold transition-all text-xs active:scale-98 shadow-xs cursor-pointer"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
                           Mua ngay
-                        </a>
+                        </button>
 
                         <button
-                          onClick={handleAction}
-                          className="p-2.5 border border-gray-300 hover:border-[#1C3F24] text-gray-500 hover:text-[#1C3F24] rounded-lg transition-colors flex items-center justify-center bg-white shadow-xs hover:bg-[#1C3F24]/5"
+                          onClick={(e) => handleBuyItem(e, item, false)}
+                          title="Thêm vào giỏ hàng"
+                          className="p-2.5 border border-gray-300 hover:border-[#1C3F24] text-gray-500 hover:text-[#1C3F24] rounded-lg transition-colors flex items-center justify-center bg-white shadow-xs hover:bg-[#1C3F24]/5 cursor-pointer"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

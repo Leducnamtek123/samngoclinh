@@ -63,7 +63,7 @@ export function PageBannerSlider({ banners, badgeText, badgeIcon }: PageBannerSl
                 {badgeIcon}
                 {badgeText}
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-display-lg drop-shadow-md">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-display-lg drop-shadow-md">
                 {banner.title}
               </h1>
               <p className="text-gray-200 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed drop-shadow-sm">

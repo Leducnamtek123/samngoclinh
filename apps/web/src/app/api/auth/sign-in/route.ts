@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-
 import { Env } from '@/libs/Env';
 
 export async function POST(request: Request) {
@@ -62,22 +61,35 @@ export async function POST(request: Request) {
       }
     }
 
-    // Set secure cookie
     const response = NextResponse.json({
       success: true,
       email: userEmail,
       token,
       refreshToken,
       expiresIn,
-      message: 'Đăng nhập thành công'
+      message: 'Đăng nhập thành công',
     });
+
+    // Set 30-day session cookies for both Access Token and Refresh Token
+    const thirtyDaysInSeconds = 30 * 24 * 60 * 60;
+
     response.cookies.set('user_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      sameSite: 'lax',
+      maxAge: thirtyDaysInSeconds,
       path: '/',
     });
+
+    if (refreshToken) {
+      response.cookies.set('user_refresh_token', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: thirtyDaysInSeconds,
+        path: '/',
+      });
+    }
 
     return response;
   } catch (error) {

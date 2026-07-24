@@ -8,6 +8,48 @@ import { fetchApi } from '@/libs/Api';
 import { HeaderNav } from '@/components/HeaderNav';
 import QueryProvider from '@/providers/QueryProvider';
 
+function HeaderNavSkeleton() {
+  return (
+    <>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-emerald-800 font-bold whitespace-nowrap">
+          Trang chủ
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-3 rounded-full inline-flex items-center justify-center gap-1.5 text-xs font-bold leading-none whitespace-nowrap flex-shrink-0 border bg-[#FFFBEB] border-amber-200/60 text-[#D97706]">
+          🎁 Khuyến mãi
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
+          Trồng sâm
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
+          Cửa hàng
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center gap-1 font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
+          Thông tin
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
+          Mua bán cây
+        </span>
+      </li>
+      <li className="flex items-center">
+        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
+          Giới thiệu
+        </span>
+      </li>
+    </>
+  );
+}
+
 export default async function Layout(props: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -35,7 +77,7 @@ export default async function Layout(props: {
     <QueryProvider>
       <BaseTemplate
         leftNav={
-          <Suspense fallback={<span className="text-gray-400 text-sm">Thông tin...</span>}>
+          <Suspense fallback={<HeaderNavSkeleton />}>
             <HeaderNav />
           </Suspense>
         }
@@ -45,13 +87,13 @@ export default async function Layout(props: {
               <UserHeaderMenu profile={profile} />
             ) : (
               <>
-                <li>
-                  <Link href="/sign-in/" className="text-gray-700 hover:text-primary transition-colors px-3 py-2">
+                <li className="flex items-center">
+                  <Link href="/sign-in/" className="h-8 px-3 text-gray-700 hover:text-emerald-800 transition-colors font-semibold text-xs xl:text-sm leading-none inline-flex items-center justify-center">
                     Đăng nhập
                   </Link>
                 </li>
-                <li>
-                  <Link href="/sign-up/" className="bg-secondary text-white hover:bg-secondary-hover transition-colors px-4 py-2.5 rounded-lg shadow-sm">
+                <li className="flex items-center">
+                  <Link href="/sign-up/" className="h-8 px-4 bg-[#43a047] text-white hover:bg-[#388e3c] transition-colors rounded-lg text-xs xl:text-sm font-bold shadow-sm inline-flex items-center justify-center leading-none">
                     Đăng ký
                   </Link>
                 </li>
