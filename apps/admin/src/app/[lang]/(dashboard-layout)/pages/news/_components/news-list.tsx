@@ -1,11 +1,25 @@
 "use client"
 
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
+import {
+  ChevronLeft,
+  ChevronRight,
+  ImageIcon,
+  Pencil,
+  Trash2,
+} from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ImageIcon, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Article {
   id: string
@@ -63,7 +77,10 @@ export function NewsList({
         <TableBody>
           {articles.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-16 text-slate-400 text-xs">
+              <TableCell
+                colSpan={6}
+                className="text-center py-16 text-slate-400 text-xs"
+              >
                 Không tìm thấy bài viết tin tức nào.
               </TableCell>
             </TableRow>
@@ -71,7 +88,7 @@ export function NewsList({
             articles.map((art) => (
               <TableRow key={art.id} className="hover:bg-slate-50/50">
                 <TableCell>
-                  {(art.coverImage || art.image) ? (
+                  {art.coverImage || art.image ? (
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-100">
                       <Image
                         src={art.coverImage || art.image}
@@ -101,7 +118,10 @@ export function NewsList({
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-slate-200">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] px-2 py-0.5 border-slate-200"
+                  >
                     {categoryNameMap[art.category] || art.category}
                   </Badge>
                 </TableCell>
@@ -111,8 +131,8 @@ export function NewsList({
                       art.status === "published"
                         ? "default"
                         : art.status === "draft"
-                        ? "secondary"
-                        : "destructive"
+                          ? "secondary"
+                          : "destructive"
                     }
                     className="text-[10px] font-bold px-2 py-0.5"
                   >
@@ -120,7 +140,11 @@ export function NewsList({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-slate-400 text-[10px] font-medium">
-                  {art.createdAt ? new Date(art.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "N/A"}
+                  {art.createdAt
+                    ? new Date(art.createdAt).toLocaleDateString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                      })
+                    : "N/A"}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1.5">
@@ -154,7 +178,8 @@ export function NewsList({
       {metadata && (
         <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} bài viết)
+            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
+            {metadata.count} bài viết)
           </span>
           <div className="flex items-center gap-1.5">
             <Button

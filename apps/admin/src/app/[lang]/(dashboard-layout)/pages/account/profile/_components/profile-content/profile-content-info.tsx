@@ -9,4 +9,3 @@ export function ProfileContentInfo({ user }: { user?: any }) {
     </div>
   )
 }
-

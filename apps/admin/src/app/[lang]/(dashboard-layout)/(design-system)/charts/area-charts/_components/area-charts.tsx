@@ -1,9 +1,6 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
+import { useRecharts } from "@/hooks/use-recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -22,9 +19,14 @@ const areaChartsData = [
 ]
 
 export function AreaCharts() {
-  const recharts = useRecharts();
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Area, AreaChart, CartesianGrid, XAxis, YAxis } = recharts;
+  const recharts = useRecharts()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Area, AreaChart, CartesianGrid, XAxis, YAxis } = recharts
 
   return (
     <section className="conatiner grid gap-4 p-4">

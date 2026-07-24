@@ -1,9 +1,5 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { ComponentProps } from "react"
 import type { ScatterPointItem } from "recharts/types/cartesian/Scatter"
 import type { GenderDistributionType } from "../../analytics/types"
@@ -11,6 +7,7 @@ import type { GenderDistributionType } from "../../analytics/types"
 import { formatPercent } from "@/lib/utils"
 
 import { useIsRtl } from "@/hooks/use-is-rtl"
+import { useRecharts } from "@/hooks/use-recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -50,12 +47,15 @@ export function GenderDistributionChart({
 }: {
   data: GenderDistributionType[]
 }) {
-  const recharts = useRecharts();
-    const isRtl = useIsRtl()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Scatter, ScatterChart, XAxis, YAxis } = recharts;
-
-
+  const recharts = useRecharts()
+  const isRtl = useIsRtl()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Scatter, ScatterChart, XAxis, YAxis } = recharts
 
   const values = data.map((item) => item.value)
   const minValue = Math.min(...values)

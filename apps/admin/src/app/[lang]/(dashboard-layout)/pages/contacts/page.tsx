@@ -1,12 +1,16 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { ContactsTable } from "./_components/contacts-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { ContactsTable } from "./_components/contacts-table"
 
 export const metadata: Metadata = {
   title: "Quản lý Liên hệ | Sâm Ngọc Linh Admin",
-  description: "Duyệt danh sách và chi tiết các yêu cầu liên hệ, tin nhắn từ khách hàng gửi về hệ thống.",
+  description:
+    "Duyệt danh sách và chi tiết các yêu cầu liên hệ, tin nhắn từ khách hàng gửi về hệ thống.",
 }
 
 interface ContactsPageProps {
@@ -21,7 +25,9 @@ interface ContactsPageProps {
   }>
 }
 
-export default async function ContactsPage({ searchParams }: ContactsPageProps) {
+export default async function ContactsPage({
+  searchParams,
+}: ContactsPageProps) {
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
@@ -41,11 +47,13 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
 
     const res = await fetchApi(`/admin/contacts?${queryParams.toString()}`)
     const payload = await res.json()
-    
+
     if (res.status >= 400) {
       errorMsg = payload?.message || "Không thể tải danh sách liên hệ."
     } else {
-      contacts = Array.isArray(payload.data) ? payload.data : (payload.data?.items || [])
+      contacts = Array.isArray(payload.data)
+        ? payload.data
+        : payload.data?.items || []
       metadata = payload.metadata || null
     }
   } catch (e) {
@@ -58,15 +66,16 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Quản lý Liên hệ</h1>
         <p className="text-muted-foreground">
-          Duyệt danh sách và chi tiết các yêu cầu liên hệ, tin nhắn từ khách hàng gửi về hệ thống.
+          Duyệt danh sách và chi tiết các yêu cầu liên hệ, tin nhắn từ khách
+          hàng gửi về hệ thống.
         </p>
       </div>
 
       <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
-        <ContactsTable 
-          initialContacts={contacts} 
-          metadata={metadata} 
-          errorMsg={errorMsg} 
+        <ContactsTable
+          initialContacts={contacts}
+          metadata={metadata}
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

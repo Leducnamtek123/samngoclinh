@@ -9,4 +9,3 @@ export function ProfileContent({ user }: { user?: any }) {
     </section>
   )
 }
-

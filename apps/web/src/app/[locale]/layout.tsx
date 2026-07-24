@@ -39,6 +39,8 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+import { Toaster } from '@/components/ui/Toaster';
+
 export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -56,6 +58,7 @@ export default async function RootLayout(props: {
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
           {props.children}
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

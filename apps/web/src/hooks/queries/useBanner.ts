@@ -6,5 +6,6 @@ export function useBanner(pageKey: string, initialData?: any) {
     queryKey: ['banners', pageKey],
     queryFn: () => fetchApiClient(`/public/banners/${pageKey}`).then((res) => res.data),
     initialData,
+    staleTime: 5 * 60 * 1000,
   });
 }

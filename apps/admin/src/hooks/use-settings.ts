@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext } from "react"
+
 import type { SettingsType } from "@/types"
 
 export const defaultSettings: SettingsType = {

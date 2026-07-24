@@ -1,28 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 
-export default function SignInForm() {
-  const searchParams = useSearchParams();
-  const reason = searchParams?.get('reason');
-
-  const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
-  const [showToast, setShowToast] = useState(!!reason);
-  
-  // Email states
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  // Phone states
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [infoMessage, setInfoMessage] = useState('');
-
+function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void }) {
   const getReasonMessage = (resVal: string | null) => {
     switch (resVal) {
       case 'campaigns':
@@ -53,6 +35,51 @@ export default function SignInForm() {
     }
   };
 
+  const message = getReasonMessage(reason);
+  return (
+    <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#EF4444] text-white rounded-2xl shadow-2xl p-4 flex gap-3.5 border border-red-400/20 animate-in fade-in slide-in-from-bottom-10 duration-300">
+      <div className="bg-white/20 p-2 rounded-xl h-10 w-10 flex items-center justify-center shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+        </svg>
+      </div>
+      <div className="flex-1 space-y-1">
+        <h4 className="font-bold text-sm tracking-wide text-left">{message.title}</h4>
+        <p className="text-xs text-white/90 font-medium leading-relaxed text-left">{message.description}</p>
+      </div>
+      <button 
+        type="button" 
+        onClick={onClose} 
+        className="text-white/70 hover:text-white transition-colors shrink-0 align-top self-start"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+export default function SignInForm() {
+  const searchParams = useSearchParams();
+  const reason = searchParams?.get('reason');
+
+  const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
+  const [showToast, setShowToast] = useState(!!reason);
+  
+  // Email states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Phone states
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [infoMessage, setInfoMessage] = useState('');
+
   const handleSendOtp = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!phone) {
@@ -63,75 +90,82 @@ export default function SignInForm() {
     setError('');
     setInfoMessage('');
 
-    try {
-      const res = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phone }),
+    fetch('/api/auth/send-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phone }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || 'Gửi mã OTP thất bại');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setOtpSent(true);
+        setInfoMessage(`Mã OTP đã được gửi. Sử dụng mã OTP thật vừa sinh: ${data.otp}`);
+      })
+      .catch((err: any) => {
+        setError(err.message || 'Đã xảy ra lỗi khi gửi OTP');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Gửi mã OTP thất bại');
-      }
-
-      setOtpSent(true);
-      setInfoMessage(`Mã OTP đã được gửi. Sử dụng mã OTP thật vừa sinh: ${data.otp}`);
-    } catch (err: any) {
-      setError(err.message || 'Đã xảy ra lỗi khi gửi OTP');
-    } finally {
-      setLoading(false);
-    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setInfoMessage('');
 
-    try {
-      const payload = activeTab === 'email' 
-        ? { email, password, type: 'email' }
-        : { phone, otp, type: 'phone' };
+    const payload = activeTab === 'email' 
+      ? { email, password, type: 'email' }
+      : { phone, otp, type: 'phone' };
 
-      const res = await fetch('/api/auth/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+    fetch('/api/auth/sign-in', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || 'Đăng nhập thất bại');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
+          window.location.href = `http://localhost:3003/en?token=${data.token}&refreshToken=${data.refreshToken || ''}&expiresIn=${data.expiresIn || 3600}`;
+        } else {
+          window.location.href = '/';
+        }
+      })
+      .catch((err: any) => {
+        setError(err.message || 'Đã xảy ra lỗi kết nối');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Đăng nhập thất bại');
-      }
-
-      // Redirect to homepage or admin panel based on role email
-      if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
-        window.location.href = `http://localhost:3003/en?token=${data.token}&refreshToken=${data.refreshToken || ''}&expiresIn=${data.expiresIn || 3600}`;
-      } else {
-        window.location.href = '/';
-      }
-    } catch (err: any) {
-      setError(err.message || 'Đã xảy ra lỗi kết nối');
-    } finally {
-      setLoading(false);
-    }
+  };
   };
 
   return (
     <div className="w-full min-h-[calc(100vh-120px)] bg-gray-50 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-xl p-8 space-y-6">
         <div className="space-y-3 text-center">
-          <img
+          <Image
             src="/assets/images/logo_ruou_sam.png?v=2"
             alt="Rượu Sâm Ngọc Linh Logo"
+            width={64}
+            height={64}
+            unoptimized
             className="mx-auto h-16 w-16 object-contain"
           />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-display-lg">
@@ -148,7 +182,7 @@ export default function SignInForm() {
               setError('');
               setInfoMessage('');
             }}
-            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
+            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-colors ${
               activeTab === 'email' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
             }`}
           >
@@ -161,7 +195,7 @@ export default function SignInForm() {
               setError('');
               setInfoMessage('');
             }}
-            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-all ${
+            className={`flex-1 pb-3 text-center border-b-2 text-xs font-bold transition-colors ${
               activeTab === 'phone' ? 'border-primary text-primary' : 'border-transparent text-gray-400'
             }`}
           >
@@ -199,7 +233,7 @@ export default function SignInForm() {
                   id="email"
                   type="email"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm bg-white"
                   placeholder="nhap-email@ruousamngoclinh.vn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -219,7 +253,7 @@ export default function SignInForm() {
                   id="password"
                   type="password"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm bg-white"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -241,7 +275,7 @@ export default function SignInForm() {
                     type="tel"
                     required
                     disabled={otpSent}
-                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white disabled:bg-gray-50 disabled:text-gray-400"
+                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm bg-white disabled:bg-gray-50 disabled:text-gray-400"
                     placeholder="0847 234 234"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -251,7 +285,7 @@ export default function SignInForm() {
                       type="button"
                       disabled={loading}
                       onClick={handleSendOtp}
-                      className="px-4 py-3 bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold rounded-xl text-xs shadow-sm transition-all whitespace-nowrap"
+                      className="px-4 py-3 bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold rounded-xl text-xs shadow-sm transition-colors whitespace-nowrap"
                     >
                       Gửi mã OTP
                     </button>
@@ -282,7 +316,7 @@ export default function SignInForm() {
                     type="text"
                     required
                     maxLength={6}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm bg-white tracking-widest text-center font-bold text-lg"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors text-sm bg-white tracking-widest text-center font-bold text-lg"
                     placeholder="••••••"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
@@ -306,7 +340,7 @@ export default function SignInForm() {
           <button
             type="submit"
             disabled={loading || (activeTab === 'phone' && !otpSent)}
-            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3.5 rounded-xl shadow-md transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -320,36 +354,13 @@ export default function SignInForm() {
           <p className="text-xs text-gray-500 mb-3 font-medium">Bạn chưa có tài khoản?</p>
           <a
             href="/sign-up"
-            className="inline-block w-full bg-[#4CAF50] hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-sm transition-all text-center"
+            className="inline-block w-full bg-[#4CAF50] hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-sm transition-colors text-center"
           >
             Tạo tài khoản mới
           </a>
         </div>
       </div>
-
-      {/* Red Floating Toast at Bottom-Right */}
-      {showToast && reason && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#EF4444] text-white rounded-2xl shadow-2xl p-4 flex gap-3.5 border border-red-400/20 animate-in fade-in slide-in-from-bottom-10 duration-300">
-          <div className="bg-white/20 p-2 rounded-xl h-10 w-10 flex items-center justify-center shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
-            </svg>
-          </div>
-          <div className="flex-1 space-y-1">
-            <h4 className="font-bold text-sm tracking-wide text-left">{getReasonMessage(reason).title}</h4>
-            <p className="text-xs text-white/90 font-medium leading-relaxed text-left">{getReasonMessage(reason).description}</p>
-          </div>
-          <button 
-            type="button" 
-            onClick={() => setShowToast(false)} 
-            className="text-white/70 hover:text-white transition-colors shrink-0 align-top self-start"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
+      {showToast && reason && <ReasonToast reason={reason} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

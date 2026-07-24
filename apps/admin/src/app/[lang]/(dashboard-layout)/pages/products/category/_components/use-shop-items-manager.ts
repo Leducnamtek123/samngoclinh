@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface ShopItem {
   id: string
@@ -57,15 +60,20 @@ async function getCroppedImg(
   )
 
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      resolve(blob)
-    }, "image/jpeg", 0.9)
+    canvas.toBlob(
+      (blob) => {
+        resolve(blob)
+      },
+      "image/jpeg",
+      0.9
+    )
   })
 }
 
-import { useTranslation } from "@/providers/i18n-provider"
-
-export function useShopItemsManager({ initialItems, initialError }: UseShopItemsManagerProps) {
+export function useShopItemsManager({
+  initialItems,
+  initialError,
+}: UseShopItemsManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -82,7 +90,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
   useEffect(() => {
     setItems(initialItems)
   }, [initialItems])
-  
+
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
 
@@ -137,7 +145,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
       status: "active",
       description: "",
       imageUrl: "",
-    }
+    },
   })
 
   // Image Cropping States
@@ -155,20 +163,23 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
     croppedAreaPixels: null,
   })
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -186,7 +197,9 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
   }, [searchQuery, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleCategoryFilterChange = (val: string) => {
@@ -248,7 +261,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
         status: "active",
         description: "",
         imageUrl: "",
-      }
+      },
     })
   }
 
@@ -270,11 +283,13 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
         status: item.status || "active",
         description: item.description || "",
         imageUrl: item.images?.[0] || "",
-      }
+      },
     })
   }
 
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -298,9 +313,16 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
     setDialogState((prev) => ({ ...prev, uploadingImage: true, error: "" }))
 
     try {
-      const croppedImageBlob = await getCroppedImg(cropState.imageSrc, cropState.croppedAreaPixels)
+      const croppedImageBlob = await getCroppedImg(
+        cropState.imageSrc,
+        cropState.croppedAreaPixels
+      )
       if (!croppedImageBlob) {
-        setDialogState((prev) => ({ ...prev, uploadingImage: false, error: t("messages.errorOccurred") }))
+        setDialogState((prev) => ({
+          ...prev,
+          uploadingImage: false,
+          error: t("messages.errorOccurred"),
+        }))
         return
       }
 
@@ -314,14 +336,17 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: payload?.message || t("messages.errorOccurred"),
+        }))
       } else {
         setDialogState((prev) => ({
           ...prev,
           formData: {
             ...prev.formData,
             imageUrl: payload.data?.url || "",
-          }
+          },
         }))
         setCropState((prev) => ({ ...prev, isOpen: false, imageSrc: null }))
       }
@@ -333,14 +358,16 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
     }
   }
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type } = e.target
     setDialogState((prev) => ({
       ...prev,
       formData: {
         ...prev.formData,
         [name]: type === "number" ? parseInt(value) || 0 : value,
-      }
+      },
     }))
   }
 
@@ -357,7 +384,9 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
       stock: dialogState.formData.stock,
       status: dialogState.formData.status,
       description: dialogState.formData.description || undefined,
-      images: dialogState.formData.imageUrl ? [dialogState.formData.imageUrl] : [],
+      images: dialogState.formData.imageUrl
+        ? [dialogState.formData.imageUrl]
+        : [],
     }
 
     try {
@@ -368,22 +397,30 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
           body: JSON.stringify(bodyData),
         })
       } else {
-        res = await fetchApi(`/admin/catalog/shop-items/${dialogState.selectedItem?.id}`, {
-          method: "PUT",
-          body: JSON.stringify(bodyData),
-        })
+        res = await fetchApi(
+          `/admin/catalog/shop-items/${dialogState.selectedItem?.id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(bodyData),
+          }
+        )
       }
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: payload?.message || t("messages.errorOccurred"),
+        }))
       } else {
         const savedItem = payload.data
         if (dialogState.mode === "create") {
           setItems((prev) => [savedItem, ...prev])
           setSuccessMsg(t("messages.createSuccess"))
         } else {
-          setItems((prev) => prev.map((item) => (item.id === savedItem.id ? savedItem : item)))
+          setItems((prev) =>
+            prev.map((item) => (item.id === savedItem.id ? savedItem : item))
+          )
           setSuccessMsg(t("messages.updateSuccess"))
         }
         setDialogState((prev) => ({ ...prev, isOpen: false }))

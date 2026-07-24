@@ -15,4 +15,3 @@ export function ProfileContentIntro({ user }: { user?: any }) {
     </Card>
   )
 }
-

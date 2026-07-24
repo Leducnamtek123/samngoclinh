@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
+
 import { AddBedForm } from "./_components/add-bed-form"
 
 export const metadata: Metadata = {

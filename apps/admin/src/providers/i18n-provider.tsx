@@ -1,8 +1,11 @@
 "use client"
 
-import { createContext, useContext, useMemo, type ReactNode } from "react"
-import { translate } from "@/lib/i18n"
+import { createContext, useContext, useMemo } from "react"
+
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { ReactNode } from "react"
+
+import { translate } from "@/lib/i18n"
 
 interface I18nContextType {
   dictionary: DictionaryType

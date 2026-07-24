@@ -1,10 +1,21 @@
 "use client"
 
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ConfirmationDialog,
+  ErrorState,
+  ToastCard,
+} from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
-import { Trash2, Plus, ChevronLeft, ChevronRight } from "lucide-react"
-import { ToastCard, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
 import { GardenDialog } from "./garden-dialog"
 import { GardensList } from "./gardens-list"
 import { useGardensManager } from "./use-gardens-manager"
@@ -44,7 +55,11 @@ interface GardensTableProps {
   errorMsg?: string
 }
 
-export function GardensTable({ initialGardens, metadata, errorMsg: initialError }: GardensTableProps) {
+export function GardensTable({
+  initialGardens,
+  metadata,
+  errorMsg: initialError,
+}: GardensTableProps) {
   const {
     gardens,
     filteredGardens,
@@ -75,12 +90,17 @@ export function GardensTable({ initialGardens, metadata, errorMsg: initialError 
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý khu vườn</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Quản lý khu vườn
+          </h1>
           <p className="text-muted-foreground">
             Quản lý các khu vườn sâm và theo dõi số lượng luống, cây sâm.
           </p>
         </div>
-        <Button onClick={handleOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+        <Button
+          onClick={handleOpenCreate}
+          className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+        >
           <Plus className="h-4 w-4" /> Thêm khu vườn
         </Button>
       </div>
@@ -90,7 +110,8 @@ export function GardensTable({ initialGardens, metadata, errorMsg: initialError 
           <div>
             <CardTitle>Danh sách khu vườn</CardTitle>
             <CardDescription>
-              Hiển thị tổng số {filteredGardens.length} khu vườn đang canh tác sâm.
+              Hiển thị tổng số {filteredGardens.length} khu vườn đang canh tác
+              sâm.
             </CardDescription>
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -129,7 +150,8 @@ export function GardensTable({ initialGardens, metadata, errorMsg: initialError 
           {metadata && (
             <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between mt-4 rounded-b-md">
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} khu vườn)
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
+                {metadata.count} khu vườn)
               </span>
               <div className="flex items-center gap-1.5">
                 <Button
@@ -164,7 +186,12 @@ export function GardensTable({ initialGardens, metadata, errorMsg: initialError 
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={(updater) => setDialogState((prev) => ({ ...prev, formData: updater(prev.formData) }))}
+        onChange={(updater) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: updater(prev.formData),
+          }))
+        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}

@@ -1,28 +1,40 @@
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react"
 
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+export type UserRole = "SUPER_ADMIN" | "ADMIN" | "USER"
 
 export function useRole() {
-  const { data: session, status } = useSession();
-  
-  const user = session?.user as any;
-  const email = user?.email?.toLowerCase() || '';
+  const { data: session, status } = useSession()
 
-  let rawRole = user?.role?.code || user?.role?.name || user?.role || '';
-  const strRole = String(rawRole).toUpperCase();
+  const user = session?.user as any
+  const email = user?.email?.toLowerCase() || ""
 
-  const isSuperAdmin = strRole.includes('SUPER_ADMIN') || email.includes('superadmin') || email.includes('super_admin');
-  const isAdmin = isSuperAdmin || strRole.includes('ADMIN') || email.includes('admin') || true; // Admin portal default fallback
-  const isLoading = status === 'loading';
+  let rawRole = user?.role?.code || user?.role?.name || user?.role || ""
+  const strRole = String(rawRole).toUpperCase()
 
-  const role: UserRole = isSuperAdmin ? 'SUPER_ADMIN' : isAdmin ? 'ADMIN' : 'USER';
+  const isSuperAdmin =
+    strRole.includes("SUPER_ADMIN") ||
+    email.includes("superadmin") ||
+    email.includes("super_admin")
+  const isAdmin =
+    isSuperAdmin || strRole.includes("ADMIN") || email.includes("admin") || true // Admin portal default fallback
+  const isLoading = status === "loading"
+
+  const role: UserRole = isSuperAdmin
+    ? "SUPER_ADMIN"
+    : isAdmin
+      ? "ADMIN"
+      : "USER"
 
   const hasRole = (allowedRoles?: UserRole[]) => {
-    if (!allowedRoles || allowedRoles.length === 0) return true;
-    if (isSuperAdmin) return true;
-    if (isAdmin && (allowedRoles.includes('ADMIN') || allowedRoles.includes('SUPER_ADMIN'))) return true;
-    return allowedRoles.includes(role);
-  };
+    if (!allowedRoles || allowedRoles.length === 0) return true
+    if (isSuperAdmin) return true
+    if (
+      isAdmin &&
+      (allowedRoles.includes("ADMIN") || allowedRoles.includes("SUPER_ADMIN"))
+    )
+      return true
+    return allowedRoles.includes(role)
+  }
 
   return {
     role,
@@ -31,5 +43,5 @@ export function useRole() {
     isLoading,
     hasRole,
     user,
-  };
+  }
 }

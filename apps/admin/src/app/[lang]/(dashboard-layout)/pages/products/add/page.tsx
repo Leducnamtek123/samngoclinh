@@ -2,15 +2,24 @@
 
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+
+import type { LocaleType } from "@/types"
+
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
-import type { LocaleType } from "@/types"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function AddProductPage() {
   const router = useRouter()
@@ -28,11 +37,16 @@ export default function AddProductPage() {
   const [errorMsg, setErrorMsg] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "ageYear" || name === "price" || name === "stock" ? Number(value) : value,
+      [name]:
+        name === "ageYear" || name === "price" || name === "stock"
+          ? Number(value)
+          : value,
     }))
   }
 
@@ -71,16 +85,21 @@ export default function AddProductPage() {
   return (
     <div className="container p-4 md:p-6 mx-auto max-w-2xl space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Thêm sâm Ngọc Linh</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Thêm sâm Ngọc Linh
+        </h1>
         <p className="text-muted-foreground">
-          Thêm một độ tuổi hoặc chủng loại sâm mới vào danh mục sản phẩm tại vườn.
+          Thêm một độ tuổi hoặc chủng loại sâm mới vào danh mục sản phẩm tại
+          vườn.
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Thông tin sâm</CardTitle>
-          <CardDescription>Nhập đầy đủ thông tin bên dưới để khởi tạo sản phẩm.</CardDescription>
+          <CardDescription>
+            Nhập đầy đủ thông tin bên dưới để khởi tạo sản phẩm.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -181,11 +200,19 @@ export default function AddProductPage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(ensureLocalizedPathname("/pages/products", locale))}
+                onClick={() =>
+                  router.push(
+                    ensureLocalizedPathname("/pages/products", locale)
+                  )
+                }
               >
                 Hủy bỏ
               </Button>
-              <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
                 {loading ? "Đang xử lý..." : "Thêm mới"}
               </Button>
             </div>

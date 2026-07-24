@@ -45,8 +45,6 @@ export function EmailComposerForm() {
 
   const { isSubmitting } = form.formState
 
-
-
   return (
     <Form {...form}>
       <form

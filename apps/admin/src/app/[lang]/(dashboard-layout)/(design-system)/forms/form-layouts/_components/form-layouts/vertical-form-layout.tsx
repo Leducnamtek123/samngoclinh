@@ -37,8 +37,6 @@ export function VerticalFormLayout() {
   const { isSubmitting, isDirty } = form.formState
   const isDisabled = isSubmitting || !isDirty // Disable button if form is unchanged or submitting
 
-
-
   return (
     <Card>
       <CardHeader>

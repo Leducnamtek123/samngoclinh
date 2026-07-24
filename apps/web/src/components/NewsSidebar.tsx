@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { Link } from '@/libs/I18nNavigation';
 
 const categoryLabels: Record<string, string> = {
@@ -33,11 +34,12 @@ export const NewsSidebar = ({
   const searchParams = useSearchParams();
 
   const [searchVal, setSearchVal] = useState(searchQuery);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
 
-  // Sync state with URL search query changes
-  useEffect(() => {
+  if (prevSearchQuery !== searchQuery) {
+    setPrevSearchQuery(searchQuery);
     setSearchVal(searchQuery);
-  }, [searchQuery]);
+  }
 
   const updateQueryParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams?.toString() || '');
@@ -86,7 +88,8 @@ export const NewsSidebar = ({
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder="Tìm kiếm bài viết..."
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs outline-none transition-all placeholder-gray-400 focus:border-primary focus:bg-white text-gray-800"
+            aria-label="Tìm kiếm bài viết"
+            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs outline-none transition-colors placeholder-gray-400 focus:border-primary focus:bg-white text-gray-800"
           />
           <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
@@ -104,10 +107,11 @@ export const NewsSidebar = ({
         <div className="space-y-3.5">
           {/* Tất cả */}
           <button
+            type="button"
             onClick={() => handleCategorySelect('')}
             className="flex items-center gap-3 w-full text-left group cursor-pointer"
           >
-            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
               !selectedCategory 
                 ? 'bg-primary border-primary text-white' 
                 : 'border-gray-300 group-hover:border-primary bg-white'
@@ -130,11 +134,12 @@ export const NewsSidebar = ({
             const isChecked = selectedCategory === cat;
             return (
               <button
+                type="button"
                 key={cat}
                 onClick={() => handleCategorySelect(cat)}
                 className="flex items-center gap-3 w-full text-left group cursor-pointer"
               >
-                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
                   isChecked 
                     ? 'bg-primary border-primary text-white' 
                     : 'border-gray-300 group-hover:border-primary bg-white'
@@ -168,14 +173,19 @@ export const NewsSidebar = ({
               href={`/news/${article.slug}`}
               className="flex items-center gap-3 group"
             >
-              <img
-                src={article.image || newsImages[idx % newsImages.length]}
-                alt={article.title}
-                className="w-14 h-14 object-cover rounded-xl bg-gray-50 flex-shrink-0"
-              />
+              <div className="relative w-14 h-14 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden">
+                <Image
+                  src={article.image || newsImages[idx % newsImages.length]}
+                  alt={article.title}
+                  fill
+                  sizes="56px"
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
               <div className="space-y-0.5">
                 <div className="text-[10px] text-gray-400 font-semibold">
-                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN') : ''}
+                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : ''}
                 </div>
                 <h4 className="text-xs font-bold text-gray-800 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                   {article.title}

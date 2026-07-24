@@ -48,9 +48,8 @@ export async function POST(request: Request) {
       }),
     });
 
-    const payload = await signUpRes.json();
-
-    if (signUpRes.status >= 400) {
+    if (!signUpRes.ok) {
+      const payload = await signUpRes.json().catch(() => null);
       const errorMsg = typeof payload?.message === 'string'
         ? payload.message
         : (Array.isArray(payload?.message) ? payload.message.join(', ') : 'Đăng ký không thành công. Vui lòng kiểm tra lại.');
@@ -59,6 +58,8 @@ export async function POST(request: Request) {
         { status: signUpRes.status }
       );
     }
+
+    await signUpRes.json().catch(() => null);
 
     return NextResponse.json({
       success: true,

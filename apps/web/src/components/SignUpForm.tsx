@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function SignUpForm() {
@@ -41,43 +42,48 @@ export default function SignUpForm() {
 
     setLoading(true);
 
-    try {
-      const res = await fetch('/api/auth/sign-up', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
+    fetch('/api/auth/sign-up', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+      }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.message || 'Đăng ký không thành công.');
+        }
+        return res.json().catch(() => null);
+      })
+      .then(() => {
+        setSuccess('Đăng ký tài khoản thành công! Đang chuyển đến trang đăng nhập...');
+        setTimeout(() => {
+          window.location.href = '/sign-in';
+        }, 1500);
+      })
+      .catch((err: any) => {
+        setError(err.message || 'Đã xảy ra lỗi kết nối');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Đăng ký không thành công.');
-      }
-
-      setSuccess('Đăng ký tài khoản thành công! Đang chuyển đến trang đăng nhập...');
-      setTimeout(() => {
-        window.location.href = '/sign-in';
-      }, 1500);
-    } catch (err: any) {
-      setError(err.message || 'Đã xảy ra lỗi kết nối');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <div className="w-full min-h-[calc(100vh-120px)] bg-gray-50 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl shadow-xl p-8 space-y-6">
         <div className="space-y-3 text-center">
-          <img
+          <Image
             src="/assets/images/logo_ruou_sam.png?v=2"
             alt="Rượu Sâm Ngọc Linh Logo"
+            width={64}
+            height={64}
+            unoptimized
             className="mx-auto h-16 w-16 object-contain"
           />
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-display-lg">
@@ -102,59 +108,63 @@ export default function SignUpForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+            <label htmlFor="signup-name" className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
               Họ và tên
             </label>
             <input
+              id="signup-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nguyễn Văn A"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+            <label htmlFor="signup-email" className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
               Địa chỉ Email <span className="text-red-500">*</span>
             </label>
             <input
+              id="signup-email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="nhap-email@ruousamngoclinh.vn"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+            <label htmlFor="signup-password" className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
               Mật khẩu <span className="text-red-500">*</span>
             </label>
             <input
+              id="signup-password"
               type="password"
               required
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Tối thiểu 8 ký tự"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
+            <label htmlFor="signup-confirm-password" className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
               Xác nhận mật khẩu <span className="text-red-500">*</span>
             </label>
             <input
+              id="signup-confirm-password"
               type="password"
               required
               minLength={8}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Nhập lại mật khẩu"
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-all"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-primary focus:outline-none transition-colors"
             />
           </div>
 
@@ -174,7 +184,7 @@ export default function SignUpForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3.5 rounded-xl shadow-md transition-all text-sm disabled:opacity-50 cursor-pointer"
+            className="w-full bg-[#1C3F24] hover:bg-[#15301B] text-white font-bold py-3.5 rounded-xl shadow-md transition-colors text-sm disabled:opacity-50 cursor-pointer"
           >
             {loading ? 'Đang khởi tạo tài khoản...' : 'Tạo tài khoản mới'}
           </button>

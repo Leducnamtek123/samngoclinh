@@ -1,12 +1,29 @@
 "use client"
 
 import React from "react"
+import {
+  ChevronLeft,
+  Eye,
+  EyeOff,
+  Pencil,
+  Plus,
+  Search,
+  Sprout,
+  Trash2,
+} from "lucide-react"
+
+import type { Bed, Garden } from "./use-beds-table"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ChevronLeft, Plus, Search, Sprout, Eye, EyeOff, Pencil, Trash2 } from "lucide-react"
-import type { Bed, Garden } from "./use-beds-table"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface BedsLeftSidebarProps {
   leftSidebarOpen: boolean
@@ -59,7 +76,9 @@ export function BedsLeftSidebar({
   return (
     <div
       className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-all duration-300 ${
-        leftSidebarOpen ? "w-full lg:w-72" : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
+        leftSidebarOpen
+          ? "w-full lg:w-72"
+          : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
       }`}
     >
       <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
@@ -131,15 +150,24 @@ export function BedsLeftSidebar({
         className="flex-1 overflow-y-auto p-3 space-y-3 bg-slate-50/30 dark:bg-slate-900/30"
       >
         {filteredBeds.length === 0 ? (
-          <div className="text-center py-12 text-xs text-muted-foreground">Không tìm thấy luống nào.</div>
+          <div className="text-center py-12 text-xs text-muted-foreground">
+            Không tìm thấy luống nào.
+          </div>
         ) : (
           filteredBeds.map((bed) => {
             const isSelected = bed.code === selectedBedCode
-            const percentOccupied = bed.maxTrees ? Math.min(100, Math.round((bed.treeCount / bed.maxTrees) * 100)) : 0
+            const percentOccupied = bed.maxTrees
+              ? Math.min(100, Math.round((bed.treeCount / bed.maxTrees) * 100))
+              : 0
 
             const blocks = Array.from({ length: 12 }).map((_, i) => {
-              if (i < Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12 * 0.8)) return "bg-emerald-500"
-              if (i < Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12)) return "bg-amber-500"
+              if (
+                i <
+                Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12 * 0.8)
+              )
+                return "bg-emerald-500"
+              if (i < Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12))
+                return "bg-amber-500"
               return "bg-slate-100 dark:bg-slate-800"
             })
             return (
@@ -162,13 +190,19 @@ export function BedsLeftSidebar({
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <Sprout className={`h-4 w-4 ${isSelected ? "text-emerald-600" : "text-slate-400"}`} />
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">{bed.name}</h3>
+                    <Sprout
+                      className={`h-4 w-4 ${isSelected ? "text-emerald-600" : "text-slate-400"}`}
+                    />
+                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
+                      {bed.name}
+                    </h3>
                   </div>
                   <Badge
                     variant={bed.status === "active" ? "default" : "secondary"}
                     className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
-                      bed.status === "active" ? "bg-emerald-500/10 text-emerald-600 border-transparent" : ""
+                      bed.status === "active"
+                        ? "bg-emerald-500/10 text-emerald-600 border-transparent"
+                        : ""
                     }`}
                   >
                     {bed.status === "active" ? "Active" : "Inactive"}
@@ -196,13 +230,22 @@ export function BedsLeftSidebar({
                     </span>
                   </div>
                   <div>
-                    Quy hoạch: <span className="font-semibold text-slate-700 dark:text-slate-300">{bed.ageYear} năm</span>
+                    Quy hoạch:{" "}
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                      {bed.ageYear} năm
+                    </span>
                   </div>
                   <div className="truncate text-emerald-600 dark:text-emerald-400">
-                    Tưới: <span className="font-semibold">{formatDaysAgo(bed.lastWateredAt)}</span>
+                    Tưới:{" "}
+                    <span className="font-semibold">
+                      {formatDaysAgo(bed.lastWateredAt)}
+                    </span>
                   </div>
                   <div className="truncate text-amber-600 dark:text-amber-500">
-                    Bón: <span className="font-semibold">{formatDaysAgo(bed.lastFertilizedAt)}</span>
+                    Bón:{" "}
+                    <span className="font-semibold">
+                      {formatDaysAgo(bed.lastFertilizedAt)}
+                    </span>
                   </div>
                 </div>
 
@@ -214,7 +257,9 @@ export function BedsLeftSidebar({
                     type="button"
                     onClick={() => handleToggleStatus(bed)}
                     className="p-1 text-slate-400 hover:text-slate-600 rounded-md transition-colors"
-                    title={bed.status === "active" ? "Tạm ẩn luống" : "Mở luống"}
+                    title={
+                      bed.status === "active" ? "Tạm ẩn luống" : "Mở luống"
+                    }
                   >
                     {bed.status === "active" ? (
                       <Eye className="h-3.5 w-3.5" />

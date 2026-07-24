@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { OrdersTable } from "./_components/orders-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { OrdersTable } from "./_components/orders-table"
 
 export const metadata: Metadata = {
   title: "Quản lý Đơn hàng | Sâm Ngọc Linh Admin",
@@ -71,17 +74,20 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách đơn hàng</h2>
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
+            Danh sách đơn hàng
+          </h2>
           <p className="text-xs text-muted-foreground">
-            Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời gian tạo.
+            Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời
+            gian tạo.
           </p>
         </div>
-        
+
         <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
-          <OrdersTable 
-            initialOrders={orders} 
-            metadata={metadata} 
-            errorMsg={errorMsg} 
+          <OrdersTable
+            initialOrders={orders}
+            metadata={metadata}
+            errorMsg={errorMsg}
           />
         </Suspense>
       </div>

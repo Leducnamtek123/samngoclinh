@@ -1,11 +1,24 @@
 "use client"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Bed {
   id: string
@@ -63,9 +76,7 @@ export function TreeDialog({
             <DialogTitle>
               {mode === "create" ? t("trees.addTree") : t("trees.editTree")}
             </DialogTitle>
-            <DialogDescription>
-              {t("trees.subtitle")}
-            </DialogDescription>
+            <DialogDescription>{t("trees.subtitle")}</DialogDescription>
           </DialogHeader>
 
           {error && (
@@ -146,15 +157,21 @@ export function TreeDialog({
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">{t("common.status.active")}</SelectItem>
-                    <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
+                    <SelectItem value="active">
+                      {t("common.status.active")}
+                    </SelectItem>
+                    <SelectItem value="harvested">
+                      {t("common.status.completed")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-health">{t("trees.fields.healthStatus")}</Label>
+              <Label htmlFor="tree-health">
+                {t("trees.fields.healthStatus")}
+              </Label>
               <Select
                 value={formData.healthStatus}
                 onValueChange={(val) => onSelectChange("healthStatus", val)}
@@ -163,16 +180,26 @@ export function TreeDialog({
                   <SelectValue placeholder={t("trees.fields.healthStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="healthy">{t("common.status.healthy")}</SelectItem>
-                  <SelectItem value="diseased">{t("common.status.diseased")}</SelectItem>
-                  <SelectItem value="weak">{t("common.status.warning")}</SelectItem>
-                  <SelectItem value="dead">{t("common.status.error")}</SelectItem>
+                  <SelectItem value="healthy">
+                    {t("common.status.healthy")}
+                  </SelectItem>
+                  <SelectItem value="diseased">
+                    {t("common.status.diseased")}
+                  </SelectItem>
+                  <SelectItem value="weak">
+                    {t("common.status.warning")}
+                  </SelectItem>
+                  <SelectItem value="dead">
+                    {t("common.status.error")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-planted">{t("trees.fields.plantedDate")}</Label>
+              <Label htmlFor="tree-planted">
+                {t("trees.fields.plantedDate")}
+              </Label>
               <Input
                 id="tree-planted"
                 name="plantedAt"
@@ -216,7 +243,9 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-price">{t("products.fields.price")} (VND)</Label>
+              <Label htmlFor="tree-price">
+                {t("products.fields.price")} (VND)
+              </Label>
               <Input
                 id="tree-price"
                 name="priceBought"
@@ -231,7 +260,9 @@ export function TreeDialog({
               <Label htmlFor="tree-owner">Owner</Label>
               <Select
                 value={formData.ownerUserId || "system"}
-                onValueChange={(val) => onSelectChange("ownerUserId", val === "system" ? "" : val)}
+                onValueChange={(val) =>
+                  onSelectChange("ownerUserId", val === "system" ? "" : val)
+                }
               >
                 <SelectTrigger id="tree-owner">
                   <SelectValue placeholder="Select owner" />
@@ -239,7 +270,8 @@ export function TreeDialog({
                 <SelectContent>
                   <SelectItem value="system">System</SelectItem>
                   {users.map((u) => {
-                    const name = `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim();
+                    const name =
+                      `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
                     return (
                       <SelectItem key={u.id} value={u.id}>
                         {name}
@@ -260,7 +292,11 @@ export function TreeDialog({
             >
               {t("common.actions.cancel")}
             </Button>
-            <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               {loading ? t("common.status.pending") : t("common.actions.save")}
             </Button>
           </DialogFooter>

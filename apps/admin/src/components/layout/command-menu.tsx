@@ -21,8 +21,8 @@ import {
   isActivePathname,
   titleCaseToCamelCase,
 } from "@/lib/utils"
-import { useRole } from "@/hooks/use-role"
 
+import { useRole } from "@/hooks/use-role"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -89,13 +89,13 @@ export function CommandMenu({
 
   const isItemAllowed = (item: NavigationRootItem | NavigationNestedItem) => {
     if (item.allowedRoles && item.allowedRoles.length > 0) {
-      return hasRole(item.allowedRoles);
+      return hasRole(item.allowedRoles)
     }
-    return true;
-  };
+    return true
+  }
 
   const renderMenuItem = (item: NavigationRootItem | NavigationNestedItem) => {
-    if (!isItemAllowed(item)) return null;
+    if (!isItemAllowed(item)) return null
 
     const title = getDictionaryValue(
       titleCaseToCamelCase(item.title),
@@ -107,8 +107,8 @@ export function CommandMenu({
 
     // If the item has nested items, render it with a collapsible dropdown.
     if (item.items) {
-      const visibleSubItems = item.items.filter(isItemAllowed);
-      if (visibleSubItems.length === 0) return null;
+      const visibleSubItems = item.items.filter(isItemAllowed)
+      if (visibleSubItems.length === 0) return null
 
       return (
         <Collapsible key={item.title} className="group/collapsible">
@@ -183,15 +183,15 @@ export function CommandMenu({
           <ScrollArea className="h-[300px] max-h-[300px]">
             {navigationsData.map((nav) => {
               const visibleItems = nav.items.filter((item) => {
-                if (!isItemAllowed(item)) return false;
+                if (!isItemAllowed(item)) return false
                 if (item.items) {
-                  const allowedSub = item.items.filter(isItemAllowed);
-                  return allowedSub.length > 0;
+                  const allowedSub = item.items.filter(isItemAllowed)
+                  return allowedSub.length > 0
                 }
-                return true;
-              });
+                return true
+              })
 
-              if (visibleItems.length === 0) return null;
+              if (visibleItems.length === 0) return null
 
               const title = getDictionaryValue(
                 titleCaseToCamelCase(nav.title),

@@ -1,13 +1,10 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { ChartConfig } from "@/components/ui/chart"
 import type { LeadSourceType } from "../types"
 
 import { useRadius } from "@/hooks/use-radius"
+import { useRecharts } from "@/hooks/use-recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -42,12 +39,15 @@ export function LeadSourcesChart({
 }: {
   data: Pick<LeadSourceType, "leads" | "summary">
 }) {
-  const recharts = useRecharts();
-    const radius = useRadius()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Label, PolarRadiusAxis, RadialBar, RadialBarChart } = recharts;
-
-
+  const recharts = useRecharts()
+  const radius = useRadius()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Label, PolarRadiusAxis, RadialBar, RadialBarChart } = recharts
 
   return (
     <ChartContainer

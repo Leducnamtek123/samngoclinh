@@ -1,7 +1,6 @@
 "use client"
 
-import { useReducer, useState, useMemo, useCallback } from "react"
-import { CalendarContext } from "../_hooks/calendar-context"
+import { useCallback, useMemo, useReducer, useState } from "react"
 
 import type { CalendarApi } from "@fullcalendar/core/index.js"
 import type { ReactNode } from "react"
@@ -14,10 +13,10 @@ import type {
 
 import { categoriesData } from "../_data/categories"
 
+import { CalendarContext } from "../_hooks/calendar-context"
 import { CalendarReducer } from "../_reducers/calendar-reducer"
 
 // Create Kanban context
-
 
 export function CalendarProvider({
   events,
@@ -38,12 +37,15 @@ export function CalendarProvider({
   const [eventSidebarIsOpen, setEventSidebarIsOpen] = useState(false)
 
   // Handlers for event actions
-  const handleAddEvent = useCallback((event: EventWithoutIdType) => {
-    dispatch({
-      type: "addEvent",
-      event: { ...event, id: calendarState.events.length.toString() },
-    })
-  }, [calendarState.events.length])
+  const handleAddEvent = useCallback(
+    (event: EventWithoutIdType) => {
+      dispatch({
+        type: "addEvent",
+        event: { ...event, id: calendarState.events.length.toString() },
+      })
+    },
+    [calendarState.events.length]
+  )
 
   const handleUpdateEvent = useCallback((event: EventType) => {
     dispatch({ type: "updateEvent", event })
@@ -62,39 +64,43 @@ export function CalendarProvider({
     dispatch({ type: "selectCategory", category })
   }, [])
 
-  const handleSelectAllCategories = useCallback((isSelectAllCategories: boolean) => {
-    dispatch({ type: "selectAllCategories", isSelectAllCategories })
-  }, [])
+  const handleSelectAllCategories = useCallback(
+    (isSelectAllCategories: boolean) => {
+      dispatch({ type: "selectAllCategories", isSelectAllCategories })
+    },
+    []
+  )
 
-  const contextValue = useMemo(() => ({
-    calendarState,
-    calendarApi,
-    setCalendarApi,
-    eventSidebarIsOpen,
-    setEventSidebarIsOpen,
-    handleUpdateEvent,
-    handleAddEvent,
-    handleDeleteEvent,
-    handleSelectEvent,
-    handleSelectCategory,
-    handleSelectAllCategories,
-  }), [
-    calendarState,
-    calendarApi,
-    eventSidebarIsOpen,
-    handleUpdateEvent,
-    handleAddEvent,
-    handleDeleteEvent,
-    handleSelectEvent,
-    handleSelectCategory,
-    handleSelectAllCategories,
-  ])
+  const contextValue = useMemo(
+    () => ({
+      calendarState,
+      calendarApi,
+      setCalendarApi,
+      eventSidebarIsOpen,
+      setEventSidebarIsOpen,
+      handleUpdateEvent,
+      handleAddEvent,
+      handleDeleteEvent,
+      handleSelectEvent,
+      handleSelectCategory,
+      handleSelectAllCategories,
+    }),
+    [
+      calendarState,
+      calendarApi,
+      eventSidebarIsOpen,
+      handleUpdateEvent,
+      handleAddEvent,
+      handleDeleteEvent,
+      handleSelectEvent,
+      handleSelectCategory,
+      handleSelectAllCategories,
+    ]
+  )
 
   return (
-    <CalendarContext.Provider
-      value={contextValue}
-    >
+    <CalendarContext.Provider value={contextValue}>
       {children}
-      </CalendarContext.Provider>
+    </CalendarContext.Provider>
   )
 }

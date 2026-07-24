@@ -1,11 +1,24 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface PackageDialogProps {
   isOpen: boolean
@@ -39,15 +52,24 @@ export function PackageDialog({
   activeTab,
 }: PackageDialogProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {mode === "create" ? "Thêm gói dịch vụ mới" : "Chỉnh sửa gói dịch vụ"}
+              {mode === "create"
+                ? "Thêm gói dịch vụ mới"
+                : "Chỉnh sửa gói dịch vụ"}
             </DialogTitle>
             <DialogDescription>
-              Nhập các thông tin chi tiết cho gói {activeTab === "care" ? "chăm sóc" : "bảo hiểm/bảo vệ"}. Nhấn Lưu để hoàn tất.
+              Nhập các thông tin chi tiết cho gói{" "}
+              {activeTab === "care" ? "chăm sóc" : "bảo hiểm/bảo vệ"}. Nhấn Lưu
+              để hoàn tất.
             </DialogDescription>
           </DialogHeader>
 
@@ -63,7 +85,9 @@ export function PackageDialog({
               <Input
                 id="pkg-code"
                 value={formData.code}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, code: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({ ...prev, code: e.target.value }))
+                }
                 placeholder="Ví dụ: CARE_GOLD, PROT_MAX"
                 disabled={mode === "edit"}
                 required
@@ -75,7 +99,9 @@ export function PackageDialog({
               <Input
                 id="pkg-name"
                 value={formData.name}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="Ví dụ: Gói Chăm Sóc Vàng"
                 required
               />
@@ -87,7 +113,12 @@ export function PackageDialog({
                 id="pkg-price"
                 type="number"
                 value={formData.price}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, price: Number(e.target.value) }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    price: Number(e.target.value),
+                  }))
+                }
                 min={0}
                 required
               />
@@ -100,18 +131,30 @@ export function PackageDialog({
                   id="pkg-duration"
                   type="number"
                   value={formData.durationMonths}
-                  onChange={(e) => onChange((prev: any) => ({ ...prev, durationMonths: Number(e.target.value) }))}
+                  onChange={(e) =>
+                    onChange((prev: any) => ({
+                      ...prev,
+                      durationMonths: Number(e.target.value),
+                    }))
+                  }
                   min={1}
                   required
                 />
               </div>
             ) : (
               <div className="grid gap-2">
-                <Label htmlFor="pkg-coverage">Phạm vi bảo vệ / bồi thường</Label>
+                <Label htmlFor="pkg-coverage">
+                  Phạm vi bảo vệ / bồi thường
+                </Label>
                 <Input
                   id="pkg-coverage"
                   value={formData.coverage}
-                  onChange={(e) => onChange((prev: any) => ({ ...prev, coverage: e.target.value }))}
+                  onChange={(e) =>
+                    onChange((prev: any) => ({
+                      ...prev,
+                      coverage: e.target.value,
+                    }))
+                  }
                   placeholder="Ví dụ: Bồi thường 100% khi cây chết"
                 />
               </div>
@@ -121,7 +164,9 @@ export function PackageDialog({
               <Label htmlFor="pkg-status">Trạng thái hoạt động</Label>
               <Select
                 value={formData.status}
-                onValueChange={(val) => onChange((prev: any) => ({ ...prev, status: val }))}
+                onValueChange={(val) =>
+                  onChange((prev: any) => ({ ...prev, status: val }))
+                }
               >
                 <SelectTrigger id="pkg-status">
                   <SelectValue placeholder="Chọn trạng thái" />
@@ -138,7 +183,12 @@ export function PackageDialog({
               <Textarea
                 id="pkg-desc"
                 value={formData.description}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Mô tả chi tiết quyền lợi dịch vụ..."
                 rows={3}
               />
@@ -154,7 +204,11 @@ export function PackageDialog({
             >
               Hủy
             </Button>
-            <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               {loading ? "Đang lưu..." : "Lưu thay đổi"}
             </Button>
           </DialogFooter>

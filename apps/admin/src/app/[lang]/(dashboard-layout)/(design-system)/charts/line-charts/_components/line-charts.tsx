@@ -1,6 +1,6 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
+import { useRecharts } from "@/hooks/use-recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -19,8 +19,13 @@ const lineChartData = [
 ]
 
 export function LineCharts() {
-  const recharts = useRecharts();
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
+  const recharts = useRecharts()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
 
   return (
     <section className="conatiner grid gap-4 p-4">
@@ -42,7 +47,7 @@ export function LineCharts() {
 }
 
 function BasicLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -65,7 +70,7 @@ function BasicLineChart({ recharts }: { recharts: any }) {
 }
 
 function TinyLineChart({ recharts }: { recharts: any }) {
-  const { Line, LineChart } = recharts;
+  const { Line, LineChart } = recharts
   return (
     <Card>
       <CardHeader>
@@ -88,7 +93,7 @@ function TinyLineChart({ recharts }: { recharts: any }) {
 }
 
 function DashedLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -121,7 +126,7 @@ function DashedLineChart({ recharts }: { recharts: any }) {
 }
 
 function VerticalLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -144,7 +149,7 @@ function VerticalLineChart({ recharts }: { recharts: any }) {
 }
 
 function BiaxialLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -178,7 +183,7 @@ function BiaxialLineChart({ recharts }: { recharts: any }) {
 }
 
 function VerticalLineChartDomain({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -201,7 +206,7 @@ function VerticalLineChartDomain({ recharts }: { recharts: any }) {
 }
 
 function LineChartPadding({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -224,7 +229,8 @@ function LineChartPadding({ recharts }: { recharts: any }) {
 }
 
 function LineChartReferenceLines({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } =
+    recharts
   return (
     <Card>
       <CardHeader>
@@ -242,11 +248,7 @@ function LineChartReferenceLines({ recharts }: { recharts: any }) {
               stroke="hsl(var(--chart-3))"
               label="Max PV PAGE"
             />
-            <ReferenceLine
-              y={9800}
-              label="Max"
-              stroke="hsl(var(--chart-4))"
-            />
+            <ReferenceLine y={9800} label="Max" stroke="hsl(var(--chart-4))" />
             <Line type="monotone" dataKey="pv" stroke="hsl(var(--chart-1))" />
             <Line type="monotone" dataKey="uv" stroke="hsl(var(--chart-2))" />
           </LineChart>
@@ -257,7 +259,7 @@ function LineChartReferenceLines({ recharts }: { recharts: any }) {
 }
 
 function CustomizedDotLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -315,7 +317,7 @@ function CustomizedDotLineChart({ recharts }: { recharts: any }) {
 }
 
 function CustomizedLabelLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -358,7 +360,7 @@ function CustomizedLabelLineChart({ recharts }: { recharts: any }) {
 }
 
 function MultiSeriesLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -373,11 +375,7 @@ function MultiSeriesLineChart({ recharts }: { recharts: any }) {
             <ChartTooltip content={<ChartTooltipContent />} />
             <Line type="monotone" dataKey="pv" stroke="hsl(var(--chart-1))" />
             <Line type="monotone" dataKey="uv" stroke="hsl(var(--chart-2))" />
-            <Line
-              type="monotone"
-              dataKey="amt"
-              stroke="hsl(var(--chart-3))"
-            />
+            <Line type="monotone" dataKey="amt" stroke="hsl(var(--chart-3))" />
           </LineChart>
         </ChartContainer>
       </CardContent>
@@ -386,7 +384,7 @@ function MultiSeriesLineChart({ recharts }: { recharts: any }) {
 }
 
 function SynchronizedLineChart({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
@@ -417,7 +415,7 @@ function SynchronizedLineChart({ recharts }: { recharts: any }) {
 }
 
 function LineChartConnectNulls({ recharts }: { recharts: any }) {
-  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts;
+  const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>

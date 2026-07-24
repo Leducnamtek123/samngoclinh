@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
+
 import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
 
 interface EContract {
   id: string
@@ -71,20 +74,23 @@ export function useContractsManager({
     setContracts(initialContracts)
   }, [initialContracts])
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -102,7 +108,9 @@ export function useContractsManager({
   }, [searchQuery, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleStatusFilterChange = (val: string) => {
@@ -154,18 +162,19 @@ export function useContractsManager({
       partyB: "",
       pdfUrl: "",
       terms: "",
-    }
+    },
   })
 
   const filteredContracts = contracts.filter((contract) => {
-    const matchesPayment = paymentFilter === "all" || contract.paymentStatus === paymentFilter
+    const matchesPayment =
+      paymentFilter === "all" || contract.paymentStatus === paymentFilter
     return matchesPayment
   })
 
   const handleOpenCreate = () => {
     const nextYear = new Date()
     nextYear.setFullYear(nextYear.getFullYear() + 1)
-    
+
     setDialogState({
       isOpen: true,
       loading: false,
@@ -176,7 +185,8 @@ export function useContractsManager({
         userId: users[0]?.id || "",
         treeCode: trees[0]?.code || "none",
         title: "Hợp đồng ký gửi và chăm sóc sâm Ngọc Linh giống",
-        content: "BÊN A đồng ý ký gửi sâm Ngọc Linh tại nông trại của BÊN B. BÊN B cam kết thực hiện quy trình chăm sóc tiêu chuẩn, bón phân hữu cơ và bảo vệ cây giống...",
+        content:
+          "BÊN A đồng ý ký gửi sâm Ngọc Linh tại nông trại của BÊN B. BÊN B cam kết thực hiện quy trình chăm sóc tiêu chuẩn, bón phân hữu cơ và bảo vệ cây giống...",
         contractValue: 5000000,
         paymentStatus: "unpaid",
         status: "pending",
@@ -186,7 +196,7 @@ export function useContractsManager({
         partyB: "",
         pdfUrl: "",
         terms: "",
-      }
+      },
     })
   }
 
@@ -211,18 +221,24 @@ export function useContractsManager({
         partyB: contract.partyB || "",
         pdfUrl: contract.pdfUrl || "",
         terms: contract.terms || "",
-      }
+      },
     })
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!dialogState.formData.userId) {
-      setDialogState((prev) => ({ ...prev, error: "Vui lòng chọn khách hàng chủ hợp đồng" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: "Vui lòng chọn khách hàng chủ hợp đồng",
+      }))
       return
     }
     if (!dialogState.formData.title.trim()) {
-      setDialogState((prev) => ({ ...prev, error: "Vui lòng nhập tiêu đề hợp đồng" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: "Vui lòng nhập tiêu đề hợp đồng",
+      }))
       return
     }
 
@@ -257,7 +273,10 @@ export function useContractsManager({
         })
         const payloadData = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payloadData?.message || "Không thể tạo hợp đồng mới" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payloadData?.message || "Không thể tạo hợp đồng mới",
+          }))
         } else {
           setContracts((prev) => [payloadData.data, ...prev])
           setSuccessMsg("Tạo hợp đồng điện tử mới thành công!")
@@ -266,19 +285,27 @@ export function useContractsManager({
         }
       } else if (dialogState.mode === "edit" && dialogState.selectedContract) {
         payload.status = dialogState.formData.status
-        const res = await fetchApi(`/admin/contracts/${dialogState.selectedContract.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        })
+        const res = await fetchApi(
+          `/admin/contracts/${dialogState.selectedContract.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        )
         const payloadData = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payloadData?.message || "Không thể cập nhật hợp đồng" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payloadData?.message || "Không thể cập nhật hợp đồng",
+          }))
         } else {
           setContracts((prev) =>
-            prev.map((c) => (c.id === dialogState.selectedContract!.id ? payloadData.data : c))
+            prev.map((c) =>
+              c.id === dialogState.selectedContract!.id ? payloadData.data : c
+            )
           )
           setSuccessMsg("Cập nhật thông tin hợp đồng thành công!")
           setDialogState((prev) => ({ ...prev, isOpen: false }))
@@ -293,8 +320,16 @@ export function useContractsManager({
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa hợp đồng điện tử này?")) return
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+
+  const handleDelete = (id: string) => {
+    setDeleteConfirmId(id)
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return
+    const id = deleteConfirmId
+    setDeleteConfirmId(null)
 
     setErrorMsg("")
     setSuccessMsg("")
@@ -305,15 +340,19 @@ export function useContractsManager({
       })
       if (res.status >= 400) {
         const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa hợp đồng này.")
+        const msg = payload?.message || "Không thể xóa hợp đồng này."
+        setErrorMsg(msg)
+        toast.error(msg)
       } else {
         setContracts((prev) => prev.filter((c) => c.id !== id))
         setSuccessMsg("Đã xóa hợp đồng điện tử thành công!")
+        toast.success("Đã xóa hợp đồng điện tử thành công!")
         router.refresh()
       }
     } catch (err) {
       console.error(err)
       setErrorMsg("Lỗi hệ thống khi thực hiện xóa.")
+      toast.error("Lỗi hệ thống khi thực hiện xóa.")
     }
   }
 
@@ -330,7 +369,7 @@ export function useContractsManager({
       } else {
         const count = payload.data?.count || 0
         const notifiedList = payload.data?.notified || []
-        
+
         // Reload list to get updated reminder states
         const listRes = await fetchApi("/admin/contracts")
         const listPayload = await listRes.json()
@@ -339,9 +378,13 @@ export function useContractsManager({
         }
 
         if (count === 0) {
-          setSuccessMsg("Đã quét xong: Không có hợp đồng nào sắp hết hạn trong vòng 7 ngày tới.")
+          setSuccessMsg(
+            "Đã quét xong: Không có hợp đồng nào sắp hết hạn trong vòng 7 ngày tới."
+          )
         } else {
-          setSuccessMsg(`Quét & thông báo thành công: Phát hiện ${count} hợp đồng sắp hết hạn. Đã gửi cảnh báo nhắc gia hạn tới các hợp đồng: ${notifiedList.join(", ")}.`)
+          setSuccessMsg(
+            `Quét & thông báo thành công: Phát hiện ${count} hợp đồng sắp hết hạn. Đã gửi cảnh báo nhắc gia hạn tới các hợp đồng: ${notifiedList.join(", ")}.`
+          )
         }
       }
     } catch (err) {
@@ -368,6 +411,9 @@ export function useContractsManager({
     handleOpenEdit,
     handleSave,
     handleDelete,
+    deleteConfirmId,
+    setDeleteConfirmId,
+    confirmDelete,
     handleCheckExpiry,
     handlePageChange,
     handleStatusFilterChange,

@@ -1,13 +1,36 @@
 "use client"
 
+import { Bell, ChevronLeft, ChevronRight, Plus } from "lucide-react"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { ToastCard } from "@/components/ui/feedback-components"
-import { Bell, Plus, ChevronLeft, ChevronRight } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ContractDialog } from "./contract-dialog"
 import { ContractsList } from "./contracts-list"
 import { useContractsManager } from "./use-contracts-manager"
@@ -86,6 +109,9 @@ export function ContractsManager({
     handleOpenEdit,
     handleSave,
     handleDelete,
+    deleteConfirmId,
+    setDeleteConfirmId,
+    confirmDelete,
     handleCheckExpiry,
     handlePageChange,
     handleStatusFilterChange,
@@ -103,14 +129,13 @@ export function ContractsManager({
         handleOpenCreate={handleOpenCreate}
       />
 
-
-
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
           <div>
             <CardTitle>Danh sách Hợp đồng</CardTitle>
             <CardDescription>
-              Tổng số {filteredContracts.length} hợp đồng điện tử trong hệ thống.
+              Tổng số {filteredContracts.length} hợp đồng điện tử trong hệ
+              thống.
             </CardDescription>
           </div>
           <ContractsFilters
@@ -145,13 +170,45 @@ export function ContractsManager({
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={(updater) => setDialogState((prev) => ({ ...prev, formData: updater(prev.formData) }))}
+        onChange={(updater) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: updater(prev.formData),
+          }))
+        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}
         users={users}
         trees={trees}
       />
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog
+        open={!!deleteConfirmId}
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa hợp đồng điện tử?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa hợp
+              đồng điện tử này khỏi hệ thống?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteConfirmId(null)}>
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={confirmDelete}
+            >
+              Xóa Hợp Đồng
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Toast notifications */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
@@ -181,20 +238,33 @@ interface ContractsHeaderProps {
   handleOpenCreate: () => void
 }
 
-function ContractsHeader({ handleCheckExpiry, handleOpenCreate }: ContractsHeaderProps) {
+function ContractsHeader({
+  handleCheckExpiry,
+  handleOpenCreate,
+}: ContractsHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý Hợp đồng Điện tử</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Quản lý Hợp đồng Điện tử
+        </h1>
         <p className="text-muted-foreground">
-          Lập, ký kết và theo dõi các hợp đồng ký gửi trồng sâm Ngọc Linh với đối tác, khách hàng.
+          Lập, ký kết và theo dõi các hợp đồng ký gửi trồng sâm Ngọc Linh với
+          đối tác, khách hàng.
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-        <Button onClick={handleCheckExpiry} variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 gap-2 font-semibold">
+        <Button
+          onClick={handleCheckExpiry}
+          variant="outline"
+          className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 gap-2 font-semibold"
+        >
           <Bell className="h-4 w-4" /> Quét & Nhắc gia hạn
         </Button>
-        <Button onClick={handleOpenCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 font-semibold">
+        <Button
+          onClick={handleOpenCreate}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 font-semibold"
+        >
           <Plus className="h-4 w-4" /> Soạn hợp đồng mới
         </Button>
       </div>
@@ -258,12 +328,16 @@ interface ContractsPaginationProps {
   handlePageChange: (page: number) => void
 }
 
-function ContractsPagination({ metadata, handlePageChange }: ContractsPaginationProps) {
+function ContractsPagination({
+  metadata,
+  handlePageChange,
+}: ContractsPaginationProps) {
   if (!metadata) return null
   return (
     <div className="mt-4 flex items-center justify-between">
       <span className="text-xs text-slate-500 dark:text-slate-400">
-        Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} hợp đồng)
+        Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
+        {metadata.count} hợp đồng)
       </span>
       <div className="flex items-center gap-1.5">
         <Button
@@ -303,13 +377,41 @@ const formatVND = (value: number) => {
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "pending":
-      return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-transparent font-semibold">Chờ ký kết</Badge>
+      return (
+        <Badge
+          variant="outline"
+          className="bg-amber-500/10 text-amber-600 border-transparent font-semibold"
+        >
+          Chờ ký kết
+        </Badge>
+      )
     case "signed":
-      return <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-transparent font-semibold">Đã ký</Badge>
+      return (
+        <Badge
+          variant="outline"
+          className="bg-emerald-500/10 text-emerald-600 border-transparent font-semibold"
+        >
+          Đã ký
+        </Badge>
+      )
     case "expired":
-      return <Badge variant="outline" className="bg-slate-500/10 text-slate-600 border-transparent font-semibold">Hết hạn</Badge>
+      return (
+        <Badge
+          variant="outline"
+          className="bg-slate-500/10 text-slate-600 border-transparent font-semibold"
+        >
+          Hết hạn
+        </Badge>
+      )
     case "terminated":
-      return <Badge variant="outline" className="bg-red-500/10 text-red-650 border-transparent font-semibold">Đã hủy</Badge>
+      return (
+        <Badge
+          variant="outline"
+          className="bg-red-500/10 text-red-650 border-transparent font-semibold"
+        >
+          Đã hủy
+        </Badge>
+      )
     default:
       return <Badge variant="outline">{status}</Badge>
   }

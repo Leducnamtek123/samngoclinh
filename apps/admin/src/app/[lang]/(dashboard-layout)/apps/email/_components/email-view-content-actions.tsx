@@ -18,11 +18,7 @@ interface ActionButtonProps extends ComponentProps<typeof Button> {
   label: string
 }
 
-function ActionButton({
-  icon: Icon,
-  label,
-  ...props
-}: ActionButtonProps) {
+function ActionButton({ icon: Icon, label, ...props }: ActionButtonProps) {
   return (
     <Button variant="ghost" size="icon" aria-label={label} {...props}>
       <Icon className="h-4 w-4" />

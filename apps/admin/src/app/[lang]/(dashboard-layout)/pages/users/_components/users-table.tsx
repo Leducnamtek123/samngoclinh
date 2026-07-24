@@ -1,17 +1,31 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { ChevronLeft, ChevronRight, Search } from "lucide-react"
+
+import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { ToastCard } from "@/components/ui/feedback-components"
-import { useTranslation } from "@/providers/i18n-provider"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface User {
   id: string
@@ -37,7 +51,11 @@ interface UsersTableProps {
   errorMsg?: string
 }
 
-export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps) {
+export function UsersTable({
+  initialUsers,
+  metadata,
+  errorMsg,
+}: UsersTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -57,20 +75,23 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
 
   const statusFilter = searchParams.get("status") || "all"
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -88,7 +109,9 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
   }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleStatusFilterChange = (val: string) => {
@@ -115,10 +138,18 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
               <SelectValue placeholder={t("users.fields.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
-              <SelectItem value="active">{t("common.status.active")}</SelectItem>
-              <SelectItem value="inactive">{t("common.status.inactive")}</SelectItem>
-              <SelectItem value="blocked">{t("common.status.cancelled")}</SelectItem>
+              <SelectItem value="all">
+                {t("common.actions.filter")}: All
+              </SelectItem>
+              <SelectItem value="active">
+                {t("common.status.active")}
+              </SelectItem>
+              <SelectItem value="inactive">
+                {t("common.status.inactive")}
+              </SelectItem>
+              <SelectItem value="blocked">
+                {t("common.status.cancelled")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -138,30 +169,47 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                 <TableHead>{t("users.fields.email")}</TableHead>
                 <TableHead>Verified</TableHead>
                 <TableHead>{t("users.fields.status")}</TableHead>
-                <TableHead className="text-right">{t("users.fields.createdAt")}</TableHead>
-                <TableHead className="text-center">{t("common.actions.actions")}</TableHead>
+                <TableHead className="text-right">
+                  {t("users.fields.createdAt")}
+                </TableHead>
+                <TableHead className="text-center">
+                  {t("common.actions.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {initialUsers.map((user) => (
                 <TableRow key={user.id} className="hover:bg-muted/30">
-                  <TableCell className="font-medium text-slate-800 dark:text-slate-200">{user.name || "-"}</TableCell>
-                  <TableCell className="text-slate-650 dark:text-slate-400">{user.username}</TableCell>
+                  <TableCell className="font-medium text-slate-800 dark:text-slate-200">
+                    {user.name || "-"}
+                  </TableCell>
+                  <TableCell className="text-slate-650 dark:text-slate-400">
+                    {user.username}
+                  </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant={user.isVerified ? "default" : "outline"} className={user.isVerified ? "bg-emerald-500/10 text-emerald-600 border-transparent hover:bg-emerald-500/15" : "text-slate-500"}>
-                      {user.isVerified ? t("common.status.success") : t("common.status.pending")}
+                    <Badge
+                      variant={user.isVerified ? "default" : "outline"}
+                      className={
+                        user.isVerified
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent hover:bg-emerald-500/15"
+                          : "text-slate-500"
+                      }
+                    >
+                      {user.isVerified
+                        ? t("common.status.success")
+                        : t("common.status.pending")}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className={
-                        user.status.toLowerCase() === "active" 
-                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold" 
+                        user.status.toLowerCase() === "active"
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold"
                           : user.status.toLowerCase() === "blocked"
-                          ? "bg-red-500/10 text-red-650 border-transparent font-semibold"
-                          : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
+                            ? "bg-red-500/10 text-red-650 border-transparent font-semibold"
+                            : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
                       }
                     >
                       {user.status.toUpperCase()}
@@ -169,7 +217,11 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                   </TableCell>
                   <TableCell className="text-right text-slate-500">
                     {user.signUpDate || user.createdAt
-                      ? new Date(user.signUpDate || user.createdAt!).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
+                      ? new Date(
+                          user.signUpDate || user.createdAt!
+                        ).toLocaleDateString("vi-VN", {
+                          timeZone: "Asia/Ho_Chi_Minh",
+                        })
                       : "-"}
                   </TableCell>
                   <TableCell className="text-center">
@@ -189,7 +241,11 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
           {metadata && (
             <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
+                {t("common.table.pageOf", {
+                  page: metadata.page,
+                  total: metadata.totalPage,
+                })}{" "}
+                ({metadata.count} total)
               </span>
               <div className="flex items-center gap-1.5">
                 <Button

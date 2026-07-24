@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { fetchApiClient } from '@/libs/ApiClient';
 
 export interface SepayPaymentInfo {
   qrUrl: string;
@@ -18,6 +20,8 @@ interface SepayPaymentModalProps {
   onPaymentSuccess?: () => void;
   checkStatusApiUrl?: string;
 }
+
+const currencyFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 
 export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
   isOpen,
@@ -37,34 +41,40 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    return currencyFormatter.format(val);
   };
+
+  const onPaymentSuccessRef = useRef(onPaymentSuccess);
+  useEffect(() => {
+    onPaymentSuccessRef.current = onPaymentSuccess;
+  });
 
   // Poll order status
   useEffect(() => {
     if (!isOpen || !checkStatusApiUrl || isPaid || !isPolling) return;
 
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(checkStatusApiUrl);
-        if (res.ok) {
-          const data = await res.json();
-          const status = data?.data?.status;
+    let isMounted = true;
+    const interval = setInterval(() => {
+      fetchApiClient(checkStatusApiUrl)
+        .then((res) => {
+          if (!isMounted) return;
+          const status = res?.data?.status;
           if (status === 'paid') {
             setIsPaid(true);
             setIsPolling(false);
-            if (onPaymentSuccess) {
-              onPaymentSuccess();
-            }
+            onPaymentSuccessRef.current?.();
           }
-        }
-      } catch (err) {
-        console.error('Failed to poll payment status', err);
-      }
+        })
+        .catch((err) => {
+          console.error('Failed to poll payment status', err);
+        });
     }, 3000);
 
-    return () => clearInterval(interval);
-  }, [isOpen, checkStatusApiUrl, isPaid, isPolling, onPaymentSuccess]);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [isOpen, checkStatusApiUrl, isPaid, isPolling]);
 
   if (!isOpen) return null;
 
@@ -86,6 +96,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors"
           >
@@ -106,6 +117,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
               <p className="text-sm text-gray-500">Đơn hàng <span className="font-bold text-emerald-700">{paymentInfo.orderCode}</span> đã được ghi nhận thanh toán.</p>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="mt-4 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition-colors"
             >
@@ -119,9 +131,12 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
             {/* QR Code Container */}
             <div className="flex flex-col items-center justify-center bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100 space-y-3">
               <div className="relative group p-2 bg-white rounded-xl shadow-md border border-gray-200">
-                <img
+                <Image
                   src={paymentInfo.qrUrl}
                   alt={`VietQR Thanh toán SePay - ${paymentInfo.orderCode}`}
+                  width={224}
+                  height={224}
+                  unoptimized
                   className="w-44 h-44 sm:w-56 sm:h-56 object-contain rounded-lg"
                 />
               </div>
@@ -146,6 +161,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
                 <div className="flex items-center gap-2 font-mono font-bold text-gray-900">
                   <span>{paymentInfo.accountNumber}</span>
                   <button
+                    type="button"
                     onClick={() => copyToClipboard(paymentInfo.accountNumber, 'acc')}
                     className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-2 py-0.5 rounded transition-colors"
                   >
@@ -166,6 +182,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
                 <div className="flex items-center gap-2 font-black text-emerald-700 text-base">
                   <span>{formatCurrency(paymentInfo.amount)}</span>
                   <button
+                    type="button"
                     onClick={() => copyToClipboard(paymentInfo.amount.toString(), 'amount')}
                     className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-2 py-0.5 rounded transition-colors"
                   >
@@ -180,6 +197,7 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
                 <div className="flex items-center gap-2 font-mono font-black text-amber-700 bg-amber-50 px-2 py-1 rounded border border-amber-200">
                   <span>{paymentInfo.orderCode}</span>
                   <button
+                    type="button"
                     onClick={() => copyToClipboard(paymentInfo.orderCode, 'code')}
                     className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-medium px-2 py-0.5 rounded transition-colors"
                   >

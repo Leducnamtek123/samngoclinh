@@ -1,14 +1,32 @@
 "use client"
 
 import Image from "next/image"
+import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
-import { EmptyState, EmptySearchResult, ImagePlaceholder } from "@/components/ui/feedback-components"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  EmptySearchResult,
+  EmptyState,
+  ImagePlaceholder,
+} from "@/components/ui/feedback-components"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Plant {
   id: string
@@ -66,7 +84,9 @@ export function PlantsList({
 }: PlantsListProps) {
   const { t } = useTranslation()
   const selectedPlantIdsSet = new Set(selectedPlantIds)
-  const allFilteredSelected = filteredPlants.length > 0 && filteredPlants.every((p) => selectedPlantIdsSet.has(p.id))
+  const allFilteredSelected =
+    filteredPlants.length > 0 &&
+    filteredPlants.every((p) => selectedPlantIdsSet.has(p.id))
 
   return (
     <Card>
@@ -79,10 +99,7 @@ export function PlantsList({
       <CardContent>
         {filteredPlants.length === 0 ? (
           searchQuery ? (
-            <EmptySearchResult
-              query={searchQuery}
-              onClear={onClearSearch}
-            />
+            <EmptySearchResult query={searchQuery} onClear={onClearSearch} />
           ) : (
             <EmptyState
               title={t("common.table.noResults")}
@@ -106,25 +123,36 @@ export function PlantsList({
                 <TableHead>{t("products.fields.image")}</TableHead>
                 <TableHead>{t("products.fields.status")}</TableHead>
                 <TableHead>Approval</TableHead>
-                <TableHead>{t("products.fields.price")} / {t("products.fields.stock")}</TableHead>
+                <TableHead>
+                  {t("products.fields.price")} / {t("products.fields.stock")}
+                </TableHead>
                 <TableHead>Import Price</TableHead>
                 <TableHead>Planted Date</TableHead>
                 <TableHead>Age</TableHead>
-                <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+                <TableHead className="text-right">
+                  {t("common.actions.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPlants.map((plant) => {
                 const isSelected = selectedPlantIdsSet.has(plant.id)
                 return (
-                  <TableRow key={plant.id} className={isSelected ? "bg-slate-50 dark:bg-slate-900" : ""}>
+                  <TableRow
+                    key={plant.id}
+                    className={
+                      isSelected ? "bg-slate-50 dark:bg-slate-900" : ""
+                    }
+                  >
                     <TableCell className="w-12">
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => onToggleSelect(plant.id)}
                       />
                     </TableCell>
-                    <TableCell className="font-semibold">{plant.name}</TableCell>
+                    <TableCell className="font-semibold">
+                      {plant.name}
+                    </TableCell>
                     <TableCell className="max-w-xs truncate text-muted-foreground text-sm">
                       {plant.description || "-"}
                     </TableCell>
@@ -139,17 +167,25 @@ export function PlantsList({
                             className="object-cover"
                           />
                         ) : (
-                          <ImagePlaceholder className="rounded-none border-none min-h-0 h-full w-full p-1" showText={false} />
+                          <ImagePlaceholder
+                            className="rounded-none border-none min-h-0 h-full w-full p-1"
+                            showText={false}
+                          />
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <span className="text-sm font-medium">
-                        {plant.status === "available" ? t("common.status.active") : t("common.status.completed")}
+                        {plant.status === "available"
+                          ? t("common.status.active")
+                          : t("common.status.completed")}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+                      <Badge
+                        variant="default"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                      >
                         {t("common.status.approved")}
                       </Badge>
                     </TableCell>
@@ -163,7 +199,9 @@ export function PlantsList({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">0 VND</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      0 VND
+                    </TableCell>
                     <TableCell className="text-sm">
                       {getPlantingDate(plant.ageYear)}
                     </TableCell>
@@ -202,7 +240,11 @@ export function PlantsList({
       {metadata && (
         <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
+            {t("common.table.pageOf", {
+              page: metadata.page,
+              total: metadata.totalPage,
+            })}{" "}
+            ({metadata.count} total)
           </span>
           <div className="flex items-center gap-1.5">
             <Button

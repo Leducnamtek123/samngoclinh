@@ -1,8 +1,7 @@
-import { userData } from "@/data/user"
 import { ProfileContentIntroItem } from "./profile-content-info-intro-item"
 
 export function ProfileContentIntroList({ user }: { user?: any }) {
-  const userInfo = user || userData
+  const userInfo = user || {}
   const location = userInfo.state
     ? userInfo.state + ", " + (userInfo.country || "Việt Nam")
     : userInfo.country || "Việt Nam"
@@ -13,7 +12,8 @@ export function ProfileContentIntroList({ user }: { user?: any }) {
         title="Chức vụ / Vai trò"
         value={
           <>
-            {userInfo.role || "Quản trị viên"} <span className="text-foreground"> tại </span>{" "}
+            {userInfo.role || "Quản trị viên"}{" "}
+            <span className="text-foreground"> tại </span>{" "}
             {userInfo.organization || "Hệ thống Sâm Ngọc Linh"}
           </>
         }
@@ -44,4 +44,3 @@ export function ProfileContentIntroList({ user }: { user?: any }) {
     </ul>
   )
 }
-

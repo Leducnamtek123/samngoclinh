@@ -1,5 +1,11 @@
 "use client"
 
+import type { ChangeEvent } from "react"
+import type { UseFormReturn } from "react-hook-form"
+import type { ProfileInfoFormType, UserType } from "../../../types"
+
+import { cn, getInitials } from "@/lib/utils"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { buttonVariants } from "@/components/ui/button-variants"
@@ -11,10 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { cn, getInitials } from "@/lib/utils"
-import type { UseFormReturn } from "react-hook-form"
-import type { ProfileInfoFormType, UserType } from "../../../types"
-import type { ChangeEvent } from "react"
 
 interface PhotoUploadSectionProps {
   photoPreview: string | undefined
@@ -63,11 +65,7 @@ export function PhotoUploadSection({
             </FormItem>
           )}
         />
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleRemovePhoto}
-        >
+        <Button type="button" variant="destructive" onClick={handleRemovePhoto}>
           Remove Photo
         </Button>
       </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { Link } from '@/libs/I18nNavigation';
 
@@ -23,7 +24,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
       title: 'Rượu Sâm Ngọc Linh Ngâm Chum Sành 5 Năm',
       volume: 'Bình 5 Lít • Sâm củ 6 năm tuổi',
       desc: 'Ngâm ủ thủ công trong chum sành không tráng men, tách lọc độc tố Andehit, hương thơm sâu lắng êm dịu.',
-      image: '/images/products/product_ginseng_bottle_1.png',
+      image: '/images/kon_tum_ginseng.png',
       price: 15500000,
     },
     {
@@ -31,7 +32,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
       title: 'Rượu Sâm Ngọc Linh Hạ Thổ Thượng Hạng',
       volume: 'Bình 10 Lít • Sâm củ 8 năm tuổi',
       desc: 'Hạ thổ 3 năm dưới đại ngàn Ngọc Linh, giữ trọn vẹn 52 hợp chất Saponin quý giá cho sức khỏe.',
-      image: '/images/products/product_ginseng_bottle_2.png',
+      image: '/images/kon_tum_ginseng.png',
       price: 32000000,
     },
     {
@@ -39,7 +40,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
       title: 'Rượu Sâm Ngọc Linh Cổ Thụ Nguyên Củ',
       volume: 'Bình 20 Lít • Sâm cổ thụ 12 năm tuổi',
       desc: 'Phiên bản giới hạn chứa củ sâm nguyên dáng tự nhiên độc bản, mang giá trị sưu tầm & phong thủy cao.',
-      image: '/images/products/product_ginseng_bottle_3.png',
+      image: '/images/kon_tum_ginseng.png',
       price: 68000000,
     },
   ];
@@ -66,17 +67,17 @@ export default async function Portfolio(props: PortfolioPageProps) {
           {collections.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-3xl border border-gray-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="bg-white rounded-3xl border border-gray-200/80 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between"
             >
               <div className="p-6 space-y-4">
-                <div className="h-56 bg-gray-50 rounded-2xl flex items-center justify-center p-4 overflow-hidden border border-gray-100">
-                  <img
+                <div className="h-56 bg-gray-50 rounded-2xl flex items-center justify-center p-4 overflow-hidden border border-gray-100 relative">
+                  <Image
                     src={item.image}
                     alt={item.title}
-                    className="max-h-full max-w-full object-contain hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      (e.target as HTMLElement).setAttribute('src', '/images/logo_ruou_sam.png');
-                    }}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    unoptimized
+                    className="object-contain hover:scale-105 transition-transform duration-500 rounded-xl"
                   />
                 </div>
                 <div className="space-y-2">

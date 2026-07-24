@@ -1,10 +1,13 @@
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
+
 import { BannersManager } from "./_components/banners-manager"
 
 export const metadata: Metadata = {
   title: "Quản lý Banners | Sâm Ngọc Linh Admin",
-  description: "Cấu hình hình ảnh, tiêu đề, và nội dung giới thiệu các trang trong hệ thống",
+  description:
+    "Cấu hình hình ảnh, tiêu đề, và nội dung giới thiệu các trang trong hệ thống",
 }
 
 interface Banner {

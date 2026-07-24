@@ -143,7 +143,10 @@ export const migrationBusinessData: Record<
                 stock: 144,
                 status: 'available',
                 orderCount: 12,
-                images: [],
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
                 description: 'Cây sâm 1 năm dành cho người mới tham gia.',
             },
             {
@@ -154,7 +157,10 @@ export const migrationBusinessData: Record<
                 stock: 330,
                 status: 'available',
                 orderCount: 30,
-                images: [],
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
                 description: 'Cây sâm 2 năm có giá trị tăng trưởng tốt.',
             },
             {
@@ -165,7 +171,10 @@ export const migrationBusinessData: Record<
                 stock: 140,
                 status: 'available',
                 orderCount: 57,
-                images: [],
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
                 description: 'Cây sâm 3 năm phổ biến trên trang bán hàng.',
             },
         ],
@@ -179,7 +188,10 @@ export const migrationBusinessData: Record<
                 stock: 12,
                 status: 'available',
                 featured: true,
-                images: [],
+                images: [
+                    '/images/products/wine_root.png',
+                    '/images/kon_tum_ginseng.png',
+                ],
                 description: 'Sản phẩm ngâm rượu từ củ sâm thật.',
             },
             {
@@ -191,7 +203,10 @@ export const migrationBusinessData: Record<
                 stock: 18,
                 status: 'available',
                 featured: true,
-                images: [],
+                images: [
+                    '/images/products/tea_slice.png',
+                    '/images/products/tea_box.png',
+                ],
                 description: 'Gói lát sâm sấy thăng hoa tiện dùng.',
             },
             {
@@ -203,7 +218,10 @@ export const migrationBusinessData: Record<
                 stock: 42,
                 status: 'available',
                 featured: false,
-                images: [],
+                images: [
+                    '/images/products/shampoo.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
                 description: 'Sản phẩm chăm sóc cá nhân từ thảo dược.',
             },
         ],

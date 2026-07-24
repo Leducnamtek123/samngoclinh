@@ -31,7 +31,9 @@ export function ToggleGroup({
       className={cn("flex items-center justify-center gap-1", className)}
       {...props}
     >
-      <ToggleGroupContext.Provider value={useMemo(() => ({ variant, size }), [variant, size])}>
+      <ToggleGroupContext.Provider
+        value={useMemo(() => ({ variant, size }), [variant, size])}
+      >
         {children}
       </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>

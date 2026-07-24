@@ -1,14 +1,11 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { CustomerSatisfactionType } from "../types"
 
 import { ratingToPercentage } from "@/lib/utils"
 
 import { useRadius } from "@/hooks/use-radius"
+import { useRecharts } from "@/hooks/use-recharts"
 import { ChartContainer } from "@/components/ui/chart"
 
 export function CustomerSatisfactionChart({
@@ -16,12 +13,16 @@ export function CustomerSatisfactionChart({
 }: {
   data: CustomerSatisfactionType["summary"]
 }) {
-  const recharts = useRecharts();
-    const radius = useRadius()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Label, PolarAngleAxis, PolarRadiusAxis, RadialBar, RadialBarChart } = recharts;
-
-
+  const recharts = useRecharts()
+  const radius = useRadius()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Label, PolarAngleAxis, PolarRadiusAxis, RadialBar, RadialBarChart } =
+    recharts
 
   const maxRating = 5
 

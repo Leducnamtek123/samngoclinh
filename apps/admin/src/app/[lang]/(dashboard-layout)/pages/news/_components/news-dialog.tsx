@@ -1,14 +1,33 @@
 "use client"
 
 import Image from "next/image"
+import {
+  AlertCircle,
+  Image as ImageIcon,
+  RefreshCw,
+  Upload,
+} from "lucide-react"
+
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Editor } from "@/components/ui/editor"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AlertCircle, RefreshCw, Image as ImageIcon, Upload } from "lucide-react"
-import { Editor } from "@/components/ui/editor"
 
 interface NewsDialogProps {
   isOpen: boolean
@@ -57,10 +76,13 @@ export function NewsDialog({
         <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {mode === "create" ? "Tạo bài viết tin tức mới" : "Chỉnh sửa bài viết"}
+              {mode === "create"
+                ? "Tạo bài viết tin tức mới"
+                : "Chỉnh sửa bài viết"}
             </DialogTitle>
             <DialogDescription>
-              Soạn thảo nội dung bài viết, phân loại chuyên mục hiển thị trên website khách hàng.
+              Soạn thảo nội dung bài viết, phân loại chuyên mục hiển thị trên
+              website khách hàng.
             </DialogDescription>
           </DialogHeader>
 
@@ -74,7 +96,9 @@ export function NewsDialog({
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 gap-3">
               <RefreshCw className="h-8 w-8 text-emerald-600 animate-spin" />
-              <p className="text-xs text-slate-400 font-medium animate-pulse">Đang tải chi tiết bài viết...</p>
+              <p className="text-xs text-slate-400 font-medium animate-pulse">
+                Đang tải chi tiết bài viết...
+              </p>
             </div>
           ) : (
             <>
@@ -95,7 +119,9 @@ export function NewsDialog({
                     <Input
                       id="news-slug"
                       value={formData.slug}
-                      onChange={(e) => onChange((prev) => ({ ...prev, slug: e.target.value }))}
+                      onChange={(e) =>
+                        onChange((prev) => ({ ...prev, slug: e.target.value }))
+                      }
                       placeholder="le-hoi-sam-ngoc-linh..."
                       required
                     />
@@ -107,7 +133,9 @@ export function NewsDialog({
                     <Label htmlFor="news-category">Chuyên mục bài viết</Label>
                     <Select
                       value={formData.category}
-                      onValueChange={(val) => onChange((prev) => ({ ...prev, category: val }))}
+                      onValueChange={(val) =>
+                        onChange((prev) => ({ ...prev, category: val }))
+                      }
                     >
                       <SelectTrigger id="news-category">
                         <SelectValue placeholder="Chọn chuyên mục" />
@@ -125,7 +153,9 @@ export function NewsDialog({
                     <Label htmlFor="news-status">Trạng thái xuất bản</Label>
                     <Select
                       value={formData.status}
-                      onValueChange={(val) => onChange((prev) => ({ ...prev, status: val }))}
+                      onValueChange={(val) =>
+                        onChange((prev) => ({ ...prev, status: val }))
+                      }
                     >
                       <SelectTrigger id="news-status">
                         <SelectValue placeholder="Chọn trạng thái" />
@@ -145,7 +175,12 @@ export function NewsDialog({
                       id="news-sort"
                       type="number"
                       value={formData.sortOrder}
-                      onChange={(e) => onChange((prev) => ({ ...prev, sortOrder: Number(e.target.value) }))}
+                      onChange={(e) =>
+                        onChange((prev) => ({
+                          ...prev,
+                          sortOrder: Number(e.target.value),
+                        }))
+                      }
                     />
                   </div>
                   <div className="grid gap-2">
@@ -153,7 +188,12 @@ export function NewsDialog({
                     <Input
                       id="news-author"
                       value={formData.authorName}
-                      onChange={(e) => onChange((prev) => ({ ...prev, authorName: e.target.value }))}
+                      onChange={(e) =>
+                        onChange((prev) => ({
+                          ...prev,
+                          authorName: e.target.value,
+                        }))
+                      }
                       placeholder="Ví dụ: iWE FARM, Admin..."
                     />
                   </div>
@@ -164,10 +204,18 @@ export function NewsDialog({
                   <div className="flex items-center gap-4">
                     {formData.coverImage ? (
                       <div className="relative w-28 h-20 rounded-xl overflow-hidden border">
-                        <Image src={formData.coverImage} alt="Cover Preview" fill sizes="112px" className="object-cover" />
+                        <Image
+                          src={formData.coverImage}
+                          alt="Cover Preview"
+                          fill
+                          sizes="112px"
+                          className="object-cover"
+                        />
                         <button
                           type="button"
-                          onClick={() => onChange((prev) => ({ ...prev, coverImage: "" }))}
+                          onClick={() =>
+                            onChange((prev) => ({ ...prev, coverImage: "" }))
+                          }
                           className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white text-[10px] font-bold transition-all"
                         >
                           Gỡ bỏ ảnh
@@ -216,7 +264,9 @@ export function NewsDialog({
                   <Textarea
                     id="news-summary"
                     value={formData.summary}
-                    onChange={(e) => onChange((prev) => ({ ...prev, summary: e.target.value }))}
+                    onChange={(e) =>
+                      onChange((prev) => ({ ...prev, summary: e.target.value }))
+                    }
                     placeholder="Nhập tóm tắt ngắn hiển thị trên danh sách tin tức..."
                     rows={2}
                     required
@@ -227,7 +277,9 @@ export function NewsDialog({
                   <Label htmlFor="news-body">Nội dung bài viết chi tiết</Label>
                   <Editor
                     value={formData.body}
-                    onValueChange={(val) => onChange((prev) => ({ ...prev, body: val }))}
+                    onValueChange={(val) =>
+                      onChange((prev) => ({ ...prev, body: val }))
+                    }
                     placeholder="Soạn thảo nội dung bài viết chi tiết..."
                     className="min-h-[200px]"
                   />
@@ -235,10 +287,19 @@ export function NewsDialog({
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" className="h-9 font-semibold text-xs" onClick={onClose}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-9 font-semibold text-xs"
+                  onClick={onClose}
+                >
                   Hủy bỏ
                 </Button>
-                <Button type="submit" disabled={uploadingImage} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-9 text-xs">
+                <Button
+                  type="submit"
+                  disabled={uploadingImage}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-9 text-xs"
+                >
                   {mode === "create" ? "Đăng bài viết" : "Lưu thay đổi"}
                 </Button>
               </DialogFooter>

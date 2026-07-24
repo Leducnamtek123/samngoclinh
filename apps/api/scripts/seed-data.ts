@@ -444,8 +444,8 @@ async function main() {
   console.log('Ensuring catalog plants and products exist...');
   const plantsCatalog = [
     { code: 'PL-01', name: 'Sâm giống Ngọc Linh 2 tuổi', ageYear: 2, price: 120000, stock: 1500, status: 'active', description: 'Cây sâm Ngọc Linh giống chính gốc Trà Linh Nam Trà My, được ươm 2 năm tuổi khỏe mạnh, kháng bệnh cao.', images: [ginsengUrl] },
-    { code: 'PL-02', name: 'Sâm giống Ngọc Linh 3 tuổi', ageYear: 3, price: 180000, stock: 800, status: 'active', description: 'Cây giống sâm 3 năm tuổi có củ bắt đầu sinh trưởng mạnh, thích hợp trồng đất tơi xốp mùn nhiều.', images: [ginsengUrl] },
-    { code: 'PL-03', name: 'Sâm giống Ngọc Linh 4 tuổi', ageYear: 4, price: 280000, stock: 450, status: 'active', description: 'Cây giống sâm 4 năm tuổi khỏe mạnh gieo hạt tự nhiên dưới tán rừng sâu.', images: [ginsengUrl] }
+    { code: 'PL-02', name: 'Sâm giống Ngọc Linh 3 tuổi', ageYear: 3, price: 180000, stock: 800, status: 'active', description: 'Cây giống sâm 3 năm tuổi có củ bắt đầu sinh trưởng mạnh, thích hợp trồng đất tơi xốp mùn nhiều.', images: [ginsengUrl, wineUrl] },
+    { code: 'PL-03', name: 'Sâm giống Ngọc Linh 4 tuổi', ageYear: 4, price: 280000, stock: 450, status: 'active', description: 'Cây giống sâm 4 năm tuổi khỏe mạnh gieo hạt tự nhiên dưới tán rừng sâu.', images: [ginsengUrl, wineUrl, honeyUrl, teaUrl] }
   ];
   for (const p of plantsCatalog) {
     await prisma.catalogPlant.upsert({
@@ -456,9 +456,9 @@ async function main() {
   }
 
   const productsCatalog = [
-    { code: 'PROD-01', name: 'Mật ong ngâm Sâm Ngọc Linh', category: 'Sản phẩm chế biến', unit: 'Hũ 200ml', price: 950000, stock: 250, status: 'active', featured: true, images: [honeyUrl] },
-    { code: 'PROD-02', name: 'Trà sâm Ngọc Linh hòa tan', category: 'Trà & Thảo mộc', unit: 'Hộp 20 gói', price: 350000, stock: 500, status: 'active', featured: true, images: [teaUrl] },
-    { code: 'PROD-03', name: 'Rượu Sâm Ngọc Linh hạ thổ', category: 'Rượu sâm', unit: 'Chai 750ml', price: 2800000, stock: 120, status: 'active', featured: false, images: [wineUrl] }
+    { code: 'PROD-01', name: 'Mật ong ngâm Sâm Ngọc Linh', category: 'Sản phẩm chế biến', unit: 'Hũ 200ml', price: 950000, stock: 250, status: 'active', featured: true, images: [honeyUrl, ginsengUrl, wineUrl] },
+    { code: 'PROD-02', name: 'Trà sâm Ngọc Linh hòa tan', category: 'Trà & Thảo mộc', unit: 'Hộp 20 gói', price: 350000, stock: 500, status: 'active', featured: true, images: [teaUrl, honeyUrl] },
+    { code: 'PROD-03', name: 'Rượu Sâm Ngọc Linh hạ thổ', category: 'Rượu sâm', unit: 'Chai 750ml', price: 2800000, stock: 120, status: 'active', featured: false, images: [wineUrl, ginsengUrl, honeyUrl, teaUrl, avatarHaUrl] }
   ];
   for (const pr of productsCatalog) {
     await prisma.catalogProduct.upsert({

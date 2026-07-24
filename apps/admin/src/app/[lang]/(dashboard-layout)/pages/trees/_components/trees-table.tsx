@@ -1,15 +1,32 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
-import { ToastCard, ConfirmationDialog, ErrorState } from "@/components/ui/feedback-components"
-import { TreesList } from "./trees-list"
-import { TreeDialog } from "./tree-dialog"
-import { useTreesManager } from "./use-trees-manager"
+
 import { useTranslation } from "@/providers/i18n-provider"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ConfirmationDialog,
+  ErrorState,
+  ToastCard,
+} from "@/components/ui/feedback-components"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { TreeDialog } from "./tree-dialog"
+import { TreesList } from "./trees-list"
+import { useTreesManager } from "./use-trees-manager"
 
 interface Tree {
   id: string
@@ -54,7 +71,12 @@ interface TreesTableProps {
   errorMsg?: string
 }
 
-export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialError }: TreesTableProps) {
+export function TreesTable({
+  initialTrees,
+  beds,
+  metadata,
+  errorMsg: initialError,
+}: TreesTableProps) {
   const { t } = useTranslation()
   const {
     trees,
@@ -97,12 +119,15 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("trees.title")}</h1>
-          <p className="text-muted-foreground">
-            {t("trees.subtitle")}
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t("trees.title")}
+          </h1>
+          <p className="text-muted-foreground">{t("trees.subtitle")}</p>
         </div>
-        <Button onClick={handleOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+        <Button
+          onClick={handleOpenCreate}
+          className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+        >
           <Plus className="h-4 w-4" /> {t("trees.addTree")}
         </Button>
       </div>
@@ -122,14 +147,23 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-[250px]"
             />
-            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+            <Select
+              value={statusFilter}
+              onValueChange={handleStatusFilterChange}
+            >
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder={t("trees.fields.healthStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
-                <SelectItem value="active">{t("common.status.active")}</SelectItem>
-                <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
+                <SelectItem value="all">
+                  {t("common.actions.filter")}: All
+                </SelectItem>
+                <SelectItem value="active">
+                  {t("common.status.active")}
+                </SelectItem>
+                <SelectItem value="harvested">
+                  {t("common.status.completed")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -158,7 +192,12 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
         beds={beds}
         users={users}
         onChange={handleFormChange}
-        onSelectChange={(field, val) => setDialogState((prev) => ({ ...prev, formData: { ...prev.formData, [field]: val } }))}
+        onSelectChange={(field, val) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, [field]: val },
+          }))
+        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}

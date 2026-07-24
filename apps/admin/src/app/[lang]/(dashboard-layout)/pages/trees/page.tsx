@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { TreesTable } from "./_components/trees-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { TreesTable } from "./_components/trees-table"
 
 export const metadata: Metadata = {
   title: "Manage Plants & Trees | Sâm Ngọc Linh Admin",
@@ -40,7 +43,9 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
     if (search) treeQueryParams.append("search", search)
     if (status && status !== "all") treeQueryParams.append("status", status)
 
-    const treesRes = await fetchApi(`/admin/cultivation/trees?${treeQueryParams.toString()}`)
+    const treesRes = await fetchApi(
+      `/admin/cultivation/trees?${treeQueryParams.toString()}`
+    )
     const treesPayload = await treesRes.json()
     if (treesRes.status >= 400) {
       errorMsg = treesPayload?.message || "Failed to load trees"
@@ -64,11 +69,11 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
   return (
     <div className="container mx-auto p-4 md:p-6">
       <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
-        <TreesTable 
-          initialTrees={trees} 
-          beds={beds} 
-          metadata={metadata} 
-          errorMsg={errorMsg} 
+        <TreesTable
+          initialTrees={trees}
+          beds={beds}
+          metadata={metadata}
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

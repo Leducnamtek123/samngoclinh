@@ -47,7 +47,6 @@ export function CalendarContent() {
 
   // Function to parse and transform an event from FullCalendar's internal event representation to a structured format
 
-
   const handleDateClick = (date: DateInput) => {
     if (calendarApi) {
       calendarApi.changeView("timeGridDay", date)
@@ -85,7 +84,6 @@ export function CalendarContent() {
   )
 
   // Custom class names for event styling
-
 
   return (
     <FullCalendar

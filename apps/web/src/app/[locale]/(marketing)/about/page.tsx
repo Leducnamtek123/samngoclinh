@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function getAboutBanner() {
   try {
-    const res = await fetchApi('/public/banners/about', { cache: 'no-store' });
+    const res = await fetchApi('/public/banners/about', { next: { revalidate: 60 } });
     if (res.ok) {
       const json = await res.json();
       return Array.isArray(json.data) ? json.data : [json.data];
@@ -48,15 +48,7 @@ export default async function About(props: AboutPageProps) {
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       
       {/* Hero Header Section */}
-      <PageBannerSlider 
-        banners={banners} 
-        badgeText="Di sản quốc bảo Việt Nam" 
-        badgeIcon={
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-          </svg>
-        }
-      />
+      <PageBannerSlider banners={banners} />
 
       {/* Main Grid Content */}
       <section className="max-w-6xl mx-auto px-4 md:px-8 py-16 space-y-20">

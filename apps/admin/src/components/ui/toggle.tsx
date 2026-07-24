@@ -1,12 +1,13 @@
 "use client"
 
 import * as TogglePrimitive from "@radix-ui/react-toggle"
-import { toggleVariants } from "./toggle-variants"
 
 import type { VariantProps } from "class-variance-authority"
 import type { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
+
+import { toggleVariants } from "./toggle-variants"
 
 export function Toggle({
   className,

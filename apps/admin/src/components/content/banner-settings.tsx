@@ -1,29 +1,29 @@
-'use client';
+"use client"
 
-import { FormEvent } from 'react';
+import { FormEvent } from "react"
 
 type BannerSettingsProps = {
-  homepageBanner1: string;
-  setHomepageBanner1: (val: string) => void;
-  homepageBanner2: string;
-  setHomepageBanner2: (val: string) => void;
-  homepageBanner3: string;
-  setHomepageBanner3: (val: string) => void;
-  homepageBanner4: string;
-  setHomepageBanner4: (val: string) => void;
-  homepageBanner5: string;
-  setHomepageBanner5: (val: string) => void;
-  aboutBanner: string;
-  setAboutBanner: (val: string) => void;
-  newsBanner: string;
-  setNewsBanner: (val: string) => void;
-  campaignsBanner: string;
-  setCampaignsBanner: (val: string) => void;
-  bannerLoading: boolean;
-  bannerError: string;
-  bannerSuccess: boolean;
-  handleSaveBanner: (e: FormEvent) => void;
-};
+  homepageBanner1: string
+  setHomepageBanner1: (val: string) => void
+  homepageBanner2: string
+  setHomepageBanner2: (val: string) => void
+  homepageBanner3: string
+  setHomepageBanner3: (val: string) => void
+  homepageBanner4: string
+  setHomepageBanner4: (val: string) => void
+  homepageBanner5: string
+  setHomepageBanner5: (val: string) => void
+  aboutBanner: string
+  setAboutBanner: (val: string) => void
+  newsBanner: string
+  setNewsBanner: (val: string) => void
+  campaignsBanner: string
+  setCampaignsBanner: (val: string) => void
+  bannerLoading: boolean
+  bannerError: string
+  bannerSuccess: boolean
+  handleSaveBanner: (e: FormEvent) => void
+}
 
 export function BannerSettings({
   homepageBanner1,
@@ -50,8 +50,13 @@ export function BannerSettings({
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Quản lý Banner Hệ Thống</h2>
-        <p className="text-xs text-gray-400 font-medium">Cấu hình các hình ảnh hiển thị ở phần Banner chính trên Trang chủ và các Trang con</p>
+        <h2 className="text-xl font-bold text-gray-900">
+          Quản lý Banner Hệ Thống
+        </h2>
+        <p className="text-xs text-gray-400 font-medium">
+          Cấu hình các hình ảnh hiển thị ở phần Banner chính trên Trang chủ và
+          các Trang con
+        </p>
       </div>
 
       <form onSubmit={handleSaveBanner} className="space-y-6">
@@ -69,11 +74,18 @@ export function BannerSettings({
 
         <div className="space-y-6">
           <div className="border-b border-gray-150 pb-4">
-            <h3 className="text-sm font-bold text-emerald-800 mb-4">I. Banners Trang Chủ (5 ảnh slide hiển thị xoay vòng)</h3>
-            
+            <h3 className="text-sm font-bold text-emerald-800 mb-4">
+              I. Banners Trang Chủ (5 ảnh slide hiển thị xoay vòng)
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
               <div className="space-y-1.5">
-                <label htmlFor="homepage-banner-1" className="uppercase tracking-wider">Hình Banner Slide 1</label>
+                <label
+                  htmlFor="homepage-banner-1"
+                  className="uppercase tracking-wider"
+                >
+                  Hình Banner Slide 1
+                </label>
                 <input
                   id="homepage-banner-1"
                   type="text"
@@ -85,7 +97,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="homepage-banner-2" className="uppercase tracking-wider">Hình Banner Slide 2</label>
+                <label
+                  htmlFor="homepage-banner-2"
+                  className="uppercase tracking-wider"
+                >
+                  Hình Banner Slide 2
+                </label>
                 <input
                   id="homepage-banner-2"
                   type="text"
@@ -97,7 +114,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="homepage-banner-3" className="uppercase tracking-wider">Hình Banner Slide 3</label>
+                <label
+                  htmlFor="homepage-banner-3"
+                  className="uppercase tracking-wider"
+                >
+                  Hình Banner Slide 3
+                </label>
                 <input
                   id="homepage-banner-3"
                   type="text"
@@ -109,7 +131,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="homepage-banner-4" className="uppercase tracking-wider">Hình Banner Slide 4</label>
+                <label
+                  htmlFor="homepage-banner-4"
+                  className="uppercase tracking-wider"
+                >
+                  Hình Banner Slide 4
+                </label>
                 <input
                   id="homepage-banner-4"
                   type="text"
@@ -121,7 +148,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="homepage-banner-5" className="uppercase tracking-wider">Hình Banner Slide 5</label>
+                <label
+                  htmlFor="homepage-banner-5"
+                  className="uppercase tracking-wider"
+                >
+                  Hình Banner Slide 5
+                </label>
                 <input
                   id="homepage-banner-5"
                   type="text"
@@ -135,11 +167,18 @@ export function BannerSettings({
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-emerald-800 mb-4">II. Banners các Trang Con</h3>
-            
+            <h3 className="text-sm font-bold text-emerald-800 mb-4">
+              II. Banners các Trang Con
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
               <div className="space-y-1.5">
-                <label htmlFor="about-banner" className="uppercase tracking-wider">Trang Giới Thiệu (About)</label>
+                <label
+                  htmlFor="about-banner"
+                  className="uppercase tracking-wider"
+                >
+                  Trang Giới Thiệu (About)
+                </label>
                 <input
                   id="about-banner"
                   type="text"
@@ -151,7 +190,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="news-banner" className="uppercase tracking-wider">Trang Tin tức (News)</label>
+                <label
+                  htmlFor="news-banner"
+                  className="uppercase tracking-wider"
+                >
+                  Trang Tin tức (News)
+                </label>
                 <input
                   id="news-banner"
                   type="text"
@@ -163,7 +207,12 @@ export function BannerSettings({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="campaigns-banner" className="uppercase tracking-wider">Trang Chiến Dịch (Campaigns)</label>
+                <label
+                  htmlFor="campaigns-banner"
+                  className="uppercase tracking-wider"
+                >
+                  Trang Chiến Dịch (Campaigns)
+                </label>
                 <input
                   id="campaigns-banner"
                   type="text"
@@ -183,10 +232,10 @@ export function BannerSettings({
             disabled={bannerLoading}
             className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm text-xs"
           >
-            {bannerLoading ? 'Đang lưu...' : 'Lưu Banner'}
+            {bannerLoading ? "Đang lưu..." : "Lưu Banner"}
           </button>
         </div>
       </form>
     </div>
-  );
+  )
 }

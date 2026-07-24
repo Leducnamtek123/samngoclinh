@@ -40,8 +40,6 @@ export function PaymentMethodForm() {
   const { isSubmitting } = form.formState
   const creditCardBrandName = getCreditCardBrandName(cardNumber || "")
 
-
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-y-3">

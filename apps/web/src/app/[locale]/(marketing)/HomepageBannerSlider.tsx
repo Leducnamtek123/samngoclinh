@@ -1,22 +1,25 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 type HomepageBannerSliderProps = {
   images: string[];
 };
 
-export function HomepageBannerSlider({ images }: HomepageBannerSliderProps) {
+export function HomepageBannerSlider({ images = [] }: HomepageBannerSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const safeImages = Array.isArray(images) ? images : [];
+
   useEffect(() => {
-    if (images.length <= 1) return;
+    if (safeImages.length <= 1) return;
 
     if (!isHovered) {
       timerRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % safeImages.length);
       }, 4000);
     }
 
@@ -25,13 +28,13 @@ export function HomepageBannerSlider({ images }: HomepageBannerSliderProps) {
         clearInterval(timerRef.current);
       }
     };
-  }, [images.length, isHovered]);
+  }, [safeImages.length, isHovered]);
 
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
   };
 
-  if (!images || images.length === 0) {
+  if (safeImages.length === 0) {
     return (
       <div className="w-full aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] rounded-2xl sm:rounded-3xl bg-white/5 border border-gray-200 shadow-lg flex items-center justify-center text-gray-500">
         Không có hình ảnh banner
@@ -49,14 +52,17 @@ export function HomepageBannerSlider({ images }: HomepageBannerSliderProps) {
       <div className="relative w-full h-full">
         {images.map((image, index) => (
           <div
-            key={index}
+            key={image}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
           >
-            <img
+            <Image
               src={image}
               alt={`Sâm Ngọc Linh Banner ${index + 1}`}
+              fill
+              sizes="100vw"
+              unoptimized
               className="w-full h-full object-cover"
             />
           </div>
@@ -65,12 +71,12 @@ export function HomepageBannerSlider({ images }: HomepageBannerSliderProps) {
 
       {/* Indicators / Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {images.map((_, index) => (
+        {images.map((image, index) => (
           <button
-            key={index}
+            key={image}
             type="button"
             onClick={() => handleDotClick(index)}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer border-0 ${
+            className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 cursor-pointer border-0 ${
               index === currentIndex 
                 ? 'bg-white scale-125 shadow-md w-6' 
                 : 'bg-white/50 hover:bg-white/80'

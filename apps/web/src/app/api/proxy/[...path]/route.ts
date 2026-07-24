@@ -72,7 +72,12 @@ async function handleProxy(
       }
     }
 
-    const data = await res.json().catch(() => ({}));
+    let data: any = {};
+    if (res.ok) {
+      data = await res.json().catch(() => ({}));
+    } else {
+      data = await res.json().catch(() => ({}));
+    }
     const response = NextResponse.json(data, { status: res.status });
 
     // If tokens were refreshed, update cookies on response (30 days maxAge)

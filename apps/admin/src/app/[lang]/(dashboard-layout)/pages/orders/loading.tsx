@@ -12,9 +12,12 @@ export default function Loading() {
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách đơn hàng</h2>
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
+            Danh sách đơn hàng
+          </h2>
           <p className="text-xs text-muted-foreground">
-            Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời gian tạo.
+            Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời
+            gian tạo.
           </p>
         </div>
         <TableSkeleton cols={5} rows={5} />

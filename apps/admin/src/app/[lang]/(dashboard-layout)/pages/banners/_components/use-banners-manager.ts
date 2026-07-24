@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useRef, useState } from "react"
+
 import { fetchApi } from "@/lib/api"
 
 interface Banner {
@@ -13,7 +14,10 @@ interface Banner {
 }
 
 // Helper to crop image
-async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<Blob | null> {
+async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: any
+): Promise<Blob | null> {
   const image = new window.Image()
   image.src = imageSrc
   await new Promise((resolve) => {
@@ -43,9 +47,13 @@ async function getCroppedImg(imageSrc: string, pixelCrop: any): Promise<Blob | n
   )
 
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      resolve(blob)
-    }, "image/jpeg", 0.9)
+    canvas.toBlob(
+      (blob) => {
+        resolve(blob)
+      },
+      "image/jpeg",
+      0.9
+    )
   })
 }
 
@@ -58,7 +66,10 @@ const pageNameMap: Record<string, string> = {
   news: "Trang Tin tức",
 }
 
-export function useBannersManager(initialBanners: Banner[], initialError?: string) {
+export function useBannersManager(
+  initialBanners: Banner[],
+  initialError?: string
+) {
   const [banners, setBanners] = useState<Banner[]>(initialBanners)
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
@@ -82,12 +93,18 @@ export function useBannersManager(initialBanners: Banner[], initialError?: strin
     uploadingImage,
   } = dialogState
 
-  const setIsDialogOpen = (isOpen: boolean) => setDialogState((prev) => ({ ...prev, isOpen }))
-  const setDialogMode = (mode: "create" | "edit") => setDialogState((prev) => ({ ...prev, mode }))
-  const setSelectedBanner = (selectedBanner: Banner | null) => setDialogState((prev) => ({ ...prev, selectedBanner }))
-  const setDialogLoading = (loading: boolean) => setDialogState((prev) => ({ ...prev, loading }))
-  const setDialogError = (error: string) => setDialogState((prev) => ({ ...prev, error }))
-  const setUploadingImage = (uploadingImage: boolean) => setDialogState((prev) => ({ ...prev, uploadingImage }))
+  const setIsDialogOpen = (isOpen: boolean) =>
+    setDialogState((prev) => ({ ...prev, isOpen }))
+  const setDialogMode = (mode: "create" | "edit") =>
+    setDialogState((prev) => ({ ...prev, mode }))
+  const setSelectedBanner = (selectedBanner: Banner | null) =>
+    setDialogState((prev) => ({ ...prev, selectedBanner }))
+  const setDialogLoading = (loading: boolean) =>
+    setDialogState((prev) => ({ ...prev, loading }))
+  const setDialogError = (error: string) =>
+    setDialogState((prev) => ({ ...prev, error }))
+  const setUploadingImage = (uploadingImage: boolean) =>
+    setDialogState((prev) => ({ ...prev, uploadingImage }))
 
   // Delete Confirm State
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -121,7 +138,7 @@ export function useBannersManager(initialBanners: Banner[], initialError?: strin
       title: "",
       subtitle: "",
       image: "",
-      order: banners.filter(b => b.pageKey === "home").length,
+      order: banners.filter((b) => b.pageKey === "home").length,
     })
     setDialogState({
       isOpen: true,
@@ -175,12 +192,17 @@ export function useBannersManager(initialBanners: Banner[], initialError?: strin
     setDialogError("")
 
     try {
-      const croppedBlob = await getCroppedImg(cropImageSrc, croppedAreaPixelsRef.current)
+      const croppedBlob = await getCroppedImg(
+        cropImageSrc,
+        croppedAreaPixelsRef.current
+      )
       if (!croppedBlob) {
         throw new Error("Không thể cắt hình ảnh")
       }
 
-      const file = new File([croppedBlob], cropFileNameRef.current, { type: "image/jpeg" })
+      const file = new File([croppedBlob], cropFileNameRef.current, {
+        type: "image/jpeg",
+      })
       const fd = new FormData()
       fd.append("file", file)
 
@@ -214,7 +236,9 @@ export function useBannersManager(initialBanners: Banner[], initialError?: strin
 
     try {
       const isEdit = dialogMode === "edit"
-      const url = isEdit ? `/admin/banners/${selectedBanner?.id}` : "/admin/banners"
+      const url = isEdit
+        ? `/admin/banners/${selectedBanner?.id}`
+        : "/admin/banners"
       const method = isEdit ? "PUT" : "POST"
 
       const res = await fetchApi(url, {
@@ -237,10 +261,14 @@ export function useBannersManager(initialBanners: Banner[], initialError?: strin
           setBanners((prev) =>
             prev.map((b) => (b.id === selectedBanner?.id ? savedItem : b))
           )
-          setSuccessMsg(`Cập nhật banner cho "${pageNameMap[savedItem.pageKey] || savedItem.pageKey}" thành công!`)
+          setSuccessMsg(
+            `Cập nhật banner cho "${pageNameMap[savedItem.pageKey] || savedItem.pageKey}" thành công!`
+          )
         } else {
           setBanners((prev) => [...prev, savedItem])
-          setSuccessMsg(`Tạo mới banner cho "${pageNameMap[savedItem.pageKey] || savedItem.pageKey}" thành công!`)
+          setSuccessMsg(
+            `Tạo mới banner cho "${pageNameMap[savedItem.pageKey] || savedItem.pageKey}" thành công!`
+          )
         }
         setIsDialogOpen(false)
         setTimeout(() => setSuccessMsg(""), 4000)
