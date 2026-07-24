@@ -321,14 +321,16 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
           <SepayPaymentModal
             isOpen={isPaymentOpen}
             onClose={() => setIsPaymentOpen(false)}
-            qrCodeUrl={paymentData.qrCodeUrl}
-            accountNo={paymentData.accountNo}
-            accountName={paymentData.accountName}
-            bankName={paymentData.bankName}
-            amount={paymentData.amount}
-            orderCode={paymentData.orderCode}
+            paymentInfo={{
+              qrUrl: paymentData.qrCodeUrl,
+              accountNumber: paymentData.accountNo,
+              accountName: paymentData.accountName,
+              bankBrand: paymentData.bankName,
+              amount: paymentData.amount,
+              orderCode: paymentData.orderCode,
+            }}
             checkStatusApiUrl={paymentData.checkStatusApiUrl}
-            onSuccess={() => {
+            onPaymentSuccess={() => {
               alert('Thanh toán thành công! Đơn hàng của bạn đã được xác nhận.');
               setIsPaymentOpen(false);
               window.location.href = `/${_locale}/profile`;
