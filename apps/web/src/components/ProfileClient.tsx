@@ -15,7 +15,7 @@ type ProfileClientProps = {
 };
 
 export const ProfileClient = ({
-  locale: _locale,
+  locale,
   initialTab = 'info',
   initialProfile,
   initialBusiness,
@@ -34,6 +34,15 @@ export const ProfileClient = ({
 
   const isError = profileError || (!profileLoading && !profile);
 
+  const handleRelogin = async () => {
+    try {
+      await fetch('/api/auth/sign-out', { method: 'POST' });
+    } catch {
+      // Ignore errors
+    }
+    window.location.href = `/${locale}/sign-in?reason=session_expired`;
+  };
+
   // Active tab state styling helper
   const tabClass = (current: string) =>
     `flex-1 py-3.5 text-center font-bold text-sm border-b-2 transition-all whitespace-nowrap px-4 cursor-pointer ${
@@ -45,19 +54,27 @@ export const ProfileClient = ({
   if (isError) {
     return (
       <div className="max-w-4xl mx-auto py-16 px-4 text-center space-y-4 flex flex-col items-center">
-        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-gray-800">Không thể tải thông tin hồ sơ</h2>
-        <p className="text-gray-500">Vui lòng kiểm tra lại kết nối hoặc đăng nhập lại.</p>
-        <button
-          onClick={() => refetchProfile()}
-          className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary-hover transition-colors"
-        >
-          Thử lại
-        </button>
+        <h2 className="text-2xl font-bold text-gray-800">Phiên làm việc đã hết hạn</h2>
+        <p className="text-gray-500 text-sm max-w-md">Vui lòng đăng nhập lại để tiếp tục quản lý thông tin tài khoản và tài sản cây sâm.</p>
+        <div className="flex gap-3 pt-2">
+          <button
+            onClick={handleRelogin}
+            className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl font-bold hover:bg-primary-hover transition-colors text-xs shadow-md"
+          >
+            Đăng nhập lại
+          </button>
+          <button
+            onClick={() => refetchProfile()}
+            className="inline-block bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 px-6 py-2.5 rounded-xl font-bold transition-colors text-xs"
+          >
+            Thử lại
+          </button>
+        </div>
       </div>
     );
   }
