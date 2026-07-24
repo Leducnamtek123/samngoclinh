@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     Logger,
+    OnModuleInit,
     UnauthorizedException,
 } from '@nestjs/common';
 import { OrdersService } from '@modules/orders/services/orders.service';
@@ -9,26 +10,28 @@ import { DatabaseService } from '@common/database/services/database.service';
 import { SepayWebhookDto } from '@modules/sepay/dtos/sepay-webhook.dto';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
-
-export interface ISepayPaymentInfo {
-    qrUrl: string;
-    accountNumber: string;
-    accountName: string;
-    bankBrand: string;
-    amount: number;
-    orderCode: string;
-}
+import {
+    IPaymentGatewayProvider,
+    IPaymentQrInfo,
+} from '@modules/payment-gateway/interfaces/payment-gateway.interface';
+import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
 
 @Injectable()
-export class SepayService {
+export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
+    readonly name = 'sepay';
     private readonly logger = new Logger(SepayService.name);
 
     constructor(
         private readonly ordersService: OrdersService,
-        private readonly databaseService: DatabaseService
+        private readonly databaseService: DatabaseService,
+        private readonly paymentGatewayRegistry: PaymentGatewayRegistry
     ) {}
 
-    async getPaymentInfo(orderCode: string, amount: number): Promise<ISepayPaymentInfo> {
+    onModuleInit() {
+        this.paymentGatewayRegistry.registerProvider(this);
+    }
+
+    async getPaymentInfo(orderCode: string, amount: number): Promise<IPaymentQrInfo> {
         const dbAcc = await this.databaseService.systemSetting.findUnique({
             where: { key: 'sepay_bank_account' },
         });
@@ -58,6 +61,7 @@ export class SepayService {
             orderCode,
         };
     }
+
 
 
     verifyWebhookAuth(authHeader?: string): boolean {

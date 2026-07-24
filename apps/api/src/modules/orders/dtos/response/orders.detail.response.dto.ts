@@ -129,11 +129,13 @@ export class OrdersDetailResponseDto {
     @Expose()
     paymentQr?: {
         qrUrl: string;
-        accountNumber: string;
-        accountName: string;
-        bankBrand: string;
+        accountNumber?: string;
+        accountName?: string;
+        bankBrand?: string;
         amount: number;
         orderCode: string;
+        redirectUrl?: string;
     };
 }
+
 

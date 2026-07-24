@@ -18,12 +18,15 @@ import { CartItem } from '@generated/prisma-client';
 import { PaginationService } from '@common/pagination/services/pagination.service';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
+import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
+
 @Injectable()
 export class OrdersService implements IOrdersService {
     constructor(
         private readonly ordersRepository: OrdersRepository,
         private readonly databaseService: DatabaseService,
-        private readonly paginationService: PaginationService
+        private readonly paginationService: PaginationService,
+        private readonly paymentGatewayRegistry: PaymentGatewayRegistry
     ) {}
 
     async list(
@@ -38,35 +41,10 @@ export class OrdersService implements IOrdersService {
         };
     }
 
-    private async buildSepayQrInfo(code: string, amount: number) {
-        const dbAcc = await this.databaseService.systemSetting.findUnique({
-            where: { key: 'sepay_bank_account' },
-        });
-        const dbBank = await this.databaseService.systemSetting.findUnique({
-            where: { key: 'sepay_bank_brand' },
-        });
-        const dbName = await this.databaseService.systemSetting.findUnique({
-            where: { key: 'sepay_account_name' },
-        });
-
-        const accountNumber = dbAcc?.value || process.env.SEPAY_BANK_ACCOUNT || '';
-        const bankBrand = dbBank?.value || process.env.SEPAY_BANK_BRAND || 'MBBank';
-        const accountName = dbName?.value || process.env.SEPAY_ACCOUNT_NAME || '';
-
-        const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
-            accountNumber
-        )}&bank=${encodeURIComponent(bankBrand)}&amount=${amount}&des=${encodeURIComponent(
-            code
-        )}&template=compact`;
-
-        return {
-            qrUrl,
-            accountNumber,
-            accountName,
-            bankBrand,
-            amount,
-            orderCode: code,
-        };
+    private async buildPaymentQrInfo(code: string, amount: number, paymentMethod?: string | null) {
+        const provider = this.paymentGatewayRegistry.getProvider(paymentMethod || undefined);
+        if (!provider) return undefined;
+        return provider.getPaymentInfo(code, amount);
     }
 
     async detail(
@@ -83,7 +61,7 @@ export class OrdersService implements IOrdersService {
         }
 
         const paymentQr = order.status === 'pending'
-            ? await this.buildSepayQrInfo(order.code, order.total)
+            ? await this.buildPaymentQrInfo(order.code, order.total, order.paymentMethod)
             : undefined;
 
         return {
@@ -93,6 +71,7 @@ export class OrdersService implements IOrdersService {
             },
         };
     }
+
 
 
 
@@ -275,10 +254,11 @@ export class OrdersService implements IOrdersService {
                 paidAt: order.paidAt,
                 cancelledAt: order.cancelledAt,
                 createdAt: order.createdAt,
-                paymentQr: await this.buildSepayQrInfo(order.code, order.total),
+                paymentQr: await this.buildPaymentQrInfo(order.code, order.total, order.paymentMethod),
             },
         };
     }
+
 
 
 
