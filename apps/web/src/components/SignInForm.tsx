@@ -137,9 +137,6 @@ export default function SignInForm() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-display-lg">
             Đăng nhập tài khoản
           </h1>
-          <p className="text-xs text-gray-500 font-medium">
-            Tài khoản thử nghiệm: <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'user@mail.com' : '0847234234'}</code> / <code className="bg-gray-100 px-1 py-0.5 rounded font-mono text-[10px]">{activeTab === 'email' ? 'aaAA@123' : 'OTP: 123456'}</code>
-          </p>
         </div>
 
         {/* Tabs */}

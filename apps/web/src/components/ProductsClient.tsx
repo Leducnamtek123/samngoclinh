@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { addToCart } from '@/utils/cart';
 
 type ProductsClientProps = {
   locale: string;
@@ -18,11 +19,21 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
   const { data: banners } = useBanner('products');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleAction = (e: React.MouseEvent) => {
+  const handleBuyItem = (e: React.MouseEvent, item: any) => {
     if (!isLoggedIn) {
       e.preventDefault();
       window.location.href = `/${locale}/sign-in?reason=cart`;
+      return;
     }
+    e.preventDefault();
+    addToCart({
+      id: item.id || `PROD-${item.name}`,
+      name: item.name,
+      price: item.price,
+      image: item.image || '/images/products/product_ginseng_bottle_1.png',
+      category: item.category,
+    });
+    window.location.href = `/${locale}/cart`;
   };
 
   const displayItems = items || [];
@@ -129,16 +140,15 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
                       <p className="text-[9px] text-gray-400 uppercase font-semibold">{t('price')}</p>
                       <p className="font-bold text-secondary text-sm">{item.price.toLocaleString('vi-VN')} đ</p>
                     </div>
-                    <a
-                      href="/cart"
-                      onClick={handleAction}
-                      className="p-2 bg-[#4CAF50] hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center justify-center gap-1 px-4 py-2 text-xs font-bold shadow-sm"
+                    <button
+                      onClick={(e) => handleBuyItem(e, item)}
+                      className="p-2 bg-[#4CAF50] hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center justify-center gap-1 px-4 py-2 text-xs font-bold shadow-sm cursor-pointer"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       <span>{t('buyNow')}</span>
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>

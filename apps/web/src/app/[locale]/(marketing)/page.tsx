@@ -145,11 +145,11 @@ export default async function Index(props: IndexPageProps) {
         `}} />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
-            {/* Left Column: Portrait Image without Kon Tum overlay */}
-            <div className="lg:col-span-3 relative group animate-fade-in-up">
-              <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50">
+            {/* Left Column: Portrait Image */}
+            <div className="lg:col-span-5 relative group animate-fade-in-up">
+              <div className="aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/5] rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 max-h-[520px]">
                 <img 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   src="/images/kon_tum_ginseng.png" 
@@ -158,87 +158,90 @@ export default async function Index(props: IndexPageProps) {
               </div>
             </div>
 
-            {/* Middle Column: Text Information */}
-            <div className="lg:col-span-4 space-y-6 text-left animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <span className="text-secondary font-bold tracking-widest uppercase text-xs block">
-                {t('aboutUsBadge')}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight font-display-lg">
-                {t('aboutTitle')}
-              </h2>
-              <p className="text-sm text-gray-600 leading-relaxed font-medium">
-                {t('aboutDesc')}
-              </p>
-              <div>
-                <Link 
-                  href="/about" 
-                  className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-secondary-hover transition-colors group/link"
-                >
-                  <span>{t('learnMore')}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/link:translate-x-1 duration-300">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </Link>
+            {/* Right Column: Text Information + Stat Cards */}
+            <div className="lg:col-span-7 space-y-6 text-left animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div className="space-y-4">
+                <span className="text-secondary font-bold tracking-widest uppercase text-xs block">
+                  {t('aboutUsBadge')}
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight font-display-lg">
+                  {t('aboutTitle')}
+                </h2>
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
+                  {t('aboutDesc')}
+                </p>
+                <div>
+                  <Link 
+                    href="/about" 
+                    className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-secondary-hover transition-colors group/link"
+                  >
+                    <span>{t('learnMore')}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/link:translate-x-1 duration-300">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
+              {/* 2x2 Grid of Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                
+                {/* Stat Card 1: Experience */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-1">
+                  <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17a2 2 0 01-2 2H8M12 3C7 3 3 7 3 12c0 2.5 1.5 5 4 6M12 3c5 0 9 4 9 9c0 2.5-1.5 5-4 6M12 10c-2-2-4-2-6 0M12 14c2-2 4-2 6 0" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-extrabold text-primary">10+</p>
+                    <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('yearsExperience')}</p>
+                  </div>
+                </div>
+
+                {/* Stat Card 2: Elevation */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-2">
+                  <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-extrabold text-primary">1500m+</p>
+                    <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('altitude')}</p>
+                  </div>
+                </div>
+
+                {/* Stat Card 3: Customers */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-3">
+                  <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a6 6 0 00-3.44-5.32M15 7.25a3.25 3.25 0 11-6.5 0 3.25 3.25 0 016.5 0zM9 13.72A6.002 6.002 0 003 19.5h12m.002-5.78a6.002 6.002 0 016 5.78H15.002z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-extrabold text-primary">5000+</p>
+                    <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('happyCustomers')}</p>
+                  </div>
+                </div>
+
+                {/* Stat Card 4: Bottles Supplied */}
+                <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-4">
+                  <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9V5.25m0 3.75a2.25 2.25 0 0 0 2.25 2.25h0A2.25 2.25 0 0 0 14.25 9V5.25m-4.5 0h4.5m-4.5 0V3h4.5v2.25m-4.5 3.75h4.5M9 11.25v8.25a2.25 2.25 0 0 0 2.25 2.25h5.5A2.25 2.25 0 0 0 19 19.5v-8.25A2.25 2.25 0 0 0 16.75 9h-5.5A2.25 2.25 0 0 0 9 11.25Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-extrabold text-primary">100.000+</p>
+                    <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('bottlesSupplied')}</p>
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            {/* Right Column: 2x2 Grid of Stat Cards */}
-            <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              
-              {/* Stat Card 1: Experience */}
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-1">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17a2 2 0 01-2 2H8M12 3C7 3 3 7 3 12c0 2.5 1.5 5 4 6M12 3c5 0 9 4 9 9c0 2.5-1.5 5-4 6M12 10c-2-2-4-2-6 0M12 14c2-2 4-2 6 0" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-primary">10+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('yearsExperience')}</p>
-                </div>
-              </div>
-
-              {/* Stat Card 2: Elevation */}
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-2">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-primary">1500m+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('altitude')}</p>
-                </div>
-              </div>
-
-              {/* Stat Card 3: Customers */}
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-3">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a6 6 0 00-3.44-5.32M15 7.25a3.25 3.25 0 11-6.5 0 3.25 3.25 0 016.5 0zM9 13.72A6.002 6.002 0 003 19.5h12m.002-5.78a6.002 6.002 0 016 5.78H15.002z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-primary">5000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('happyCustomers')}</p>
-                </div>
-              </div>
-
-              {/* Stat Card 4: Bottles Supplied */}
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4 animate-float-4">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9V5.25m0 3.75a2.25 2.25 0 0 0 2.25 2.25h0A2.25 2.25 0 0 0 14.25 9V5.25m-4.5 0h4.5m-4.5 0V3h4.5v2.25m-4.5 3.75h4.5M9 11.25v8.25a2.25 2.25 0 0 0 2.25 2.25h5.5A2.25 2.25 0 0 0 19 19.5v-8.25A2.25 2.25 0 0 0 16.75 9h-5.5A2.25 2.25 0 0 0 9 11.25Z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-2xl font-extrabold text-primary">100.000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('bottlesSupplied')}</p>
-                </div>
-              </div>
-
-            </div>
           </div>
         </div>
       </section>

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/libs/I18nNavigation';
+import { getCartCount } from '@/utils/cart';
+import { NotificationDrawer } from '@/components/NotificationDrawer';
 
 type UserHeaderMenuProps = {
   profile: {
@@ -33,6 +35,8 @@ const UKFlag = () => (
 export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const locale = useLocale();
@@ -42,6 +46,18 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const fullName = profile?.fullName || 'Khách hàng';
   const email = profile?.email || 'user@mail.com';
   const initial = fullName.charAt(0).toUpperCase();
+
+  // Sync cart count from localStorage
+  useEffect(() => {
+    setCartCount(getCartCount());
+
+    const handleUpdate = () => {
+      setCartCount(getCartCount());
+    };
+
+    window.addEventListener('cart_updated', handleUpdate);
+    return () => window.removeEventListener('cart_updated', handleUpdate);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -82,22 +98,29 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
   return (
     <div className="flex items-center gap-4 sm:gap-5" ref={menuRef}>
-      {/* Shopping Cart Icon */}
+      {/* Shopping Cart Icon with Dynamic Badge */}
       <a href={`/${locale}/cart`} className="relative p-1 text-gray-600 hover:text-primary transition-colors">
         <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1.5 min-w-[1.125rem] h-4.5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[10px] font-black border border-white px-1">
+            {cartCount}
+          </span>
+        )}
       </a>
 
-      {/* Notification Bell Icon with Badge */}
-      <a href={`/${locale}/profile?tabs=info`} className="relative p-1 text-gray-600 hover:text-primary transition-colors">
+      {/* Notification Bell Icon */}
+      <button
+        onClick={() => setIsNotifOpen(true)}
+        className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
+        title="Thông báo"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
-        <span className="absolute -top-1 -right-1.5 w-4.5 h-4.5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-black border border-white">
-          7
-        </span>
-      </a>
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+      </button>
 
       {/* Hero Avatar Button */}
       <div className="relative">
@@ -261,6 +284,8 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
           </div>
         )}
       </div>
+
+      <NotificationDrawer isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
     </div>
   );
 };

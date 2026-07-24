@@ -4,19 +4,14 @@ import { useState, useEffect } from 'react';
 import { Link } from '@/libs/I18nNavigation';
 import { fetchApiClient } from '@/libs/ApiClient';
 import { SepayPaymentModal } from '@/components/SepayPaymentModal';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-  category?: string;
-}
+import { useProfileMe } from '@/hooks/queries/useProfile';
+import { getCartItems, updateCartQuantity, removeFromCart, clearCart, type CartItem } from '@/utils/cart';
 
 export const CartClient = ({ locale: _locale }: { locale: string }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const { data: profile } = useProfileMe();
 
   // Shipping details form
   const [recipientName, setRecipientName] = useState('');
@@ -29,46 +24,34 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   useEffect(() => {
-    // Load initial cart from localStorage or fallback
-    try {
-      const saved = localStorage.getItem('cart_items');
-      if (saved) {
-        setItems(JSON.parse(saved));
-      } else {
-        // Sample initial item if empty for smooth UX
-        const defaultItem: CartItem = {
-          id: 'SHOP-01',
-          name: 'Rượu Sâm Ngọc Linh Hạ Thổ 500ml',
-          price: 2850000,
-          quantity: 1,
-          image: '/images/products/product_ginseng_bottle_1.png',
-        };
-        setItems([defaultItem]);
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
+    // Load cart items from localStorage
+    setItems(getCartItems());
+
+    const handleCartUpdate = () => {
+      setItems(getCartItems());
+    };
+
+    window.addEventListener('cart_updated', handleCartUpdate);
+    return () => window.removeEventListener('cart_updated', handleCartUpdate);
   }, []);
 
-  const updateQuantity = (id: string, delta: number) => {
-    const next = items
-      .map((item) => {
-        if (item.id === id) {
-          const q = item.quantity + delta;
-          return q > 0 ? { ...item, quantity: q } : null;
-        }
-        return item;
-      })
-      .filter(Boolean) as CartItem[];
+  // Pre-fill recipient details from user profile when available
+  useEffect(() => {
+    if (profile) {
+      if (profile.fullName && !recipientName) {
+        setRecipientName(profile.fullName);
+      }
+    }
+  }, [profile]);
 
+  const handleUpdateQuantity = (id: string, delta: number) => {
+    const next = updateCartQuantity(id, delta);
     setItems(next);
-    localStorage.setItem('cart_items', JSON.stringify(next));
   };
 
-  const removeItem = (id: string) => {
-    const next = items.filter((item) => item.id !== id);
+  const handleRemoveItem = (id: string) => {
+    const next = removeFromCart(id);
     setItems(next);
-    localStorage.setItem('cart_items', JSON.stringify(next));
   };
 
   const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -102,7 +85,7 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
         const orderCode = order.code || `DH${Math.floor(100000 + Math.random() * 900000)}`;
 
         // Clear cart after checkout
-        localStorage.removeItem('cart_items');
+        clearCart();
 
         setPaymentData({
           orderId,
@@ -122,6 +105,8 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
       // If endpoint requires login or fails, generate SePay VietQR payment fallback
       const orderId = `ORD-${Date.now()}`;
       const orderCode = `DH${Math.floor(100000 + Math.random() * 900000)}`;
+
+      clearCart();
 
       setPaymentData({
         orderId,
@@ -207,15 +192,15 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
                         <p className="text-xs font-bold text-secondary">{item.price.toLocaleString('vi-VN')} đ</p>
                       </div>
                       <div className="flex items-center gap-2 border border-gray-200 rounded-lg p-1">
-                        <button onClick={() => updateQuantity(item.id, -1)} className="w-6 h-6 rounded bg-gray-100 text-gray-600 font-bold hover:bg-gray-200">
+                        <button onClick={() => handleUpdateQuantity(item.id, -1)} className="w-6 h-6 rounded bg-gray-100 text-gray-600 font-bold hover:bg-gray-200">
                           -
                         </button>
                         <span className="text-xs font-bold px-1">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)} className="w-6 h-6 rounded bg-gray-100 text-gray-600 font-bold hover:bg-gray-200">
+                        <button onClick={() => handleUpdateQuantity(item.id, 1)} className="w-6 h-6 rounded bg-gray-100 text-gray-600 font-bold hover:bg-gray-200">
                           +
                         </button>
                       </div>
-                      <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-500 p-1">
+                      <button onClick={() => handleRemoveItem(item.id)} className="text-gray-400 hover:text-red-500 p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>

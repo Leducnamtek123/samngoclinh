@@ -12,10 +12,10 @@ export const BaseTemplate = (props: {
   return (
     <div className="w-full text-gray-800 antialiased bg-brand-bg min-h-screen flex flex-col font-sans overflow-x-hidden">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-50 w-full bg-white/90 border-b border-gray-200/80 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex justify-between items-center">
-          {/* Logo & Navigation */}
-          <div className="flex items-center gap-3 sm:gap-6 md:gap-12 min-w-0">
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/95 border-b border-gray-200/80 backdrop-blur-md shadow-xs">
+        <div className="mx-auto max-w-7xl px-0 h-16 sm:h-20 flex items-center justify-between gap-3">
+          {/* Left: Brand Logo & Mobile Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Hamburger button for Mobile */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -32,28 +32,28 @@ export const BaseTemplate = (props: {
             </button>
 
             {/* Brand Logo */}
-            <a href="/" className="flex items-center gap-2 group min-w-0 flex-shrink-0">
+            <a href="/" className="h-8 inline-flex items-center gap-2 group flex-shrink-0">
               <img
                 src="/assets/images/logo_ruou_sam.png?v=2"
                 alt="Rượu Sâm Ngọc Linh Logo"
-                className="w-8 h-8 sm:w-10 sm:h-10 object-contain flex-shrink-0"
+                className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
               />
-              <span className="font-bold text-sm sm:text-lg md:text-[22px] tracking-tight text-primary font-display-lg truncate max-w-[150px] sm:max-w-none">
+              <span className="font-bold text-base sm:text-lg md:text-xl lg:text-[22px] tracking-tight text-primary font-display-lg whitespace-nowrap leading-none inline-flex items-center">
                 Rượu Sâm Ngọc Linh
               </span>
             </a>
-
-            {/* Desktop Menu Links */}
-            <nav className="hidden md:block">
-              <ul className="flex items-center gap-5 lg:gap-6 text-sm font-semibold text-gray-600">
-                {props.leftNav}
-              </ul>
-            </nav>
           </div>
 
+          {/* Center: Desktop Menu Links */}
+          <nav className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-4 min-w-0">
+            <ul className="flex items-center gap-4 lg:gap-6 xl:gap-8 font-semibold text-gray-600">
+              {props.leftNav}
+            </ul>
+          </nav>
+
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <ul className="flex items-center gap-2 sm:gap-4 text-sm font-semibold">
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            <ul className="flex items-center gap-3 sm:gap-4 text-sm font-semibold">
               {props.rightNav}
             </ul>
           </div>
@@ -103,7 +103,7 @@ export const BaseTemplate = (props: {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow w-full">
+      <main className="flex-grow w-full pt-16 sm:pt-20">
         {props.children}
       </main>
 
