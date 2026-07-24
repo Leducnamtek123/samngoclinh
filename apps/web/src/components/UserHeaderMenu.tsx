@@ -99,28 +99,16 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
         </span>
       </a>
 
-      {/* Hero Avatar Button with Chevron */}
+      {/* Hero Avatar Button */}
       <div className="relative">
         <button
           onClick={() => {
             setIsOpen(!isOpen);
             setShowLangMenu(false);
           }}
-          className="flex items-center gap-1.5 p-0.5 rounded-full hover:bg-gray-100 transition-colors focus:outline-none cursor-pointer"
+          className="w-9 h-9 rounded-full bg-[#1C3F24] hover:bg-emerald-900 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-colors border border-emerald-800 focus:outline-none cursor-pointer"
         >
-          <div className="w-9 h-9 rounded-full bg-[#1C3F24] hover:bg-emerald-900 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-colors border border-emerald-800">
-            {initial}
-          </div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2.5"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
+          {initial}
         </button>
 
         {/* Dropdown Menu Card */}
