@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Bed {
   id: string
@@ -52,16 +53,18 @@ export function TreeDialog({
   loading,
   error,
 }: TreeDialogProps) {
+  const { t } = useTranslation()
+
   return (
     <Dialog open={isOpen} onOpenChange={(val) => !val && onClose()}>
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {mode === "create" ? "Trồng thêm cây giống" : "Cập nhật thông tin cây trồng"}
+              {mode === "create" ? t("trees.addTree") : t("trees.editTree")}
             </DialogTitle>
             <DialogDescription>
-              Nhập thông số chi tiết cây trồng. Lô cây sẽ được gán vào cơ sở dữ liệu trồng trọt.
+              {t("trees.subtitle")}
             </DialogDescription>
           </DialogHeader>
 
@@ -73,19 +76,19 @@ export function TreeDialog({
 
           <div className="grid gap-4 py-4 grid-cols-2">
             <div className="grid gap-2 col-span-2">
-              <Label htmlFor="tree-name">Tên cây giống</Label>
+              <Label htmlFor="tree-name">{t("trees.fields.name")}</Label>
               <Input
                 id="tree-name"
                 name="name"
                 value={formData.name}
                 onChange={onChange}
-                placeholder="Nhập tên cây sâm, ví dụ: Sâm Ngọc Linh Trà My"
+                placeholder={t("trees.fields.name")}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-age">Độ tuổi (năm tuổi)</Label>
+              <Label htmlFor="tree-age">{t("trees.fields.age")}</Label>
               <Input
                 id="tree-age"
                 name="ageYear"
@@ -98,7 +101,7 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-quantity">Số lượng gốc</Label>
+              <Label htmlFor="tree-quantity">Quantity</Label>
               <Input
                 id="tree-quantity"
                 name="quantity"
@@ -112,16 +115,16 @@ export function TreeDialog({
 
             {mode === "create" && (
               <div className="grid gap-2">
-                <Label htmlFor="tree-bedCode">Gán vào luống</Label>
+                <Label htmlFor="tree-bedCode">{t("trees.fields.bed")}</Label>
                 <Select
                   value={formData.bedCode}
                   onValueChange={(val) => onSelectChange("bedCode", val)}
                 >
                   <SelectTrigger id="tree-bedCode">
-                    <SelectValue placeholder="Chọn luống trồng" />
+                    <SelectValue placeholder={t("trees.fields.bed")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">— Không gán luống (Trống) —</SelectItem>
+                    <SelectItem value="none">— None —</SelectItem>
                     {beds.map((bed) => (
                       <SelectItem key={bed.id} value={bed.code}>
                         {bed.name} ({bed.code})
@@ -134,42 +137,42 @@ export function TreeDialog({
 
             {mode === "edit" && (
               <div className="grid gap-2">
-                <Label htmlFor="tree-status">Trạng thái sinh trưởng</Label>
+                <Label htmlFor="tree-status">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(val) => onSelectChange("status", val)}
                 >
                   <SelectTrigger id="tree-status">
-                    <SelectValue placeholder="Chọn trạng thái" />
+                    <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Đang sinh trưởng (Active)</SelectItem>
-                    <SelectItem value="harvested">Đã thu hoạch (Harvested)</SelectItem>
+                    <SelectItem value="active">{t("common.status.active")}</SelectItem>
+                    <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-health">Tình trạng sức khỏe</Label>
+              <Label htmlFor="tree-health">{t("trees.fields.healthStatus")}</Label>
               <Select
                 value={formData.healthStatus}
                 onValueChange={(val) => onSelectChange("healthStatus", val)}
               >
                 <SelectTrigger id="tree-health">
-                  <SelectValue placeholder="Chọn tình trạng sức khỏe" />
+                  <SelectValue placeholder={t("trees.fields.healthStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="healthy">Khỏe mạnh (Tốt)</SelectItem>
-                  <SelectItem value="diseased">Bị nhiễm sâu bệnh</SelectItem>
-                  <SelectItem value="weak">Cần theo dõi sát (Kém)</SelectItem>
-                  <SelectItem value="dead">Đã chết (Hỏng)</SelectItem>
+                  <SelectItem value="healthy">{t("common.status.healthy")}</SelectItem>
+                  <SelectItem value="diseased">{t("common.status.diseased")}</SelectItem>
+                  <SelectItem value="weak">{t("common.status.warning")}</SelectItem>
+                  <SelectItem value="dead">{t("common.status.error")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-planted">Ngày xuống giống</Label>
+              <Label htmlFor="tree-planted">{t("trees.fields.plantedDate")}</Label>
               <Input
                 id="tree-planted"
                 name="plantedAt"
@@ -180,7 +183,7 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-expected-harvest">Dự kiến thu hoạch</Label>
+              <Label htmlFor="tree-expected-harvest">Expected Harvest</Label>
               <Input
                 id="tree-expected-harvest"
                 name="expectedHarvestAt"
@@ -191,7 +194,7 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-last-care">Ngày chăm sóc cuối</Label>
+              <Label htmlFor="tree-last-care">Last Care Date</Label>
               <Input
                 id="tree-last-care"
                 name="lastCareDate"
@@ -202,7 +205,7 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-next-care">Lịch chăm sóc tiếp</Label>
+              <Label htmlFor="tree-next-care">Next Care Date</Label>
               <Input
                 id="tree-next-care"
                 name="nextCareDate"
@@ -213,28 +216,28 @@ export function TreeDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-price">Giá mua gốc sâm (VND)</Label>
+              <Label htmlFor="tree-price">{t("products.fields.price")} (VND)</Label>
               <Input
                 id="tree-price"
                 name="priceBought"
                 type="number"
                 value={formData.priceBought}
                 onChange={onChange}
-                placeholder="Ví dụ: 5000000"
+                placeholder="5000000"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="tree-owner">Khách hàng sở hữu</Label>
+              <Label htmlFor="tree-owner">Owner</Label>
               <Select
                 value={formData.ownerUserId || "system"}
                 onValueChange={(val) => onSelectChange("ownerUserId", val === "system" ? "" : val)}
               >
                 <SelectTrigger id="tree-owner">
-                  <SelectValue placeholder="Chọn khách hàng sở hữu" />
+                  <SelectValue placeholder="Select owner" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="system">Hệ thống (Không có chủ)</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
                   {users.map((u) => {
                     const name = `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim();
                     return (
@@ -255,10 +258,10 @@ export function TreeDialog({
               onClick={onClose}
               disabled={loading}
             >
-              Hủy
+              {t("common.actions.cancel")}
             </Button>
             <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              {loading ? "Đang lưu..." : "Lưu thay đổi"}
+              {loading ? t("common.status.pending") : t("common.actions.save")}
             </Button>
           </DialogFooter>
         </form>

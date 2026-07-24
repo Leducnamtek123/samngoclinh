@@ -356,7 +356,7 @@ export function formatOverviewCardValue(
   }
 }
 
-// Retrieve the dictionary value safely
+// Retrieve the dictionary value safely with fallback
 export function getDictionaryValue(
   key: string,
   section: Record<string, unknown>
@@ -364,9 +364,7 @@ export function getDictionaryValue(
   const value = section[key]
 
   if (typeof value !== "string") {
-    throw new Error(
-      `Invalid dictionary value for key: ${key}. Please ensure all values are correctly set in the dictionary files.`
-    )
+    return key
   }
 
   return value

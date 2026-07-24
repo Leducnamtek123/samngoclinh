@@ -8,6 +8,8 @@ import { Customizer } from "./customizer"
 import { HorizontalLayout } from "./horizontal-layout"
 import { VerticalLayout } from "./vertical-layout"
 
+import { I18nProvider } from "@/providers/i18n-provider"
+
 export function Layout({
   children,
   dictionary,
@@ -18,7 +20,7 @@ export function Layout({
   const isVertical = useIsVertical()
 
   return (
-    <>
+    <I18nProvider dictionary={dictionary}>
       <Customizer />
       {/* If the layout is vertical, render a vertical layout; otherwise, render a horizontal layout */}
       {isVertical ? (
@@ -26,6 +28,6 @@ export function Layout({
       ) : (
         <HorizontalLayout dictionary={dictionary}>{children}</HorizontalLayout>
       )}
-    </>
+    </I18nProvider>
   )
 }

@@ -5,8 +5,8 @@ import { ShopItemsTable } from "./_components/shop-items-table"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
-  title: "Sản phẩm Thương mại | Sâm Ngọc Linh Admin",
-  description: "Quản lý sản phẩm chế biến và vật tư trong hệ thống Sâm Ngọc Linh",
+  title: "Commercial Products & Supplies | Sâm Ngọc Linh Admin",
+  description: "Manage processed products and agricultural supplies",
 }
 
 interface ShopItem {
@@ -62,7 +62,7 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
     }
   } catch (e) {
     console.error("Error fetching shop items:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = "Unable to connect to server"
   }
 
   return (

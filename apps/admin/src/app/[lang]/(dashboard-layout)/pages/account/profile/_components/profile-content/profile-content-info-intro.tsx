@@ -1,17 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ProfileContentIntroList } from "./profile-content-info-intro-list"
 
-export function ProfileContentIntro() {
+export function ProfileContentIntro({ user }: { user?: any }) {
   return (
     <Card asChild>
       <article>
         <CardHeader>
-          <CardTitle>Intro</CardTitle>
+          <CardTitle>Thông tin cơ bản</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProfileContentIntroList />
+          <ProfileContentIntroList user={user} />
         </CardContent>
       </article>
     </Card>
   )
 }
+

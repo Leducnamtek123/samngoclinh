@@ -9,7 +9,7 @@ type TradingFloorPageProps = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Sàn Giao Dịch Ký Gửi | Rượu Sâm Ngọc Linh',
+    title: 'Sàn Mua Bán Cây | Sâm Ngọc Linh',
     description: 'Sàn giao dịch P2P sâm Ngọc Linh kỹ thuật số minh bạch và bảo mật.',
   };
 }

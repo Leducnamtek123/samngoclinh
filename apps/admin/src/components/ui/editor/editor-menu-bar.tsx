@@ -180,7 +180,10 @@ function AlignmentHandler({
   )
 }
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 function ImageHandler({ editor }: { editor: Editor }) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [uploading, setUploading] = useState(false)
 
@@ -201,11 +204,11 @@ function ImageHandler({ editor }: { editor: Editor }) {
         editor.chain().focus().setImage({ src: payload.data.url }).run()
         setIsOpen(false)
       } else {
-        alert(payload?.message || "Tải ảnh lên thất bại")
+        alert(payload?.message || t("messages.errorOccurred"))
       }
     } catch (err) {
       console.error(err)
-      alert("Lỗi kết nối khi tải ảnh lên")
+      alert(t("messages.networkError"))
     } finally {
       setUploading(false)
     }
@@ -226,11 +229,11 @@ function ImageHandler({ editor }: { editor: Editor }) {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-3">
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">Tải lên hình ảnh</p>
+          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{t("common.actions.import", "Upload Image")}</p>
           <div className="flex items-center gap-2">
             <InputFile onValueChange={handleFileChange} disabled={uploading} />
           </div>
-          {uploading && <p className="text-[10px] text-emerald-600 animate-pulse font-medium">Đang tải ảnh lên...</p>}
+          {uploading && <p className="text-[10px] text-emerald-600 animate-pulse font-medium">{t("common.status.pending")}</p>}
         </div>
       </PopoverContent>
     </Popover>
@@ -238,6 +241,7 @@ function ImageHandler({ editor }: { editor: Editor }) {
 }
 
 function LinkHandler({ editor }: { editor: Editor }) {
+  const { t } = useTranslation()
   const isLinkActive = editor.isActive("link")
   const [isOpen, setIsOpen] = useState(false)
   const [linkUrl, setLinkUrl] = useState("")
@@ -279,7 +283,7 @@ function LinkHandler({ editor }: { editor: Editor }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex flex-col gap-2 w-80 p-3">
-        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">Chèn liên kết</p>
+        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{t("common.actions.add", "Insert Link")}</p>
         <div className="flex gap-2">
           <Input
             autoFocus

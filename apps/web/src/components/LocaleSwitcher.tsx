@@ -1,39 +1,30 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
-import type { ChangeEventHandler } from 'react';
+import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/libs/I18nNavigation';
-import { routing } from '@/libs/I18nRouting';
 
 export const LocaleSwitcher = () => {
-  const t = useTranslations('LocaleSwitcher');
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
 
-  const handleChange: ChangeEventHandler<HTMLSelectElement> = (event) => {
-    const newLocale = event.target.value;
-
-    if (newLocale === locale) {
-      return;
-    }
-
+  const toggleLocale = () => {
+    const nextLocale = locale === 'vi' ? 'en' : 'vi';
     const { search } = window.location;
-    router.push(`${pathname}${search}`, { locale: newLocale, scroll: false });
+    router.push(`${pathname}${search}`, { locale: nextLocale, scroll: false });
   };
 
   return (
-    <select
-      defaultValue={locale}
-      onChange={handleChange}
-      className="border border-gray-300 font-medium focus:outline-hidden focus-visible:ring-3"
-      aria-label={t('change_language')}
+    <button
+      type="button"
+      onClick={toggleLocale}
+      className="h-8 w-8 rounded-full bg-gray-100/90 hover:bg-emerald-50 border border-gray-200/80 hover:border-emerald-300 shadow-xs inline-flex items-center justify-center cursor-pointer transition-all duration-150 active:scale-95 flex-shrink-0"
+      title={locale === 'vi' ? 'Chuyển sang English' : 'Switch to Tiếng Việt'}
+      aria-label="Toggle language"
     >
-      {routing.locales.map((elt) => (
-        <option key={elt} value={elt}>
-          {elt.toUpperCase()}
-        </option>
-      ))}
-    </select>
+      <span className="text-lg leading-none select-none">
+        {locale === 'vi' ? '🇻🇳' : '🇺🇸'}
+      </span>
+    </button>
   );
 };

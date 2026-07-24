@@ -1,7 +1,29 @@
 {
+  "auth": {
+    "rememberMe": "Remember me for 30 days on this device"
+  },
   "navigation": {
     "dashboards": "Dashboards",
     "analytics": "Analytics",
+    "cultivation": "Cultivation",
+    "ginsengGardens": "Ginseng Gardens",
+    "ginsengBeds": "Ginseng Beds",
+    "managePlants": "Manage Plants",
+    "careLogs": "Care Logs",
+    "qrCodeTraceability": "QR Traceability",
+    "investorEkycApproval": "eKYC Approvals",
+    "eContracts": "e-Contracts",
+    "business": "Business & Commerce",
+    "products": "Products",
+    "list": "List",
+    "category": "Category",
+    "orders": "Orders",
+    "servicePackages": "Service Packages",
+    "system": "System",
+    "users": "Users",
+    "banners": "Banners",
+    "manageNews": "Manage News",
+    "contactRequests": "Contact Requests",
     "crm": "CRM",
     "ecommerce": "eCommerce",
     "pages": "Pages",
@@ -126,19 +148,24 @@
     "products": "Products",
     "list": "List",
     "add": "Add",
-    "category": "Category",
+    "category": "Categories",
     "orders": "Orders",
     "details": "Details",
     "customers": "Customers",
     "users": "Users",
-    "vườnCủaTôi": "My Gardens",
-    "luốngCủaTôi": "My Beds",
-    "quảnLýCâyTrồng": "Manage Plants",
-    "quảnLýHợpĐồng": "e-Contracts",
-    "góiDịchVụ": "Service Packages",
+    "myGardens": "My Gardens",
+    "myBeds": "My Beds",
+    "ginsengGardens": "Ginseng Gardens",
+    "ginsengBeds": "Ginseng Beds",
+    "careLogs": "Care Logs",
+    "qrCodeTraceability": "QR Code Traceability",
+    "investoreKYCApproval": "Investor eKYC Approval",
+    "managePlants": "Manage Plants",
+    "eContracts": "e-Contracts",
+    "servicePackages": "Service Packages",
     "banners": "Banners",
-    "tinTức": "Manage News",
-    "liênHệ": "Contact Requests",
+    "manageNews": "Manage News",
+    "contactRequests": "Contact Requests",
     "cultivation": "Cultivation & Farming",
     "business": "Business & Sales",
     "system": "System & Users",
@@ -163,6 +190,179 @@
       "settings": "Settings",
       "signOut": "Sign out"
     }
+  },
+  "common": {
+    "actions": {
+      "add": "Add New",
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "search": "Search...",
+      "filter": "Filter",
+      "export": "Export",
+      "import": "Import",
+      "refresh": "Refresh",
+      "confirm": "Confirm",
+      "close": "Close",
+      "view": "View Details",
+      "actions": "Actions",
+      "back": "Back",
+      "submit": "Submit",
+      "reset": "Reset",
+      "copy": "Copy",
+      "print": "Print",
+      "approve": "Approve",
+      "reject": "Reject",
+      "scan": "Scan QR Code",
+      "generate": "Generate"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "success": "Success",
+      "error": "Error",
+      "warning": "Warning",
+      "info": "Info",
+      "healthy": "Healthy",
+      "diseased": "Diseased",
+      "harvested": "Harvested",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "table": {
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} of {total}",
+      "noResults": "No results found.",
+      "selected": "{count} selected",
+      "showing": "Showing {start} to {end} of {total} entries"
+    },
+    "confirmations": {
+      "deleteTitle": "Are you sure?",
+      "deleteDescription": "This action cannot be undone. This will permanently delete the item.",
+      "confirmText": "Yes, delete",
+      "cancelText": "Cancel"
+    }
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage system users, roles, and permissions",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "userDetails": "User Details",
+    "fields": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "role": "Role",
+      "status": "Status",
+      "createdAt": "Created At",
+      "lastLogin": "Last Login",
+      "address": "Address",
+      "avatar": "Avatar"
+    },
+    "roles": {
+      "admin": "Administrator",
+      "manager": "Manager",
+      "investor": "Investor",
+      "farmer": "Farmer",
+      "user": "User"
+    }
+  },
+  "trees": {
+    "title": "Plant & Tree Management",
+    "subtitle": "Manage Ginseng trees, gardens, beds, and growth logs",
+    "addTree": "Add Plant/Tree",
+    "editTree": "Edit Plant/Tree",
+    "treeDetails": "Plant Details",
+    "fields": {
+      "code": "Tree Code",
+      "name": "Plant Name",
+      "garden": "Garden",
+      "bed": "Bed",
+      "plantedDate": "Planted Date",
+      "age": "Age (Years)",
+      "healthStatus": "Health Status",
+      "notes": "Notes",
+      "qrCode": "QR Code"
+    },
+    "careLogs": {
+      "title": "Care Logs",
+      "addLog": "Add Care Log",
+      "activity": "Activity",
+      "performer": "Performed By",
+      "date": "Date"
+    }
+  },
+  "products": {
+    "title": "Product Management",
+    "subtitle": "Manage products, categories, and service packages",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "categories": "Categories",
+    "addCategory": "Add Category",
+    "fields": {
+      "name": "Product Name",
+      "sku": "SKU",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock Quantity",
+      "status": "Status",
+      "description": "Description",
+      "image": "Product Image"
+    }
+  },
+  "content": {
+    "title": "Content Management",
+    "subtitle": "Manage banners, news articles, and contact inquiries",
+    "banners": {
+      "title": "Banner Settings",
+      "addBanner": "Add Banner",
+      "bannerTitle": "Banner Title",
+      "imageUrl": "Image URL",
+      "linkUrl": "Link URL"
+    },
+    "articles": {
+      "title": "Articles & News",
+      "addArticle": "Add Article",
+      "articleTitle": "Article Title",
+      "author": "Author",
+      "publishedDate": "Published Date",
+      "category": "Category"
+    },
+    "contacts": {
+      "title": "Contact Requests",
+      "name": "Sender Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "receivedAt": "Received At"
+    }
+  },
+  "qrCode": {
+    "title": "QR Code Traceability",
+    "subtitle": "Scan and generate product and tree origin traceability QR codes",
+    "scanPrompt": "Scan QR Code to verify origin",
+    "generateQr": "Generate QR Code",
+    "qrDetails": "Traceability Information"
+  },
+  "messages": {
+    "saveSuccess": "Saved successfully!",
+    "deleteSuccess": "Deleted successfully!",
+    "createSuccess": "Created successfully!",
+    "updateSuccess": "Updated successfully!",
+    "errorOccurred": "An error occurred. Please try again.",
+    "networkError": "Network error. Please check your connection."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must not exceed {max} characters"
   },
   "label": {
     "soon": "Soon",

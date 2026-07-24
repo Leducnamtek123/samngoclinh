@@ -1,6 +1,6 @@
 FROM node:24-alpine
 RUN apk add --no-cache openssl libc6-compat
-RUN corepack enable
+RUN npm install -g pnpm@10.29.2
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -22,8 +22,8 @@ ENV NEXT_PUBLIC_HOME_PATHNAME=$NEXT_PUBLIC_HOME_PATHNAME
 # Generate prisma client for admin using local prisma version relative to the apps/admin folder
 RUN pnpm --filter shadboard-nextjs-full-kit exec prisma generate --schema=prisma/schema.prisma
 
-# Copy the generated client to the root node_modules so Next.js can resolve it in the monorepo
-RUN mkdir -p node_modules/.prisma && cp -R apps/admin/node_modules/.prisma/client node_modules/.prisma/
+# Copy the generated client to the root node_modules so Next.js can resolve it in the monorepo if needed
+RUN mkdir -p node_modules/.prisma && (cp -R apps/admin/node_modules/.prisma/client node_modules/.prisma/ 2>/dev/null || true)
 
 # Build the admin application
 RUN pnpm --filter shadboard-nextjs-full-kit build

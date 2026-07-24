@@ -84,6 +84,7 @@
         "cors": "^2.8.6",
         "crypto-js": "^4.2.0",
         "dotenv": "^17.4.2",
+        "express": "^4.21.2",
         "firebase-admin": "^13.10.0",
         "flat": "^6.0.1",
         "geoip-lite": "^2.0.2",

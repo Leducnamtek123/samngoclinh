@@ -8,7 +8,7 @@ const localePrefix: LocalePrefixMode = 'as-needed';
 export const AppConfig = {
   name: 'Rượu Sâm Ngọc Linh',
   i18n: {
-    locales: ['en', 'vi'],
+    locales: ['vi', 'en'],
     defaultLocale: 'vi',
     localePrefix,
   },

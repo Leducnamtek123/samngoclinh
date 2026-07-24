@@ -12,7 +12,8 @@ export function useProfileMe(initialData?: any) {
 export function useProfileBusiness(initialData?: any) {
   return useQuery({
     queryKey: ['profile', 'business'],
-    queryFn: () => fetchApiClient('/user/profile/business').then((res) => res.data),
+    queryFn: () => fetchApiClient('/user/profile/business').then((res) => res.data).catch(() => null),
     initialData,
+    retry: false,
   });
 }

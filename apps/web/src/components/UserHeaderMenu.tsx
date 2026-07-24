@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/libs/I18nNavigation';
+import { getCartCount } from '@/utils/cart';
+import { NotificationDrawer } from '@/components/NotificationDrawer';
 
 type UserHeaderMenuProps = {
   profile: {
@@ -14,14 +16,14 @@ type UserHeaderMenuProps = {
 
 // Premium SVG flag icons
 const VietnamFlag = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 rounded-full border border-gray-100 shadow-sm flex-shrink-0">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 rounded-full border border-gray-100 shadow-sm flex-shrink-0">
     <circle cx="12" cy="12" r="12" fill="#da251d" />
     <polygon points="12,6.5 13.5,11.2 18.5,11.2 14.5,14.2 16,19 12,16 8,19 9.5,14.2 5.5,11.2 10.5,11.2" fill="#ffff00" />
   </svg>
 );
 
 const UKFlag = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5 rounded-full border border-gray-100 shadow-sm flex-shrink-0">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4 rounded-full border border-gray-100 shadow-sm flex-shrink-0">
     <circle cx="12" cy="12" r="12" fill="#00247d" />
     <path d="M 0,0 L 24,24 M 24,0 L 0,24" stroke="#ffffff" strokeWidth="2.5" />
     <path d="M 0,0 L 24,24 M 24,0 L 0,24" stroke="#cf142b" strokeWidth="1.2" />
@@ -33,6 +35,8 @@ const UKFlag = () => (
 export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const locale = useLocale();
@@ -40,8 +44,20 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const pathname = usePathname();
 
   const fullName = profile?.fullName || 'Khách hàng';
-  const email = profile?.email || '';
+  const email = profile?.email || 'user@mail.com';
   const initial = fullName.charAt(0).toUpperCase();
+
+  // Sync cart count from localStorage
+  useEffect(() => {
+    setCartCount(getCartCount());
+
+    const handleUpdate = () => {
+      setCartCount(getCartCount());
+    };
+
+    window.addEventListener('cart_updated', handleUpdate);
+    return () => window.removeEventListener('cart_updated', handleUpdate);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -68,14 +84,12 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   };
 
   const navigateToTab = (tabName: string) => {
-    window.location.href = `/profile?tabs=${tabName}`;
+    window.location.href = `/${locale}/profile?tabs=${tabName}`;
     setIsOpen(false);
   };
 
   const switchLocale = (newLocale: string) => {
-    if (newLocale === locale) {
-      return;
-    }
+    if (newLocale === locale) return;
     const { search } = window.location;
     router.push(`${pathname}${search}`, { locale: newLocale, scroll: false });
     setIsOpen(false);
@@ -83,50 +97,57 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   };
 
   return (
-    <div className="flex items-center gap-5" ref={menuRef}>
-      {/* Shopping Cart Icon */}
-      <a href="/cart" className="relative p-1">
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5 text-gray-500 hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <div className="flex items-center gap-4 sm:gap-5" ref={menuRef}>
+      {/* Shopping Cart Icon with Dynamic Badge */}
+      <a href={`/${locale}/cart`} className="relative p-1 text-gray-600 hover:text-primary transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1.5 min-w-[1.125rem] h-4.5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[10px] font-black border border-white px-1">
+            {cartCount}
+          </span>
+        )}
       </a>
 
-      {/* Notification Bell Icon with Badge 7 */}
-      <a href="/profile?tabs=info" className="relative p-1">
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5 text-gray-500 hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      {/* Notification Bell Icon */}
+      <button
+        onClick={() => setIsNotifOpen(true)}
+        className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
+        title="Thông báo"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
-        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-black shadow border border-white">
-          7
-        </span>
-      </a>
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+      </button>
 
-      {/* Green Circle Avatar */}
+      {/* Hero Avatar Button */}
       <div className="relative">
         <button
           onClick={() => {
             setIsOpen(!isOpen);
             setShowLangMenu(false);
           }}
-          className="w-10 h-10 rounded-full bg-[#1C3F24] hover:bg-primary-hover text-white flex items-center justify-center font-bold text-base shadow-sm focus:outline-none transition-colors border border-emerald-800"
+          className="w-9 h-9 rounded-full bg-[#1C3F24] hover:bg-emerald-900 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-colors border border-emerald-800 focus:outline-none cursor-pointer"
         >
           {initial}
         </button>
 
-        {/* Dropdown Menu */}
+        {/* Dropdown Menu Card */}
         {isOpen && (
-          <div className="absolute right-0 mt-3.5 w-72 bg-white rounded-2xl shadow-xl border border-gray-150 py-3 z-50 animate-in fade-in slide-in-from-top-3 duration-200">
-            {/* Header info */}
-            <div className="px-5 py-3 border-b border-gray-100">
+          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+            {/* User Info Header */}
+            <div className="px-5 py-2.5 border-b border-gray-100">
               <p className="font-extrabold text-gray-900 text-sm">{fullName}</p>
-              <p className="text-[11px] text-gray-400 font-medium mt-0.5 truncate">{email}</p>
-              <span className="inline-block bg-primary/10 text-primary text-[9px] font-black px-2.5 py-0.5 rounded-full mt-2 uppercase tracking-wider">
+              <p className="text-xs text-gray-400 font-medium mt-0.5 truncate">{email}</p>
+              <span className="inline-block bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2.5 py-0.5 rounded-full mt-2 uppercase tracking-wider">
                 Khách hàng
               </span>
             </div>
 
-            {/* Menu Items */}
-            <ul className="text-sm font-semibold text-gray-700 mt-2">
+            {/* Main Navigation Items */}
+            <ul className="text-xs font-semibold text-gray-700 pt-1.5">
               <li>
                 <button
                   onClick={() => navigateToTab('info')}
@@ -135,7 +156,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Hồ sơ
+                  <span>Hồ sơ</span>
                 </button>
               </li>
               <li>
@@ -146,7 +167,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  Đơn hàng
+                  <span>Đơn hàng</span>
                 </button>
               </li>
               <li>
@@ -157,7 +178,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
-                  Tài sản
+                  <span>Tài sản</span>
                 </button>
               </li>
               <li>
@@ -168,7 +189,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0l1.8-1.8A2 2 0 0113 4h4a2 2 0 012 2v1M9 13h6m-6 3h3" />
                   </svg>
-                  Căn cước công dân
+                  <span>Căn cước công dân</span>
                 </button>
               </li>
               <li>
@@ -177,65 +198,68 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4a2 2 0 012 2v6a2 2 0 01-2 2h-4a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
-                  Giới thiệu bạn bè
+                  <span>Giới thiệu bạn bè</span>
                 </button>
               </li>
             </ul>
 
-            {/* Separator */}
-            <div className="border-t border-gray-100 my-2"></div>
+            {/* Separator Line */}
+            <div className="border-t border-gray-100 my-1.5"></div>
 
-            {/* Expandable Language Dropdown inside Avatar Menu */}
+            {/* Language Switcher */}
             <div className="relative">
               <button
                 onClick={() => setShowLangMenu(!showLangMenu)}
-                className="w-full px-5 py-2.5 flex items-center justify-between text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+                className="w-full px-5 py-2 flex items-center justify-between text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  {locale === 'vi' ? <VietnamFlag /> : <UKFlag />}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8" />
+                  </svg>
                   <span>{locale === 'vi' ? 'Tiếng Việt' : 'English'}</span>
                 </div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showLangMenu ? 'rotate-180' : ''}`}
+                  className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${showLangMenu ? 'rotate-90' : ''}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="2"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
 
-              {/* Sub-menu options */}
+              {/* Sub-menu Language Selection */}
               {showLangMenu && (
-                <div className="bg-gray-50/50 border-y border-gray-100 py-1 space-y-0.5 animate-in fade-in duration-200">
+                <div className="bg-gray-50/70 border-y border-gray-100 py-1 space-y-0.5 animate-in fade-in duration-150">
                   <button
                     onClick={() => switchLocale('vi')}
-                    className={`w-full px-8 py-2 flex items-center gap-3 text-xs font-semibold text-left transition-colors ${
-                      locale === 'vi' ? 'text-primary bg-primary/5' : 'text-gray-600 hover:bg-gray-100'
+                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
+                      locale === 'vi' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     <VietnamFlag />
                     <span>Tiếng Việt (VI)</span>
                     {locale === 'vi' && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-primary ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </button>
                   <button
                     onClick={() => switchLocale('en')}
-                    className={`w-full px-8 py-2 flex items-center gap-3 text-xs font-semibold text-left transition-colors ${
-                      locale === 'en' ? 'text-primary bg-primary/5' : 'text-gray-600 hover:bg-gray-100'
+                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
+                      locale === 'en' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
                     <UKFlag />
                     <span>English (EN)</span>
                     {locale === 'en' && (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-primary ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
@@ -244,22 +268,24 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               )}
             </div>
 
-            {/* Separator */}
-            <div className="border-t border-gray-100 my-2"></div>
+            {/* Separator Line */}
+            <div className="border-t border-gray-100 my-1.5"></div>
 
-            {/* Logout button */}
+            {/* Sign Out Item in Red */}
             <button
               onClick={handleSignOut}
-              className="w-full px-5 py-2 hover:bg-red-50 text-gray-700 hover:text-red-700 flex items-center gap-3 text-left transition-colors font-bold text-sm"
+              className="w-full px-5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-left transition-colors font-bold text-xs"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              Đăng xuất
+              <span>Đăng xuất</span>
             </button>
           </div>
         )}
       </div>
+
+      <NotificationDrawer isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
     </div>
   );
 };

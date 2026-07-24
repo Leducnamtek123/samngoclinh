@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
 import { EmptyState, EmptySearchResult } from "@/components/ui/feedback-components"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Tree {
   id: string
@@ -59,23 +60,25 @@ export function TreesList({
   metadata,
   handlePageChange,
 }: TreesListProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã cây</TableHead>
-              <TableHead>Tên cây giống</TableHead>
-              <TableHead>Mã Luống</TableHead>
-              <TableHead>Tuổi sâm</TableHead>
-              <TableHead>Số lượng gốc</TableHead>
-              <TableHead>Chủ sở hữu</TableHead>
-              <TableHead>Sức khỏe</TableHead>
-              <TableHead>Gói Chăm Sóc</TableHead>
-              <TableHead>Gói Bảo Vệ</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
+              <TableHead>{t("trees.fields.code")}</TableHead>
+              <TableHead>{t("trees.fields.name")}</TableHead>
+              <TableHead>{t("trees.fields.bed")}</TableHead>
+              <TableHead>{t("trees.fields.age")}</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Owner</TableHead>
+              <TableHead>{t("trees.fields.healthStatus")}</TableHead>
+              <TableHead>Care Package</TableHead>
+              <TableHead>Protection Package</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -89,9 +92,9 @@ export function TreesList({
                     />
                   ) : (
                     <EmptyState
-                      title="Chưa có cây trồng"
-                      description="Không tìm thấy lô gốc sâm nào trong hệ thống hoặc luống hiện tại. Hãy trồng thêm lô cây mới để bắt đầu theo dõi."
-                      actionLabel="Trồng cây mới"
+                      title={t("common.table.noResults")}
+                      description={t("trees.subtitle")}
+                      actionLabel={t("trees.addTree")}
                       onAction={onOpenCreate}
                     />
                   )}
@@ -110,19 +113,19 @@ export function TreesList({
                         {tree.bedCode}
                       </Badge>
                     ) : (
-                      <span className="text-muted-foreground text-xs">— Chưa gán luống —</span>
+                      <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="font-medium">{tree.ageYear} tuổi</TableCell>
+                  <TableCell className="font-medium">{tree.ageYear} y</TableCell>
                   <TableCell className="font-semibold text-slate-700 dark:text-slate-300">
-                    {tree.quantity} gốc
+                    {tree.quantity}
                   </TableCell>
                   <TableCell className="text-xs truncate max-w-[150px]" title={tree.ownerUserId}>
                     {getOwnerName(tree.ownerUserId)}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      {tree.metadata?.healthStatus || "Tốt"}
+                      {tree.metadata?.healthStatus || t("common.status.healthy")}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs">
@@ -131,12 +134,12 @@ export function TreesList({
                         <span className="font-semibold text-emerald-700">{tree.carePackageCode}</span>
                         {tree.carePackageExpiredAt && (
                           <span className="text-[10px] text-muted-foreground">
-                            Hết hạn: {new Date(tree.carePackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                            Exp: {new Date(tree.carePackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-muted-foreground text-xs">Chưa đăng ký</span>
+                      <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
                   <TableCell className="text-xs">
@@ -145,12 +148,12 @@ export function TreesList({
                         <span className="font-semibold text-indigo-700">{tree.protectionPackageCode}</span>
                         {tree.protectionPackageExpiredAt && (
                           <span className="text-[10px] text-muted-foreground">
-                            Hết hạn: {new Date(tree.protectionPackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                            Exp: {new Date(tree.protectionPackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-muted-foreground text-xs">Chưa đăng ký</span>
+                      <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -162,7 +165,7 @@ export function TreesList({
                           : "bg-slate-500/10 text-slate-600 border-transparent font-semibold"
                       }
                     >
-                      {tree.status === "active" ? "Đang trồng" : tree.status}
+                      {tree.status === "active" ? t("common.status.active") : tree.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -196,7 +199,7 @@ export function TreesList({
       {metadata && (
         <div className="mt-4 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} lô gốc sâm)
+            {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
           </span>
           <div className="flex items-center gap-1.5">
             <Button
@@ -207,7 +210,7 @@ export function TreesList({
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              <span>Trước</span>
+              <span>{t("common.actions.back")}</span>
             </Button>
             <Button
               variant="outline"
@@ -216,7 +219,7 @@ export function TreesList({
               onClick={() => handlePageChange(metadata.page + 1)}
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
-              <span>Kế tiếp</span>
+              <span>{t("common.actions.confirm")}</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>

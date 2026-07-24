@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslation } from "@/providers/i18n-provider"
 
 type Article = {
   id: string;
@@ -24,13 +25,15 @@ export function ArticlesList({
   openEditModal,
   handleDelete,
 }: ArticlesListProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="space-y-6">
       {/* Header section */}
       <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Quản lý bài viết</h2>
-          <p className="text-xs text-gray-400 font-medium">Soạn thảo, cập nhật và chỉnh sửa nội dung bài viết hiển thị trên trang web khách hàng</p>
+          <h2 className="text-xl font-bold text-gray-900">{t("content.articles.title")}</h2>
+          <p className="text-xs text-gray-400 font-medium">{t("content.subtitle")}</p>
         </div>
         <button
           type="button"
@@ -40,7 +43,7 @@ export function ArticlesList({
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          Thêm bài viết
+          {t("content.articles.addArticle")}
         </button>
       </div>
 
@@ -50,18 +53,18 @@ export function ArticlesList({
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-4">Hình ảnh</th>
-                <th className="px-6 py-4">Tiêu đề bài viết</th>
-                <th className="px-6 py-4">Danh mục</th>
-                <th className="px-6 py-4">Ngày đăng</th>
-                <th className="px-6 py-4 text-right">Thao tác</th>
+                <th className="px-6 py-4">{t("products.fields.image", "Image")}</th>
+                <th className="px-6 py-4">{t("content.articles.articleTitle")}</th>
+                <th className="px-6 py-4">{t("content.articles.category")}</th>
+                <th className="px-6 py-4">{t("content.articles.publishedDate")}</th>
+                <th className="px-6 py-4 text-right">{t("common.actions.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-150 text-gray-700 font-medium">
               {articles.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-gray-400">
-                    Không có bài viết nào được tìm thấy.
+                    {t("common.table.noResults")}
                   </td>
                 </tr>
               ) : (
@@ -80,7 +83,7 @@ export function ArticlesList({
                     </td>
                     <td className="px-6 py-4 max-w-sm">
                       <p className="font-bold text-gray-900 line-clamp-1">{article.title}</p>
-                      <p className="text-gray-400 text-[10px] line-clamp-1 mt-0.5">{article.summary || 'Không có mô tả ngắn'}</p>
+                      <p className="text-gray-400 text-[10px] line-clamp-1 mt-0.5">{article.summary || '-'}</p>
                     </td>
                     <td className="px-6 py-4">
                       <span className="bg-emerald-50 text-emerald-800 border border-emerald-100 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
@@ -96,14 +99,14 @@ export function ArticlesList({
                         onClick={() => openEditModal(article)}
                         className="text-emerald-700 hover:text-emerald-950 font-bold"
                       >
-                        Sửa
+                        {t("common.actions.edit")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(article.id)}
                         className="text-red-600 hover:text-red-800 font-bold"
                       >
-                        Xóa
+                        {t("common.actions.delete")}
                       </button>
                     </td>
                   </tr>

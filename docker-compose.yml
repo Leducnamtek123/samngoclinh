@@ -209,6 +209,8 @@ services:
             - apps/admin/.env.example
         environment:
             - PORT=3003
+            - NEXTAUTH_URL=http://localhost:3003
+            - BASE_URL=http://localhost:3003
             - API_URL=http://apis:3000/api
             - INTERNAL_API_URL=http://apis:3000/api
         depends_on:

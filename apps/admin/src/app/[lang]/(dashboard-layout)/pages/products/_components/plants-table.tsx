@@ -10,6 +10,7 @@ import { ToastCard, ErrorState, ConfirmationDialog } from "@/components/ui/feedb
 import { PlantsList } from "./plants-list"
 import { PlantDialog } from "./plant-dialog"
 import { usePlantsManager } from "./use-plants-manager"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Plant {
   id: string
@@ -37,6 +38,7 @@ interface PlantsTableProps {
 }
 
 export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }: PlantsTableProps) {
+  const { t } = useTranslation()
   const {
     plants,
     filteredPlants,
@@ -79,7 +81,7 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
     return (
       <div className="py-12">
         <ErrorState
-          title="Không thể tải dữ liệu sản phẩm sâm"
+          title={t("messages.errorOccurred")}
           description={errorMsg}
           onRetry={() => window.location.reload()}
         />
@@ -91,8 +93,8 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Sản phẩm Sâm giống</h1>
-          <p className="text-sm text-slate-400">Quản lý lô cây sâm giống, độ tuổi, giá bán và tình trạng tồn kho trên gian hàng.</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t("products.title")}</h1>
+          <p className="text-sm text-slate-400">{t("products.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2 self-start md:self-auto">
           {selectedPlantIds.length > 0 && (
@@ -102,7 +104,7 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
               className="flex items-center gap-2 font-semibold bg-red-650 hover:bg-red-700"
             >
               <Trash2 className="w-4 h-4" />
-              Xóa {selectedPlantIds.length} dòng đã chọn
+              {t("common.actions.delete")} ({selectedPlantIds.length})
             </Button>
           )}
           <Button
@@ -110,18 +112,18 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Thêm sản phẩm
+            {t("products.addProduct")}
           </Button>
         </div>
       </div>
 
       {/* Search & Filter section */}
       <div className="flex flex-col gap-4 p-4 rounded-xl border bg-card text-card-foreground shadow-sm">
-        <h3 className="font-semibold text-lg">Tìm kiếm &amp; Lọc</h3>
+        <h3 className="font-semibold text-lg">{t("common.actions.filter")}</h3>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <Input
-              placeholder="Tìm kiếm sản phẩm..."
+              placeholder={t("common.actions.search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-md"
@@ -130,12 +132,12 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
           <div className="w-full md:w-56">
             <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Tất cả trạng thái" />
+                <SelectValue placeholder={t("products.fields.status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                <SelectItem value="available">Sâm đang phát triển</SelectItem>
-                <SelectItem value="harvested">Sâm đã thu hoạch</SelectItem>
+                <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
+                <SelectItem value="available">{t("common.status.active")}</SelectItem>
+                <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -147,13 +149,13 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
         <Tabs value={ageTab} onValueChange={setAgeTab} className="w-full">
           <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50">
             <TabsTrigger value="all" className="px-6 py-2">
-              Tất cả ({plants.length})
+              All ({plants.length})
             </TabsTrigger>
             {ageYears.map((age) => {
               const count = plants.filter((p) => p.ageYear === age).length
               return (
                 <TabsTrigger key={age} value={age.toString()} className="px-6 py-2">
-                  {age} tuổi ({count})
+                  {age} y ({count})
                 </TabsTrigger>
               )
             })}
@@ -207,8 +209,8 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
         onConfirm={confirmState.action}
         title={confirmState.title}
         description={confirmState.desc}
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy bỏ"
+        confirmLabel={t("common.actions.confirm")}
+        cancelLabel={t("common.actions.cancel")}
         type="danger"
         isLoading={confirmState.loading}
       />
@@ -218,7 +220,7 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -226,7 +228,7 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />

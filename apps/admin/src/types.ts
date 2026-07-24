@@ -101,6 +101,7 @@ export interface NavigationRootItemBasicType {
   title: string
   label?: string
   iconName: DynamicIconNameType
+  allowedRoles?: ("SUPER_ADMIN" | "ADMIN" | "USER")[]
 }
 
 export interface NavigationRootItemWithHrefType
@@ -121,6 +122,7 @@ export interface NavigationRootItemWithItemsType
 export interface NavigationNestedItemBasicType {
   title: string
   label?: string
+  allowedRoles?: ("SUPER_ADMIN" | "ADMIN" | "USER")[]
 }
 
 export interface NavigationNestedItemWithHrefType

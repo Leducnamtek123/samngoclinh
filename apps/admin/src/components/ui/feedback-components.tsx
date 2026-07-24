@@ -18,6 +18,7 @@ import {
   Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/providers/i18n-provider"
 
 // ==========================================
 // 1. INLINE ALERT & BANNER
@@ -143,11 +144,13 @@ export function ToastCard({
   type,
   title,
   description,
-  timeString = "Vừa xong",
+  timeString,
   onClose,
   className,
 }: ToastCardProps) {
+  const { t } = useTranslation()
   const currentStyle = TOAST_CARD_STYLES[type]
+  const displayTime = timeString || t("common.status.justNow", "Just now")
 
   return (
     <div
@@ -164,12 +167,12 @@ export function ToastCard({
       <div className="flex-grow min-w-0">
         <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 leading-snug">{title}</p>
         {description && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 leading-normal">{description}</p>}
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-none">{timeString}</p>
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-none">{displayTime}</p>
       </div>
       {onClose && (
         <button type="button"
           onClick={onClose}
-          aria-label="Đóng"
+          aria-label={t("common.actions.close")}
           className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 transition-colors flex-shrink-0"
         >
           <X className="h-4 w-4" />
@@ -206,6 +209,7 @@ export function NotificationCenter({
   onNotificationClick,
   className,
 }: NotificationCenterProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const unreadCount = notifications.filter((n) => !n.isRead).length
@@ -238,8 +242,8 @@ export function NotificationCenter({
         <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden max-h-[500px]">
           <div className="flex justify-between items-center px-4 py-3 border-b border-slate-100 dark:border-slate-850">
             <div>
-              <h3 className="font-semibold text-sm text-slate-800 dark:text-slate-100">Thông báo</h3>
-              <p className="text-xs text-slate-500">{unreadCount} thông báo chưa đọc</p>
+              <h3 className="font-semibold text-sm text-slate-800 dark:text-slate-100">{t("navigation.notifications.notifications")}</h3>
+              <p className="text-xs text-slate-500">{unreadCount} unread</p>
             </div>
             <div className="flex gap-2">
               {onMarkAllAsRead && unreadCount > 0 && (
@@ -247,7 +251,7 @@ export function NotificationCenter({
                   onClick={onMarkAllAsRead}
                   className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
                 >
-                  Đọc tất cả
+                  {t("common.actions.readAll", "Read all")}
                 </button>
               )}
               {onClearAll && notifications.length > 0 && (
@@ -255,7 +259,7 @@ export function NotificationCenter({
                   onClick={onClearAll}
                   className="text-xs font-semibold text-slate-400 hover:text-slate-600 hover:underline"
                 >
-                  Xóa tất cả
+                  {t("navigation.notifications.dismissAll")}
                 </button>
               )}
             </div>
@@ -388,6 +392,7 @@ export function EmptySearchResult({
   onClear,
   className,
 }: EmptySearchResultProps) {
+  const { t } = useTranslation()
   return (
     <div
       className={cn(
@@ -398,19 +403,13 @@ export function EmptySearchResult({
       <div className="w-20 h-20 mb-6 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
         <Search className="h-10 w-10 stroke-[1.5]" />
       </div>
-      <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">Không tìm thấy kết quả</h4>
+      <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">{t("search.noResults")}</h4>
       <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-sm leading-relaxed">
-        Chúng tôi không tìm thấy kết quả nào khớp với từ khóa{" "}
-        {query ? (
-          <span className="font-bold text-slate-900 dark:text-slate-200">"{query}"</span>
-        ) : (
-          "của bạn"
-        )}
-        . Vui lòng thử lại với từ khóa khác.
+        {query ? `No results found matching "${query}".` : t("common.table.noResults")}
       </p>
       {onClear && (
         <button type="button" onClick={onClear} className="text-emerald-700 dark:text-emerald-400 hover:underline font-semibold text-sm">
-          Xóa bộ lọc tìm kiếm
+          {t("common.actions.reset")}
         </button>
       )}
     </div>
@@ -423,6 +422,7 @@ interface ImagePlaceholderProps {
 }
 
 export function ImagePlaceholder({ className, showText = true }: ImagePlaceholderProps) {
+  const { t } = useTranslation()
   return (
     <div
       className={cn(
@@ -432,7 +432,7 @@ export function ImagePlaceholder({ className, showText = true }: ImagePlaceholde
     >
       <ImageIcon className="h-6 w-6 stroke-[1.5] flex-shrink-0" />
       {showText && (
-        <span className="text-[10px] uppercase font-bold tracking-widest leading-none text-center">Không có hình ảnh</span>
+        <span className="text-[10px] uppercase font-bold tracking-widest leading-none text-center">{t("common.status.noImage", "No image")}</span>
       )}
     </div>
   )
@@ -533,11 +533,15 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = "Lỗi tải dữ liệu",
-  description = "Có sự cố xảy ra khi kết nối với máy chủ dữ liệu. Vui lòng thử lại.",
+  title,
+  description,
   onRetry,
   className,
 }: ErrorStateProps) {
+  const { t } = useTranslation()
+  const displayTitle = title || t("messages.errorOccurred")
+  const displayDesc = description || t("messages.networkError")
+
   return (
     <div
       className={cn(
@@ -548,15 +552,15 @@ export function ErrorState({
       <div className="w-20 h-20 mb-6 rounded-full bg-red-50 dark:bg-red-950/20 flex items-center justify-center text-red-500">
         <CloudOff className="h-10 w-10 stroke-[1.5]" />
       </div>
-      <h4 className="font-semibold text-lg text-red-600 dark:text-red-400 mb-2">{title}</h4>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm leading-relaxed">{description}</p>
+      <h4 className="font-semibold text-lg text-red-600 dark:text-red-400 mb-2">{displayTitle}</h4>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm leading-relaxed">{displayDesc}</p>
       {onRetry && (
         <button type="button"
           onClick={onRetry}
           className="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2"
         >
           <RefreshCw className="h-4 w-4" />
-          <span>Thử lại</span>
+          <span>{t("common.actions.refresh")}</span>
         </button>
       )}
     </div>
@@ -572,6 +576,7 @@ interface OfflineStateProps {
 }
 
 export function OfflineState({ onReconnect, className }: OfflineStateProps) {
+  const { t } = useTranslation()
   const [isOffline, setIsOffline] = React.useState(false)
 
   React.useEffect(() => {
@@ -607,7 +612,7 @@ export function OfflineState({ onReconnect, className }: OfflineStateProps) {
           <WifiOff className="h-4 w-4" />
         </div>
         <p className="text-sm font-medium leading-normal text-center sm:text-left">
-          Bạn đang ở chế độ ngoại tuyến. Kết nối mạng bị gián đoạn, một số chức năng sẽ bị hạn chế.
+          {t("messages.networkError")}
         </p>
       </div>
       {onReconnect && (
@@ -615,7 +620,7 @@ export function OfflineState({ onReconnect, className }: OfflineStateProps) {
           onClick={onReconnect}
           className="text-xs font-bold uppercase tracking-wider text-amber-800 hover:text-amber-950 dark:text-amber-400 hover:underline flex-shrink-0"
         >
-          Thử kết nối lại
+          {t("common.actions.refresh")}
         </button>
       )}
     </div>
@@ -643,11 +648,15 @@ export function ConfirmationDialog({
   onConfirm,
   title,
   description,
-  confirmLabel = "Xác nhận",
-  cancelLabel = "Hủy bỏ",
+  confirmLabel,
+  cancelLabel,
   type = "primary",
   isLoading = false,
 }: ConfirmationDialogProps) {
+  const { t } = useTranslation()
+  const displayConfirm = confirmLabel || t("common.actions.confirm")
+  const displayCancel = cancelLabel || t("common.actions.cancel")
+
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden"
@@ -674,7 +683,7 @@ export function ConfirmationDialog({
       <div className="relative w-full max-w-md bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 z-10 animate-scale-up">
         <button type="button"
           onClick={onClose}
-          aria-label="Đóng"
+          aria-label={t("common.actions.close")}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
         >
           <X className="h-5 w-5" />
@@ -703,7 +712,7 @@ export function ConfirmationDialog({
             disabled={isLoading}
             className="px-5 py-2 rounded-lg font-semibold text-sm border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-350 transition-colors disabled:opacity-50"
           >
-            {cancelLabel}
+            {displayCancel}
           </button>
           <button
             type="button"
@@ -715,7 +724,7 @@ export function ConfirmationDialog({
             )}
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-            <span>{confirmLabel}</span>
+            <span>{displayConfirm}</span>
           </button>
         </div>
       </div>
