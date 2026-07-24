@@ -1,47 +1,47 @@
 import { userData } from "@/data/user"
-
 import { ProfileContentIntroItem } from "./profile-content-info-intro-item"
 
-export function ProfileContentIntroList() {
-  const userInfo = userData
+export function ProfileContentIntroList({ user }: { user?: any }) {
+  const userInfo = user || userData
   const location = userInfo.state
-    ? userInfo.state + ", " + userInfo.country
-    : userInfo.country
+    ? userInfo.state + ", " + (userInfo.country || "Việt Nam")
+    : userInfo.country || "Việt Nam"
 
   return (
     <ul className="grid gap-y-3">
       <ProfileContentIntroItem
-        title="Works as a"
+        title="Chức vụ / Vai trò"
         value={
           <>
-            {userInfo.role} <span className="text-foreground"> at </span>{" "}
-            {userInfo.organization}
+            {userInfo.role || "Quản trị viên"} <span className="text-foreground"> tại </span>{" "}
+            {userInfo.organization || "Hệ thống Sâm Ngọc Linh"}
           </>
         }
         iconName="BriefcaseBusiness"
       />
       <ProfileContentIntroItem
-        title="Lives in"
+        title="Khu vực"
         value={location}
         iconName="House"
       />
 
       <ProfileContentIntroItem
-        title="Email"
-        value={userInfo.email}
+        title="Email liên hệ"
+        value={userInfo.email || "admin@samngoclinh.com"}
         iconName="Mail"
       />
 
       <ProfileContentIntroItem
-        title="Phone Number"
-        value={userInfo.phoneNumber}
+        title="Số điện thoại"
+        value={userInfo.phoneNumber || "---"}
         iconName="Phone"
       />
       <ProfileContentIntroItem
-        title="Language"
-        value={userInfo.language}
+        title="Ngôn ngữ"
+        value={userInfo.language || "Tiếng Việt"}
         iconName="Languages"
       />
     </ul>
   )
 }
+

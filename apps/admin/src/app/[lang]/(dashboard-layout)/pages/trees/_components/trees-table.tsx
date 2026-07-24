@@ -9,6 +9,7 @@ import { ToastCard, ConfirmationDialog, ErrorState } from "@/components/ui/feedb
 import { TreesList } from "./trees-list"
 import { TreeDialog } from "./tree-dialog"
 import { useTreesManager } from "./use-trees-manager"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Tree {
   id: string
@@ -54,6 +55,7 @@ interface TreesTableProps {
 }
 
 export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialError }: TreesTableProps) {
+  const { t } = useTranslation()
   const {
     trees,
     filteredTrees,
@@ -83,7 +85,7 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
     return (
       <div className="py-12">
         <ErrorState
-          title="Không thể tải dữ liệu cây trồng"
+          title={t("messages.errorOccurred")}
           description={errorMsg}
           onRetry={() => window.location.reload()}
         />
@@ -95,39 +97,39 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Quản lý Cây trồng thực tế</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("trees.title")}</h1>
           <p className="text-muted-foreground">
-            Theo dõi chi tiết số lượng, tuổi, trạng thái sinh trưởng của các gốc sâm đã trồng trong các luống.
+            {t("trees.subtitle")}
           </p>
         </div>
         <Button onClick={handleOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
-          <Plus className="h-4 w-4" /> Trồng cây mới
+          <Plus className="h-4 w-4" /> {t("trees.addTree")}
         </Button>
       </div>
 
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
           <div>
-            <CardTitle>Danh sách gốc sâm trong hệ thống</CardTitle>
+            <CardTitle>{t("trees.title")}</CardTitle>
             <CardDescription>
-              Tổng số {filteredTrees.length} lô gốc sâm đang được theo dõi chăm sóc.
+              {filteredTrees.length} total entries
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <Input
-              placeholder="Tìm kiếm cây, mã cây, chủ sở hữu..."
+              placeholder={t("common.actions.search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="max-w-[250px]"
             />
             <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
               <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Trạng thái" />
+                <SelectValue placeholder={t("trees.fields.healthStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                <SelectItem value="active">Đang trồng (Active)</SelectItem>
-                <SelectItem value="harvested">Đã thu hoạch</SelectItem>
+                <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
+                <SelectItem value="active">{t("common.status.active")}</SelectItem>
+                <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -169,8 +171,8 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
         onConfirm={confirmDialog.action}
         title={confirmDialog.title}
         description={confirmDialog.description}
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy bỏ"
+        confirmLabel={t("common.actions.confirm")}
+        cancelLabel={t("common.actions.cancel")}
         type="danger"
         isLoading={confirmDialog.loading}
       />
@@ -180,7 +182,7 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -188,7 +190,7 @@ export function TreesTable({ initialTrees, beds, metadata, errorMsg: initialErro
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />

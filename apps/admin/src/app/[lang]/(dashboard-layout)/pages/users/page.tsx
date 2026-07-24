@@ -5,8 +5,8 @@ import { UsersTable } from "./_components/users-table"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
-  title: "Quản lý Người dùng | Sâm Ngọc Linh Admin",
-  description: "Danh sách tài khoản người dùng trong hệ thống Sâm Ngọc Linh",
+  title: "User Management | Admin",
+  description: "User account list",
 }
 
 interface User {
@@ -60,23 +60,23 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
     }
   } catch (e) {
     console.error("Error fetching users:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = "Unable to connect to server"
   }
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Người dùng</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
         <p className="text-muted-foreground">
-          Quản lý tất cả tài khoản người dùng, đối tác, nhân viên và quản trị viên trong hệ thống.
+          Manage system users, roles, and permissions.
         </p>
       </div>
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Danh sách tài khoản</h2>
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Account List</h2>
           <p className="text-xs text-muted-foreground">
-            Hiển thị thông tin tên, email, trạng thái hoạt động và ngày đăng ký.
+            Display user name, email, status, and registration date.
           </p>
         </div>
         

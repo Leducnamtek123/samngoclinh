@@ -50,13 +50,43 @@ export function getPreferredLocale(request: NextRequest) {
     console.error("Failed to parse settings cookie", error)
   }
 
-  const supportedLocales = [...i18n.locales]
-  const preferredLocales = new Negotiator({
-    headers: Object.fromEntries(request.headers.entries()),
-  }).languages(supportedLocales)
-
-  // Match preferred locales with supported locales
-  const locale = match(preferredLocales, supportedLocales, i18n.defaultLocale)
-
-  return locale as LocaleType
+  return i18n.defaultLocale as LocaleType
 }
+
+export function getNestedValue(obj: any, path: string): any {
+  if (!obj || !path) return undefined
+  const keys = path.split(".")
+  let current = obj
+  for (const key of keys) {
+    if (current && typeof current === "object" && key in current) {
+      current = current[key]
+    } else {
+      return undefined
+    }
+  }
+  return current
+}
+
+export function translate(
+  dictionary: any,
+  key: string,
+  params?: Record<string, string | number>
+): string {
+  let val = getNestedValue(dictionary, key)
+  if (typeof val !== "string") {
+    val = dictionary?.[key] || key
+  }
+  if (typeof val !== "string") return String(key)
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      val = (val as string).replace(new RegExp(`\\{${k}\\}`, "g"), String(v))
+    })
+  }
+  return val
+}
+
+export function createTranslator(dictionary: any) {
+  return (key: string, params?: Record<string, string | number>): string =>
+    translate(dictionary, key, params)
+}
+

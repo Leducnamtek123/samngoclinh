@@ -16,6 +16,7 @@ import { ensureRedirectPathname } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
 import { ButtonLoading } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
@@ -25,10 +26,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { SeparatorWithText } from "@/components/ui/separator"
-import { OAuthLinks } from "./oauth-links"
+import { useTranslation } from "@/providers/i18n-provider"
 
 export function SignInForm() {
+  const { t } = useTranslation()
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -74,21 +75,23 @@ export function SignInForm() {
     defaultValues: {
       email: "",
       password: "",
+      rememberMe: true,
     },
   })
 
   const locale = params.lang as LocaleType
   const { isSubmitting } = form.formState
-  const isDisabled = isSubmitting // Disable button if form is submitting
+  const isDisabled = isSubmitting
 
   async function onSubmit(data: SignInFormType) {
-    const { email, password } = data
+    const { email, password, rememberMe } = data
 
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
+        rememberMe: rememberMe ? "true" : "false",
       })
 
       if (result && result.error) {
@@ -108,7 +111,7 @@ export function SignInForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-        <div className="grid grow gap-2">
+        <div className="grid grow gap-4">
           <FormField
             control={form.control}
             name="email"
@@ -135,7 +138,6 @@ export function SignInForm() {
                   <FormLabel>Password</FormLabel>
                   <Link
                     href={ensureLocalizedPathname(
-                      // Include redirect pathname if available, otherwise default to "/forgot-password"
                       redirectPathname
                         ? ensureRedirectPathname(
                             "/forgot-password",
@@ -144,7 +146,7 @@ export function SignInForm() {
                         : "/forgot-password",
                       locale
                     )}
-                    className="ms-auto inline-block text-sm underline"
+                    className="ms-auto inline-block text-sm underline text-emerald-700 dark:text-emerald-400 hover:text-emerald-800"
                   >
                     Forgot your password?
                   </Link>
@@ -156,28 +158,30 @@ export function SignInForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center space-x-2 space-y-0 py-1">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel className="text-sm font-normal text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                  {t("auth.rememberMe") && t("auth.rememberMe") !== "auth.rememberMe"
+                    ? t("auth.rememberMe")
+                    : "Ghi nhớ đăng nhập 30 ngày trên thiết bị này"}
+                </FormLabel>
+              </FormItem>
+            )}
+          />
         </div>
 
-        <ButtonLoading isLoading={isSubmitting} disabled={isDisabled}>
-          Sign In with Email
+        <ButtonLoading isLoading={isSubmitting} disabled={isDisabled} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+          {t("navigation.signIn") || "Đăng nhập"}
         </ButtonLoading>
-        <div className="-mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link
-            href={ensureLocalizedPathname(
-              // Include redirect pathname if available, otherwise default to "/register"
-              redirectPathname
-                ? ensureRedirectPathname("/register", redirectPathname)
-                : "/register",
-              locale
-            )}
-            className="underline"
-          >
-            Sign up
-          </Link>
-        </div>
-        <SeparatorWithText>Or continue with</SeparatorWithText>
-        <OAuthLinks />
       </form>
     </Form>
   )

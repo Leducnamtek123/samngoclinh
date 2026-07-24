@@ -46,8 +46,11 @@ const slugify = (text: string) => {
     .replace(/-+/g, '-')
 }
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 export function useContentManager({ initialArticles, initialBannerSettings }: UseContentManagerProps) {
   const router = useRouter()
+  const { t } = useTranslation()
   
   // Navigation tabs: 'articles' | 'banner'
   const [activeTab, setActiveTab] = useState<'articles' | 'banner'>('articles')
@@ -118,13 +121,13 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setError(payload?.message || "Tải ảnh lên thất bại")
+        setError(payload?.message || t("messages.errorOccurred"))
       } else {
         setImage(payload.data?.url || "")
       }
     } catch (err) {
       console.error(err)
-      setError("Lỗi kết nối khi tải ảnh lên")
+      setError(t("messages.networkError"))
     } finally {
       setUploadingImage(false)
     }
@@ -139,8 +142,6 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
     setError('')
     setIsOpen(true)
   }
-
-
 
   const openEditModal = (article: Article) => {
     setEditingArticle(article)
@@ -162,7 +163,7 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title) {
-      setError('Vui lòng nhập tiêu đề bài viết.')
+      setError(t("validation.required"))
       return
     }
 
@@ -212,7 +213,7 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
         setArticles([updatedArticle as any, ...articles])
       }
     } else {
-      setError(res.error || 'Có lỗi xảy ra.')
+      setError(res.error || t("messages.errorOccurred"))
     }
   }
 
@@ -225,14 +226,14 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
       const res = await deleteArticleAction(id)
       if (res.success) {
         setArticles((prev) => prev.filter(a => a.id !== id))
-        setSuccessMsg("Xóa bài viết thành công!")
+        setSuccessMsg(t("messages.deleteSuccess"))
         router.refresh()
       } else {
-        setErrorMsg(res.error || 'Lỗi khi xóa bài viết.')
+        setErrorMsg(res.error || t("messages.errorOccurred"))
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg("Lỗi hệ thống khi xóa bài viết.")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
@@ -242,8 +243,8 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
     const article = articles.find((a) => a.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: "Xóa bài viết?",
-      description: `Hành động này sẽ xóa vĩnh viễn bài viết "${article?.title || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("common.confirmations.deleteTitle"),
+      description: t("common.confirmations.deleteDescription"),
       action: () => performDelete(id),
       loading: false,
     })
@@ -273,10 +274,10 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
         setBannerSuccess(true)
         router.refresh()
       } else {
-        setBannerError(failedResult.error || 'Lỗi khi cập nhật cài đặt banner.')
+        setBannerError(failedResult.error || t("messages.errorOccurred"))
       }
     } catch (err: any) {
-      setBannerError(err.message || 'Lỗi kết nối.')
+      setBannerError(err.message || t("messages.networkError"))
     } finally {
       setBannerLoading(false)
     }

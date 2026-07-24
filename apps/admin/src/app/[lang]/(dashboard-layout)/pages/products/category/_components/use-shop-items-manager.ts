@@ -63,10 +63,13 @@ async function getCroppedImg(
   })
 }
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 export function useShopItemsManager({ initialItems, initialError }: UseShopItemsManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   const [items, setItems] = useState<ShopItem[]>(initialItems)
 
@@ -128,7 +131,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
       code: "",
       name: "",
       category: "processed",
-      unit: "cái",
+      unit: "pcs",
       price: 50000,
       stock: 100,
       status: "active",
@@ -202,15 +205,15 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
 
       if (res.status >= 400) {
         const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa sản phẩm.")
+        setErrorMsg(payload?.message || t("messages.errorOccurred"))
       } else {
         setItems((prev) => prev.filter((item) => item.id !== id))
-        setSuccessMsg("Xóa sản phẩm thành công!")
+        setSuccessMsg(t("messages.deleteSuccess"))
         router.refresh()
       }
     } catch (e) {
       console.error(e)
-      setErrorMsg("Không thể kết nối đến máy chủ API")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
@@ -220,8 +223,8 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
     const item = items.find((x) => x.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: "Xóa sản phẩm thương mại?",
-      description: `Hành động này sẽ xóa vĩnh viễn sản phẩm "${item?.name || ""}" (${item?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("common.confirmations.deleteTitle"),
+      description: t("common.confirmations.deleteDescription"),
       action: () => performDelete(id),
       loading: false,
     })
@@ -239,7 +242,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
         code: "prod-" + Math.floor(Math.random() * 10000),
         name: "",
         category: "processed",
-        unit: "cái",
+        unit: "pcs",
         price: 50000,
         stock: 100,
         status: "active",
@@ -261,7 +264,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
         code: item.code,
         name: item.name,
         category: item.category || "processed",
-        unit: item.unit || "cái",
+        unit: item.unit || "pcs",
         price: item.price || 0,
         stock: item.stock || 0,
         status: item.status || "active",
@@ -297,7 +300,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
     try {
       const croppedImageBlob = await getCroppedImg(cropState.imageSrc, cropState.croppedAreaPixels)
       if (!croppedImageBlob) {
-        setDialogState((prev) => ({ ...prev, uploadingImage: false, error: "Không thể cắt hình ảnh." }))
+        setDialogState((prev) => ({ ...prev, uploadingImage: false, error: t("messages.errorOccurred") }))
         return
       }
 
@@ -311,7 +314,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || "Tải ảnh lên thất bại" }))
+        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
       } else {
         setDialogState((prev) => ({
           ...prev,
@@ -324,7 +327,7 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối khi tải ảnh lên" }))
+      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
     } finally {
       setDialogState((prev) => ({ ...prev, uploadingImage: false }))
     }
@@ -373,22 +376,22 @@ export function useShopItemsManager({ initialItems, initialError }: UseShopItems
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || "Lưu thông tin sản phẩm thất bại." }))
+        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
       } else {
         const savedItem = payload.data
         if (dialogState.mode === "create") {
           setItems((prev) => [savedItem, ...prev])
-          setSuccessMsg("Tạo mới sản phẩm thành công!")
+          setSuccessMsg(t("messages.createSuccess"))
         } else {
           setItems((prev) => prev.map((item) => (item.id === savedItem.id ? savedItem : item)))
-          setSuccessMsg("Cập nhật thông tin sản phẩm thành công!")
+          setSuccessMsg(t("messages.updateSuccess"))
         }
         setDialogState((prev) => ({ ...prev, isOpen: false }))
         router.refresh()
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối khi lưu thông tin sản phẩm." }))
+      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }

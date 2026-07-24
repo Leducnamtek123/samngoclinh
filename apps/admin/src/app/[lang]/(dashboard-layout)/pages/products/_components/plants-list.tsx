@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
 import { EmptyState, EmptySearchResult, ImagePlaceholder } from "@/components/ui/feedback-components"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Plant {
   id: string
@@ -63,15 +64,16 @@ export function PlantsList({
   formatVND,
   getPlantingDate,
 }: PlantsListProps) {
+  const { t } = useTranslation()
   const selectedPlantIdsSet = new Set(selectedPlantIds)
   const allFilteredSelected = filteredPlants.length > 0 && filteredPlants.every((p) => selectedPlantIdsSet.has(p.id))
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Danh sách sản phẩm</CardTitle>
+        <CardTitle>{t("products.title")}</CardTitle>
         <CardDescription>
-          Hiển thị {filteredPlants.length} trong tổng số {totalCount} sản phẩm vườn.
+          {filteredPlants.length} / {totalCount} {t("products.title")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,9 +85,9 @@ export function PlantsList({
             />
           ) : (
             <EmptyState
-              title="Chưa có sản phẩm nào"
-              description="Hệ thống chưa ghi nhận sản phẩm sâm Ngọc Linh nào. Hãy bắt đầu bằng cách thêm sản phẩm đầu tiên."
-              actionLabel="Thêm sản phẩm"
+              title={t("common.table.noResults")}
+              description={t("products.subtitle")}
+              actionLabel={t("products.addProduct")}
               onAction={openCreateDialog}
             />
           )
@@ -99,16 +101,16 @@ export function PlantsList({
                     onCheckedChange={onToggleAll}
                   />
                 </TableHead>
-                <TableHead>Sản phẩm</TableHead>
-                <TableHead>Mô tả</TableHead>
-                <TableHead>Ảnh</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Duyệt</TableHead>
-                <TableHead>Giá / Tồn kho</TableHead>
-                <TableHead>Giá nhập</TableHead>
-                <TableHead>Ngày sinh</TableHead>
-                <TableHead>Tuổi (năm)</TableHead>
-                <TableHead className="text-right">Thao tác</TableHead>
+                <TableHead>{t("products.fields.name")}</TableHead>
+                <TableHead>{t("products.fields.description")}</TableHead>
+                <TableHead>{t("products.fields.image")}</TableHead>
+                <TableHead>{t("products.fields.status")}</TableHead>
+                <TableHead>Approval</TableHead>
+                <TableHead>{t("products.fields.price")} / {t("products.fields.stock")}</TableHead>
+                <TableHead>Import Price</TableHead>
+                <TableHead>Planted Date</TableHead>
+                <TableHead>Age</TableHead>
+                <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,7 +126,7 @@ export function PlantsList({
                     </TableCell>
                     <TableCell className="font-semibold">{plant.name}</TableCell>
                     <TableCell className="max-w-xs truncate text-muted-foreground text-sm">
-                      {plant.description || `Sâm Ngọc Linh tự nhiên tuổi đời ${plant.ageYear} năm, củ chắc khỏe, hàm lượng saponin cao.`}
+                      {plant.description || "-"}
                     </TableCell>
                     <TableCell>
                       <div className="relative w-12 h-12 rounded-lg overflow-hidden border">
@@ -143,12 +145,12 @@ export function PlantsList({
                     </TableCell>
                     <TableCell>
                       <span className="text-sm font-medium">
-                        {plant.status === "available" ? "đang phát triển" : "cây đã thu hoạch"}
+                        {plant.status === "available" ? t("common.status.active") : t("common.status.completed")}
                       </span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
-                        Đã duyệt
+                        {t("common.status.approved")}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -157,11 +159,11 @@ export function PlantsList({
                           {formatVND(plant.price)}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          Còn {plant.stock}
+                          {plant.stock} left
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">0 đ</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">0 VND</TableCell>
                     <TableCell className="text-sm">
                       {getPlantingDate(plant.ageYear)}
                     </TableCell>
@@ -174,7 +176,7 @@ export function PlantsList({
                           variant="ghost"
                           size="icon"
                           onClick={() => onEdit(plant)}
-                          title="Sửa sản phẩm"
+                          title={t("common.actions.edit")}
                         >
                           <Pencil className="w-4 h-4 text-slate-600 hover:text-emerald-600" />
                         </Button>
@@ -182,7 +184,7 @@ export function PlantsList({
                           variant="ghost"
                           size="icon"
                           onClick={() => onDelete(plant.id)}
-                          title="Xóa sản phẩm"
+                          title={t("common.actions.delete")}
                         >
                           <Trash2 className="w-4 h-4 text-red-600" />
                         </Button>
@@ -200,7 +202,7 @@ export function PlantsList({
       {metadata && (
         <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} sản phẩm)
+            {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
           </span>
           <div className="flex items-center gap-1.5">
             <Button
@@ -211,7 +213,7 @@ export function PlantsList({
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              <span>Trước</span>
+              <span>{t("common.actions.back")}</span>
             </Button>
             <Button
               variant="outline"
@@ -220,7 +222,7 @@ export function PlantsList({
               onClick={() => handlePageChange(metadata.page + 1)}
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
-              <span>Kế tiếp</span>
+              <span>{t("common.actions.confirm")}</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>

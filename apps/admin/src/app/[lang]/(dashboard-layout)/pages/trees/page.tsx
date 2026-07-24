@@ -5,8 +5,8 @@ import { TreesTable } from "./_components/trees-table"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
-  title: "Quản lý cây trồng | Sâm Ngọc Linh Admin",
-  description: "Theo dõi và quản lý các gốc cây sâm trồng thực tế trong vườn",
+  title: "Manage Plants & Trees | Sâm Ngọc Linh Admin",
+  description: "Track and manage Ginseng trees and gardens",
 }
 
 interface TreesPageProps {
@@ -34,7 +34,6 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
   let errorMsg = ""
 
   try {
-    // 1. Fetch paginated trees for admin
     const treeQueryParams = new URLSearchParams()
     treeQueryParams.append("page", page)
     treeQueryParams.append("perPage", perPage)
@@ -44,13 +43,12 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
     const treesRes = await fetchApi(`/admin/cultivation/trees?${treeQueryParams.toString()}`)
     const treesPayload = await treesRes.json()
     if (treesRes.status >= 400) {
-      errorMsg = treesPayload?.message || "Không thể tải danh sách cây trồng"
+      errorMsg = treesPayload?.message || "Failed to load trees"
     } else {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []
       metadata = treesPayload.metadata || null
     }
 
-    // 2. Fetch all beds for dropdown selection (requesting a high perPage limit to get the full list)
     const bedsRes = await fetchApi("/user/cultivation/beds?perPage=100")
     const bedsPayload = await bedsRes.json()
     if (bedsRes.status < 400) {
@@ -60,7 +58,7 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
     }
   } catch (e) {
     console.error("Error fetching trees data on server:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = "Unable to connect to server"
   }
 
   return (

@@ -20,4 +20,5 @@ export const SignInSchema = z.object({
     .regex(/(?=.*[0-9])/, {
       message: "Password must contain at least one number.",
     }),
+  rememberMe: z.boolean().optional().default(true),
 })

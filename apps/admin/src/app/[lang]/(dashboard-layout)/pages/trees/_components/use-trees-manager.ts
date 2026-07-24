@@ -40,10 +40,13 @@ interface UseTreesManagerProps {
   initialError?: string
 }
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 export function useTreesManager({ initialTrees, beds, initialError }: UseTreesManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   const [trees, setTrees] = useState<Tree[]>(initialTrees)
   const [users, setUsers] = useState<any[]>([])
@@ -115,7 +118,7 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
   }
 
   const getOwnerName = (userId: string | undefined) => {
-    if (!userId) return "Hệ thống"
+    if (!userId) return "System"
     const matched = users.find((u) => u.id === userId)
     return matched ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim() : userId
   }
@@ -234,7 +237,7 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!dialogState.formData.name.trim()) {
-      setDialogState((prev) => ({ ...prev, error: "Tên cây giống không được để trống" }))
+      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
       return
     }
 
@@ -269,10 +272,10 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         })
         const dataPayload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || "Không thể thêm cây giống" }))
+          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || t("messages.errorOccurred") }))
         } else {
           setTrees((prev) => [dataPayload.data, ...prev])
-          setSuccessMsg("Đã trồng thêm cây giống mới thành công!")
+          setSuccessMsg(t("messages.createSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
           router.refresh()
         }
@@ -286,19 +289,19 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         })
         const dataPayload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || "Không thể cập nhật cây giống" }))
+          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || t("messages.errorOccurred") }))
         } else {
           setTrees((prev) =>
             prev.map((t) => (t.id === dialogState.selectedTree!.id ? dataPayload.data : t))
           )
-          setSuccessMsg("Cập nhật cây trồng thành công!")
+          setSuccessMsg(t("messages.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
           router.refresh()
         }
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối đến máy chủ" }))
+      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -315,15 +318,15 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
       })
       if (res.status >= 400) {
         const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa cây trồng")
+        setErrorMsg(payload?.message || t("messages.errorOccurred"))
       } else {
         setTrees((prev) => prev.filter((t) => t.id !== id))
-        setSuccessMsg("Đã xóa cây trồng thành công!")
+        setSuccessMsg(t("messages.deleteSuccess"))
         router.refresh()
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg("Lỗi kết nối máy chủ khi xóa")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
@@ -333,8 +336,8 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
     const tree = trees.find((t) => t.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: "Xóa cây trồng này?",
-      description: `Hành động này sẽ xóa vĩnh viễn lô cây sâm "${tree?.name || ""}" (${tree?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("common.confirmations.deleteTitle"),
+      description: t("common.confirmations.deleteDescription"),
       action: () => performDelete(id),
       loading: false,
     })

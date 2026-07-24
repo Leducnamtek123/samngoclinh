@@ -5,8 +5,8 @@ import { PlantsTable } from "./_components/plants-table"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 
 export const metadata: Metadata = {
-  title: "Quản lý Sản phẩm | Sâm Ngọc Linh Admin",
-  description: "Danh sách sản phẩm vườn sâm trong hệ thống Sâm Ngọc Linh",
+  title: "Product Management | Sâm Ngọc Linh Admin",
+  description: "Ginseng product list and catalog management",
 }
 
 interface Plant {
@@ -58,7 +58,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     }
   } catch (e) {
     console.error("Error fetching plants on server:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = "Unable to connect to server"
   }
 
   return (

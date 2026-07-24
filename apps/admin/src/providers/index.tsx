@@ -8,6 +8,7 @@ import { DirectionProvider } from "./direction-provider"
 import { ModeProvider } from "./mode-provider"
 import { NextAuthProvider } from "./next-auth-provider"
 import { ThemeProvider } from "./theme-provider"
+import { ReactQueryProvider } from "./query-provider"
 
 export function Providers({
   session,
@@ -26,7 +27,9 @@ export function Providers({
         <ThemeProvider>
           <DirectionProvider direction={direction}>
             <NextAuthProvider session={session}>
-              <SidebarProvider>{children}</SidebarProvider>
+              <ReactQueryProvider>
+                <SidebarProvider>{children}</SidebarProvider>
+              </ReactQueryProvider>
             </NextAuthProvider>
           </DirectionProvider>
         </ThemeProvider>

@@ -21,6 +21,7 @@ import {
   isActivePathname,
   titleCaseToCamelCase,
 } from "@/lib/utils"
+import { useRole } from "@/hooks/use-role"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -56,6 +57,7 @@ export function CommandMenu({
   const pathname = usePathname()
   const params = useParams()
   const router = useRouter()
+  const { hasRole } = useRole()
 
   const locale = params.lang as LocaleType
 
@@ -85,7 +87,16 @@ export function CommandMenu({
     command()
   }, [])
 
+  const isItemAllowed = (item: NavigationRootItem | NavigationNestedItem) => {
+    if (item.allowedRoles && item.allowedRoles.length > 0) {
+      return hasRole(item.allowedRoles);
+    }
+    return true;
+  };
+
   const renderMenuItem = (item: NavigationRootItem | NavigationNestedItem) => {
+    if (!isItemAllowed(item)) return null;
+
     const title = getDictionaryValue(
       titleCaseToCamelCase(item.title),
       dictionary.navigation
@@ -96,6 +107,9 @@ export function CommandMenu({
 
     // If the item has nested items, render it with a collapsible dropdown.
     if (item.items) {
+      const visibleSubItems = item.items.filter(isItemAllowed);
+      if (visibleSubItems.length === 0) return null;
+
       return (
         <Collapsible key={item.title} className="group/collapsible">
           <CommandItem asChild>
@@ -111,7 +125,7 @@ export function CommandMenu({
             </CollapsibleTrigger>
           </CommandItem>
           <CollapsibleContent className="space-y-1 overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-            {item.items.map((subItem: NavigationNestedItem) =>
+            {visibleSubItems.map((subItem: NavigationNestedItem) =>
               renderMenuItem(subItem)
             )}
           </CollapsibleContent>
@@ -168,6 +182,17 @@ export function CommandMenu({
           <CommandEmpty>{dictionary.search.noResults}</CommandEmpty>
           <ScrollArea className="h-[300px] max-h-[300px]">
             {navigationsData.map((nav) => {
+              const visibleItems = nav.items.filter((item) => {
+                if (!isItemAllowed(item)) return false;
+                if (item.items) {
+                  const allowedSub = item.items.filter(isItemAllowed);
+                  return allowedSub.length > 0;
+                }
+                return true;
+              });
+
+              if (visibleItems.length === 0) return null;
+
               const title = getDictionaryValue(
                 titleCaseToCamelCase(nav.title),
                 dictionary.navigation
@@ -179,7 +204,7 @@ export function CommandMenu({
                   heading={title}
                   className="[&_[cmdk-group-items]]:space-y-1"
                 >
-                  {nav.items.map((item) => (
+                  {visibleItems.map((item) => (
                     <Fragment key={item.title}>{renderMenuItem(item)}</Fragment>
                   ))}
                 </CommandGroup>

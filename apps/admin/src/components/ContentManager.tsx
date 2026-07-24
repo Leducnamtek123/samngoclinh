@@ -29,7 +29,10 @@ type ContentManagerProps = {
   };
 };
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 export const ContentManager = ({ initialArticles, initialBannerSettings }: ContentManagerProps) => {
+  const { t } = useTranslation()
   const {
     activeTab,
     setActiveTab,
@@ -94,7 +97,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
               : 'border-transparent text-gray-500 hover:text-gray-900'
           }`}
         >
-          Quản lý bài viết
+          {t("content.articles.title")}
         </button>
         <button
           type="button"
@@ -105,7 +108,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
               : 'border-transparent text-gray-500 hover:text-gray-900'
           }`}
         >
-          Cài đặt Banner trang chủ
+          {t("content.banners.title")}
         </button>
       </div>
 
@@ -170,8 +173,8 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
         onConfirm={confirmDialog.action}
         title={confirmDialog.title}
         description={confirmDialog.description}
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy bỏ"
+        confirmLabel={t("common.actions.confirm")}
+        cancelLabel={t("common.actions.cancel")}
         type="danger"
         isLoading={confirmDialog.loading}
       />
@@ -181,7 +184,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -189,7 +192,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />

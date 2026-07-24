@@ -4,8 +4,9 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Trash2, Pencil, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
 import { EmptyState, EmptySearchResult, ImagePlaceholder } from "@/components/ui/feedback-components"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface ShopItem {
   id: string
@@ -52,6 +53,8 @@ export function ShopItemsList({
   formatVND,
   categoryNameMap,
 }: ShopItemsListProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       {filteredItems.length === 0 ? (
@@ -63,9 +66,9 @@ export function ShopItemsList({
             />
           ) : (
             <EmptyState
-              title="Chưa có sản phẩm nào"
-              description="Danh mục này hiện chưa có sản phẩm thương mại hoặc vật tư nào. Hãy tạo sản phẩm đầu tiên."
-              actionLabel="Thêm sản phẩm"
+              title={t("common.table.noResults")}
+              description={t("products.subtitle")}
+              actionLabel={t("products.addProduct")}
               onAction={openCreateDialog}
             />
           )}
@@ -74,15 +77,15 @@ export function ShopItemsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Ảnh</TableHead>
-              <TableHead>Mã sản phẩm</TableHead>
-              <TableHead>Tên sản phẩm</TableHead>
-              <TableHead>Danh mục</TableHead>
-              <TableHead>Đơn vị</TableHead>
-              <TableHead>Đơn giá</TableHead>
-              <TableHead>Tồn kho</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
+              <TableHead>{t("products.fields.image")}</TableHead>
+              <TableHead>{t("products.fields.sku")}</TableHead>
+              <TableHead>{t("products.fields.name")}</TableHead>
+              <TableHead>{t("products.fields.category")}</TableHead>
+              <TableHead>Unit</TableHead>
+              <TableHead>{t("products.fields.price")}</TableHead>
+              <TableHead>{t("products.fields.stock")}</TableHead>
+              <TableHead>{t("products.fields.status")}</TableHead>
+              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,7 +113,7 @@ export function ShopItemsList({
                   <div className="flex flex-col">
                     <span className="font-medium">{item.name}</span>
                     <span className="text-xs text-muted-foreground max-w-xs truncate">
-                      {item.description || "Không có mô tả"}
+                      {item.description || "-"}
                     </span>
                   </div>
                 </TableCell>
@@ -126,7 +129,7 @@ export function ShopItemsList({
                 <TableCell className="font-medium">{item.stock}</TableCell>
                 <TableCell>
                   <Badge variant={item.status === "active" ? "default" : "secondary"} className={item.status === "active" ? "bg-emerald-600 text-white" : ""}>
-                    {item.status === "active" ? "Hoạt động" : "Tạm ngưng"}
+                    {item.status === "active" ? t("common.status.active") : t("common.status.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -158,7 +161,7 @@ export function ShopItemsList({
       {metadata && (
         <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between mt-4 rounded-b-md">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} sản phẩm)
+            {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
           </span>
           <div className="flex items-center gap-1.5">
             <Button
@@ -169,7 +172,7 @@ export function ShopItemsList({
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              <span>Trước</span>
+              <span>{t("common.actions.back")}</span>
             </Button>
             <Button
               variant="outline"
@@ -178,7 +181,7 @@ export function ShopItemsList({
               onClick={() => handlePageChange(metadata.page + 1)}
               className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
             >
-              <span>Kế tiếp</span>
+              <span>{t("common.actions.confirm")}</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>

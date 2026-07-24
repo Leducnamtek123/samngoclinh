@@ -83,7 +83,7 @@ export default registerAs(
         },
         throttle: {
             ttlInMs: ms('60s'),
-            limit: 100,
+            limit: 100000,
         },
     })
 );

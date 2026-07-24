@@ -1,9 +1,13 @@
+"use client"
+
 import React from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
+import { useTranslation } from "@/providers/i18n-provider"
 
 export function TableSkeleton({ cols = 5, rows = 5 }: { cols?: number; rows?: number }) {
+  const { t } = useTranslation()
   return (
     <div className="space-y-4 w-full animate-pulse">
       {/* Filters bar */}
@@ -45,10 +49,10 @@ export function TableSkeleton({ cols = 5, rows = 5 }: { cols?: number; rows?: nu
           <div className="flex items-center gap-1.5">
             <Button variant="outline" size="sm" disabled className="h-8 text-xs flex items-center gap-1 opacity-50">
               <ChevronLeft className="h-3.5 w-3.5" />
-              <span>Trước</span>
+              <span>{t("common.actions.back")}</span>
             </Button>
             <Button variant="outline" size="sm" disabled className="h-8 text-xs flex items-center gap-1 opacity-50">
-              <span>Kế tiếp</span>
+              <span>{t("common.actions.confirm")}</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { ToastCard } from "@/components/ui/feedback-components"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface User {
   id: string
@@ -40,6 +41,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   const [localError, setLocalError] = useState(errorMsg || "")
 
@@ -100,7 +102,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm kiếm người dùng..."
+            placeholder={t("common.actions.search")}
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             className="w-full h-10 text-sm pl-9 bg-background border border-input"
@@ -110,13 +112,13 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
         <div className="w-full sm:w-48">
           <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
             <SelectTrigger className="h-10 text-sm bg-background border border-input">
-              <SelectValue placeholder="Trạng thái" />
+              <SelectValue placeholder={t("users.fields.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="active">Hoạt động (Active)</SelectItem>
-              <SelectItem value="inactive">Tạm ngưng (Inactive)</SelectItem>
-              <SelectItem value="blocked">Bị chặn (Blocked)</SelectItem>
+              <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
+              <SelectItem value="active">{t("common.status.active")}</SelectItem>
+              <SelectItem value="inactive">{t("common.status.inactive")}</SelectItem>
+              <SelectItem value="blocked">{t("common.status.cancelled")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -124,20 +126,20 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
 
       {initialUsers.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground border border-dashed rounded-xl bg-muted/10">
-          Không tìm thấy người dùng nào.
+          {t("common.table.noResults")}
         </div>
       ) : (
         <div className="border border-border rounded-xl overflow-hidden shadow-xs bg-card">
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead>Tên hiển thị</TableHead>
+                <TableHead>{t("users.fields.fullName")}</TableHead>
                 <TableHead>Username</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Xác minh</TableHead>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead className="text-right">Ngày đăng ký</TableHead>
-                <TableHead className="text-center">Thao tác</TableHead>
+                <TableHead>{t("users.fields.email")}</TableHead>
+                <TableHead>Verified</TableHead>
+                <TableHead>{t("users.fields.status")}</TableHead>
+                <TableHead className="text-right">{t("users.fields.createdAt")}</TableHead>
+                <TableHead className="text-center">{t("common.actions.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,7 +150,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
                     <Badge variant={user.isVerified ? "default" : "outline"} className={user.isVerified ? "bg-emerald-500/10 text-emerald-600 border-transparent hover:bg-emerald-500/15" : "text-slate-500"}>
-                      {user.isVerified ? "Đã xác minh" : "Chưa xác minh"}
+                      {user.isVerified ? t("common.status.success") : t("common.status.pending")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -175,7 +177,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                       href={`/pages/users/details?id=${user.id}`}
                       className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
                     >
-                      Chi tiết
+                      {t("common.actions.view")}
                     </Link>
                   </TableCell>
                 </TableRow>
@@ -187,7 +189,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
           {metadata && (
             <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} người dùng)
+                {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
               </span>
               <div className="flex items-center gap-1.5">
                 <Button
@@ -198,7 +200,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                   className="h-8 text-xs flex items-center gap-1 text-muted-foreground"
                 >
                   <ChevronLeft className="h-3.5 w-3.5" />
-                  <span>Trước</span>
+                  <span>{t("common.actions.back")}</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -207,7 +209,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
                   onClick={() => handlePageChange(metadata.page + 1)}
                   className="h-8 text-xs flex items-center gap-1 text-muted-foreground"
                 >
-                  <span>Kế tiếp</span>
+                  <span>{t("common.actions.confirm")}</span>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -221,7 +223,7 @@ export function UsersTable({ initialUsers, metadata, errorMsg }: UsersTableProps
         {localError && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={localError}
             onClose={() => setLocalError("")}
           />

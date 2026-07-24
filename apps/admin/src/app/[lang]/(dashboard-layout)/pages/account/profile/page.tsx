@@ -6,10 +6,9 @@ import { userData } from "@/data/user"
 import { ProfileContent } from "./_components/profile-content"
 import { ProfileHeader } from "./_components/profile-header"
 
-// Define metadata for the page
-// More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 export const metadata: Metadata = {
-  title: "Profile",
+  title: "Hồ sơ cá nhân | Admin",
+  description: "Thông tin chi tiết tài khoản quản trị hệ thống Sâm Ngọc Linh",
 }
 
 export default async function ProfilePage(props: {
@@ -19,7 +18,10 @@ export default async function ProfilePage(props: {
   let user = userData
 
   try {
-    const res = await fetchApi("/user/profile")
+    let res = await fetchApi("/user/profile/me")
+    if (!res.ok) {
+      res = await fetchApi("/user/profile")
+    }
     const payload = await res.json()
     if (res.ok && payload.data) {
       const profile = payload.data
@@ -30,13 +32,14 @@ export default async function ProfilePage(props: {
       user = {
         ...userData,
         id: profile.id || "1",
-        name: profile.name || "Admin User",
+        name: profile.name || profile.username || "Admin User",
         firstName,
         lastName,
-        email: profile.email || "admin@mail.com",
+        email: profile.email || "admin@samngoclinh.com",
         username: profile.username || "admin",
-        phoneNumber: profile.mobileNumbers?.[0]?.number || "",
-        avatar: profile.photo?.url || "/images/avatars/male-01.svg",
+        role: profile.role?.name || profile.role || "Quản trị viên",
+        phoneNumber: profile.mobileNumbers?.[0]?.number || profile.phone || "---",
+        avatar: profile.photo?.url || profile.avatar || "/images/avatars/male-01.svg",
       }
     }
   } catch (error) {
@@ -46,7 +49,8 @@ export default async function ProfilePage(props: {
   return (
     <div className="container px-0">
       <ProfileHeader locale={params.lang} user={user} />
-      <ProfileContent />
+      <ProfileContent user={user} />
     </div>
   )
 }
+

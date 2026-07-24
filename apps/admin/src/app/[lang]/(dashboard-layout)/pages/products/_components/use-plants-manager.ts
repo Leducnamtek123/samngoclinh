@@ -62,10 +62,13 @@ async function getCroppedImg(
   })
 }
 
+import { useTranslation } from "@/providers/i18n-provider"
+
 export function usePlantsManager({ initialPlants, initialError }: UsePlantsManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { t } = useTranslation()
 
   const [plants, setPlants] = useState<Plant[]>(initialPlants)
 
@@ -240,12 +243,12 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
     if (successCount > 0) {
       setPlants((prev) => { const set = new Set(selectedPlantIds); return prev.filter((p) => !set.has(p.id)) })
-      setSuccessMsg(`Đã xóa thành công ${successCount} sản phẩm!`)
+      setSuccessMsg(t("messages.deleteSuccess"))
       router.refresh()
     }
 
     if (failCount > 0) {
-      setErrorMsg(`Có ${failCount} sản phẩm không thể xóa.`)
+      setErrorMsg(t("messages.errorOccurred"))
     }
 
     setSelectedPlantIds([])
@@ -256,8 +259,8 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     if (selectedPlantIds.length === 0) return
     setConfirmState({
       isOpen: true,
-      title: "Xóa các sản phẩm đã chọn?",
-      desc: `Hành động này sẽ xóa vĩnh viễn ${selectedPlantIds.length} sản phẩm sâm đã chọn khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("common.confirmations.deleteTitle"),
+      desc: t("common.confirmations.deleteDescription"),
       loading: false,
       action: performBulkDelete,
     })
@@ -275,16 +278,16 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
       if (res.status >= 400) {
         const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa sản phẩm.")
+        setErrorMsg(payload?.message || t("messages.errorOccurred"))
       } else {
         setPlants(plants.filter((p) => p.id !== id))
-        setSuccessMsg("Xóa sản phẩm thành công!")
+        setSuccessMsg(t("messages.deleteSuccess"))
         setSelectedPlantIds((prev) => prev.filter((item) => item !== id))
         router.refresh()
       }
     } catch (e) {
       console.error(e)
-      setErrorMsg("Không thể kết nối đến máy chủ API")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setConfirmState((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
@@ -294,8 +297,8 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     const plant = plants.find((p) => p.id === id)
     setConfirmState({
       isOpen: true,
-      title: "Xóa sản phẩm này?",
-      desc: `Hành động này sẽ xóa vĩnh viễn sản phẩm "${plant?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("common.confirmations.deleteTitle"),
+      desc: t("common.confirmations.deleteDescription"),
       loading: false,
       action: () => performDelete(id),
     })
@@ -370,7 +373,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     try {
       const croppedBlob = await getCroppedImg(cropState.imageSrc, cropState.croppedAreaPixels)
       if (!croppedBlob) {
-        setDialogState((prev) => ({ ...prev, error: "Lỗi xử lý cắt ảnh" }))
+        setDialogState((prev) => ({ ...prev, error: t("messages.errorOccurred") }))
         return
       }
 
@@ -384,7 +387,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || "Tải ảnh lên thất bại" }))
+        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
       } else {
         setDialogState((prev) => ({
           ...prev,
@@ -396,7 +399,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi khi kết nối hoặc xử lý tải ảnh" }))
+      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
     } finally {
       setDialogState((prev) => ({ ...prev, uploadingImage: false }))
       setCropState((prev) => ({ ...prev, imageSrc: null }))
@@ -427,11 +430,11 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
   const handleSavePlant = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!dialogState.formData.name) {
-      setDialogState((prev) => ({ ...prev, error: "Vui lòng nhập tên sản phẩm" }))
+      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
       return
     }
     if (!dialogState.formData.code) {
-      setDialogState((prev) => ({ ...prev, error: "Vui lòng nhập mã code sản phẩm" }))
+      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
       return
     }
 
@@ -459,10 +462,10 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Đã xảy ra lỗi khi tạo sản phẩm" }))
+          setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
         } else {
           setPlants((prev) => [payload.data, ...prev])
-          setSuccessMsg(`Đã tạo sản phẩm sâm "${dialogState.formData.name}" thành công!`)
+          setSuccessMsg(t("messages.createSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
           router.refresh()
         }
@@ -483,19 +486,19 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Đã xảy ra lỗi khi cập nhật sản phẩm" }))
+          setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
         } else {
           setPlants((prev) =>
             prev.map((p) => (p.id === dialogState.selectedPlant!.id ? { ...p, ...payload.data } : p))
           )
-          setSuccessMsg(`Cập nhật sản phẩm "${dialogState.formData.name}" thành công!`)
+          setSuccessMsg(t("messages.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
           router.refresh()
         }
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Không thể kết nối đến máy chủ API" }))
+      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }

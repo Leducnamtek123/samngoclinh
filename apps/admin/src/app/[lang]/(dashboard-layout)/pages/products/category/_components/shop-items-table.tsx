@@ -9,6 +9,7 @@ import { ToastCard, ConfirmationDialog, ErrorState } from "@/components/ui/feedb
 import { ShopItemsList } from "./shop-items-list"
 import { ShopItemDialog } from "./shop-item-dialog"
 import { useShopItemsManager } from "./use-shop-items-manager"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface ShopItem {
   id: string
@@ -37,22 +38,23 @@ interface ShopItemsTableProps {
 }
 
 const categoryOptions = [
-  { value: "processed", label: "Sản phẩm chế biến (Rượu, sâm khô...)" },
-  { value: "supplies", label: "Vật tư nông nghiệp (Phân bón, giống...)" },
-  { value: "organic", label: "Sản phẩm hữu cơ" },
-  { value: "beverage", label: "Đồ uống sâm" },
-  { value: "other", label: "Khác" },
+  { value: "processed", label: "Processed Products" },
+  { value: "supplies", label: "Agricultural Supplies" },
+  { value: "organic", label: "Organic Products" },
+  { value: "beverage", label: "Ginseng Beverages" },
+  { value: "other", label: "Other" },
 ]
 
 const categoryNameMap: Record<string, string> = {
-  processed: "Sản phẩm chế biến",
-  supplies: "Vật tư nông nghiệp",
-  organic: "Sản phẩm hữu cơ",
-  beverage: "Đồ uống sâm",
-  other: "Khác",
+  processed: "Processed Products",
+  supplies: "Agricultural Supplies",
+  organic: "Organic Products",
+  beverage: "Ginseng Beverages",
+  other: "Other",
 }
 
 export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError }: ShopItemsTableProps) {
+  const { t } = useTranslation()
   const {
     items,
     filteredItems,
@@ -85,7 +87,7 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
     return (
       <div className="py-12">
         <ErrorState
-          title="Không thể tải dữ liệu sản phẩm"
+          title={t("messages.errorOccurred")}
           description={errorMsg}
           onRetry={() => window.location.reload()}
         />
@@ -97,14 +99,14 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight">Sản phẩm thương mại & vật tư</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t("products.categories")}</h1>
           <p className="text-muted-foreground">
-            Quản lý các sản phẩm chế biến từ sâm, vật tư nông nghiệp phục vụ kinh doanh.
+            {t("products.subtitle")}
           </p>
         </div>
         <Button onClick={openCreateDialog} className="bg-emerald-600 hover:bg-emerald-700 text-white">
           <Plus className="size-4 mr-2" />
-          Thêm sản phẩm
+          {t("products.addProduct")}
         </Button>
       </div>
 
@@ -112,27 +114,27 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
             <div className="space-y-1">
-              <CardTitle>Danh sách sản phẩm</CardTitle>
+              <CardTitle>{t("products.title")}</CardTitle>
               <CardDescription>
-                Hiển thị danh sách chi tiết các mặt hàng đang kinh doanh trong hệ thống.
+                {filteredItems.length} total entries
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <Input
-                placeholder="Tìm tên hoặc mã sản phẩm..."
+                placeholder={t("common.actions.search")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-xs"
               />
               <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Tất cả danh mục" />
+                  <SelectValue placeholder={t("products.categories")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả danh mục</SelectItem>
+                  <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
                   {categoryOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label.split(" (")[0]}
+                      {opt.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -186,8 +188,8 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         onConfirm={confirmDialog.action}
         title={confirmDialog.title}
         description={confirmDialog.description}
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy bỏ"
+        confirmLabel={t("common.actions.confirm")}
+        cancelLabel={t("common.actions.cancel")}
         type="danger"
         isLoading={confirmDialog.loading}
       />
@@ -197,7 +199,7 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -205,7 +207,7 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />
