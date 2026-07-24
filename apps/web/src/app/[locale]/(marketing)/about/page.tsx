@@ -3,6 +3,8 @@ import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 
+export const dynamic = 'force-dynamic';
+
 type AboutPageProps = {
   params: Promise<{ locale: string }>;
 };

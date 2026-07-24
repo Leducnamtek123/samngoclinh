@@ -4,6 +4,8 @@ import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
 import { HomepageBannerSlider } from './HomepageBannerSlider';
 
+export const dynamic = 'force-dynamic';
+
 type IndexPageProps = {
   params: Promise<{ locale: string }>;
 };
