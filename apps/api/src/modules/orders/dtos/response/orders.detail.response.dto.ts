@@ -114,4 +114,26 @@ export class OrdersDetailResponseDto {
         email: string;
         phone: string;
     };
+
+    @ApiProperty({
+        required: false,
+        example: {
+            qrUrl: 'https://qr.sepay.vn/img?acc=038100012345&bank=MBBank&amount=1235716&des=ORD1784128470037624&template=compact',
+            accountNumber: '038100012345',
+            accountName: 'CONG TY CP SAM NGOC LINH',
+            bankBrand: 'MBBank',
+            amount: 1235716,
+            orderCode: 'ORD1784128470037624',
+        },
+    })
+    @Expose()
+    paymentQr?: {
+        qrUrl: string;
+        accountNumber: string;
+        accountName: string;
+        bankBrand: string;
+        amount: number;
+        orderCode: string;
+    };
 }
+

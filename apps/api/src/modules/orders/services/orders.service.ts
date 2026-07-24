@@ -38,6 +38,26 @@ export class OrdersService implements IOrdersService {
         };
     }
 
+    private buildSepayQrInfo(code: string, amount: number) {
+        const accountNumber = process.env.SEPAY_BANK_ACCOUNT || '038100012345';
+        const bankBrand = process.env.SEPAY_BANK_BRAND || 'MBBank';
+        const accountName = process.env.SEPAY_ACCOUNT_NAME || 'CONG TY CP SAM NGOC LINH';
+        const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
+            accountNumber
+        )}&bank=${encodeURIComponent(bankBrand)}&amount=${amount}&des=${encodeURIComponent(
+            code
+        )}&template=compact`;
+
+        return {
+            qrUrl,
+            accountNumber,
+            accountName,
+            bankBrand,
+            amount,
+            orderCode: code,
+        };
+    }
+
     async detail(
         id: string,
         userId: string
@@ -51,10 +71,18 @@ export class OrdersService implements IOrdersService {
             });
         }
 
+        const paymentQr = order.status === 'pending'
+            ? this.buildSepayQrInfo(order.code, order.total)
+            : undefined;
+
         return {
-            data: order,
+            data: {
+                ...order,
+                paymentQr,
+            },
         };
     }
+
 
     async checkout(
         userId: string,
@@ -235,9 +263,11 @@ export class OrdersService implements IOrdersService {
                 paidAt: order.paidAt,
                 cancelledAt: order.cancelledAt,
                 createdAt: order.createdAt,
+                paymentQr: this.buildSepayQrInfo(order.code, order.total),
             },
         };
     }
+
 
     async handlePaymentWebhook(
         payload: OrdersPaymentWebhookRequestDto

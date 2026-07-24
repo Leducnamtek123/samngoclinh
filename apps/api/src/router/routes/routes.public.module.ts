@@ -19,10 +19,12 @@ import { SettingPublicController } from '@modules/setting/controllers/setting.pu
 import { SettingModule } from '@modules/setting/setting.module';
 import { BannerPublicController } from '@modules/banner/controllers/banner.public.controller';
 import { BannerModule } from '@modules/banner/banner.module';
+import { SepayPublicController } from '@modules/sepay/controllers/sepay.public.controller';
+import { SepayModule } from '@modules/sepay/sepay.module';
 import { Module } from '@nestjs/common';
 
 /**
- * Mounts unauthenticated public controllers: country, hello, user, and term policy.
+ * Mounts unauthenticated public controllers: country, hello, user, term policy, and sepay.
  */
 @Module({
     controllers: [
@@ -37,6 +39,7 @@ import { Module } from '@nestjs/common';
         ContactUserController,
         SettingPublicController,
         BannerPublicController,
+        SepayPublicController,
     ],
     providers: [],
     exports: [],
@@ -51,6 +54,8 @@ import { Module } from '@nestjs/common';
         ContactModule,
         SettingModule,
         BannerModule,
+        SepayModule,
     ],
 })
 export class RoutesPublicModule {}
+
