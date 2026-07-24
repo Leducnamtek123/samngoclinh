@@ -122,7 +122,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                       onChange={() => setSelectedAges([])}
                       className="rounded border-gray-300 text-[#1C3F24] focus:ring-[#1C3F24] w-4 h-4 cursor-pointer"
                     />
-                    <span>Tất cả</span>
+                    <span>{t('all')}</span>
                   </label>
                   {[
                     { label: '1 năm', value: 1 },
