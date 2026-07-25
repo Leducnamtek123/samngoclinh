@@ -154,7 +154,6 @@ export default function SignInForm() {
         setLoading(false);
       });
   };
-  };
 
   return (
     <div className="w-full min-h-[calc(100vh-120px)] bg-gray-50 flex items-center justify-center py-12 px-4">

@@ -40,6 +40,10 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
   const handleAddToCartOnly = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isLoggedIn) {
+      window.location.href = `/${locale}/sign-in?reason=cart`;
+      return;
+    }
     if (!item?.id) return;
     addToCart({
       id: item.id,
@@ -244,7 +248,13 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
                           </button>
                           <button
                             type="button"
-                            onClick={() => setQuickPurchaseProduct(item)}
+                            onClick={() => {
+                            if (!isLoggedIn) {
+                              window.location.href = `/${locale}/sign-in?reason=products`;
+                              return;
+                            }
+                            setQuickPurchaseProduct(item);
+                          }}
                             className="flex-1 flex items-center justify-center gap-1.5 bg-[#1C3F24] hover:bg-[#1C3F24]/90 text-white py-2.5 rounded-lg font-extrabold transition-colors duration-200 text-xs active:scale-98 shadow-xs cursor-pointer"
                           >
                             Mua ngay

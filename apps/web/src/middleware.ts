@@ -8,7 +8,7 @@ import { routing } from './libs/I18nRouting';
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = (pathname: string) => {
-  return pathname.includes('/profile') || pathname.includes('/trading-floor');
+  return pathname.includes('/profile') || pathname.includes('/trading-floor') || pathname.includes('/cart');
 };
 
 const isAuthPage = (pathname: string) => {

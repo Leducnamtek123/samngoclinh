@@ -34,6 +34,10 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   const handleAddToCartOnly = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isLoggedIn) {
+      window.location.href = `/${locale}/sign-in?reason=cart`;
+      return;
+    }
     addToCart({
       id: item.id || `GINSENG-${item.name}`,
       name: item.name,
@@ -169,7 +173,13 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                     item={item}
                     onOpenDetail={openProductDetail}
                     onAddToCart={handleAddToCartOnly}
-                    onQuickPurchase={setQuickPurchasePlant}
+                    onQuickPurchase={(item) => {
+                      if (!isLoggedIn) {
+                        window.location.href = `/${locale}/sign-in?reason=ginseng`;
+                        return;
+                      }
+                      setQuickPurchasePlant(item);
+                    }}
                   />
                 ))}
               </div>

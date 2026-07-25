@@ -36,7 +36,7 @@ export const QuickPurchaseModal = ({
   item,
   mode,
   locale,
-  isLoggedIn = true,
+  isLoggedIn = false,
   onClose,
   onSuccessPayment,
   // react-doctor-disable-next-line react-doctor/prefer-useReducer
