@@ -134,24 +134,6 @@ export async function login({ email, password }) {
   };
 }
 
-// Gửi mã OTP đăng nhập tới số điện thoại (chỉ cho user đã tồn tại + đã gắn số). Dev trả kèm { otp }.
-export async function sendLoginOtp({ phone }) {
-  return apiRequest('/public/user/login/otp/send', { method: 'POST', body: { phone } });
-}
-
-// Xác nhận OTP -> trả cặp token như login.
-export async function verifyLoginOtp({ phone, otp }) {
-  const device = await getDeviceInfo();
-  const data = await apiRequest('/public/user/login/otp/verify', {
-    method: 'POST',
-    body: { phone, otp, from: 'mobile', device },
-  });
-  return {
-    accessToken: data.tokens?.accessToken ?? null,
-    refreshToken: data.tokens?.refreshToken ?? null,
-  };
-}
-
 // Đăng ký bằng email. Backend bắt buộc countryId + marketing + cookies (cờ đồng ý, không phải HTTP cookie).
 // Không gửi inviteCode vì backend forbidNonWhitelisted. countryId lấy từ resolveDefaultCountryId() ở màn hình.
 export async function register({ name, email, password, countryId }) {

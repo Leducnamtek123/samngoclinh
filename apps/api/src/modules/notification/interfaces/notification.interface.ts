@@ -3,7 +3,10 @@ import {
     EnumTermPolicyType,
     EnumUserLoginFrom,
     EnumUserLoginWith,
+    Notification,
 } from '@generated/prisma-client';
+
+export type INotificationAdminSendResult = Notification | { count: number };
 
 export interface INotificationTemporaryPasswordPayload {
     password: string;

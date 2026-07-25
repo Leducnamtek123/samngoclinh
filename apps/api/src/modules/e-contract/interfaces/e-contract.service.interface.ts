@@ -1,4 +1,4 @@
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { EContract, Prisma } from '@generated/prisma-client';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';

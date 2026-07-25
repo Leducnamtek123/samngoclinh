@@ -1,5 +1,4 @@
-// Đăng nhập — chuyển đổi Email / Số điện thoại (OTP), kèm đăng nhập Google/Apple.
-// OTP là ĐĂNG NHẬP (không phải đăng ký): chỉ dùng cho user đã tồn tại + đã gắn số điện thoại.
+// Đăng nhập bằng email/mật khẩu, kèm đăng nhập Google/Apple.
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -15,35 +14,18 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 import IconField from '../components/IconField';
-import { sendLoginOtp } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
 export default function LoginScreen({ navigation }) {
-  const { signIn, signInWithOtp } = useAuth();
+  const { signIn } = useAuth();
   const insets = useSafeAreaInsets();
   const alert = useAlert();
 
-  const [mode, setMode] = useState('phone');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const run = async (fn, after) => {
-    setLoading(true);
-    try {
-      const result = await fn();
-      after?.(result);
-    } catch (e) {
-      alert.error('Lỗi', e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Sau khi đăng nhập xong: đóng màn Login, quay lại chỗ đang thao tác (vd giỏ hàng); nếu không có thì về Home.
   const closeAfterAuth = () => {
@@ -51,34 +33,19 @@ export default function LoginScreen({ navigation }) {
     else navigation.navigate('Home');
   };
 
-  const onEmailLogin = () => {
+  const onLogin = async () => {
     if (!email.trim() || !password)
       return alert.error('Thiếu thông tin', 'Vui lòng nhập email và mật khẩu.');
-    run(
-      () => signIn({ email: email.trim().toLowerCase(), password }),
-      (res) => {
-        if (res?.mustChangePassword) navigation.navigate('ChangePassword');
-        else closeAfterAuth();
-      }
-    );
-  };
-
-  const onSendOtp = () => {
-    if (!phone.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập số điện thoại.');
-    run(async () => {
-      await sendLoginOtp({ phone: phone.trim() });
-      setOtpSent(true);
-    });
-  };
-
-  const onVerifyOtp = () => {
-    if (!otp.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập mã OTP.');
-    run(() => signInWithOtp({ phone: phone.trim(), otp: otp.trim() }), closeAfterAuth);
-  };
-
-  const switchMode = (next) => {
-    setMode(next);
-    setOtpSent(false);
+    setLoading(true);
+    try {
+      const res = await signIn({ email: email.trim().toLowerCase(), password });
+      if (res?.mustChangePassword) navigation.navigate('ChangePassword');
+      else closeAfterAuth();
+    } catch (e) {
+      alert.error('Lỗi', e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -112,75 +79,28 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.title}>Xin chào, chào mừng bạn trở lại!</Text>
             <Text style={styles.subtitle}>Đăng nhập để tiếp tục</Text>
 
-            <View style={styles.segment}>
-              <SegmentItem
+            <View style={styles.form}>
+              <IconField
                 icon="mail-outline"
-                label="Email"
-                active={mode === 'email'}
-                onPress={() => switchMode('email')}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
-              <SegmentItem
-                icon="phone-portrait-outline"
-                label="Số điện thoại"
-                active={mode === 'phone'}
-                onPress={() => switchMode('phone')}
+              <IconField
+                icon="lock-closed-outline"
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Mật khẩu"
+                secureTextEntry
               />
+              <PrimaryBtn label="Đăng nhập" onPress={onLogin} loading={loading} />
+              <Text style={styles.forgot} onPress={() => navigation.navigate('ForgotPassword')}>
+                Quên mật khẩu?
+              </Text>
             </View>
-
-            {mode === 'email' ? (
-              <>
-                <IconField
-                  icon="mail-outline"
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="Email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <IconField
-                  icon="lock-closed-outline"
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Mật khẩu"
-                  secureTextEntry
-                />
-                <PrimaryBtn label="Đăng nhập" onPress={onEmailLogin} loading={loading} />
-                <Text style={styles.forgot} onPress={() => navigation.navigate('ForgotPassword')}>
-                  Quên mật khẩu?
-                </Text>
-              </>
-            ) : (
-              <>
-                <IconField
-                  icon="call-outline"
-                  value={phone}
-                  onChangeText={setPhone}
-                  placeholder="Số điện thoại"
-                  keyboardType="phone-pad"
-                  editable={!otpSent}
-                />
-                {otpSent ? (
-                  <IconField
-                    icon="keypad-outline"
-                    value={otp}
-                    onChangeText={setOtp}
-                    placeholder="Nhập mã OTP"
-                    keyboardType="number-pad"
-                  />
-                ) : null}
-                {otpSent ? (
-                  <>
-                    <PrimaryBtn label="Xác nhận OTP" onPress={onVerifyOtp} loading={loading} />
-                    <Text style={styles.forgot} onPress={onSendOtp}>
-                      Gửi lại mã
-                    </Text>
-                  </>
-                ) : (
-                  <PrimaryBtn label="Gửi mã OTP IWEFARM" onPress={onSendOtp} loading={loading} />
-                )}
-              </>
-            )}
 
             <View style={styles.divider}>
               <View style={styles.line} />
@@ -213,15 +133,6 @@ export default function LoginScreen({ navigation }) {
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
-  );
-}
-
-function SegmentItem({ icon, label, active, onPress }) {
-  return (
-    <Pressable style={[styles.segItem, active && styles.segActive]} onPress={onPress}>
-      <Ionicons name={icon} size={20} color={active ? '#fff' : colors.text} />
-      <Text style={[styles.segText, active && styles.segTextActive]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -285,27 +196,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '800', color: colors.text, textAlign: 'center' },
   subtitle: { fontSize: 15, color: colors.textMuted, textAlign: 'center', marginTop: spacing.xs },
 
-  segment: {
-    flexDirection: 'row',
-    backgroundColor: '#EFF1EF',
-    borderRadius: 30,
-    padding: 5,
-    marginTop: spacing.xl,
-  },
-  segItem: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    height: 48,
-    borderRadius: 26,
-  },
-  segActive: { backgroundColor: colors.header },
-  segText: { fontSize: 15, fontWeight: '700', color: colors.text },
-  segTextActive: { color: '#fff' },
-
-  error: { color: colors.danger, fontSize: 14, marginTop: spacing.md },
+  form: { marginTop: spacing.xl },
 
   primary: {
     height: 56,

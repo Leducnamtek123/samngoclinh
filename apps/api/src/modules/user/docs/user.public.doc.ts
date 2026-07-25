@@ -9,7 +9,6 @@ import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.res
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserLoginSetupTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-setup-two-factor.request.dto';
 import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
-import { UserLoginFirebaseRequestDto } from '@modules/user/dtos/request/user.login-firebase.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
 import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
@@ -31,24 +30,6 @@ export function UserPublicLoginCredentialDoc(): MethodDecorator {
             dto: UserLoginRequestDto,
         }),
         DocResponse('user.loginCredential', {
-            dto: UserLoginResponseDto,
-        })
-    );
-}
-
-export function UserPublicLoginFirebaseDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc({
-            summary: 'Login/register with Firebase phone auth ID token',
-        }),
-        DocAuth({
-            xApiKey: true,
-        }),
-        DocRequest({
-            bodyType: EnumDocRequestBodyType.json,
-            dto: UserLoginFirebaseRequestDto,
-        }),
-        DocResponse('user.loginFirebase', {
             dto: UserLoginResponseDto,
         })
     );

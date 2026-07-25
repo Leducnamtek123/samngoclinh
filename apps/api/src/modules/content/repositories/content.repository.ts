@@ -38,7 +38,9 @@ export class ContentRepository {
             publishedAt: (item.publishedAt ?? item.createdAt).toISOString(),
             summary: item.summary,
             image: item.coverImage || undefined,
-            author: (item.metadata as any)?.authorName || 'iWE FARM',
+            author:
+                (item.metadata as { authorName?: string } | null)
+                    ?.authorName || 'iWE FARM',
         }));
     }
 

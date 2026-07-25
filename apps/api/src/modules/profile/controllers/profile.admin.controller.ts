@@ -12,7 +12,7 @@ import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@generated/prisma-client';
+import { BusinessProfile, EnumRoleType } from '@generated/prisma-client';
 import { ProfileService } from '@modules/profile/services/profile.service';
 import {
     ProfileAdminListBusinessDoc,
@@ -36,7 +36,7 @@ export class ProfileAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
-    async list(): Promise<IResponseReturn<{ items: any[] }>> {
+    async list(): Promise<IResponseReturn<{ items: BusinessProfile[] }>> {
         return this.profileService.adminListBusinessProfiles();
     }
 
@@ -50,7 +50,7 @@ export class ProfileAdminController {
     async updateRank(
         @Param('id') id: string,
         @Body() body: ProfileAdminUpdateRankRequestDto
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<BusinessProfile>> {
         return this.profileService.adminUpdateRank(id, body.rank);
     }
 }

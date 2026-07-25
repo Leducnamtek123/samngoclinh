@@ -4,6 +4,7 @@ import { IWalletService } from '@modules/wallet/interfaces/wallet.service.interf
 import { WalletRepository } from '@modules/wallet/repositories/wallet.repository';
 import { WalletSummaryResponseDto } from '@modules/wallet/dtos/response/wallet.summary.response.dto';
 import { WalletTransactionResponseDto } from '@modules/wallet/dtos/response/wallet.transaction.response.dto';
+import { WalletAccount, WalletTransaction } from '@generated/prisma-client';
 
 @Injectable()
 export class WalletService implements IWalletService {
@@ -31,14 +32,20 @@ export class WalletService implements IWalletService {
         };
     }
 
-    async adminListTransactions(): Promise<IResponseReturn<{ items: any[] }>> {
+    async adminListTransactions(): Promise<
+        IResponseReturn<{ items: WalletTransaction[] }>
+    > {
         const items = await this.walletRepository.listAllTransactions();
         return {
             data: { items },
         };
     }
 
-    async adminAdjustBalance(userId: string, amount: number, title: string): Promise<IResponseReturn<any>> {
+    async adminAdjustBalance(
+        userId: string,
+        amount: number,
+        title: string
+    ): Promise<IResponseReturn<WalletAccount>> {
         const wallet = await this.walletRepository.adjustBalance(userId, amount, title);
         return {
             data: wallet,

@@ -14,7 +14,6 @@ import {
     AuthPublicLoginSocialGoogleDoc,
     UserPublicForgotPasswordDoc,
     UserPublicLoginCredentialDoc,
-    UserPublicLoginFirebaseDoc,
     UserPublicLoginSetupTwoFactorDoc,
     UserPublicLoginVerifyTwoFactorDoc,
     UserPublicSendEmailVerificationDoc,
@@ -26,9 +25,6 @@ import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.fo
 import { UserLoginSetupTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-setup-two-factor.request.dto';
 import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
-import { UserLoginFirebaseRequestDto } from '@modules/user/dtos/request/user.login-firebase.request.dto';
-import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
-import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
 import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
 import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
@@ -64,37 +60,6 @@ export class UserPublicController {
         @Body() body: UserLoginRequestDto
     ): Promise<IResponseReturn<UserLoginResponseDto>> {
         return this.userService.loginCredential(body);
-    }
-
-    @Response('user.loginSendOtp')
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/login/otp/send')
-    async loginSendOtp(
-        @Body() body: UserLoginSendOtpRequestDto
-    ): Promise<{ otp: string }> {
-        return this.userService.sendLoginOtp(body);
-    }
-
-    @Response('user.loginVerifyOtp')
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/login/otp/verify')
-    async loginVerifyOtp(
-        @Body() body: UserLoginVerifyOtpRequestDto
-    ): Promise<IResponseReturn<UserLoginResponseDto>> {
-        return this.userService.verifyLoginOtp(body);
-    }
-
-    @UserPublicLoginFirebaseDoc()
-    @Response('user.loginFirebase')
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/login/firebase')
-    async loginFirebase(
-        @Body() body: UserLoginFirebaseRequestDto
-    ): Promise<IResponseReturn<UserLoginResponseDto>> {
-        return this.userService.loginWithFirebase(body);
     }
 
     @AuthPublicLoginSocialGoogleDoc()

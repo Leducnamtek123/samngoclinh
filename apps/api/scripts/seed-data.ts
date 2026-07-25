@@ -39,7 +39,7 @@ async function uploadToCloudinary(localPath: string): Promise<string> {
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log('--- Starting Business Data Seeding Script with Cloudinary Assets ---');
 
   // Upload Assets

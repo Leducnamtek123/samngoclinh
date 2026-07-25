@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import {
+    IBackofficeEngagementByDevice,
+    IBackofficeMonthlyRevenue,
+    IBackofficeNewVsReturning,
+    IBackofficeTrafficSource,
+    IBackofficeVisitorsByCountry,
+} from '@modules/backoffice/interfaces/backoffice.interface';
 
 export class BackofficeOverviewResponseDto {
     @ApiProperty({
@@ -72,21 +79,21 @@ export class BackofficeOverviewResponseDto {
 
     @ApiProperty({ required: false })
     @Expose()
-    monthlyRevenue?: any[];
+    monthlyRevenue?: IBackofficeMonthlyRevenue[];
 
     @ApiProperty({ required: false })
     @Expose()
-    trafficSources?: any[];
+    trafficSources?: IBackofficeTrafficSource[];
 
     @ApiProperty({ required: false })
     @Expose()
-    newVsReturning?: any;
+    newVsReturning?: IBackofficeNewVsReturning;
 
     @ApiProperty({ required: false })
     @Expose()
-    visitorsByCountry?: any[];
+    visitorsByCountry?: IBackofficeVisitorsByCountry[];
 
     @ApiProperty({ required: false })
     @Expose()
-    engagementByDevice?: any[];
+    engagementByDevice?: IBackofficeEngagementByDevice[];
 }

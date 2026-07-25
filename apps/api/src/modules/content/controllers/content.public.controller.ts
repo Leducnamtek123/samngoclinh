@@ -7,7 +7,7 @@ import {
     ContentPublicGetArticleDoc,
     ContentPublicListArticlesDoc,
 } from '@modules/content/docs/content.public.doc';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ContentArticle, Prisma } from '@generated/prisma-client';
 import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';

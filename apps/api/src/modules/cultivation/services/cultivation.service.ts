@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ICultivationService } from '@modules/cultivation/interfaces/cultivation.service.interface';
 import { CultivationRepository } from '@modules/cultivation/repositories/cultivation.repository';
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
@@ -16,6 +16,11 @@ import { CultivationUpdateBedRequestDto } from '@modules/cultivation/dtos/reques
 import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.update-tree.request.dto';
 import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking, Prisma } from '@generated/prisma-client';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import {
+    ICultivationBedDetail,
+    ICultivationBedLocationsGenerateResult,
+    ICultivationTreeDetail,
+} from '@modules/cultivation/interfaces/cultivation.interface';
 
 @Injectable()
 export class CultivationService implements ICultivationService {
@@ -186,7 +191,7 @@ export class CultivationService implements ICultivationService {
         return { data: garden };
     }
 
-    async bedDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>> {
+    async bedDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<ICultivationBedDetail>> {
         const bed = await this.cultivationRepository.getBedDetail(id, userId, isAdmin);
         if (!bed) {
             throw new NotFoundException('Bed not found');
@@ -194,7 +199,7 @@ export class CultivationService implements ICultivationService {
         return { data: bed };
     }
 
-    async treeDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<any>> {
+    async treeDetail(id: string, userId: string, isAdmin?: boolean): Promise<IResponseReturn<ICultivationTreeDetail>> {
         const tree = await this.cultivationRepository.getTreeDetail(id, userId, isAdmin);
         if (!tree) {
             throw new NotFoundException('Tree not found');
@@ -207,7 +212,7 @@ export class CultivationService implements ICultivationService {
         return { data: res };
     }
 
-    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<any>> {
+    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<IResponseReturn<ICultivationBedLocationsGenerateResult>> {
         const res = await this.cultivationRepository.generateBedLocations(bedCode, rows, cols);
         return { data: res };
     }

@@ -13,7 +13,6 @@ import {
   login as apiLogin,
   logout as apiLogout,
   setUnauthorizedHandler,
-  verifyLoginOtp,
 } from '../api/auth';
 import { clearSession, loadSession, saveSession } from '../api/storage';
 
@@ -50,12 +49,6 @@ export function AuthProvider({ children }) {
     }
     await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
     return { mustChangePassword: !!res.mustChangePassword };
-  };
-
-  // Đăng nhập bằng OTP số điện thoại.
-  const signInWithOtp = async ({ phone, otp }) => {
-    const res = await verifyLoginOtp({ phone, otp });
-    await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
   };
 
   const signOut = async () => {
@@ -99,7 +92,6 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: !!token,
       signIn,
-      signInWithOtp,
       signOut,
       changePassword,
     }),

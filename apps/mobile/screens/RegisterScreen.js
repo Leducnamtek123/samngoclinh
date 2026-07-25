@@ -119,22 +119,6 @@ export default function RegisterScreen({ navigation }) {
             </Pressable>
           </View>
 
-          <View style={styles.divider}>
-            <View style={styles.line} />
-            <Text style={styles.dividerText}>Hoặc</Text>
-            <View style={styles.line} />
-          </View>
-
-          <Pressable
-            onPress={() =>
-              navigation.navigate('ComingSoon', { title: 'Đăng ký bằng số điện thoại' })
-            }
-            style={({ pressed }) => [styles.phoneBtn, pressed && styles.pressed]}
-          >
-            <Ionicons name="phone-portrait-outline" size={20} color={colors.primary} />
-            <Text style={styles.phoneText}>Đăng ký bằng số điện thoại</Text>
-          </Pressable>
-
           <Text style={styles.footer}>
             Bạn đã có tài khoản?{' '}
             <Text style={styles.footerLink} onPress={() => navigation.navigate('Login')}>
@@ -201,23 +185,6 @@ const styles = StyleSheet.create({
   },
   submitText: { color: '#fff', fontSize: 17, fontWeight: '700' },
   blocked: { opacity: 0.6 },
-
-  divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginVertical: spacing.lg },
-  line: { flex: 1, height: 1, backgroundColor: colors.greenSoftBorder },
-  dividerText: { color: colors.textMuted, fontSize: 15 },
-
-  phoneBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: colors.primary,
-    backgroundColor: colors.surface,
-  },
-  phoneText: { color: colors.primary, fontSize: 16, fontWeight: '700' },
 
   footer: { textAlign: 'center', color: colors.textMuted, fontSize: 15, marginTop: spacing.xl },
   footerLink: { color: colors.primary, fontWeight: '800' },

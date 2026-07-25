@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@common/database/services/database.service';
 import { Banner } from '@generated/prisma-client';
 import { UpsertBannerDto } from '../dtos/banner.dto';
+import { IBanner } from '../interfaces/banner.interface';
 
 @Injectable()
 export class BannerService {
@@ -40,7 +41,7 @@ export class BannerService {
 
     constructor(private readonly databaseService: DatabaseService) {}
 
-    async getBanner(pageKey: string): Promise<any[]> {
+    async getBanner(pageKey: string): Promise<IBanner[]> {
         const banners = await this.databaseService.banner.findMany({
             where: { pageKey },
             orderBy: { order: 'asc' },
@@ -97,7 +98,7 @@ export class BannerService {
         });
     }
 
-    async listBanners(): Promise<any[]> {
+    async listBanners(): Promise<IBanner[]> {
         const dbBanners = await this.databaseService.banner.findMany({
             orderBy: [
                 { pageKey: 'asc' },

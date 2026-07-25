@@ -39,7 +39,7 @@ async function uploadToCloudinary(localPath: string): Promise<string> {
   });
 }
 
-async function run() {
+async function run(): Promise<void> {
   const prisma = new PrismaClient();
 
   try {

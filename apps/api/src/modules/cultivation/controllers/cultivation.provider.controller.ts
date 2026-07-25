@@ -30,6 +30,7 @@ import {
     CultivationProviderUpdateTreeDoc,
 } from '@modules/cultivation/docs/cultivation.provider.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { ICultivationBedLocationsGenerateResult } from '@modules/cultivation/interfaces/cultivation.interface';
 
 @ApiTags('modules.provider.cultivation')
 @Controller({
@@ -195,7 +196,7 @@ export class CultivationProviderController {
     async generateBedLocations(
         @Param('bedCode') bedCode: string,
         @Body() body: { rows: number; cols: number }
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<ICultivationBedLocationsGenerateResult>> {
         return this.cultivationService.generateBedLocations(bedCode, body.rows, body.cols);
     }
 

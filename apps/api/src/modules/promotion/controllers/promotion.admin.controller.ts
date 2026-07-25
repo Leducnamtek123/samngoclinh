@@ -14,7 +14,7 @@ import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@generated/prisma-client';
+import { EnumRoleType, PromotionCampaign } from '@generated/prisma-client';
 import { PromotionService } from '@modules/promotion/services/promotion.service';
 import {
     PromotionAdminCreateDoc,
@@ -41,7 +41,7 @@ export class PromotionAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
-    async list(): Promise<IResponseReturn<{ items: any[] }>> {
+    async list(): Promise<IResponseReturn<{ items: PromotionCampaign[] }>> {
         return this.promotionService.adminListCampaigns();
     }
 
@@ -54,7 +54,7 @@ export class PromotionAdminController {
     @Post('/')
     async create(
         @Body() body: PromotionAdminCreateRequestDto
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<PromotionCampaign>> {
         return this.promotionService.adminCreateCampaign(body);
     }
 
@@ -68,7 +68,7 @@ export class PromotionAdminController {
     async update(
         @Param('id') id: string,
         @Body() body: PromotionAdminUpdateRequestDto
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<PromotionCampaign>> {
         return this.promotionService.adminUpdateCampaign(id, body);
     }
 

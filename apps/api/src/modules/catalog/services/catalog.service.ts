@@ -1,4 +1,4 @@
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
     ICatalogPlantItem,

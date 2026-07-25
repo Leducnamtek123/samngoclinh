@@ -5,7 +5,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { IOrdersService } from '@modules/orders/interfaces/orders.service.interface';
 import { OrdersRepository } from '@modules/orders/repositories/orders.repository';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
@@ -19,6 +19,7 @@ import { PaginationService } from '@common/pagination/services/pagination.servic
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
+import { IPaymentQrInfo } from '@modules/payment-gateway/interfaces/payment-gateway.interface';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -43,9 +44,13 @@ export class OrdersService implements IOrdersService {
         };
     }
 
-    private async buildPaymentQrInfo(code: string, amount: number, paymentMethod?: string | null) {
+    private async buildPaymentQrInfo(
+        code: string,
+        amount: number,
+        paymentMethod?: string | null
+    ): Promise<IPaymentQrInfo | undefined> {
         const provider = this.paymentGatewayRegistry.getProvider(paymentMethod || undefined);
-        if (!provider) return undefined;
+        if (!provider) {return undefined;}
         return provider.getPaymentInfo(code, amount);
     }
 
@@ -73,9 +78,6 @@ export class OrdersService implements IOrdersService {
             },
         };
     }
-
-
-
 
     async checkout(
         userId: string,
@@ -260,9 +262,6 @@ export class OrdersService implements IOrdersService {
             },
         };
     }
-
-
-
 
     async handlePaymentWebhook(
         payload: OrdersPaymentWebhookRequestDto

@@ -8,9 +8,9 @@ import {
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@generated/prisma-client';
+import { BusinessProfile, EnumRoleType } from '@generated/prisma-client';
 import { ProfileService } from '@modules/profile/services/profile.service';
-import { ProfileUserMeDoc, ProfileUserBusinessDoc } from '@modules/profile/docs/profile.user.doc';
+import { ProfileUserBusinessDoc, ProfileUserMeDoc } from '@modules/profile/docs/profile.user.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ProfileSummaryResponseDto } from '@modules/profile/dtos/response/profile.summary.response.dto';
 
@@ -44,7 +44,7 @@ export class ProfileUserController {
     @Get('/business')
     async businessProfile(
         @AuthJwtPayload('userId') userId: string
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<BusinessProfile>> {
         return this.profileService.userBusinessProfile(userId);
     }
 }

@@ -112,7 +112,9 @@ export class RoleRepository {
         return this.databaseService.role.create({
             data: {
                 name: name,
-                abilities: this.databaseUtil.toPlainArray(abilities) as any,
+                abilities: this.databaseUtil.toPlainArray(
+                    abilities
+                ) as Prisma.InputJsonValue,
                 ...others,
             },
         });
@@ -125,7 +127,9 @@ export class RoleRepository {
         return this.databaseService.role.update({
             where: { id },
             data: {
-                abilities: this.databaseUtil.toPlainArray(abilities) as any,
+                abilities: this.databaseUtil.toPlainArray(
+                    abilities
+                ) as Prisma.InputJsonValue,
                 ...others,
             },
         });

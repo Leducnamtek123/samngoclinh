@@ -29,7 +29,7 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
         private readonly configService: ConfigService
     ) {}
 
-    onModuleInit() {
+    onModuleInit(): void {
         this.paymentGatewayRegistry.registerProvider(this);
     }
 
@@ -71,8 +71,6 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
         };
     }
 
-
-
     verifyWebhookAuth(authHeader?: string): boolean {
         const expectedSecret = this.configService.get<string>(
             'sepay.webhookApiKey'
@@ -90,7 +88,7 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
     }
 
     extractOrderCode(text: string): string | null {
-        if (!text) return null;
+        if (!text) {return null;}
 
         const match = text.match(/(ORD[A-Za-z0-9_]+)/i);
         return match ? match[1].toUpperCase() : null;

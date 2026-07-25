@@ -1,5 +1,5 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { IEContractService } from '@modules/e-contract/interfaces/e-contract.service.interface';
 import { EContractRepository } from '@modules/e-contract/repositories/e-contract.repository';
 import { EContract, Prisma } from '@generated/prisma-client';

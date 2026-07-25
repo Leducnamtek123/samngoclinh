@@ -1,6 +1,9 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
+import { PromotionCampaign } from '@generated/prisma-client';
 import { IPromotionFreeTreeItem } from '@modules/promotion/interfaces/promotion.interface';
+import { PromotionAdminCreateRequestDto } from '@modules/promotion/dtos/request/promotion.admin-create.request.dto';
+import { PromotionAdminUpdateRequestDto } from '@modules/promotion/dtos/request/promotion.admin-update.request.dto';
 
 @Injectable()
 export class PromotionRepository {
@@ -48,13 +51,15 @@ export class PromotionRepository {
         };
     }
 
-    async listCampaigns(): Promise<any[]> {
+    async listCampaigns(): Promise<PromotionCampaign[]> {
         return this.databaseService.promotionCampaign.findMany({
             orderBy: { createdAt: 'desc' },
         });
     }
 
-    async createCampaign(data: any): Promise<any> {
+    async createCampaign(
+        data: PromotionAdminCreateRequestDto
+    ): Promise<PromotionCampaign> {
         return this.databaseService.promotionCampaign.create({
             data: {
                 code: data.code,
@@ -70,7 +75,10 @@ export class PromotionRepository {
         });
     }
 
-    async updateCampaign(id: string, data: any): Promise<any> {
+    async updateCampaign(
+        id: string,
+        data: PromotionAdminUpdateRequestDto
+    ): Promise<PromotionCampaign> {
         return this.databaseService.promotionCampaign.update({
             where: { id },
             data: {
@@ -86,7 +94,7 @@ export class PromotionRepository {
         });
     }
 
-    async deleteCampaign(id: string): Promise<any> {
+    async deleteCampaign(id: string): Promise<PromotionCampaign> {
         return this.databaseService.promotionCampaign.delete({
             where: { id },
         });

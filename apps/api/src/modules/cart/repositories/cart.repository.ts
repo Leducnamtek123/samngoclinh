@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@common/database/services/database.service';
 import { ICartRepository } from '@modules/cart/interfaces/cart.repository.interface';
-import { Cart, CartItem } from '@generated/prisma-client';
+import { Cart, CartItem, Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CartRepository implements ICartRepository {
@@ -42,7 +42,7 @@ export class CartRepository implements ICartRepository {
 
         return this.databaseService.cart.update({
             where: { userId },
-            data: { items: items as any },
+            data: { items: items as unknown as Prisma.InputJsonValue },
         });
     }
 
@@ -66,7 +66,7 @@ export class CartRepository implements ICartRepository {
 
         return this.databaseService.cart.update({
             where: { userId },
-            data: { items: items as any },
+            data: { items: items as unknown as Prisma.InputJsonValue },
         });
     }
 
@@ -82,7 +82,7 @@ export class CartRepository implements ICartRepository {
 
         return this.databaseService.cart.update({
             where: { userId },
-            data: { items: items as any },
+            data: { items: items as unknown as Prisma.InputJsonValue },
         });
     }
 

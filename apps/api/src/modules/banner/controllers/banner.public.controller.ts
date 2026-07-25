@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { BannerService } from '../services/banner.service';
+import { IBanner } from '../interfaces/banner.interface';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 
 @ApiTags('modules.public.banner')
@@ -18,7 +19,7 @@ export class BannerPublicController {
     @Get('/:pageKey')
     async getBanner(
         @Param('pageKey') pageKey: string
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<IBanner[]>> {
         const data = await this.bannerService.getBanner(pageKey);
         return { data };
     }

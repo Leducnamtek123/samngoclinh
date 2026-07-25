@@ -9,7 +9,7 @@ import {
     CatalogPublicListPlantsDoc,
     CatalogPublicListShopItemsDoc,
 } from '@modules/catalog/docs/catalog.public.doc';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { CatalogPlant, CatalogProduct, Prisma } from '@generated/prisma-client';
 import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';

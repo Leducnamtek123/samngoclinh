@@ -6,7 +6,7 @@ export class PaymentGatewayRegistry {
     private readonly providers = new Map<string, IPaymentGatewayProvider>();
     private readonly logger = new Logger(PaymentGatewayRegistry.name);
 
-    registerProvider(provider: IPaymentGatewayProvider) {
+    registerProvider(provider: IPaymentGatewayProvider): void {
         this.providers.set(provider.name.toLowerCase(), provider);
         this.logger.log(`Registered payment gateway provider: [${provider.name}]`);
     }

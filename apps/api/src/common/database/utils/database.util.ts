@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { Prisma } from '@prisma/client';
+import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
 
 /**
  * UUID helpers and deep-clone casts to Prisma `JsonObject` types.
@@ -17,14 +18,14 @@ export class DatabaseUtil {
     /**
      * Deep-clones `data` and casts it to a Prisma-compatible plain object.
      */
-    toPlainObject<T, N = any>(data: T): N {
+    toPlainObject<T, N = Prisma.InputJsonValue>(data: T): N {
         return structuredClone(data as unknown) as N;
     }
 
     /**
      * Deep-clones `data` and casts it to a Prisma-compatible plain array.
      */
-    toPlainArray<T>(data: T): any {
-        return structuredClone(data);
+    toPlainArray<T>(data: T): Prisma.InputJsonValue {
+        return structuredClone(data as unknown) as Prisma.InputJsonValue;
     }
 }

@@ -10,13 +10,13 @@ import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType, ContactRequest, Prisma } from '@generated/prisma-client';
+import { ContactRequest, EnumRoleType, Prisma } from '@generated/prisma-client';
 import { ContactService } from '@modules/contact/services/contact.service';
 import {
     ContactAdminGetDetailDoc,
     ContactAdminListDoc,
 } from '@modules/contact/docs/contact.admin.doc';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 

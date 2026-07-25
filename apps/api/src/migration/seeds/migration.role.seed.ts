@@ -53,7 +53,7 @@ export class MigrationRoleSeed
                             name: role.name.toLowerCase(),
                             abilities: this.databaseUtil.toPlainArray(
                                 role.abilities
-                            ) as any,
+                            ),
                         },
                         update: {},
                     })
