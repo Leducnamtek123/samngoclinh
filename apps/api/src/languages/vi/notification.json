@@ -1,0 +1,71 @@
+{
+    "list": "Đã lấy danh sách thông báo thành công.",
+    "markAsRead": "Đã đánh dấu thông báo là đã đọc.",
+    "markAllAsRead": "Đã đánh dấu {count} thông báo là đã đọc.",
+    "updateUserSetting": "Đã cập nhật cài đặt thông báo.",
+    "listUserSetting": "Đã lấy cài đặt thông báo thành công.",
+    "notify": {
+        "welcome": {
+            "title": "Chào mừng",
+            "body": "Chào {username}, chào mừng bạn. Rất vui khi có bạn đồng hành."
+        },
+        "welcomeByAdmin": {
+            "title": "Chào mừng",
+            "body": "Chào {username}, tài khoản của bạn đã được quản trị viên tạo. Chào mừng bạn."
+        },
+        "welcomeSocial": {
+            "title": "Chào mừng",
+            "body": "Chào {username}, chào mừng bạn. Tài khoản của bạn đã sẵn sàng sử dụng."
+        },
+        "verificationEmail": {
+            "title": "Xác thực email",
+            "body": "Chào {username}, vui lòng xác thực địa chỉ email để kích hoạt tài khoản."
+        },
+        "verifiedEmail": {
+            "title": "Đã xác thực email",
+            "body": "Chào {username}, địa chỉ email của bạn đã được xác thực thành công."
+        },
+        "mobileNumberVerified": {
+            "title": "Đã xác thực số điện thoại",
+            "body": "Chào {username}, số điện thoại {mobileNumber} của bạn đã được xác thực thành công."
+        },
+        "changePassword": {
+            "title": "Đã đổi mật khẩu",
+            "body": "Chào {username}, mật khẩu của bạn đã được thay đổi thành công."
+        },
+        "forgotPassword": {
+            "title": "Quên mật khẩu",
+            "body": "Chào {username}, chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn."
+        },
+        "publishTermPolicy": {
+            "title": "Cập nhật điều khoản chính sách",
+            "body": "Phiên bản {version} của điều khoản {type} đã được xuất bản. Vui lòng xem lại."
+        },
+        "newDeviceLogin": {
+            "title": "Đăng nhập thiết bị mới",
+            "body": "Chào {username}, có một lượt đăng nhập mới từ thiết bị {device} tại {city} lúc {loginAt}."
+        },
+        "resetTwoFactorByAdmin": {
+            "title": "Đặt lại xác thực hai lớp",
+            "body": "Chào {username}, xác thực hai lớp của bạn đã được quản trị viên đặt lại."
+        },
+        "temporaryPasswordByAdmin": {
+            "title": "Mật khẩu tạm thời",
+            "body": "Chào {username}, một mật khẩu tạm đã được thiết lập. Mật khẩu sẽ hết hạn vào {passwordExpiredAt}."
+        },
+        "resetPassword": {
+            "title": "Đặt lại mật khẩu",
+            "body": "Chào {username}, mật khẩu của bạn đã được đặt lại thành công."
+        },
+        "userAcceptTermPolicy": {
+            "title": "Đã chấp nhận điều khoản chính sách",
+            "body": "Chào {username}, bạn đã chấp nhận điều khoản {type} phiên bản {version}."
+        }
+    },
+    "error": {
+        "notFound": "Không tìm thấy thông báo.",
+        "alreadyRead": "Thông báo đã được đánh dấu là đã đọc.",
+        "invalidType": "Loại thông báo không hợp lệ.",
+        "invalidChannel": "Kênh thông báo không hợp lệ."
+    }
+}

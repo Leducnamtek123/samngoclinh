@@ -1,7 +1,7 @@
 // Danh mục quốc gia (public). Dùng cho đăng ký: sign-up của backend bắt buộc countryId.
+// Backend seed sẵn Việt Nam (VN); resolveDefaultCountryId ưu tiên VN.
 import { apiPublic } from './auth';
 
-// @note backend hiện chỉ seed Indonesia; muốn mặc định Việt Nam phải seed 'VN' ở apps/api.
 export async function fetchCountries() {
   return apiPublic('/public/country/list');
 }

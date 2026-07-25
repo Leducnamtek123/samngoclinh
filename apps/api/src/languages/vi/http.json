@@ -1,0 +1,62 @@
+{
+    "success": {
+        "ok": "Thành công",
+        "created": "Đã tạo",
+        "accepted": "Đã tiếp nhận",
+        "noContent": "Không có nội dung"
+    },
+    "redirection": {
+        "movePermanently": "Đã chuyển hướng vĩnh viễn",
+        "found": "Đã tìm thấy",
+        "notModified": "Không thay đổi",
+        "temporaryRedirect": "Chuyển hướng tạm thời",
+        "permanentRedirect": "Chuyển hướng vĩnh viễn"
+    },
+    "clientError": {
+        "badRequest": "Yêu cầu không hợp lệ",
+        "unauthorized": "Chưa xác thực",
+        "forbidden": "Không có quyền truy cập",
+        "notFound": "Không tìm thấy",
+        "methodNotAllowed": "Phương thức không được phép",
+        "notAcceptable": "Không chấp nhận được",
+        "payloadToLarge": "Dữ liệu gửi lên quá lớn",
+        "uriToLarge": "URI quá dài",
+        "unsupportedMediaType": "Định dạng không được hỗ trợ",
+        "unprocessableEntity": "Dữ liệu không xử lý được",
+        "tooManyRequest": "Quá nhiều yêu cầu",
+        "requestTimeOut": "Yêu cầu hết thời gian chờ"
+    },
+    "serverError": {
+        "internalServerError": "Lỗi máy chủ nội bộ",
+        "requestTimeout": "Yêu cầu hết thời gian chờ",
+        "notImplemented": "Chưa được hỗ trợ",
+        "badGateway": "Lỗi cổng kết nối",
+        "serviceUnavailable": "Dịch vụ không khả dụng",
+        "gatewayTimeout": "Cổng kết nối hết thời gian chờ"
+    },
+    "200": "Thành công",
+    "201": "Đã tạo",
+    "202": "Đã tiếp nhận",
+    "204": "Không có nội dung",
+    "301": "Đã chuyển hướng vĩnh viễn",
+    "302": "Đã tìm thấy",
+    "304": "Không thay đổi",
+    "307": "Chuyển hướng tạm thời",
+    "308": "Chuyển hướng vĩnh viễn",
+    "400": "Yêu cầu không hợp lệ",
+    "401": "Chưa xác thực",
+    "403": "Không có quyền truy cập",
+    "404": "Không tìm thấy",
+    "405": "Phương thức không được phép",
+    "406": "Không chấp nhận được",
+    "413": "Dữ liệu gửi lên quá lớn",
+    "414": "URI quá dài",
+    "415": "Định dạng không được hỗ trợ",
+    "422": "Dữ liệu không xử lý được",
+    "429": "Quá nhiều yêu cầu",
+    "500": "Lỗi máy chủ nội bộ",
+    "501": "Chưa được hỗ trợ",
+    "502": "Lỗi cổng kết nối",
+    "503": "Dịch vụ không khả dụng",
+    "504": "Cổng kết nối hết thời gian chờ"
+}

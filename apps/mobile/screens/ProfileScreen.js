@@ -61,6 +61,8 @@ export default function ProfileScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
   const name = isAuthenticated ? user?.name || 'Người dùng' : 'Khách';
+  const email = user?.email || '';
+  const verified = user?.isVerified === true;
 
   const openItem = (item) => {
     if (item.screen) return navigation.navigate(item.screen);
@@ -106,6 +108,23 @@ export default function ProfileScreen({ navigation }) {
             <Ionicons name="person" size={54} color="#fff" />
           </View>
           <Text style={styles.name}>{name}</Text>
+          {isAuthenticated && email ? (
+            <View style={styles.emailRow}>
+              <Text style={styles.email}>{email}</Text>
+              {verified ? (
+                <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+              ) : (
+                <Pressable
+                  style={({ pressed }) => [styles.verifyPill, pressed && styles.pressed]}
+                  hitSlop={6}
+                  onPress={() => navigation.navigate('ComingSoon', { title: 'Xác thực email' })}
+                >
+                  <Ionicons name="alert-circle" size={14} color="#fff" />
+                  <Text style={styles.verifyText}>Chưa xác thực</Text>
+                </Pressable>
+              )}
+            </View>
+          ) : null}
           {isAuthenticated ? (
             <View style={styles.badges}>
               <View style={styles.tierBadge}>
@@ -229,6 +248,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   name: { fontSize: 22, fontWeight: '800', color: colors.text, textAlign: 'center', marginTop: spacing.md },
+  emailRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xs },
+  email: { fontSize: 14, color: colors.textMuted },
+  verifyPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F59E0B',
+    borderRadius: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  verifyText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   badges: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
   tierBadge: {
     backgroundColor: colors.accent,

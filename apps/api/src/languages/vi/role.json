@@ -1,0 +1,15 @@
+{
+    "list": "Đã lấy danh sách vai trò thành công.",
+    "get": "Đã lấy chi tiết vai trò thành công.",
+    "getAbilities": "Đã lấy các quyền của vai trò thành công.",
+    "create": "Đã tạo vai trò mới thành công.",
+    "update": "Đã cập nhật vai trò thành công.",
+    "delete": "Đã xóa vai trò thành công.",
+    "error": {
+        "notFound": "Rất tiếc, không tìm thấy vai trò yêu cầu.",
+        "exist": "Đã tồn tại vai trò với tên này.",
+        "used": "Vai trò này đang được sử dụng nên không thể xóa.",
+        "forbidden": "Rất tiếc, vai trò của bạn không có quyền truy cập tài nguyên này.",
+        "predefinedNotFound": "Chưa thiết lập các vai trò định sẵn."
+    }
+}

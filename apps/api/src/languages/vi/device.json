@@ -1,0 +1,8 @@
+{
+    "list": "Danh sách thiết bị",
+    "refresh": "Làm mới thông tin thiết bị",
+    "remove": "Đã gỡ thông tin thiết bị và thu hồi mọi phiên thành công",
+    "error": {
+        "notFound": "Không tìm thấy thông tin thiết bị"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "list": "Đã lấy danh sách phiên thành công.",
+    "revoke": "Đã thu hồi phiên thành công.",
+    "error": {
+        "notFound": "Rất tiếc, không tìm thấy phiên.",
+        "forbidden": "Bạn không thể thu hồi phiên hiện tại của mình."
+    }
+}

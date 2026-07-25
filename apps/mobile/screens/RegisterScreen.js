@@ -2,7 +2,6 @@
 // backend /user/sign-up còn cần countryId, marketing, cookies (xem ghi chú khi nối API thật).
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,23 +17,23 @@ import { Ionicons } from '@expo/vector-icons';
 import IconField from '../components/IconField';
 import { register } from '../api/auth';
 import { resolveDefaultCountryId } from '../api/country';
+import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
 export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const alert = useAlert();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
-    if (!email.trim()) return setError('Vui lòng nhập email.');
-    if (password.length < 8) return setError('Mật khẩu tối thiểu 8 ký tự.');
-    if (password !== confirm) return setError('Mật khẩu nhập lại không khớp.');
-    setError('');
+    if (!email.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập email.');
+    if (password.length < 8) return alert.error('Mật khẩu chưa hợp lệ', 'Mật khẩu tối thiểu 8 ký tự.');
+    if (password !== confirm) return alert.error('Mật khẩu không khớp', 'Mật khẩu nhập lại không khớp.');
     setLoading(true);
     try {
       const countryId = await resolveDefaultCountryId();
@@ -44,11 +43,12 @@ export default function RegisterScreen({ navigation }) {
         password,
         countryId,
       });
-      Alert.alert('Đăng ký thành công', 'Bạn có thể đăng nhập ngay bây giờ.', [
-        { text: 'Đăng nhập', onPress: () => navigation.navigate('Login') },
-      ]);
+      alert.success('Đăng ký thành công', 'Tài khoản đã được tạo. Hãy đăng nhập để bắt đầu.', {
+        confirmText: 'Đăng nhập',
+        onConfirm: () => navigation.navigate('Login'),
+      });
     } catch (e) {
-      setError(e?.message || 'Đăng ký thất bại, vui lòng thử lại.');
+      alert.error('Đăng ký thất bại', e?.message || 'Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -105,8 +105,6 @@ export default function RegisterScreen({ navigation }) {
               placeholder="Nhập lại mật khẩu"
               secureTextEntry
             />
-
-            {error ? <Text style={styles.error}>{error}</Text> : null}
 
             <Pressable
               onPress={onSubmit}

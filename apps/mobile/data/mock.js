@@ -1,16 +1,6 @@
 // Mock data tập trung cho toàn app — nguồn duy nhất, thay bằng authFetch khi có endpoint tương ứng.
 // Giữ đúng shape mà từng màn đang tiêu thụ; không thêm field UI chưa dùng.
 
-// Hồ sơ người dùng giả lập cho chế độ mock API (login/profile).
-export const mockUser = {
-  id: 'mock-user-1',
-  email: 'demo@iwefarm.com.vn',
-  name: 'Nguyễn Văn Demo',
-  role: 'user',
-  tier: 'Đồng',
-  level: 1,
-};
-
 // HomeScreen — lối tắt (key khớp handler điều hướng trong màn).
 export const quickActions = [
   { key: 'buy', icon: 'leaf-outline', label: 'Mua cây' },

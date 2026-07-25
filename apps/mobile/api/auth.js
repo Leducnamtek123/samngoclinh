@@ -6,8 +6,7 @@
 //  - Interceptor (withAuth): gặp 401 -> tự refresh -> retry 1 lần -> vẫn fail thì đăng xuất.
 //  - Mọi endpoint yêu cầu header x-api-key (@ApiKeyProtected) và trả về vỏ chuẩn { statusCode, message, data }.
 
-import { API_BASE_URL, API_KEY, USE_MOCK_API } from './config';
-import { mockRequest } from './mockBackend';
+import { API_BASE_URL, API_KEY } from './config';
 import { getDeviceInfo } from './device';
 import { getRefreshToken, getToken, updateTokens } from './storage';
 
@@ -34,9 +33,7 @@ export class HttpError extends Error {
 // KHÔNG kèm interceptor — dùng trực tiếp cho endpoint public (login, refresh, forgot/reset)
 // hoặc bên trong withAuth cho endpoint cần token.
 async function apiRequest(path, { method = 'GET', body, token } = {}) {
-  if (USE_MOCK_API) return mockRequest(path, method, body);
-
-  const headers = { Accept: 'application/json' };
+  const headers = { Accept: 'application/json', 'x-custom-lang': 'vi' };
   if (API_KEY) headers['x-api-key'] = API_KEY;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -60,8 +57,15 @@ async function apiRequest(path, { method = 'GET', body, token } = {}) {
   }
 
   if (!res.ok) {
-    const message =
+    // Backend validate trả chi tiết từng field trong `errors` [{property, message}] — ưu tiên hiện chi tiết.
+    let message =
       typeof payload?.message === 'string' ? payload.message : 'Đã có lỗi xảy ra, vui lòng thử lại';
+    if (Array.isArray(payload?.errors) && payload.errors.length > 0) {
+      message = payload.errors
+        .map((e) => e?.message)
+        .filter(Boolean)
+        .join('\n');
+    }
     const code = payload?.messageProperties?.code || payload?.statusCode || `HTTP_${res.status}`;
     throw new HttpError(res.status, message, code);
   }

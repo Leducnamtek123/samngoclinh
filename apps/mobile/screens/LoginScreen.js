@@ -17,11 +17,13 @@ import { Ionicons } from '@expo/vector-icons';
 import IconField from '../components/IconField';
 import { sendLoginOtp } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
+import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
 export default function LoginScreen({ navigation }) {
   const { signIn, signInWithOtp } = useAuth();
   const insets = useSafeAreaInsets();
+  const alert = useAlert();
 
   const [mode, setMode] = useState('phone');
   const [email, setEmail] = useState('');
@@ -29,17 +31,15 @@ export default function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const run = async (fn, after) => {
-    setError('');
     setLoading(true);
     try {
       const result = await fn();
       after?.(result);
     } catch (e) {
-      setError(e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
+      alert.error('Lỗi', e?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,8 @@ export default function LoginScreen({ navigation }) {
   };
 
   const onEmailLogin = () => {
-    if (!email.trim() || !password) return setError('Vui lòng nhập email và mật khẩu.');
+    if (!email.trim() || !password)
+      return alert.error('Thiếu thông tin', 'Vui lòng nhập email và mật khẩu.');
     run(
       () => signIn({ email: email.trim().toLowerCase(), password }),
       (res) => {
@@ -63,7 +64,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   const onSendOtp = () => {
-    if (!phone.trim()) return setError('Vui lòng nhập số điện thoại.');
+    if (!phone.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập số điện thoại.');
     run(async () => {
       await sendLoginOtp({ phone: phone.trim() });
       setOtpSent(true);
@@ -71,13 +72,12 @@ export default function LoginScreen({ navigation }) {
   };
 
   const onVerifyOtp = () => {
-    if (!otp.trim()) return setError('Vui lòng nhập mã OTP.');
+    if (!otp.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập mã OTP.');
     run(() => signInWithOtp({ phone: phone.trim(), otp: otp.trim() }), closeAfterAuth);
   };
 
   const switchMode = (next) => {
     setMode(next);
-    setError('');
     setOtpSent(false);
   };
 
@@ -145,7 +145,6 @@ export default function LoginScreen({ navigation }) {
                   placeholder="Mật khẩu"
                   secureTextEntry
                 />
-                {error ? <Text style={styles.error}>{error}</Text> : null}
                 <PrimaryBtn label="Đăng nhập" onPress={onEmailLogin} loading={loading} />
                 <Text style={styles.forgot} onPress={() => navigation.navigate('ForgotPassword')}>
                   Quên mật khẩu?
@@ -170,7 +169,6 @@ export default function LoginScreen({ navigation }) {
                     keyboardType="number-pad"
                   />
                 ) : null}
-                {error ? <Text style={styles.error}>{error}</Text> : null}
                 {otpSent ? (
                   <>
                     <PrimaryBtn label="Xác nhận OTP" onPress={onVerifyOtp} loading={loading} />

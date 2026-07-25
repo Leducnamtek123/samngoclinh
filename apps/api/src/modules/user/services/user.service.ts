@@ -1477,32 +1477,7 @@ export class UserService implements IUserService {
         const requestLog: IRequestLog =
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
 
-        if (!user.isVerified) {
-            const emailVerification =
-                this.userUtil.verificationCreateVerification(
-                    user.id,
-                    EnumVerificationType.email
-                ) as IUserVerificationEmailCreate;
-
-            await this.userRepository.requestVerificationEmail(
-                user.id,
-                user.email,
-                emailVerification,
-                requestLog
-            );
-
-            // @note: send notification after all creation
-            await this.notificationUtil.sendVerificationEmail(user.id, {
-                expiredAt: this.helperService.dateFormatToIso(
-                    emailVerification.expiredAt
-                ),
-                reference: emailVerification.reference,
-                link: emailVerification.encryptedLink,
-                expiredInMinutes: emailVerification.expiredInMinutes,
-            });
-
-            throw new UserEmailNotVerifiedException();
-        }
+        // @note email verification is NOT required to log in; verification is an optional protection step handled in the profile flow.
 
         if (!user.twoFactor?.enabled) {
             const tokens = await this.createTokenAndSession(

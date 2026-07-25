@@ -1,0 +1,6 @@
+{
+    "error": {
+        "forbidden": "Rất tiếc, bạn không có quyền cần thiết để thực hiện hành động này.",
+        "predefinedNotFound": "Chưa thiết lập các quyền định sẵn."
+    }
+}

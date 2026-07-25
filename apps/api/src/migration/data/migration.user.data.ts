@@ -8,21 +8,21 @@ const userData: {
     password: string;
 }[] = [
     {
-        country: 'ID',
+        country: 'VN',
         email: 'superadmin@mail.com',
         name: 'Super Admin',
         role: 'superadmin',
         password: 'aaAA@123',
     },
     {
-        country: 'ID',
+        country: 'VN',
         email: 'admin@mail.com',
         name: 'Admin',
         role: 'admin',
         password: 'aaAA@123',
     },
     {
-        country: 'ID',
+        country: 'VN',
         email: 'provider@mail.com',
         name: 'Provider',
         role: 'provider',
@@ -43,7 +43,7 @@ export const migrationUserData: Record<
     [EnumAppEnvironment.local]: [
         ...userData,
         {
-            country: 'ID',
+            country: 'VN',
             email: 'user@mail.com',
             name: 'User',
             role: 'user',

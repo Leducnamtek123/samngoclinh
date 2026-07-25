@@ -48,8 +48,8 @@ export default function HomeScreen({ navigation }) {
         <Intro user={user} />
 
         <View style={styles.statsGrid}>
-          {farmStats.map((s) => (
-            <StatCard key={s.key} {...s} />
+          {farmStats.map(({ key, ...s }) => (
+            <StatCard key={key} {...s} />
           ))}
         </View>
 
