@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { SecurityPreferencesForm } from "./security-preferences-form"
 
-export function SecurityPreferences({ user }: { user: UserType }) {
+export function SecurityPreferences({ user }: { user?: UserType }) {
   return (
     <Card>
       <CardHeader>

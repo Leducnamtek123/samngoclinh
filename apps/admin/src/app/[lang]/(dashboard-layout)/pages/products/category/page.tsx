@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { ShopItemsTable } from "./_components/shop-items-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { ShopItemsTable } from "./_components/shop-items-table"
 
 export const metadata: Metadata = {
   title: "Commercial Products & Supplies | Sâm Ngọc Linh Admin",
@@ -34,7 +37,9 @@ interface CategoryPageProps {
   }>
 }
 
-export default async function CategoryPage({ searchParams }: CategoryPageProps) {
+export default async function CategoryPage({
+  searchParams,
+}: CategoryPageProps) {
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
@@ -52,12 +57,16 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("status", status)
 
-    const res = await fetchApi(`/public/catalog/shop-items?${queryParams.toString()}`)
+    const res = await fetchApi(
+      `/public/catalog/shop-items?${queryParams.toString()}`
+    )
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load shop items"
     } else {
-      shopItems = Array.isArray(payload.data) ? payload.data : (payload.data?.items || [])
+      shopItems = Array.isArray(payload.data)
+        ? payload.data
+        : payload.data?.items || []
       metadata = payload.metadata || null
     }
   } catch (e) {
@@ -68,10 +77,10 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
-        <ShopItemsTable 
-          initialItems={shopItems} 
+        <ShopItemsTable
+          initialItems={shopItems}
           metadata={metadata}
-          errorMsg={errorMsg} 
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

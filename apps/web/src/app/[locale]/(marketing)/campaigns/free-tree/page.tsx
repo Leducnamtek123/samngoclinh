@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
 import { cookies } from 'next/headers';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { 
-  Gift, 
+  Gift,
   Sprout, 
   ShieldCheck, 
-  Sparkles, 
   CheckCircle2, 
   ArrowRight, 
   Info, 
@@ -48,7 +48,7 @@ async function getCampaignDetails() {
 
 async function getCampaignsBanner() {
   try {
-    const res = await fetchApi('/public/banners/campaigns', { cache: 'no-store' });
+    const res = await fetchApi('/public/banners/campaigns', { next: { revalidate: 60 } });
     if (res.ok) {
       const json = await res.json();
       return Array.isArray(json.data) ? json.data : [json.data];
@@ -83,11 +83,7 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
   if (!campaignData) {
     return (
       <div className="w-full bg-slate-50 min-h-screen pb-16 animate-fade-in">
-        <PageBannerSlider 
-          banners={banner || []} 
-          badgeText="Khuyến mãi & Ưu đãi" 
-          badgeIcon={<Gift className="w-4 h-4 text-amber-400" />}
-        />
+        <PageBannerSlider banners={banner || []} />
         <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
             <Info className="w-8 h-8" />
@@ -108,11 +104,7 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
   if (!primaryItem) {
     return (
       <div className="w-full bg-slate-50 min-h-screen pb-16">
-        <PageBannerSlider 
-          banners={banner || []} 
-          badgeText="Khuyến mãi & Ưu đãi" 
-          badgeIcon={<Gift className="w-4 h-4 text-amber-400" />}
-        />
+        <PageBannerSlider banners={banner || []} />
         <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
             <Sprout className="w-8 h-8" />
@@ -137,16 +129,12 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
   return (
     <div className="w-full bg-gradient-to-b from-slate-50 via-emerald-50/20 to-slate-50 min-h-screen pb-20">
       {/* Hero Banner Section */}
-      <PageBannerSlider 
-        banners={banner || []} 
-        badgeText="Chương trình Tặng cây sâm 1 năm" 
-        badgeIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
-      />
+      <PageBannerSlider banners={banner || []} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
         
         {/* Campaign Info & Status Header Bar */}
-        <div className="bg-white/90 backdrop-blur-md border border-amber-200/80 shadow-md rounded-2xl p-5 md:p-6 transition-all hover:shadow-lg">
+        <div className="bg-white/90 backdrop-blur-md border border-amber-200/80 shadow-md rounded-2xl p-5 md:p-6 transition-shadow duration-300 hover:shadow-lg">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
             {/* Note text */}
             <div className="flex items-start sm:items-center gap-3">
@@ -198,24 +186,22 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
           {slots.map((slot) => (
             <div
               key={slot.id}
-              className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+              className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:-translate-y-1 transition-transform duration-300 flex flex-col justify-between"
             >
               {/* Plant Image Container */}
               <div className="relative h-64 bg-slate-100 overflow-hidden">
-                <img
+                <Image
                   src={imageUrl}
                   alt={slot.plantCatalog?.name || "Sâm Ngọc Linh"}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  unoptimized
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 
                 {/* Top Overlay Gradients */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-                {/* Floating Badges */}
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-md text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md">
-                  <Award className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Chuẩn Kon Tum</span>
-                </div>
 
                 <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-[#1C3F24]/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
                   <Sprout className="w-3.5 h-3.5 text-emerald-400" />
@@ -267,8 +253,8 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
                 {/* Action CTA Button */}
                 <div className="pt-1">
                   <Link
-                    href={token ? `/${locale}/portfolio` : `/${locale}/sign-in?reason=campaign`}
-                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-all duration-200 shadow-md hover:shadow-lg"
+                    href={token ? "/profile?tabs=trees" : "/sign-in?reason=campaign"}
+                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
                   >
                     <span>{token ? "Nhận cây ngay" : "Đăng nhập để nhận"}</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

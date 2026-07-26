@@ -4,11 +4,10 @@ import type { DictionaryType } from "@/lib/get-dictionary"
 import type { ReactNode } from "react"
 
 import { useIsVertical } from "@/hooks/use-is-vertical"
+import { I18nProvider } from "@/providers/i18n-provider"
 import { Customizer } from "./customizer"
 import { HorizontalLayout } from "./horizontal-layout"
 import { VerticalLayout } from "./vertical-layout"
-
-import { I18nProvider } from "@/providers/i18n-provider"
 
 export function Layout({
   children,

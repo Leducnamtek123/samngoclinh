@@ -27,8 +27,6 @@ export function VerifyEmailForm() {
 
   const locale = params.lang as LocaleType
 
-
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2">
@@ -79,4 +77,3 @@ async function onSubmit(data: VerifyEmailFormType) {
     })
   }
 }
-

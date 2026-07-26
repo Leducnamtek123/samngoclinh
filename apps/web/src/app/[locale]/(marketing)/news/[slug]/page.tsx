@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
+import { sanitizeHtml } from '@/utils/sanitize';
 
 type ArticleDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -11,7 +13,7 @@ type ArticleDetailPageProps = {
 async function getArticleDetail(slug: string) {
   try {
     const res = await fetchApi(`/public/content/articles/${slug}`, {
-      cache: 'no-store',
+      next: { revalidate: 60 },
     });
     if (!res.ok) {
       return null;
@@ -27,7 +29,7 @@ async function getArticleDetail(slug: string) {
 async function getRelatedArticles(category: string, currentSlug: string) {
   try {
     const res = await fetchApi('/public/content/articles', {
-      cache: 'no-store',
+      next: { revalidate: 60 },
     });
     if (!res.ok) {
       return [];
@@ -130,10 +132,13 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         <article className="bg-white border border-gray-100 rounded-[32px] p-6 sm:p-10 shadow-sm mb-16">
           {/* Main Cover Image */}
           {article.coverImage && (
-            <div className="w-full rounded-2xl overflow-hidden mb-8 max-h-[480px]">
-              <img
+            <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
+              <Image
                 src={article.coverImage}
                 alt={article.title}
+                fill
+                sizes="100vw"
+                unoptimized
                 className="w-full h-full object-cover"
               />
             </div>
@@ -150,7 +155,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               [&_li]:text-gray-600
               [&_img]:rounded-2xl [&_img]:mx-auto [&_img]:my-6 [&_img]:shadow-sm [&_img]:max-w-full
               [&_strong]:font-bold [&_strong]:text-gray-900"
-            dangerouslySetInnerHTML={{ __html: article.body || article.summary }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body || article.summary) }}
           />
         </article>
 
@@ -164,15 +169,18 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               {relatedArticles.map((rel: any, idx: number) => (
                 <article
                   key={rel.id}
-                  className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between"
+                  className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
                 >
                   <div>
                     <div className="h-44 overflow-hidden bg-gray-100 relative p-3">
                       <Link href={`/news/${rel.slug}`}>
-                        <img
+                        <Image
                           className="w-full h-full object-cover rounded-2xl cursor-pointer"
                           src={rel.image || newsImages[idx % newsImages.length]}
                           alt={rel.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          unoptimized
                         />
                       </Link>
                       <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">

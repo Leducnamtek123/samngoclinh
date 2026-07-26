@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext } from "react"
+
 import type { CalendarContextType } from "../types"
 
 export const CalendarContext = createContext<CalendarContextType | undefined>(

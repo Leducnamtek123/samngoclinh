@@ -1,7 +1,6 @@
 "use client"
 
-import { useCallback, useReducer, useState, useMemo } from "react"
-import { EmailContext } from "../_hooks/use-email-context"
+import { useCallback, useMemo, useReducer, useState } from "react"
 
 import type { ReactNode } from "react"
 import type {
@@ -10,10 +9,10 @@ import type {
   EmailType,
 } from "../types"
 
+import { EmailContext } from "../_hooks/use-email-context"
 import { EmailReducer } from "../_reducers/email-reducer"
 
 // Create Email context
-
 
 export function EmailProvider({
   emailsData,
@@ -85,23 +84,24 @@ export function EmailProvider({
     })
   }
 
-  const contextValue = useMemo(() => ({
-    emailState,
-    handleGetFilteredEmails,
-    handleGetFilteredEmailsBySearchTerm,
-    handleToggleSelectEmail,
-    handleToggleSelectAllEmails,
-    handleToggleStarEmail,
-    isEmailSidebarOpen,
-    setIsEmailSidebarOpen,
-    handleSetRead,
-  }), [emailState, isEmailSidebarOpen])
+  const contextValue = useMemo(
+    () => ({
+      emailState,
+      handleGetFilteredEmails,
+      handleGetFilteredEmailsBySearchTerm,
+      handleToggleSelectEmail,
+      handleToggleSelectAllEmails,
+      handleToggleStarEmail,
+      isEmailSidebarOpen,
+      setIsEmailSidebarOpen,
+      handleSetRead,
+    }),
+    [emailState, isEmailSidebarOpen]
+  )
 
   return (
-    <EmailContext.Provider
-      value={contextValue}
-    >
+    <EmailContext.Provider value={contextValue}>
       {children}
-      </EmailContext.Provider>
+    </EmailContext.Provider>
   )
 }

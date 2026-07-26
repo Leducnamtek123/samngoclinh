@@ -1,19 +1,53 @@
 "use client"
 
 import { useState } from "react"
+import { Pencil, Plus, Trash2 } from "lucide-react"
+
 import { fetchApi } from "@/lib/api"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  ConfirmationDialog,
+  EmptySearchResult,
+  EmptyState,
+  ErrorState,
+  ToastCard,
+} from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Pencil, Trash2 } from "lucide-react"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ToastCard, EmptyState, EmptySearchResult, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
+import { Textarea } from "@/components/ui/textarea"
 import { PackageDialog } from "./package-dialog"
 import { CarePackagesList, ProtectionPackagesList } from "./packages-list"
 
@@ -49,8 +83,11 @@ export function PackagesManager({
   errorMsg: initialError,
 }: PackagesManagerProps) {
   const [activeTab, setActiveTab] = useState<"care" | "protection">("care")
-  const [carePackages, setCarePackages] = useState<CarePackage[]>(initialCarePackages)
-  const [protectionPackages, setProtectionPackages] = useState<ProtectionPackage[]>(initialProtectionPackages)
+  const [carePackages, setCarePackages] =
+    useState<CarePackage[]>(initialCarePackages)
+  const [protectionPackages, setProtectionPackages] = useState<
+    ProtectionPackage[]
+  >(initialProtectionPackages)
 
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
@@ -100,10 +137,8 @@ export function PackagesManager({
       coverage: "",
       description: "",
       status: "active",
-    }
+    },
   })
-
-
 
   const handleOpenCreate = () => {
     setDialogState({
@@ -120,7 +155,7 @@ export function PackagesManager({
         coverage: "",
         description: "",
         status: "active",
-      }
+      },
     })
   }
 
@@ -139,14 +174,20 @@ export function PackagesManager({
         coverage: pkg.coverage || "",
         description: pkg.description || "",
         status: pkg.status,
-      }
+      },
     })
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!dialogState.formData.code.trim() || !dialogState.formData.name.trim()) {
-      setDialogState((prev) => ({ ...prev, error: "Mã và tên gói không được để trống" }))
+    if (
+      !dialogState.formData.code.trim() ||
+      !dialogState.formData.name.trim()
+    ) {
+      setDialogState((prev) => ({
+        ...prev,
+        error: "Mã và tên gói không được để trống",
+      }))
       return
     }
 
@@ -154,7 +195,10 @@ export function PackagesManager({
     setSuccessMsg("")
 
     try {
-      const endpoint = activeTab === "care" ? "/admin/packages/care" : "/admin/packages/protection"
+      const endpoint =
+        activeTab === "care"
+          ? "/admin/packages/care"
+          : "/admin/packages/protection"
       const bodyPayload: any = {
         code: dialogState.formData.code,
         name: dialogState.formData.name,
@@ -179,7 +223,10 @@ export function PackagesManager({
         })
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Không thể tạo gói dịch vụ" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || "Không thể tạo gói dịch vụ",
+          }))
         } else {
           if (activeTab === "care") {
             setCarePackages((prev) => [payload.data, ...prev])
@@ -190,24 +237,38 @@ export function PackagesManager({
           setDialogState((prev) => ({ ...prev, isOpen: false }))
         }
       } else if (dialogState.mode === "edit" && dialogState.selectedPackage) {
-        const res = await fetchApi(`${endpoint}/${dialogState.selectedPackage.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyPayload),
-        })
+        const res = await fetchApi(
+          `${endpoint}/${dialogState.selectedPackage.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(bodyPayload),
+          }
+        )
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Không thể cập nhật gói dịch vụ" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || "Không thể cập nhật gói dịch vụ",
+          }))
         } else {
           if (activeTab === "care") {
             setCarePackages((prev) =>
-              prev.map((item) => (item.id === dialogState.selectedPackage!.id ? payload.data : item))
+              prev.map((item) =>
+                item.id === dialogState.selectedPackage!.id
+                  ? payload.data
+                  : item
+              )
             )
           } else {
             setProtectionPackages((prev) =>
-              prev.map((item) => (item.id === dialogState.selectedPackage!.id ? payload.data : item))
+              prev.map((item) =>
+                item.id === dialogState.selectedPackage!.id
+                  ? payload.data
+                  : item
+              )
             )
           }
           setSuccessMsg("Cập nhật gói dịch vụ thành công!")
@@ -223,9 +284,10 @@ export function PackagesManager({
   }
 
   const handleDelete = (id: string) => {
-    const pkg = activeTab === "care" 
-      ? carePackages.find((p) => p.id === id) 
-      : protectionPackages.find((p) => p.id === id)
+    const pkg =
+      activeTab === "care"
+        ? carePackages.find((p) => p.id === id)
+        : protectionPackages.find((p) => p.id === id)
     setConfirmDialog({
       isOpen: true,
       title: "Xóa gói dịch vụ?",
@@ -241,7 +303,10 @@ export function PackagesManager({
     setSuccessMsg("")
 
     try {
-      const endpoint = activeTab === "care" ? `/admin/packages/care/${id}` : `/admin/packages/protection/${id}`
+      const endpoint =
+        activeTab === "care"
+          ? `/admin/packages/care/${id}`
+          : `/admin/packages/protection/${id}`
       const res = await fetchApi(endpoint, {
         method: "DELETE",
       })
@@ -286,7 +351,12 @@ export function PackagesManager({
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={(updater) => setDialogState((prev) => ({ ...prev, formData: updater(prev.formData) }))}
+        onChange={(updater) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: updater(prev.formData),
+          }))
+        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}
@@ -337,12 +407,17 @@ function PackagesHeader({ onOpenCreate }: PackagesHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý Gói dịch vụ</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Quản lý Gói dịch vụ
+        </h1>
         <p className="text-muted-foreground">
           Cấu hình các gói chăm sóc định kỳ và bảo hiểm/bảo vệ cây giống sâm.
         </p>
       </div>
-      <Button onClick={onOpenCreate} className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+      <Button
+        onClick={onOpenCreate}
+        className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+      >
         <Plus className="h-4 w-4" /> Thêm gói mới
       </Button>
     </div>

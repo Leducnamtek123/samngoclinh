@@ -1,106 +1,140 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
-import { useApiQuery } from '@/hooks/use-api-query';
-import { RoleGuard } from '@/components/guards/rbac-guard';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { QrCode, Search, Download, ShieldCheck, MapPin, Calendar, Sprout, RefreshCw } from 'lucide-react';
-import { useTranslation } from '@/providers/i18n-provider';
+import React, { useState } from "react"
+import {
+  Calendar,
+  Download,
+  MapPin,
+  QrCode,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  Sprout,
+} from "lucide-react"
+
+import { useApiQuery } from "@/hooks/use-api-query"
+import { useTranslation } from "@/providers/i18n-provider"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { RoleGuard } from "@/components/guards/rbac-guard"
+import { QRCodeSVG } from "qrcode.react"
 
 interface TreeItem {
-  id: string;
-  code: string;
-  name?: string;
-  age?: number | string;
-  gardenName?: string;
-  bedName?: string;
-  plantedAt?: string;
-  createdAt?: string;
-  status?: string;
+  id: string
+  code: string
+  name?: string
+  age?: number | string
+  gardenName?: string
+  bedName?: string
+  plantedAt?: string
+  createdAt?: string
+  status?: string
 }
 
 export default function QrCodeTraceabilityPage() {
-  const { t } = useTranslation();
-  const [searchCode, setSearchCode] = useState('');
-  const [selectedTree, setSelectedTree] = useState<TreeItem | null>(null);
+  const { t } = useTranslation()
+  const [searchCode, setSearchCode] = useState("")
+  const [selectedTree, setSelectedTree] = useState<TreeItem | null>(null)
 
-  const { data: response, isLoading, isError, refetch } = useApiQuery<TreeItem[] | { items: TreeItem[] }>(
-    ['trees-traceability'],
-    '/admin/cultivation/trees?page=1&perPage=100'
-  );
+  const {
+    data: response,
+    isLoading,
+    isError,
+    refetch,
+  } = useApiQuery<TreeItem[] | { items: TreeItem[] }>(
+    ["trees-traceability"],
+    "/admin/cultivation/trees?page=1&perPage=100"
+  )
 
-  const rawData = response?.data;
+  const rawData = response?.data
   const treesList: TreeItem[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || (rawData as any)?.data || [];
+    : (rawData as any)?.items || (rawData as any)?.data || []
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchCode) return;
+    e.preventDefault()
+    if (!searchCode) return
     const found = treesList.find(
-      (t) => t.code?.toLowerCase().includes(searchCode.toLowerCase()) || t.id === searchCode
-    );
+      (t) =>
+        t.code?.toLowerCase().includes(searchCode.toLowerCase()) ||
+        t.id === searchCode
+    )
     if (found) {
-      setSelectedTree(found);
+      setSelectedTree(found)
     } else {
       setSelectedTree({
         id: searchCode,
         code: searchCode.toUpperCase(),
-        name: 'Plant Code',
+        name: "Plant Code",
         age: 5,
-        gardenName: 'Ginseng Cultivation Zone',
+        gardenName: "Ginseng Cultivation Zone",
         plantedAt: new Date().toISOString(),
-        status: 'ACTIVE',
-      });
+        status: "ACTIVE",
+      })
     }
-  };
+  }
 
-  const activeTree = selectedTree || (treesList.length > 0 ? treesList[0] : null);
+  const activeTree =
+    selectedTree || (treesList.length > 0 ? treesList[0] : null)
 
   const getQrUrl = (tree: TreeItem) => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://samngoclinh.vn';
-    return `${baseUrl}/trace/${tree.code || tree.id}`;
-  };
+    const baseUrl =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://samngoclinh.vn"
+    return `${baseUrl}/trace/${tree.code || tree.id}`
+  }
 
   const downloadQr = () => {
-    const svgElement = document.getElementById('qr-code-svg');
-    if (!svgElement) return;
+    const svgElement = document.getElementById("qr-code-svg")
+    if (!svgElement) return
 
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const URL = window.URL || window.webkitURL || window;
-    const blobURL = URL.createObjectURL(svgBlob);
+    const svgData = new XMLSerializer().serializeToString(svgElement)
+    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" })
+    const URL = window.URL || window.webkitURL || window
+    const blobURL = URL.createObjectURL(svgBlob)
 
-    const image = new Image();
+    const image = new Image()
     image.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 400;
-      canvas.height = 400;
-      const context = canvas.getContext('2d');
+      const canvas = document.createElement("canvas")
+      canvas.width = 400
+      canvas.height = 400
+      const context = canvas.getContext("2d")
       if (context) {
-        context.fillStyle = '#ffffff';
-        context.fillRect(0, 0, 400, 400);
-        context.drawImage(image, 0, 0, 400, 400);
-        const png = canvas.toDataURL('image/png');
+        context.fillStyle = "#ffffff"
+        context.fillRect(0, 0, 400, 400)
+        context.drawImage(image, 0, 0, 400, 400)
+        const png = canvas.toDataURL("image/png")
 
-        const downloadLink = document.createElement('a');
-        downloadLink.href = png;
-        downloadLink.download = `QR-${activeTree?.code || 'SAM'}.png`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        const downloadLink = document.createElement("a")
+        downloadLink.href = png
+        downloadLink.download = `QR-${activeTree?.code || "SAM"}.png`
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
       }
-    };
-    image.src = blobURL;
-  };
+    }
+    image.src = blobURL
+  }
 
   return (
-    <RoleGuard allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+    <RoleGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
       <div className="container mx-auto p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -112,14 +146,21 @@ export default function QrCodeTraceabilityPage() {
               {t("qrCode.subtitle")}
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="gap-2"
+          >
             <RefreshCw className="w-4 h-4" /> {t("common.actions.refresh")}
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">{t("qrCode.scanPrompt")}</CardTitle>
+            <CardTitle className="text-base font-semibold">
+              {t("qrCode.scanPrompt")}
+            </CardTitle>
             <CardDescription>{t("common.actions.search")}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -129,7 +170,10 @@ export default function QrCodeTraceabilityPage() {
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
               />
-              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+              <Button
+                type="submit"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+              >
                 <Search className="w-4 h-4" /> {t("common.actions.search")}
               </Button>
             </form>
@@ -149,14 +193,22 @@ export default function QrCodeTraceabilityPage() {
                   fgColor="#047857"
                 />
               </div>
-              <Badge variant="outline" className="text-emerald-700 border-emerald-300 font-mono text-sm mb-2">
+              <Badge
+                variant="outline"
+                className="text-emerald-700 border-emerald-300 font-mono text-sm mb-2"
+              >
                 {activeTree.code || activeTree.id}
               </Badge>
               <p className="text-xs text-muted-foreground mb-4">
                 {t("qrCode.scanPrompt")}
               </p>
-              <Button variant="outline" className="gap-2 w-full" onClick={downloadQr}>
-                <Download className="w-4 h-4" /> {t("common.actions.export")} PNG
+              <Button
+                variant="outline"
+                className="gap-2 w-full"
+                onClick={downloadQr}
+              >
+                <Download className="w-4 h-4" /> {t("common.actions.export")}{" "}
+                PNG
               </Button>
             </Card>
 
@@ -171,44 +223,59 @@ export default function QrCodeTraceabilityPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-3 border rounded-lg bg-card">
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Sprout className="w-3.5 h-3.5 text-emerald-600" /> {t("trees.fields.name")}
+                      <Sprout className="w-3.5 h-3.5 text-emerald-600" />{" "}
+                      {t("trees.fields.name")}
                     </span>
-                    <p className="font-semibold mt-1 text-sm">{activeTree.name || activeTree.code}</p>
+                    <p className="font-semibold mt-1 text-sm">
+                      {activeTree.name || activeTree.code}
+                    </p>
                   </div>
                   <div className="p-3 border rounded-lg bg-card">
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5 text-emerald-600" /> {t("trees.fields.age")}
+                      <Calendar className="w-3.5 h-3.5 text-emerald-600" />{" "}
+                      {t("trees.fields.age")}
                     </span>
-                    <p className="font-semibold mt-1 text-sm">{activeTree.age ? `${activeTree.age} y` : '-'}</p>
+                    <p className="font-semibold mt-1 text-sm">
+                      {activeTree.age ? `${activeTree.age} y` : "-"}
+                    </p>
                   </div>
                   <div className="p-3 border rounded-lg bg-card sm:col-span-2">
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-600" /> {t("trees.fields.garden")} &amp; {t("trees.fields.bed")}
+                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />{" "}
+                      {t("trees.fields.garden")} &amp; {t("trees.fields.bed")}
                     </span>
                     <p className="font-semibold mt-1 text-sm">
-                      {activeTree.gardenName || 'Ginseng Cultivation Zone'}
+                      {activeTree.gardenName || "Ginseng Cultivation Zone"}
                     </p>
                   </div>
                 </div>
 
                 <div className="border-t pt-4 space-y-2">
-                  <h4 className="font-semibold text-sm">{t("qrCode.qrDetails")}</h4>
+                  <h4 className="font-semibold text-sm">
+                    {t("qrCode.qrDetails")}
+                  </h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center justify-between border-b pb-2">
                       <span>ID:</span>
-                      <span className="font-mono text-foreground text-xs">{activeTree.id}</span>
+                      <span className="font-mono text-foreground text-xs">
+                        {activeTree.id}
+                      </span>
                     </li>
                     <li className="flex items-center justify-between border-b pb-2">
                       <span>{t("trees.fields.plantedDate")}:</span>
                       <span className="font-medium text-foreground">
                         {activeTree.plantedAt || activeTree.createdAt
-                          ? new Date(activeTree.plantedAt || activeTree.createdAt!).toLocaleDateString('vi-VN')
-                          : '-'}
+                          ? new Date(
+                              activeTree.plantedAt || activeTree.createdAt!
+                            ).toLocaleDateString("vi-VN")
+                          : "-"}
                       </span>
                     </li>
                     <li className="flex items-center justify-between">
                       <span>{t("users.fields.status")}:</span>
-                      <Badge className="bg-emerald-600 text-white">{activeTree.status || t("common.status.active")}</Badge>
+                      <Badge className="bg-emerald-600 text-white">
+                        {activeTree.status || t("common.status.active")}
+                      </Badge>
                     </li>
                   </ul>
                 </div>
@@ -226,7 +293,9 @@ export default function QrCodeTraceabilityPage() {
         {treesList.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">{t("trees.title")}</CardTitle>
+              <CardTitle className="text-base font-semibold">
+                {t("trees.title")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
@@ -235,16 +304,23 @@ export default function QrCodeTraceabilityPage() {
                     <TableHead>{t("trees.fields.code")}</TableHead>
                     <TableHead>{t("trees.fields.name")}</TableHead>
                     <TableHead>{t("users.fields.status")}</TableHead>
-                    <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("common.actions.actions")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {treesList.map((tree) => (
                     <TableRow key={tree.id}>
-                      <TableCell className="font-mono text-xs font-semibold">{tree.code || tree.id}</TableCell>
-                      <TableCell>{tree.name || 'Plant'}</TableCell>
+                      <TableCell className="font-mono text-xs font-semibold">
+                        {tree.code || tree.id}
+                      </TableCell>
+                      <TableCell>{tree.name || "Plant"}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300">
+                        <Badge
+                          variant="outline"
+                          className="bg-emerald-50 text-emerald-700 border-emerald-300"
+                        >
                           {tree.status || t("common.status.active")}
                         </Badge>
                       </TableCell>
@@ -267,5 +343,5 @@ export default function QrCodeTraceabilityPage() {
         )}
       </div>
     </RoleGuard>
-  );
+  )
 }

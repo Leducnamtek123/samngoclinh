@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { PlantsTable } from "./_components/plants-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { PlantsTable } from "./_components/plants-table"
 
 export const metadata: Metadata = {
   title: "Product Management | Sâm Ngọc Linh Admin",
@@ -32,7 +35,9 @@ interface ProductsPageProps {
   }>
 }
 
-export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+export default async function ProductsPage({
+  searchParams,
+}: ProductsPageProps) {
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
@@ -48,12 +53,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
 
-    const res = await fetchApi(`/public/catalog/plants?${queryParams.toString()}`)
+    const res = await fetchApi(
+      `/public/catalog/plants?${queryParams.toString()}`
+    )
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load plants"
     } else {
-      plants = Array.isArray(payload.data) ? payload.data : (payload.data?.items || [])
+      plants = Array.isArray(payload.data)
+        ? payload.data
+        : payload.data?.items || []
       metadata = payload.metadata || null
     }
   } catch (e) {
@@ -64,10 +73,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
-        <PlantsTable 
-          initialPlants={plants} 
+        <PlantsTable
+          initialPlants={plants}
           metadata={metadata}
-          errorMsg={errorMsg} 
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

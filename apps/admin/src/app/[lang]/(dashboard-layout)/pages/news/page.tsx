@@ -1,13 +1,16 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { NewsManager } from "./_components/news-manager"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { NewsManager } from "./_components/news-manager"
 
 export const metadata: Metadata = {
   title: "Quản lý Tin tức | Sâm Ngọc Linh Admin",
-  description: "Quản lý các bài viết tin tức, hướng dẫn và kiến thức cho dự án sâm Ngọc Linh",
+  description:
+    "Quản lý các bài viết tin tức, hướng dẫn và kiến thức cho dự án sâm Ngọc Linh",
 }
 
 interface Article {
@@ -53,12 +56,16 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("category", status) // Use category filtering on the backend
 
-    const res = await fetchApi(`/public/content/articles?${queryParams.toString()}`)
+    const res = await fetchApi(
+      `/public/content/articles?${queryParams.toString()}`
+    )
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load articles"
     } else {
-      articles = Array.isArray(payload.data) ? payload.data : (payload.data?.items || [])
+      articles = Array.isArray(payload.data)
+        ? payload.data
+        : payload.data?.items || []
       metadata = payload.metadata || null
     }
   } catch (e) {
@@ -69,10 +76,10 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
-        <NewsManager 
-          initialArticles={articles} 
+        <NewsManager
+          initialArticles={articles}
           metadata={metadata}
-          errorMsg={errorMsg} 
+          errorMsg={errorMsg}
         />
       </Suspense>
     </div>

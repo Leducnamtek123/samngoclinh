@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { AccountRecoveryOptionsForm } from "./account-recovery-options-form"
 
-export function AccountRecoveryOptions({ user }: { user: UserType }) {
+export function AccountRecoveryOptions({ user }: { user?: UserType }) {
   return (
     <Card>
       <CardHeader>

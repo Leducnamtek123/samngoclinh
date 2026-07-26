@@ -1,15 +1,24 @@
 "use client"
 
-import { useEffect, useState, useCallback, Suspense } from "react"
+import { Suspense, useCallback, useEffect, useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { fetchApi } from "@/lib/api"
-import { DetailsSkeleton } from "@/components/ui/loading-skeletons"
-import { ensureLocalizedPathname } from "@/lib/i18n"
+
 import type { LocaleType } from "@/types"
+
+import { fetchApi } from "@/lib/api"
+import { ensureLocalizedPathname } from "@/lib/i18n"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { DetailsSkeleton } from "@/components/ui/loading-skeletons"
 
 interface CustomerDetail {
   id: string
@@ -77,9 +86,13 @@ function CustomerDetailsContent() {
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(payload?.message || "Không thể cập nhật trạng thái khách hàng")
+        setErrorMsg(
+          payload?.message || "Không thể cập nhật trạng thái khách hàng"
+        )
       } else {
-        setSuccessMsg(`Đã cập nhật trạng thái người dùng thành công sang "${status}"!`)
+        setSuccessMsg(
+          `Đã cập nhật trạng thái người dùng thành công sang "${status}"!`
+        )
         await loadUserDetails()
       }
     } catch (e) {
@@ -104,7 +117,11 @@ function CustomerDetailsContent() {
   }
 
   if (!user) {
-    return <div className="text-center py-8 text-muted-foreground">Không tìm thấy thông tin khách hàng</div>
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        Không tìm thấy thông tin khách hàng
+      </div>
+    )
   }
 
   return (
@@ -112,19 +129,30 @@ function CustomerDetailsContent() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">Chi tiết tài khoản</h1>
-            <Badge variant={user.status === "ACTIVE" || user.status === "active" ? "default" : "destructive"}>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Chi tiết tài khoản
+            </h1>
+            <Badge
+              variant={
+                user.status === "ACTIVE" || user.status === "active"
+                  ? "default"
+                  : "destructive"
+              }
+            >
               {user.status.toUpperCase()}
             </Badge>
           </div>
           <p className="text-muted-foreground">
-            Mã định danh (ID): <span className="font-mono text-sm">{user.id}</span>
+            Mã định danh (ID):{" "}
+            <span className="font-mono text-sm">{user.id}</span>
           </p>
         </div>
         <div>
           <Button
             variant="outline"
-            onClick={() => router.push(ensureLocalizedPathname("/pages/users", locale))}
+            onClick={() =>
+              router.push(ensureLocalizedPathname("/pages/users", locale))
+            }
           >
             Quay lại
           </Button>
@@ -153,35 +181,56 @@ function CustomerDetailsContent() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4 border-b pb-3">
               <div>
-                <span className="text-sm text-muted-foreground block">Tên hiển thị:</span>
-                <span className="font-semibold text-lg">{user.name || "Chưa thiết lập"}</span>
+                <span className="text-sm text-muted-foreground block">
+                  Tên hiển thị:
+                </span>
+                <span className="font-semibold text-lg">
+                  {user.name || "Chưa thiết lập"}
+                </span>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground block">Tên tài khoản (Username):</span>
+                <span className="text-sm text-muted-foreground block">
+                  Tên tài khoản (Username):
+                </span>
                 <span className="font-semibold text-lg">{user.username}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 border-b pb-3">
               <div>
-                <span className="text-sm text-muted-foreground block">Địa chỉ Email:</span>
+                <span className="text-sm text-muted-foreground block">
+                  Địa chỉ Email:
+                </span>
                 <span className="font-medium">{user.email}</span>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground block">Số điện thoại:</span>
-                <span className="font-medium">{user.phoneNumber || "Chưa thiết lập"}</span>
+                <span className="text-sm text-muted-foreground block">
+                  Số điện thoại:
+                </span>
+                <span className="font-medium">
+                  {user.phoneNumber || "Chưa thiết lập"}
+                </span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm text-muted-foreground block">Vai trò:</span>
-                <Badge variant="outline" className="capitalize text-sm font-semibold">
-                  {typeof user.role === "object" && user.role ? (user.role as any).name : user.role}
+                <span className="text-sm text-muted-foreground block">
+                  Vai trò:
+                </span>
+                <Badge
+                  variant="outline"
+                  className="capitalize text-sm font-semibold"
+                >
+                  {typeof user.role === "object" && user.role
+                    ? (user.role as any).name
+                    : user.role}
                 </Badge>
               </div>
               <div>
-                <span className="text-sm text-muted-foreground block">Ngày đăng ký:</span>
+                <span className="text-sm text-muted-foreground block">
+                  Ngày đăng ký:
+                </span>
                 <span className="font-medium">
                   {new Date(user.createdAt).toLocaleString("vi-VN")}
                 </span>

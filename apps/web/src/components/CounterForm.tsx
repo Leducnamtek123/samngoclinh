@@ -24,7 +24,9 @@ export const CounterForm = () => {
       },
       body: JSON.stringify(formData),
     });
-    await response.json();
+    if (response.ok) {
+      await response.json();
+    }
 
     router.refresh();
   });

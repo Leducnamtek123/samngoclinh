@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
-import { userData } from "@/data/user"
 
 import { DangerousZone } from "./_components/general/dangerous-zone"
 import { ProfileInfo } from "./_components/general/profile-info"
@@ -13,27 +12,29 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfileInfoPage() {
-  let user = userData
+  let user: any = null
 
   try {
     const res = await fetchApi("/user/profile")
     const payload = await res.json()
     if (res.ok && payload.data) {
       const profile = payload.data
-      const nameParts = profile.name ? profile.name.trim().split(/\s+/) : ["Admin"]
+      const nameParts = profile.name
+        ? profile.name.trim().split(/\s+/)
+        : ["Admin"]
       const firstName = nameParts.slice(0, -1).join(" ") || "Admin"
       const lastName = nameParts[nameParts.length - 1] || "User"
 
       user = {
-        ...userData,
-        id: profile.id || "1",
-        name: profile.name || "Admin User",
+        id: profile.id,
+        name: profile.name,
         firstName,
         lastName,
-        email: profile.email || "admin@mail.com",
-        username: profile.username || "admin",
+        email: profile.email,
+        username: profile.username,
         phoneNumber: profile.mobileNumbers?.[0]?.number || "",
-        avatar: profile.photo?.url || "/images/avatars/male-01.svg",
+        avatar: profile.photo?.url || "",
+        role: profile.role,
       }
     }
   } catch (error) {

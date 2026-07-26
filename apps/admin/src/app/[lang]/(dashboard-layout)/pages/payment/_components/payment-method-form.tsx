@@ -65,8 +65,6 @@ export function PaymentMethodForm({
     }
   }, [cardNumber, cardName, expiry, cvc, form])
 
-
-
   return (
     <Form {...form}>
       <Card asChild>

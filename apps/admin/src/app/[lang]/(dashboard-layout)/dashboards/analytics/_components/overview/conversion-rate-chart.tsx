@@ -1,9 +1,5 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { ChartConfig } from "@/components/ui/chart"
 import type { ComponentProps } from "react"
 import type { OverviewType } from "../../types"
@@ -11,6 +7,7 @@ import type { OverviewType } from "../../types"
 import { formatPercent } from "@/lib/utils"
 
 import { useIsRtl } from "@/hooks/use-is-rtl"
+import { useRecharts } from "@/hooks/use-recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -44,12 +41,15 @@ export function ConversionRateChart({
 }: {
   data: OverviewType["conversionRate"]["perMonth"]
 }) {
-  const recharts = useRecharts();
-    const isRtl = useIsRtl()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Area, AreaChart, CartesianGrid, XAxis } = recharts;
-
-
+  const recharts = useRecharts()
+  const isRtl = useIsRtl()
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Area, AreaChart, CartesianGrid, XAxis } = recharts
 
   return (
     <ChartContainer

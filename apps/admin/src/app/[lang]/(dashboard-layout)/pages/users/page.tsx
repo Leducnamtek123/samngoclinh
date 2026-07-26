@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { UsersTable } from "./_components/users-table"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
+import { UsersTable } from "./_components/users-table"
 
 export const metadata: Metadata = {
   title: "User Management | Admin",
@@ -74,17 +77,19 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">Account List</h2>
+          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
+            Account List
+          </h2>
           <p className="text-xs text-muted-foreground">
             Display user name, email, status, and registration date.
           </p>
         </div>
-        
+
         <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
-          <UsersTable 
-            initialUsers={customers} 
-            metadata={metadata} 
-            errorMsg={errorMsg} 
+          <UsersTable
+            initialUsers={customers}
+            metadata={metadata}
+            errorMsg={errorMsg}
           />
         </Suspense>
       </div>

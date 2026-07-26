@@ -13,21 +13,23 @@ interface Banner {
 
 type PageBannerSliderProps = {
   banners: Banner[];
-  badgeText: string;
-  badgeIcon: React.ReactNode;
+  badgeText?: string;
+  badgeIcon?: React.ReactNode;
 };
 
-export function PageBannerSlider({ banners, badgeText, badgeIcon }: PageBannerSliderProps) {
+export function PageBannerSlider({ banners = [] }: PageBannerSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const safeBanners = Array.isArray(banners) ? banners : [];
+
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (safeBanners.length <= 1) return;
 
     if (!isHovered) {
       timerRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % banners.length);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % safeBanners.length);
       }, 5500);
     }
 
@@ -36,19 +38,19 @@ export function PageBannerSlider({ banners, badgeText, badgeIcon }: PageBannerSl
         clearInterval(timerRef.current);
       }
     };
-  }, [banners.length, isHovered]);
+  }, [safeBanners.length, isHovered]);
 
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
   };
 
-  if (!banners || banners.length === 0) return null;
+  if (safeBanners.length === 0) return null;
 
   return (
     <section className="relative overflow-hidden border-b border-gray-200 w-full h-[260px] sm:h-[300px] md:h-[340px] bg-black">
       {/* Slides */}
       <div className="absolute inset-0 w-full h-full">
-        {banners.map((banner, index) => (
+        {safeBanners.map((banner, index) => (
           <div
             key={banner.id}
             onMouseEnter={() => setIsHovered(true)}
@@ -58,15 +60,11 @@ export function PageBannerSlider({ banners, badgeText, badgeIcon }: PageBannerSl
             }`}
             style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('${banner.image}')` }}
           >
-            <div className="max-w-4xl mx-auto space-y-4 relative z-20">
-              <div className="inline-flex items-center gap-2 bg-emerald-600/35 text-white border border-emerald-400/30 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm">
-                {badgeIcon}
-                {badgeText}
-              </div>
+            <div className="max-w-4xl mx-auto space-y-3 relative z-20">
               <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight font-display-lg drop-shadow-md">
                 {banner.title}
               </h1>
-              <p className="text-gray-200 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
+              <p className="text-gray-200 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed drop-shadow-sm font-medium">
                 {banner.subtitle}
               </p>
             </div>
@@ -75,14 +73,14 @@ export function PageBannerSlider({ banners, badgeText, badgeIcon }: PageBannerSl
       </div>
 
       {/* Indicators / Dots for slider */}
-      {banners.length > 1 && (
+      {safeBanners.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-          {banners.map((_, index) => (
+          {safeBanners.map((banner, index) => (
             <button
-              key={index}
+              key={banner.id}
               type="button"
               onClick={() => handleDotClick(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer border-0 ${
+              className={`w-2 h-2 rounded-full transition-colors duration-300 cursor-pointer border-0 ${
                 index === currentIndex 
                   ? 'bg-white scale-125 shadow-md w-5' 
                   : 'bg-white/40 hover:bg-white/70'

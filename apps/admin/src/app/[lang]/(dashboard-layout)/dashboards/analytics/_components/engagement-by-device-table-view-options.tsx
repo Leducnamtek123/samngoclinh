@@ -34,22 +34,20 @@ export function EngagementByDeviceTableViewOptions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {table
-          .getAllColumns()
-          .flatMap((column) => {
-            if (typeof column.accessorFn !== "undefined" && column.getCanHide()) {
-              return [
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {camelCaseToTitleCase(column.id)}
-                </DropdownMenuCheckboxItem>
-              ]
-            }
-            return []
-          })}
+        {table.getAllColumns().flatMap((column) => {
+          if (typeof column.accessorFn !== "undefined" && column.getCanHide()) {
+            return [
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {camelCaseToTitleCase(column.id)}
+              </DropdownMenuCheckboxItem>,
+            ]
+          }
+          return []
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   )

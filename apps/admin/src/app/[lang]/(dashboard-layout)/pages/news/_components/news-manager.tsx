@@ -1,13 +1,23 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus, Search } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { ToastCard, ConfirmationDialog } from "@/components/ui/feedback-components"
-import { NewsList } from "./news-list"
+import {
+  ConfirmationDialog,
+  ToastCard,
+} from "@/components/ui/feedback-components"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { NewsDialog } from "./news-dialog"
+import { NewsList } from "./news-list"
 import { useNewsManager } from "./use-news-manager"
 
 interface Article {
@@ -66,7 +76,11 @@ const statusNameMap: Record<string, string> = {
   inactive: "Ngưng hiển thị",
 }
 
-export function NewsManager({ initialArticles, metadata, errorMsg: initialError }: NewsManagerProps) {
+export function NewsManager({
+  initialArticles,
+  metadata,
+  errorMsg: initialError,
+}: NewsManagerProps) {
   const {
     filteredArticles,
     errorMsg,
@@ -96,10 +110,18 @@ export function NewsManager({ initialArticles, metadata, errorMsg: initialError 
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Quản lý Tin tức</h1>
-          <p className="text-xs text-slate-400">Danh sách bài viết tin tức, sự kiện nông trại, cẩm nang kiến thức và FAQ sâm Ngọc Linh</p>
+          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+            Quản lý Tin tức
+          </h1>
+          <p className="text-xs text-slate-400">
+            Danh sách bài viết tin tức, sự kiện nông trại, cẩm nang kiến thức và
+            FAQ sâm Ngọc Linh
+          </p>
         </div>
-        <Button onClick={handleOpenCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 self-start md:self-auto shadow-sm">
+        <Button
+          onClick={handleOpenCreate}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 self-start md:self-auto shadow-sm"
+        >
           <Plus className="h-4 w-4" /> Thêm bài viết mới
         </Button>
       </div>
@@ -116,7 +138,10 @@ export function NewsManager({ initialArticles, metadata, errorMsg: initialError 
               className="pl-9 h-9 text-xs"
             />
           </div>
-          <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
+          <Select
+            value={categoryFilter}
+            onValueChange={handleCategoryFilterChange}
+          >
             <SelectTrigger className="w-full sm:w-48 h-9 text-xs">
               <SelectValue placeholder="Tất cả chuyên mục" />
             </SelectTrigger>
@@ -149,7 +174,12 @@ export function NewsManager({ initialArticles, metadata, errorMsg: initialError 
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={(updater) => setDialogState((prev) => ({ ...prev, formData: updater(prev.formData) }))}
+        onChange={(updater) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: updater(prev.formData),
+          }))
+        }
         onTitleChange={handleTitleChange}
         onImageUpload={handleImageUpload}
         onSubmit={handleSave}

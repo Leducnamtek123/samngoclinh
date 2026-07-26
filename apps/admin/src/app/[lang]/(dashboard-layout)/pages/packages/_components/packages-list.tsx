@@ -1,10 +1,18 @@
 "use client"
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Pencil, Trash2 } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
 import { EmptyState } from "@/components/ui/feedback-components"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface CarePackage {
   id: string
@@ -70,7 +78,9 @@ export function CarePackagesList({
           ) : (
             packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono text-xs font-semibold">{pkg.code}</TableCell>
+                <TableCell className="font-mono text-xs font-semibold">
+                  {pkg.code}
+                </TableCell>
                 <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                   {pkg.name}
                 </TableCell>
@@ -82,7 +92,9 @@ export function CarePackagesList({
                   {pkg.description || "—"}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={pkg.status === "active" ? "default" : "outline"}>
+                  <Badge
+                    variant={pkg.status === "active" ? "default" : "outline"}
+                  >
                     {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
                   </Badge>
                 </TableCell>
@@ -159,7 +171,9 @@ export function ProtectionPackagesList({
           ) : (
             packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono text-xs font-semibold">{pkg.code}</TableCell>
+                <TableCell className="font-mono text-xs font-semibold">
+                  {pkg.code}
+                </TableCell>
                 <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                   {pkg.name}
                 </TableCell>
@@ -171,7 +185,9 @@ export function ProtectionPackagesList({
                   {pkg.description || "—"}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={pkg.status === "active" ? "default" : "outline"}>
+                  <Badge
+                    variant={pkg.status === "active" ? "default" : "outline"}
+                  >
                     {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
                   </Badge>
                 </TableCell>

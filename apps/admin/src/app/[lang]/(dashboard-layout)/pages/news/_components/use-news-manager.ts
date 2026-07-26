@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
 
 interface Article {
   id: string
@@ -42,7 +44,10 @@ const slugify = (text: string) => {
   return str.trim()
 }
 
-export function useNewsManager({ initialArticles, initialError }: UseNewsManagerProps) {
+export function useNewsManager({
+  initialArticles,
+  initialError,
+}: UseNewsManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -98,7 +103,7 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
       sortOrder: 0,
       coverImage: "",
       authorName: "iWE FARM",
-    }
+    },
   })
 
   // Confirmation Dialog State
@@ -112,20 +117,23 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
     loading: false,
   })
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -143,7 +151,9 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
   }, [searchQuery, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleCategoryFilterChange = (val: string) => {
@@ -158,7 +168,7 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
         ...prev.formData,
         title: titleVal,
         slug: prev.mode === "create" ? slugify(titleVal) : prev.formData.slug,
-      }
+      },
     }))
   }
 
@@ -179,20 +189,26 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || "Tải ảnh lên thất bại" }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: payload?.message || "Tải ảnh lên thất bại",
+        }))
       } else {
         setDialogState((prev) => ({
           ...prev,
           formData: {
             ...prev.formData,
             coverImage: payload.data?.url || "",
-          }
+          },
         }))
         setSuccessMsg("Tải ảnh bìa bài viết lên thành công!")
       }
     } catch (err: any) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: err?.message || "Lỗi kết nối khi tải ảnh lên" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: err?.message || "Lỗi kết nối khi tải ảnh lên",
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, uploadingImage: false }))
     }
@@ -216,7 +232,7 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
         sortOrder: 0,
         coverImage: "",
         authorName: "iWE FARM",
-      }
+      },
     })
   }
 
@@ -238,7 +254,7 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
         sortOrder: 0,
         coverImage: article.coverImage || article.image || "",
         authorName: article.metadata?.authorName || "iWE FARM",
-      }
+      },
     })
 
     try {
@@ -258,12 +274,15 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
             sortOrder: fullDetail.sortOrder || 0,
             coverImage: fullDetail.coverImage || "",
             authorName: fullDetail.metadata?.authorName || "iWE FARM",
-          }
+          },
         }))
       }
     } catch (e) {
       console.error("Error loading article detail:", e)
-      setDialogState((prev) => ({ ...prev, error: "Không thể tải chi tiết bài viết từ máy chủ" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: "Không thể tải chi tiết bài viết từ máy chủ",
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -275,7 +294,9 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
 
     try {
       const isEdit = dialogState.mode === "edit"
-      const url = isEdit ? `/admin/content/articles/${dialogState.selectedArticle?.id}` : "/admin/content/articles"
+      const url = isEdit
+        ? `/admin/content/articles/${dialogState.selectedArticle?.id}`
+        : "/admin/content/articles"
       const method = isEdit ? "PUT" : "POST"
 
       const res = await fetchApi(url, {
@@ -295,21 +316,31 @@ export function useNewsManager({ initialArticles, initialError }: UseNewsManager
           metadata: {
             ...(dialogState.selectedArticle?.metadata || {}),
             authorName: dialogState.formData.authorName,
-          }
+          },
         }),
       })
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || "Không thể lưu bài viết" }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: payload?.message || "Không thể lưu bài viết",
+        }))
       } else {
-        setSuccessMsg(isEdit ? "Đã cập nhật bài viết thành công!" : "Đã tạo bài viết mới thành công!")
+        setSuccessMsg(
+          isEdit
+            ? "Đã cập nhật bài viết thành công!"
+            : "Đã tạo bài viết mới thành công!"
+        )
         setDialogState((prev) => ({ ...prev, isOpen: false }))
         router.refresh()
       }
     } catch (err: any) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: err?.message || "Lỗi máy chủ khi lưu tin tức" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: err?.message || "Lỗi máy chủ khi lưu tin tức",
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }

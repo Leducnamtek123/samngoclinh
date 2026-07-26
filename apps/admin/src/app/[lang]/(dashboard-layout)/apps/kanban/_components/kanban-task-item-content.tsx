@@ -11,7 +11,10 @@ interface KanbanTaskItemContentProps {
 
 export function KanbanTaskItemContent({ task }: KanbanTaskItemContentProps) {
   const mediaAttachments = task.attachments.flatMap((attachment) => {
-    if (attachment.type.includes("image") || attachment.type.includes("video")) {
+    if (
+      attachment.type.includes("image") ||
+      attachment.type.includes("video")
+    ) {
       return [
         {
           src: attachment.url,
@@ -19,7 +22,7 @@ export function KanbanTaskItemContent({ task }: KanbanTaskItemContentProps) {
           type: attachment.type.includes("video")
             ? ("VIDEO" as const)
             : ("IMAGE" as const),
-        }
+        },
       ]
     }
     return []

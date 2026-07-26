@@ -2,13 +2,15 @@
 
 import { Suspense } from "react"
 import { LayoutGrid } from "lucide-react"
-import { useBedsTable } from "./use-beds-table"
-import { BedsLeftSidebar } from "./beds-left-sidebar"
-import { BedFormDialog, BedsOtherDialogs } from "./beds-dialogs"
-import { BedsRightSidebar } from "./beds-right-sidebar"
-import { BedsInteractiveGrid } from "./beds-interactive-grid"
-import { BedsSkeleton } from "@/components/ui/loading-skeletons"
+
 import type { Bed, Garden } from "./use-beds-table"
+
+import { BedsSkeleton } from "@/components/ui/loading-skeletons"
+import { BedFormDialog, BedsOtherDialogs } from "./beds-dialogs"
+import { BedsInteractiveGrid } from "./beds-interactive-grid"
+import { BedsLeftSidebar } from "./beds-left-sidebar"
+import { BedsRightSidebar } from "./beds-right-sidebar"
+import { useBedsTable } from "./use-beds-table"
 
 interface BedsTableProps {
   initialBeds: Bed[]
@@ -24,7 +26,12 @@ interface BedsTableProps {
   errorMsg?: string
 }
 
-function BedsTableContent({ initialBeds, metadata, gardens, errorMsg: initialError }: BedsTableProps) {
+function BedsTableContent({
+  initialBeds,
+  metadata,
+  gardens,
+  errorMsg: initialError,
+}: BedsTableProps) {
   const tableData = useBedsTable(initialBeds, metadata, gardens, initialError)
 
   const {

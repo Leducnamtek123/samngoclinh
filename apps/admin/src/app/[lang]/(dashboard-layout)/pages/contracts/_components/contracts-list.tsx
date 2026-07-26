@@ -1,10 +1,18 @@
 "use client"
 
 import React from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Pencil, Trash2 } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface EContract {
   id: string
@@ -72,7 +80,10 @@ export function ContractsList({
         <TableBody>
           {contracts.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
+              <TableCell
+                colSpan={10}
+                className="text-center py-12 text-muted-foreground"
+              >
                 Không tìm thấy hợp đồng nào phù hợp.
               </TableCell>
             </TableRow>
@@ -81,14 +92,20 @@ export function ContractsList({
               const userObj = users.find((u) => u.id === contract.userId)
               return (
                 <TableRow key={contract.id}>
-                  <TableCell className="font-mono text-xs font-semibold">{contract.code}</TableCell>
+                  <TableCell className="font-mono text-xs font-semibold">
+                    {contract.code}
+                  </TableCell>
                   <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                     {contract.title}
                   </TableCell>
                   <TableCell className="text-xs">
                     <div className="flex flex-col">
-                      <span className="font-medium">{userObj?.name || "Hệ thống"}</span>
-                      <span className="text-muted-foreground">{userObj?.email}</span>
+                      <span className="font-medium">
+                        {userObj?.name || "Hệ thống"}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {userObj?.email}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell className="font-mono text-xs text-slate-600">
@@ -112,19 +129,29 @@ export function ContractsList({
                           : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
                       }
                     >
-                      {contract.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
+                      {contract.paymentStatus === "paid"
+                        ? "Đã thanh toán"
+                        : "Chưa thanh toán"}
                     </Badge>
                   </TableCell>
                   <TableCell>{getStatusBadge(contract.status)}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {new Date(contract.expiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                    {new Date(contract.expiredAt).toLocaleDateString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                    })}
                   </TableCell>
                   <TableCell className="text-xs">
                     {contract.isReminderSent ? (
                       <div className="flex flex-col text-[10px] text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 w-max">
                         <span className="font-bold">Đã gửi nhắc</span>
                         {contract.reminderSentAt && (
-                          <span>{new Date(contract.reminderSentAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}</span>
+                          <span>
+                            {new Date(
+                              contract.reminderSentAt
+                            ).toLocaleDateString("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
+                            })}
+                          </span>
                         )}
                       </div>
                     ) : (

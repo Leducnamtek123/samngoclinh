@@ -89,4 +89,3 @@ export function createTranslator(dictionary: any) {
   return (key: string, params?: Record<string, string | number>): string =>
     translate(dictionary, key, params)
 }
-

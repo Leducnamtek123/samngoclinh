@@ -1,6 +1,6 @@
 import { useRadius } from "@/hooks/use-radius"
-import { ChartContainer } from "@/components/ui/chart"
 import { useRecharts } from "@/hooks/use-recharts"
+import { ChartContainer } from "@/components/ui/chart"
 
 export function ActiveProjectsItemChart({
   value,
@@ -14,8 +14,14 @@ export function ActiveProjectsItemChart({
   const recharts = useRecharts()
   const radius = useRadius()
 
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>
-  const { Label, PolarAngleAxis, PolarRadiusAxis, RadialBar, RadialBarChart } = recharts
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Label, PolarAngleAxis, PolarRadiusAxis, RadialBar, RadialBarChart } =
+    recharts
 
   return (
     <ChartContainer config={{}} className="aspect-square h-16">

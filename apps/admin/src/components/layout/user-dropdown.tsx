@@ -7,8 +7,6 @@ import { LogOut, User, UserCog } from "lucide-react"
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
 
-import { userData } from "@/data/user"
-
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { getInitials } from "@/lib/utils"
 
@@ -34,9 +32,9 @@ export function UserDropdown({
   const { data: session } = useSession()
   const user = session?.user
 
-  const name = user?.name || userData?.name
-  const email = user?.email || userData?.email
-  const avatar = user ? user.avatar : userData?.avatar
+  const name = user?.name ?? ""
+  const email = user?.email ?? ""
+  const avatar = user?.avatar
 
   return (
     <DropdownMenu>

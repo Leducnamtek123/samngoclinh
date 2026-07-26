@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { DynamicIcon } from "@/components/dynamic-icon"
@@ -38,7 +39,7 @@ export function FullscreenToggle() {
         // For IE/Edge
         element.msRequestFullscreen()
       } else {
-        alert("Fullscreen mode is not supported in this browser.")
+        toast.warning("Fullscreen mode is not supported in this browser.")
       }
 
       // If fullscreen mode is active, deactivate it

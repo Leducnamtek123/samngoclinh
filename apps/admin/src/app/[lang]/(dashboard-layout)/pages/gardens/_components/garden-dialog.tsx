@@ -1,9 +1,16 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface GardenDialogProps {
   isOpen: boolean
@@ -38,10 +45,17 @@ export function GardenDialog({
   error,
 }: GardenDialogProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
       <DialogContent className="sm:max-w-[625px] overflow-y-auto max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Thêm khu vườn mới" : "Chỉnh sửa khu vườn"}</DialogTitle>
+          <DialogTitle>
+            {mode === "create" ? "Thêm khu vườn mới" : "Chỉnh sửa khu vườn"}
+          </DialogTitle>
           <DialogDescription>
             Điền các thông tin của khu vườn dưới đây. Nhấn Lưu khi hoàn tất.
           </DialogDescription>
@@ -56,11 +70,15 @@ export function GardenDialog({
         <form onSubmit={onSubmit}>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="grid gap-2 col-span-2">
-              <Label htmlFor="garden-name">Tên khu vườn <span className="text-red-500">*</span></Label>
+              <Label htmlFor="garden-name">
+                Tên khu vườn <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="garden-name"
                 value={formData.name}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="Nhập tên vườn, ví dụ: Vườn Sâm Số 1"
                 required
               />
@@ -70,7 +88,12 @@ export function GardenDialog({
               <Input
                 id="garden-location"
                 value={formData.location}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, location: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    location: e.target.value,
+                  }))
+                }
                 placeholder="Kon Tum, Quảng Nam..."
               />
             </div>
@@ -81,7 +104,9 @@ export function GardenDialog({
                 type="number"
                 step="any"
                 value={formData.area}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, area: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({ ...prev, area: e.target.value }))
+                }
                 placeholder="Ví dụ: 500"
               />
             </div>
@@ -92,7 +117,12 @@ export function GardenDialog({
                 type="number"
                 step="any"
                 value={formData.latitude}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, latitude: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    latitude: e.target.value,
+                  }))
+                }
                 placeholder="Ví dụ: 14.1234"
               />
             </div>
@@ -103,7 +133,12 @@ export function GardenDialog({
                 type="number"
                 step="any"
                 value={formData.longitude}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, longitude: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    longitude: e.target.value,
+                  }))
+                }
                 placeholder="Ví dụ: 107.5678"
               />
             </div>
@@ -112,7 +147,12 @@ export function GardenDialog({
               <Input
                 id="garden-manager-name"
                 value={formData.managerName}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, managerName: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    managerName: e.target.value,
+                  }))
+                }
                 placeholder="Ví dụ: Nguyễn Văn A"
               />
             </div>
@@ -121,7 +161,12 @@ export function GardenDialog({
               <Input
                 id="garden-manager-phone"
                 value={formData.managerPhone}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, managerPhone: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    managerPhone: e.target.value,
+                  }))
+                }
                 placeholder="Ví dụ: 0987654321"
               />
             </div>
@@ -131,7 +176,12 @@ export function GardenDialog({
                 id="garden-established"
                 type="date"
                 value={formData.establishedAt}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, establishedAt: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    establishedAt: e.target.value,
+                  }))
+                }
               />
             </div>
             <div className="grid gap-2">
@@ -140,7 +190,12 @@ export function GardenDialog({
                 id="garden-max-beds"
                 type="number"
                 value={formData.maxBeds}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, maxBeds: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    maxBeds: e.target.value,
+                  }))
+                }
                 placeholder="Ví dụ: 100"
               />
             </div>
@@ -149,7 +204,12 @@ export function GardenDialog({
               <Input
                 id="garden-description"
                 value={formData.description}
-                onChange={(e) => onChange((prev: any) => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  onChange((prev: any) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Nhập mô tả về đất, khí hậu, các giống sâm..."
               />
             </div>
@@ -164,7 +224,11 @@ export function GardenDialog({
             >
               Hủy
             </Button>
-            <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               {loading ? "Đang lưu..." : "Lưu thay đổi"}
             </Button>
           </DialogFooter>

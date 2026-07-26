@@ -8,7 +8,7 @@ import { TrafficSourcesChart } from "./traffic-sources-chart"
 import { TrafficSourcesTable } from "./traffic-sources-table"
 
 export function TrafficSources({ stats }: { stats: any }) {
-  const sources = stats?.trafficSources || trafficSourcesData.sources;
+  const sources = stats?.trafficSources || trafficSourcesData.sources
 
   return (
     <DashboardCard

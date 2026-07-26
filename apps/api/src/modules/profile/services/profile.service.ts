@@ -43,11 +43,8 @@ export class ProfileService {
 
     async userBusinessProfile(userId: string): Promise<IResponseReturn<any>> {
         const profile = await this.profileRepository.getBusinessProfileByUserId(userId);
-        if (!profile) {
-            throw new NotFoundException('Business profile not found');
-        }
         return {
-            data: profile,
+            data: profile || null,
         };
     }
 }

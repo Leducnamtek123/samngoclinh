@@ -1,16 +1,30 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { ChevronLeft, ChevronRight, Search } from "lucide-react"
+
+import { useEvent } from "@/hooks/use-event"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { ToastCard } from "@/components/ui/feedback-components"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Order {
   id: string
@@ -33,7 +47,11 @@ interface OrdersTableProps {
   errorMsg?: string
 }
 
-export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTableProps) {
+export function OrdersTable({
+  initialOrders,
+  metadata,
+  errorMsg,
+}: OrdersTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -52,20 +70,23 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
 
   const statusFilter = searchParams.get("status") || "all"
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -83,16 +104,14 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
   }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleStatusFilterChange = (val: string) => {
     router.push(`${pathname}?${createQueryString({ status: val })}`)
   }
-
-
-
-
 
   return (
     <div className="space-y-4">
@@ -116,8 +135,12 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
             <SelectContent>
               <SelectItem value="all">Tất cả trạng thái</SelectItem>
               <SelectItem value="pending">Chờ xử lý (Pending)</SelectItem>
-              <SelectItem value="processing">Đang xử lý (Processing)</SelectItem>
-              <SelectItem value="completed">Đã hoàn thành (Completed)</SelectItem>
+              <SelectItem value="processing">
+                Đang xử lý (Processing)
+              </SelectItem>
+              <SelectItem value="completed">
+                Đã hoàn thành (Completed)
+              </SelectItem>
               <SelectItem value="cancelled">Đã hủy (Cancelled)</SelectItem>
               <SelectItem value="failed">Thất bại (Failed)</SelectItem>
             </SelectContent>
@@ -144,19 +167,27 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
             <TableBody>
               {initialOrders.map((order) => (
                 <TableRow key={order.id} className="hover:bg-muted/30">
-                  <TableCell className="font-mono font-medium">{order.code}</TableCell>
+                  <TableCell className="font-mono font-medium">
+                    {order.code}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "-"}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString("vi-VN", {
+                          timeZone: "Asia/Ho_Chi_Minh",
+                        })
+                      : "-"}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={
-                        order.status.toLowerCase() === "completed" || order.status.toLowerCase() === "success"
+                        order.status.toLowerCase() === "completed" ||
+                        order.status.toLowerCase() === "success"
                           ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold hover:bg-emerald-500/15"
-                          : order.status.toLowerCase() === "pending" || order.status.toLowerCase() === "processing"
-                          ? "bg-amber-500/10 text-amber-600 border-transparent font-semibold hover:bg-amber-500/15"
-                          : "bg-red-500/10 text-red-650 border-transparent font-semibold hover:bg-red-500/15"
+                          : order.status.toLowerCase() === "pending" ||
+                              order.status.toLowerCase() === "processing"
+                            ? "bg-amber-500/10 text-amber-600 border-transparent font-semibold hover:bg-amber-500/15"
+                            : "bg-red-500/10 text-red-650 border-transparent font-semibold hover:bg-red-500/15"
                       }
                     >
                       {order.status.toUpperCase()}
@@ -182,7 +213,8 @@ export function OrdersTable({ initialOrders, metadata, errorMsg }: OrdersTablePr
           {metadata && (
             <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} đơn hàng)
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
+                {metadata.count} đơn hàng)
               </span>
               <div className="flex items-center gap-1.5">
                 <Button

@@ -4,8 +4,6 @@ import { UserPen } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 
-import { userData } from "@/data/user"
-
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn, formatNumberToCompact, getInitials } from "@/lib/utils"
 
@@ -13,8 +11,14 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { buttonVariants } from "@/components/ui/button-variants"
 
-export function ProfileHeader({ locale, user }: { locale: LocaleType; user?: any }) {
-  const profileUser = user || userData
+export function ProfileHeader({
+  locale,
+  user,
+}: {
+  locale: LocaleType
+  user?: any
+}) {
+  const profileUser = user || {}
 
   return (
     <section className="bg-background border-y border-border">
@@ -51,7 +55,9 @@ export function ProfileHeader({ locale, user }: { locale: LocaleType; user?: any
         </Link>
         <div className="text-center md:text-start">
           <div>
-            <h1 className="text-2xl font-bold line-clamp-1">{profileUser.name}</h1>
+            <h1 className="text-2xl font-bold line-clamp-1">
+              {profileUser.name}
+            </h1>
             <p className="text-muted-foreground line-clamp-1">
               {profileUser.state && profileUser.state + ", "}
               {profileUser.country}

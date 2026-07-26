@@ -1,11 +1,22 @@
 "use client"
 
+import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Trash2, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
-import { EmptyState, EmptySearchResult } from "@/components/ui/feedback-components"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  EmptySearchResult,
+  EmptyState,
+} from "@/components/ui/feedback-components"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Tree {
   id: string
@@ -78,7 +89,9 @@ export function TreesList({
               <TableHead>Care Package</TableHead>
               <TableHead>Protection Package</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+              <TableHead className="text-right">
+                {t("common.actions.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,7 +116,9 @@ export function TreesList({
             ) : (
               filteredTrees.map((tree) => (
                 <TableRow key={tree.id}>
-                  <TableCell className="font-mono text-xs font-semibold">{tree.code}</TableCell>
+                  <TableCell className="font-mono text-xs font-semibold">
+                    {tree.code}
+                  </TableCell>
                   <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                     {tree.name}
                   </TableCell>
@@ -116,25 +131,41 @@ export function TreesList({
                       <span className="text-muted-foreground text-xs">—</span>
                     )}
                   </TableCell>
-                  <TableCell className="font-medium">{tree.ageYear} y</TableCell>
+                  <TableCell className="font-medium">
+                    {tree.ageYear} y
+                  </TableCell>
                   <TableCell className="font-semibold text-slate-700 dark:text-slate-300">
                     {tree.quantity}
                   </TableCell>
-                  <TableCell className="text-xs truncate max-w-[150px]" title={tree.ownerUserId}>
+                  <TableCell
+                    className="text-xs truncate max-w-[150px]"
+                    title={tree.ownerUserId}
+                  >
                     {getOwnerName(tree.ownerUserId)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                      {tree.metadata?.healthStatus || t("common.status.healthy")}
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-50 text-blue-700 border-blue-200"
+                    >
+                      {tree.metadata?.healthStatus ||
+                        t("common.status.healthy")}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs">
                     {tree.carePackageCode ? (
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-emerald-700">{tree.carePackageCode}</span>
+                        <span className="font-semibold text-emerald-700">
+                          {tree.carePackageCode}
+                        </span>
                         {tree.carePackageExpiredAt && (
                           <span className="text-[10px] text-muted-foreground">
-                            Exp: {new Date(tree.carePackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                            Exp:{" "}
+                            {new Date(
+                              tree.carePackageExpiredAt
+                            ).toLocaleDateString("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
+                            })}
                           </span>
                         )}
                       </div>
@@ -145,10 +176,17 @@ export function TreesList({
                   <TableCell className="text-xs">
                     {tree.protectionPackageCode ? (
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-semibold text-indigo-700">{tree.protectionPackageCode}</span>
+                        <span className="font-semibold text-indigo-700">
+                          {tree.protectionPackageCode}
+                        </span>
                         {tree.protectionPackageExpiredAt && (
                           <span className="text-[10px] text-muted-foreground">
-                            Exp: {new Date(tree.protectionPackageExpiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                            Exp:{" "}
+                            {new Date(
+                              tree.protectionPackageExpiredAt
+                            ).toLocaleDateString("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
+                            })}
                           </span>
                         )}
                       </div>
@@ -165,7 +203,9 @@ export function TreesList({
                           : "bg-slate-500/10 text-slate-600 border-transparent font-semibold"
                       }
                     >
-                      {tree.status === "active" ? t("common.status.active") : tree.status}
+                      {tree.status === "active"
+                        ? t("common.status.active")
+                        : tree.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
@@ -199,7 +239,11 @@ export function TreesList({
       {metadata && (
         <div className="mt-4 flex items-center justify-between">
           <span className="text-xs text-slate-500 dark:text-slate-400">
-            {t("common.table.pageOf", { page: metadata.page, total: metadata.totalPage })} ({metadata.count} total)
+            {t("common.table.pageOf", {
+              page: metadata.page,
+              total: metadata.totalPage,
+            })}{" "}
+            ({metadata.count} total)
           </span>
           <div className="flex items-center gap-1.5">
             <Button

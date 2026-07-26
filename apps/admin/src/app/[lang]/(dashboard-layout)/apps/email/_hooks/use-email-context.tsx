@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext } from "react"
+
 import type { EmailContextType } from "../types"
 
 export const EmailContext = createContext<EmailContextType | undefined>(

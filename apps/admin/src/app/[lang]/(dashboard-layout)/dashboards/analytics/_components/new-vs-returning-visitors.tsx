@@ -5,18 +5,20 @@ import { NewVsReturningVisitorsChart } from "./new-vs-returning-visitors-chart"
 import { NewVsReturningVisitorsList } from "./new-vs-returning-visitors-list"
 
 export function NewVsReturningVisitors({ stats }: { stats: any }) {
-  const visitors = stats?.newVsReturning ? {
-    new: {
-      value: stats.newVsReturning.summary.newVisitors,
-      percentageChange: 0.65,
-      fill: "hsl(var(--chart-1))",
-    },
-    returning: {
-      value: stats.newVsReturning.summary.returningVisitors,
-      percentageChange: 0.35,
-      fill: "hsl(var(--chart-2))",
-    }
-  } : newVsReturningVisitors.visitors;
+  const visitors = stats?.newVsReturning
+    ? {
+        new: {
+          value: stats.newVsReturning.summary.newVisitors,
+          percentageChange: 0.65,
+          fill: "hsl(var(--chart-1))",
+        },
+        returning: {
+          value: stats.newVsReturning.summary.returningVisitors,
+          percentageChange: 0.35,
+          fill: "hsl(var(--chart-2))",
+        },
+      }
+    : newVsReturningVisitors.visitors
 
   return (
     <DashboardCard

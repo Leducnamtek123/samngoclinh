@@ -1,15 +1,29 @@
 "use client"
 
-import Cropper from "react-easy-crop"
 import Image from "next/image"
+import Cropper from "react-easy-crop"
+import { Image as ImageIcon, Loader2 } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { InlineAlert } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Loader2, Image as ImageIcon } from "lucide-react"
-import { InlineAlert } from "@/components/ui/feedback-components"
 
 interface ShopItem {
   id: string
@@ -40,7 +54,9 @@ interface ShopItemDialogProps {
     imageUrl: string
   }
   categoryOptions: Array<{ value: string; label: string }>
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
   onSelectCategory: (val: string) => void
   onSelectUnit: (val: string) => void
   onSelectStatus: (val: string) => void
@@ -92,16 +108,24 @@ export function ShopItemDialog({
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {mode === "create" ? "Thêm sản phẩm thương mại mới" : "Chỉnh sửa sản phẩm thương mại"}
+              {mode === "create"
+                ? "Thêm sản phẩm thương mại mới"
+                : "Chỉnh sửa sản phẩm thương mại"}
             </DialogTitle>
             <DialogDescription>
-              Nhập các trường thông tin cần thiết dưới đây để lưu sản phẩm thương mại.
+              Nhập các trường thông tin cần thiết dưới đây để lưu sản phẩm
+              thương mại.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={onSubmit} className="space-y-4 my-2">
             {error && (
-              <InlineAlert type="error" title="Lỗi" message={error} className="my-2" />
+              <InlineAlert
+                type="error"
+                title="Lỗi"
+                message={error}
+                className="my-2"
+              />
             )}
 
             <div className="grid grid-cols-2 gap-4">
@@ -149,10 +173,7 @@ export function ShopItemDialog({
 
               <div className="space-y-2">
                 <Label htmlFor="unit">Đơn vị tính</Label>
-                <Select
-                  value={formData.unit}
-                  onValueChange={onSelectUnit}
-                >
+                <Select value={formData.unit} onValueChange={onSelectUnit}>
                   <SelectTrigger id="unit">
                     <SelectValue placeholder="Đơn vị tính" />
                   </SelectTrigger>
@@ -194,16 +215,17 @@ export function ShopItemDialog({
 
               <div className="space-y-2 col-span-2">
                 <Label htmlFor="status">Trạng thái kinh doanh</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={onSelectStatus}
-                >
+                <Select value={formData.status} onValueChange={onSelectStatus}>
                   <SelectTrigger id="status">
                     <SelectValue placeholder="Chọn trạng thái" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Hoạt động (Được mở bán)</SelectItem>
-                    <SelectItem value="inactive">Tạm ngưng hoạt động</SelectItem>
+                    <SelectItem value="active">
+                      Hoạt động (Được mở bán)
+                    </SelectItem>
+                    <SelectItem value="inactive">
+                      Tạm ngưng hoạt động
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -248,7 +270,8 @@ export function ShopItemDialog({
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ lệ vuông 1:1.
+                      Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ
+                      lệ vuông 1:1.
                     </p>
                   </div>
                 </div>
@@ -259,7 +282,11 @@ export function ShopItemDialog({
               <Button type="button" variant="outline" onClick={onClose}>
                 Hủy
               </Button>
-              <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
                 {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
                 Lưu sản phẩm
               </Button>
@@ -269,12 +296,16 @@ export function ShopItemDialog({
       </Dialog>
 
       {/* Image Crop Dialog */}
-      <Dialog open={cropState.isOpen} onOpenChange={(val) => !val && onCloseCrop()}>
+      <Dialog
+        open={cropState.isOpen}
+        onOpenChange={(val) => !val && onCloseCrop()}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Cắt ảnh sản phẩm (Tỉ lệ vuông 1:1)</DialogTitle>
             <DialogDescription>
-              Kéo thả khung cắt để chọn góc ảnh đại diện đẹp nhất cho sản phẩm thương mại.
+              Kéo thả khung cắt để chọn góc ảnh đại diện đẹp nhất cho sản phẩm
+              thương mại.
             </DialogDescription>
           </DialogHeader>
 
@@ -285,9 +316,13 @@ export function ShopItemDialog({
                 crop={cropState.crop}
                 zoom={cropState.zoom}
                 aspect={1} // 1:1 Aspect ratio
-                onCropChange={(c) => onCropStateChange((prev) => ({ ...prev, crop: c }))}
+                onCropChange={(c) =>
+                  onCropStateChange((prev) => ({ ...prev, crop: c }))
+                }
                 onCropComplete={onCropComplete}
-                onZoomChange={(z) => onCropStateChange((prev) => ({ ...prev, zoom: z }))}
+                onZoomChange={(z) =>
+                  onCropStateChange((prev) => ({ ...prev, zoom: z }))
+                }
               />
             </div>
           )}
@@ -324,7 +359,9 @@ export function ShopItemDialog({
               onClick={onCropSave}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              {uploadingImage && <Loader2 className="size-4 mr-2 animate-spin" />}
+              {uploadingImage && (
+                <Loader2 className="size-4 mr-2 animate-spin" />
+              )}
               Cắt & Tải lên Cloudinary
             </Button>
           </DialogFooter>

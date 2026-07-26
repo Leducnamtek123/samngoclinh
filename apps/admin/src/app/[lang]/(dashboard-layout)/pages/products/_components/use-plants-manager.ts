@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Plant {
   id: string
@@ -56,15 +59,20 @@ async function getCroppedImg(
   )
 
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      resolve(blob)
-    }, "image/jpeg", 0.9)
+    canvas.toBlob(
+      (blob) => {
+        resolve(blob)
+      },
+      "image/jpeg",
+      0.9
+    )
   })
 }
 
-import { useTranslation } from "@/providers/i18n-provider"
-
-export function usePlantsManager({ initialPlants, initialError }: UsePlantsManagerProps) {
+export function usePlantsManager({
+  initialPlants,
+  initialError,
+}: UsePlantsManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -83,7 +91,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
   useEffect(() => {
     setPlants(initialPlants)
   }, [initialPlants])
-  
+
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
 
@@ -122,6 +130,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
       status: string
       description: string
       imageUrl: string
+      images: string[]
     }
   }>({
     isOpen: false,
@@ -134,12 +143,13 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
       code: "",
       name: "",
       ageYear: 1,
-      price: 100000,
-      stock: 50,
+      price: 0,
+      stock: 0,
       status: "available",
       description: "",
       imageUrl: "",
-    }
+      images: [],
+    },
   })
 
   // Consolidated Image Cropping State
@@ -157,20 +167,23 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     isOpen: false,
   })
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -188,7 +201,9 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
   }, [searchQuery, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleStatusFilterChange = (val: string) => {
@@ -206,12 +221,19 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
   const handleToggleAll = () => {
     const allFilteredIds = filteredPlants.map((p) => p.id)
     const selectedPlantIdsSet = new Set(selectedPlantIds)
-    const isAllSelected = allFilteredIds.every((id) => selectedPlantIdsSet.has(id))
+    const isAllSelected = allFilteredIds.every((id) =>
+      selectedPlantIdsSet.has(id)
+    )
 
     if (isAllSelected) {
-      setSelectedPlantIds((prev) => { const set = new Set(allFilteredIds); return prev.filter((id) => !set.has(id)) })
+      setSelectedPlantIds((prev) => {
+        const set = new Set(allFilteredIds)
+        return prev.filter((id) => !set.has(id))
+      })
     } else {
-      setSelectedPlantIds((prev) => Array.from(new Set([...prev, ...allFilteredIds])))
+      setSelectedPlantIds((prev) =>
+        Array.from(new Set([...prev, ...allFilteredIds]))
+      )
     }
   }
 
@@ -242,7 +264,10 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     )
 
     if (successCount > 0) {
-      setPlants((prev) => { const set = new Set(selectedPlantIds); return prev.filter((p) => !set.has(p.id)) })
+      setPlants((prev) => {
+        const set = new Set(selectedPlantIds)
+        return prev.filter((p) => !set.has(p.id))
+      })
       setSuccessMsg(t("messages.deleteSuccess"))
       router.refresh()
     }
@@ -321,11 +346,14 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
         status: "available",
         description: "",
         imageUrl: "",
-      }
+        images: [],
+      },
     })
   }
 
   const openEditDialog = (plant: Plant) => {
+    const plantImages =
+      plant.images && plant.images.length > 0 ? plant.images : []
     setDialogState({
       isOpen: true,
       mode: "edit",
@@ -341,8 +369,9 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
         stock: plant.stock,
         status: plant.status,
         description: plant.description || "",
-        imageUrl: plant.images?.[0] || "",
-      }
+        imageUrl: plantImages[0] || "",
+        images: plantImages,
+      },
     })
   }
 
@@ -371,9 +400,15 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     setCropState((prev) => ({ ...prev, isOpen: false }))
 
     try {
-      const croppedBlob = await getCroppedImg(cropState.imageSrc, cropState.croppedAreaPixels)
+      const croppedBlob = await getCroppedImg(
+        cropState.imageSrc,
+        cropState.croppedAreaPixels
+      )
       if (!croppedBlob) {
-        setDialogState((prev) => ({ ...prev, error: t("messages.errorOccurred") }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: t("messages.errorOccurred"),
+        }))
         return
       }
 
@@ -387,14 +422,21 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
+        setDialogState((prev) => ({
+          ...prev,
+          error: payload?.message || t("messages.errorOccurred"),
+        }))
       } else {
+        const newUrl = payload.data?.url || ""
         setDialogState((prev) => ({
           ...prev,
           formData: {
             ...prev.formData,
-            imageUrl: payload.data?.url || "",
-          }
+            imageUrl: newUrl || prev.formData.imageUrl,
+            images: newUrl
+              ? [...(prev.formData.images || []), newUrl]
+              : prev.formData.images,
+          },
         }))
       }
     } catch (err) {
@@ -406,14 +448,16 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
     }
   }
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type } = e.target
     setDialogState((prev) => ({
       ...prev,
       formData: {
         ...prev.formData,
         [name]: type === "number" ? parseInt(value) || 0 : value,
-      }
+      },
     }))
   }
 
@@ -423,7 +467,7 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
       formData: {
         ...prev.formData,
         status: val,
-      }
+      },
     }))
   }
 
@@ -450,7 +494,11 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
       stock: dialogState.formData.stock,
       status: dialogState.formData.status,
       description: dialogState.formData.description,
-      images: dialogState.formData.imageUrl ? [dialogState.formData.imageUrl] : [],
+      images: dialogState.formData.images?.length
+        ? dialogState.formData.images
+        : dialogState.formData.imageUrl
+          ? [dialogState.formData.imageUrl]
+          : [],
     }
 
     try {
@@ -462,7 +510,10 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || t("messages.errorOccurred"),
+          }))
         } else {
           setPlants((prev) => [payload.data, ...prev])
           setSuccessMsg(t("messages.createSuccess"))
@@ -471,25 +522,39 @@ export function usePlantsManager({ initialPlants, initialError }: UsePlantsManag
         }
       } else {
         if (!dialogState.selectedPlant) return
-        const res = await fetchApi(`/admin/catalog/plants/${dialogState.selectedPlant.id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            name: dialogState.formData.name,
-            ageYear: dialogState.formData.ageYear,
-            price: dialogState.formData.price,
-            stock: dialogState.formData.stock,
-            status: dialogState.formData.status,
-            description: dialogState.formData.description,
-            images: dialogState.formData.imageUrl ? [dialogState.formData.imageUrl] : [],
-          }),
-        })
+        const res = await fetchApi(
+          `/admin/catalog/plants/${dialogState.selectedPlant.id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              name: dialogState.formData.name,
+              ageYear: dialogState.formData.ageYear,
+              price: dialogState.formData.price,
+              stock: dialogState.formData.stock,
+              status: dialogState.formData.status,
+              description: dialogState.formData.description,
+              images: dialogState.formData.images?.length
+                ? dialogState.formData.images
+                : dialogState.formData.imageUrl
+                  ? [dialogState.formData.imageUrl]
+                  : [],
+            }),
+          }
+        )
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || t("messages.errorOccurred") }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || t("messages.errorOccurred"),
+          }))
         } else {
           setPlants((prev) =>
-            prev.map((p) => (p.id === dialogState.selectedPlant!.id ? { ...p, ...payload.data } : p))
+            prev.map((p) =>
+              p.id === dialogState.selectedPlant!.id
+                ? { ...p, ...payload.data }
+                : p
+            )
           )
           setSuccessMsg(t("messages.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))

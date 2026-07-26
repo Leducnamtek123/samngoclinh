@@ -1,5 +1,5 @@
-import { SiGithub } from "react-icons/si"
 import Link from "next/link"
+import { SiGithub } from "react-icons/si"
 
 import { buttonVariants } from "@/components/ui/button-variants"
 import { Card } from "@/components/ui/card"

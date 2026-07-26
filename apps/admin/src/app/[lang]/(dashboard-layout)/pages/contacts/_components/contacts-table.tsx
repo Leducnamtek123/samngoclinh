@@ -1,17 +1,48 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Mail,
+  Phone,
+  Search,
+  User,
+} from "lucide-react"
+
+import { fetchApi } from "@/lib/api"
+
 import { useEvent } from "@/hooks/use-event"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Search, Eye, Mail, Phone, User, Calendar, ChevronLeft, ChevronRight } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { ToastCard } from "@/components/ui/feedback-components"
-import { fetchApi } from "@/lib/api"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface ContactRequest {
   id: string
@@ -37,7 +68,11 @@ interface ContactsTableProps {
   errorMsg?: string
 }
 
-export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsTableProps) {
+export function ContactsTable({
+  initialContacts,
+  metadata,
+  errorMsg,
+}: ContactsTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -59,7 +94,9 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
   const isReadFilter = searchParams.get("isRead") || "all"
 
   // Dialog state
-  const [selectedContact, setSelectedContact] = useState<ContactRequest | null>(null)
+  const [selectedContact, setSelectedContact] = useState<ContactRequest | null>(
+    null
+  )
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [detailLoading, setDetailLoading] = useState(false)
 
@@ -68,20 +105,23 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
     setContacts(initialContacts)
   }, [initialContacts])
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -99,7 +139,9 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
   }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleReadFilterChange = (val: string) => {
@@ -115,8 +157,8 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
       const res = await fetchApi(`/admin/contacts/${contact.id}`)
       const payload = await res.json()
       if (res.ok && payload.data) {
-        setContacts(prev =>
-          prev.map(c => (c.id === contact.id ? { ...c, isRead: true } : c))
+        setContacts((prev) =>
+          prev.map((c) => (c.id === contact.id ? { ...c, isRead: true } : c))
         )
         setSelectedContact(payload.data)
         router.refresh() // Refresh page to keep unread counts synced
@@ -127,8 +169,6 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
       setDetailLoading(false)
     }
   }
-
-
 
   return (
     <div className="space-y-4">
@@ -177,7 +217,10 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
             </TableHeader>
             <TableBody>
               {contacts.map((contact) => (
-                <TableRow key={contact.id} className={!contact.isRead ? "bg-muted/40 font-medium" : ""}>
+                <TableRow
+                  key={contact.id}
+                  className={!contact.isRead ? "bg-muted/40 font-medium" : ""}
+                >
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -225,7 +268,8 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
           {metadata && (
             <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
               <span className="text-xs text-muted-foreground">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số {metadata.count} tin nhắn)
+                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
+                {metadata.count} tin nhắn)
               </span>
               <div className="flex items-center gap-1.5">
                 <Button
@@ -274,44 +318,65 @@ export function ContactsTable({ initialContacts, metadata, errorMsg }: ContactsT
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <User className="size-3" /> Họ tên
                   </span>
-                  <p className="text-sm font-semibold">{selectedContact.fullName}</p>
+                  <p className="text-sm font-semibold">
+                    {selectedContact.fullName}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Calendar className="size-3" /> Ngày gửi
                   </span>
-                  <p className="text-sm font-semibold">{formatDate(selectedContact.createdAt)}</p>
+                  <p className="text-sm font-semibold">
+                    {formatDate(selectedContact.createdAt)}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Mail className="size-3" /> Email
                   </span>
-                  <p className="text-sm font-semibold break-all">{selectedContact.email}</p>
+                  <p className="text-sm font-semibold break-all">
+                    {selectedContact.email}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Phone className="size-3" /> Số điện thoại
                   </span>
-                  <p className="text-sm font-semibold">{selectedContact.phoneNumber}</p>
+                  <p className="text-sm font-semibold">
+                    {selectedContact.phoneNumber}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs text-muted-foreground font-semibold">Tiêu đề:</span>
-                <p className="text-sm font-medium bg-muted p-2 rounded-md">{selectedContact.subject}</p>
+                <span className="text-xs text-muted-foreground font-semibold">
+                  Tiêu đề:
+                </span>
+                <p className="text-sm font-medium bg-muted p-2 rounded-md">
+                  {selectedContact.subject}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs text-muted-foreground font-semibold">Nội dung tin nhắn:</span>
+                <span className="text-xs text-muted-foreground font-semibold">
+                  Nội dung tin nhắn:
+                </span>
                 <div className="text-sm bg-muted/60 p-3 rounded-md min-h-[100px] whitespace-pre-wrap">
-                  {detailLoading ? "Đang tải chi tiết..." : selectedContact.message}
+                  {detailLoading
+                    ? "Đang tải chi tiết..."
+                    : selectedContact.message}
                 </div>
               </div>
             </div>
           )}
 
           <DialogFooter>
-            <Button onClick={() => setIsDialogOpen(false)} className="bg-emerald-600 hover:bg-emerald-700 text-white">Đóng</Button>
+            <Button
+              onClick={() => setIsDialogOpen(false)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              Đóng
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

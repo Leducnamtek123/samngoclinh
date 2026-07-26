@@ -1,21 +1,22 @@
 import { ImageIcon, MapPin, Video } from "lucide-react"
 
-import { userData } from "@/data/user"
-
 import { getInitials } from "@/lib/utils"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 
-export function ProfileContentCreatePost() {
+export function ProfileContentCreatePost({ user }: { user?: any }) {
+  const name = user?.name || ""
+  const avatar = user?.avatar || user?.image || ""
+
   return (
     <Card asChild>
       <article aria-label="Create a post">
         <div className="grid grid-cols-[2.5rem__auto] gap-x-2 p-6">
           <Avatar>
-            <AvatarImage src={userData.avatar} alt="" />
-            <AvatarFallback>{getInitials(userData.name)}</AvatarFallback>
+            {avatar && <AvatarImage src={avatar} alt="" />}
+            <AvatarFallback>{name ? getInitials(name) : "?"}</AvatarFallback>
           </Avatar>
           <div className="flex gap-x-1.5">
             <Button

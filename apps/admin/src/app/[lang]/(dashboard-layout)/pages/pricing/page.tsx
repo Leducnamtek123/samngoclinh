@@ -1,8 +1,11 @@
-import type { Metadata } from "next"
-import { fetchApi } from "@/lib/api"
-import { pricingData } from "./_data/pricing"
-import { Pricing } from "./_components/pricing"
 import type { PricingPlansType } from "@/components/pricing-plans"
+import type { Metadata } from "next"
+
+import { pricingData } from "./_data/pricing"
+
+import { fetchApi } from "@/lib/api"
+
+import { Pricing } from "./_components/pricing"
 
 export const metadata: Metadata = {
   title: "Service Package Pricing | Admin",
@@ -27,7 +30,8 @@ export default async function PricingPage() {
         careItems.slice(0, 2).forEach((pkg: any, idx: number) => {
           fetchedPlans.push({
             title: pkg.name || `Care Package ${idx + 1}`,
-            description: pkg.description || "Periodic Ginseng farm care package",
+            description:
+              pkg.description || "Periodic Ginseng farm care package",
             price: pkg.price || (idx === 0 ? 1500000 : 3500000),
             period: "month",
             features: pkg.features || [
@@ -75,7 +79,9 @@ export default async function PricingPage() {
   return (
     <section className="container grid gap-8 p-4">
       <div className="mx-auto text-center space-y-1.5">
-        <h2 className="text-3xl font-bold text-emerald-950 dark:text-emerald-50">Ginseng Service Package Pricing</h2>
+        <h2 className="text-3xl font-bold text-emerald-950 dark:text-emerald-50">
+          Ginseng Service Package Pricing
+        </h2>
         <p className="max-w-prose text-sm text-muted-foreground">
           Manage system-wide Ginseng care, protection, and cultivation packages.
         </p>

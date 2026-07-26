@@ -1,37 +1,42 @@
-'use client';
-
-import { useContentManager } from './use-content-manager';
-import { ArticlesList } from './content/articles-list';
-import { BannerSettings } from './content/banner-settings';
-import { ArticleDialog } from './content/article-dialog';
-import { ToastCard, ConfirmationDialog } from "@/components/ui/feedback-components"
-
-type Article = {
-  id: string;
-  title: string;
-  category: string;
-  publishedAt: string;
-  image?: string;
-  summary?: string;
-};
-
-type ContentManagerProps = {
-  initialArticles: Article[];
-  initialBannerSettings: {
-    homepage_banner_image_1: string;
-    homepage_banner_image_2: string;
-    homepage_banner_image_3: string;
-    homepage_banner_image_4: string;
-    homepage_banner_image_5: string;
-    about_banner_image: string;
-    news_banner_image: string;
-    campaigns_banner_image: string;
-  };
-};
+"use client"
 
 import { useTranslation } from "@/providers/i18n-provider"
+import {
+  ConfirmationDialog,
+  ToastCard,
+} from "@/components/ui/feedback-components"
+import { ArticleDialog } from "./content/article-dialog"
+import { ArticlesList } from "./content/articles-list"
+import { BannerSettings } from "./content/banner-settings"
+import { useContentManager } from "./use-content-manager"
 
-export const ContentManager = ({ initialArticles, initialBannerSettings }: ContentManagerProps) => {
+type Article = {
+  id: string
+  title: string
+  category: string
+  publishedAt: string
+  image?: string
+  summary?: string
+}
+
+type ContentManagerProps = {
+  initialArticles: Article[]
+  initialBannerSettings: {
+    homepage_banner_image_1: string
+    homepage_banner_image_2: string
+    homepage_banner_image_3: string
+    homepage_banner_image_4: string
+    homepage_banner_image_5: string
+    about_banner_image: string
+    news_banner_image: string
+    campaigns_banner_image: string
+  }
+}
+
+export const ContentManager = ({
+  initialArticles,
+  initialBannerSettings,
+}: ContentManagerProps) => {
   const { t } = useTranslation()
   const {
     activeTab,
@@ -82,7 +87,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
     handleSubmit,
     handleDelete,
     handleSaveBanner,
-  } = useContentManager({ initialArticles, initialBannerSettings });
+  } = useContentManager({ initialArticles, initialBannerSettings })
 
   return (
     <div className="space-y-6">
@@ -90,29 +95,29 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
       <div className="flex border-b border-gray-200 gap-6">
         <button
           type="button"
-          onClick={() => setActiveTab('articles')}
+          onClick={() => setActiveTab("articles")}
           className={`pb-3 text-sm font-bold border-b-2 transition-all ${
-            activeTab === 'articles'
-              ? 'border-emerald-700 text-emerald-700'
-              : 'border-transparent text-gray-500 hover:text-gray-900'
+            activeTab === "articles"
+              ? "border-emerald-700 text-emerald-700"
+              : "border-transparent text-gray-500 hover:text-gray-900"
           }`}
         >
           {t("content.articles.title")}
         </button>
         <button
           type="button"
-          onClick={() => setActiveTab('banner')}
+          onClick={() => setActiveTab("banner")}
           className={`pb-3 text-sm font-bold border-b-2 transition-all ${
-            activeTab === 'banner'
-              ? 'border-emerald-700 text-emerald-700'
-              : 'border-transparent text-gray-500 hover:text-gray-900'
+            activeTab === "banner"
+              ? "border-emerald-700 text-emerald-700"
+              : "border-transparent text-gray-500 hover:text-gray-900"
           }`}
         >
           {t("content.banners.title")}
         </button>
       </div>
 
-      {activeTab === 'articles' && (
+      {activeTab === "articles" && (
         <ArticlesList
           articles={articles}
           openCreateModal={openCreateModal}
@@ -121,7 +126,7 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
         />
       )}
 
-      {activeTab === 'banner' && (
+      {activeTab === "banner" && (
         <BannerSettings
           homepageBanner1={homepageBanner1}
           setHomepageBanner1={setHomepageBanner1}
@@ -199,5 +204,5 @@ export const ContentManager = ({ initialArticles, initialBannerSettings }: Conte
         )}
       </div>
     </div>
-  );
-};
+  )
+}
