@@ -6,7 +6,7 @@ async function refreshTokens(refreshToken: string) {
   const baseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
   const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP';
 
-  const res = await fetch(`${baseUrl}/v1/public/user/login/refresh`, {
+  const res = await fetch(`${baseUrl}/v1/shared/user/refresh`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -17,6 +17,7 @@ async function refreshTokens(refreshToken: string) {
 
   if (!res.ok) return null;
   const json = await res.json();
+  if (json.data?.accessToken) return json.data;
   return json.data?.tokens || null;
 }
 
