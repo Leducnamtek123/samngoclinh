@@ -52,7 +52,7 @@ export class ProfileService {
     ): Promise<IResponseReturn<BusinessProfile>> {
         const profile = await this.profileRepository.getBusinessProfileByUserId(userId);
         return {
-            data: profile || null,
+            data: profile || undefined,
         };
     }
 }
