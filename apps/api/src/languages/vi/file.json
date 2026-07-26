@@ -1,0 +1,9 @@
+{
+    "error": {
+        "required": "Trường này là bắt buộc và không được để trống.",
+        "requiredParseFirst": "Vui lòng phân tích dữ liệu trước khi tiếp tục.",
+        "extensionInvalid": "Định dạng tệp không hợp lệ.",
+        "exceedMaxDataImport": "Số dòng dữ liệu vượt quá giới hạn cho phép để nhập.",
+        "validationDto": "Dữ liệu nhập không vượt qua kiểm tra hợp lệ."
+    }
+}

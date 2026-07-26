@@ -1,0 +1,22 @@
+{
+    "error": {
+        "invalidPerPage": "Tham số 'perPage' phải nằm trong khoảng từ 1 đến {maxPerPage}.",
+        "invalidCursorPaginationParams": "Tham số phân trang theo con trỏ không hợp lệ.",
+        "invalidOffsetPaginationParams": "Tham số phân trang theo offset không hợp lệ.",
+        "cursorTooLong": "Độ dài con trỏ không được vượt quá {maxCursorLength} ký tự.",
+        "invalidCursorFormat": "Con trỏ cung cấp không đúng định dạng.",
+        "invalidPage": "Tham số 'page' phải là số nguyên dương và tối đa {maxPage}.",
+        "filterInvalidValueEnum": "Giá trị của '{property}' không hợp lệ. Các giá trị cho phép: {allowedValues}.",
+        "filterInvalidValue": "Giá trị của '{property}' không hợp lệ.",
+        "orderByNotAllowed": "Trường 'orderBy' '{field}' không được phép. Các trường cho phép: {allowedFields}.",
+        "orderDirectionNotAllowed": "Hướng sắp xếp 'orderBy' không được phép. Các hướng cho phép: {allowedDirections}.",
+        "pageExceedsMaximum": "Tham số 'page' vượt quá giá trị tối đa cho phép {maxPage}. Nhận được: {receivedPage}.",
+        "pageCannotBeLessThanOne": "Tham số 'page' không được nhỏ hơn {minPage}. Nhận được: {receivedPage}.",
+        "perPageExceedsMaximum": "Tham số 'perPage' vượt quá giá trị tối đa cho phép {maxPerPage}. Nhận được: {receivedPerPage}.",
+        "perPageCannotBeLessThanOne": "Tham số 'perPage' không được nhỏ hơn {minPerPage}. Nhận được: {receivedPerPage}.",
+        "invalidCursorData": "Dữ liệu con trỏ cung cấp không hợp lệ.",
+        "failedToEncodeCursor": "Mã hóa dữ liệu con trỏ thất bại.",
+        "failedToDecodeCursor": "Giải mã dữ liệu con trỏ thất bại.",
+        "paginationConditionsChanged": "Điều kiện phân trang đã thay đổi. Con trỏ cung cấp không còn sử dụng được."
+    }
+}

@@ -10,6 +10,7 @@ import { CartRepository } from '@modules/cart/repositories/cart.repository';
 import { DatabaseService } from '@common/database/services/database.service';
 import { CartAddItemRequestDto } from '@modules/cart/dtos/request/cart.add-item.request.dto';
 import { CartUpdateItemRequestDto } from '@modules/cart/dtos/request/cart.update-item.request.dto';
+import { CartItem } from '@generated/prisma-client';
 
 @Injectable()
 export class CartService implements ICartService {
@@ -78,7 +79,7 @@ export class CartService implements ICartService {
         }
 
         return {
-            data: await this.mapToSummaryDto(cart.items as any),
+            data: await this.mapToSummaryDto(cart.items as unknown as CartItem[]),
         };
     }
 
@@ -111,7 +112,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items as any),
+            data: await this.mapToSummaryDto(cart.items as unknown as CartItem[]),
         };
     }
 
@@ -141,7 +142,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items as any),
+            data: await this.mapToSummaryDto(cart.items as unknown as CartItem[]),
         };
     }
 
@@ -155,7 +156,7 @@ export class CartService implements ICartService {
         );
 
         return {
-            data: await this.mapToSummaryDto(cart.items as any),
+            data: await this.mapToSummaryDto(cart.items as unknown as CartItem[]),
         };
     }
 
@@ -165,7 +166,7 @@ export class CartService implements ICartService {
         const cart = await this.cartRepository.clearCart(userId);
 
         return {
-            data: await this.mapToSummaryDto(cart.items as any),
+            data: await this.mapToSummaryDto(cart.items as unknown as CartItem[]),
         };
     }
 }

@@ -7,28 +7,29 @@ import {
     AuthJwtPayload,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
-import { UserProtected, UserCurrent } from '@modules/user/decorators/user.decorator';
+import { UserCurrent, UserProtected } from '@modules/user/decorators/user.decorator';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { CultivationCareLog, CultivationGarden, EnumRoleType, GardenBooking, Prisma } from '@generated/prisma-client';
 import { CultivationService } from '@modules/cultivation/services/cultivation.service';
 import {
+    CultivationUserBedDetailDoc,
     CultivationUserBedsDoc,
     CultivationUserCreateBookingDoc,
+    CultivationUserGardenDetailDoc,
     CultivationUserGardensDoc,
     CultivationUserListBookingsDoc,
     CultivationUserListCareLogsDoc,
-    CultivationUserTreesDoc,
-    CultivationUserGardenDetailDoc,
-    CultivationUserBedDetailDoc,
     CultivationUserTreeDetailDoc,
+    CultivationUserTreesDoc,
 } from '@modules/cultivation/docs/cultivation.user.doc';
 import { CultivationCreateBookingRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-booking.request.dto';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
 import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.garden.response.dto';
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
 import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import { ICultivationBedDetail, ICultivationTreeDetail } from '@modules/cultivation/interfaces/cultivation.interface';
 
 @ApiTags('modules.user.cultivation')
 @Controller({
@@ -242,7 +243,7 @@ export class CultivationUserController {
     async bedDetail(
         @Param('id') id: string,
         @UserCurrent() user: IUser
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<ICultivationBedDetail>> {
         const isAdmin = user.role.type === EnumRoleType.admin || user.role.type === EnumRoleType.superAdmin;
         return this.cultivationService.bedDetail(id, user.id, isAdmin);
     }
@@ -262,7 +263,7 @@ export class CultivationUserController {
     async treeDetail(
         @Param('id') id: string,
         @UserCurrent() user: IUser
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<ICultivationTreeDetail>> {
         const isAdmin = user.role.type === EnumRoleType.admin || user.role.type === EnumRoleType.superAdmin;
         return this.cultivationService.treeDetail(id, user.id, isAdmin);
     }

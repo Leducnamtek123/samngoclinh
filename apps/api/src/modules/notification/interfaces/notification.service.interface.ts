@@ -4,6 +4,7 @@ import {
     IResponseReturn,
 } from '@common/response/interfaces/response.interface';
 import { Prisma } from '@generated/prisma-client';
+import { INotificationAdminSendResult } from '@modules/notification/interfaces/notification.interface';
 import { NotificationUserSettingRequestDto } from '@modules/notification/dtos/request/notification.user-setting.request.dto';
 import { NotificationResponseDto } from '@modules/notification/dtos/response/notification.response.dto';
 import { NotificationUserSettingResponseDto } from '@modules/notification/dtos/response/notification.user-setting.response.dto';
@@ -34,6 +35,6 @@ export interface INotificationService {
         body: string;
         priority?: string;
         createdBy: string;
-    }): Promise<IResponseReturn<any>>;
+    }): Promise<IResponseReturn<INotificationAdminSendResult>>;
 }
 

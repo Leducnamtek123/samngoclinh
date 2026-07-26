@@ -2,7 +2,6 @@
 // backend /user/sign-up còn cần countryId, marketing, cookies (xem ghi chú khi nối API thật).
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,23 +17,23 @@ import { Ionicons } from '@expo/vector-icons';
 import IconField from '../components/IconField';
 import { register } from '../api/auth';
 import { resolveDefaultCountryId } from '../api/country';
+import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
 export default function RegisterScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const alert = useAlert();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
-    if (!email.trim()) return setError('Vui lòng nhập email.');
-    if (password.length < 8) return setError('Mật khẩu tối thiểu 8 ký tự.');
-    if (password !== confirm) return setError('Mật khẩu nhập lại không khớp.');
-    setError('');
+    if (!email.trim()) return alert.error('Thiếu thông tin', 'Vui lòng nhập email.');
+    if (password.length < 8) return alert.error('Mật khẩu chưa hợp lệ', 'Mật khẩu tối thiểu 8 ký tự.');
+    if (password !== confirm) return alert.error('Mật khẩu không khớp', 'Mật khẩu nhập lại không khớp.');
     setLoading(true);
     try {
       const countryId = await resolveDefaultCountryId();
@@ -44,11 +43,12 @@ export default function RegisterScreen({ navigation }) {
         password,
         countryId,
       });
-      Alert.alert('Đăng ký thành công', 'Bạn có thể đăng nhập ngay bây giờ.', [
-        { text: 'Đăng nhập', onPress: () => navigation.navigate('Login') },
-      ]);
+      alert.success('Đăng ký thành công', 'Tài khoản đã được tạo. Hãy đăng nhập để bắt đầu.', {
+        confirmText: 'Đăng nhập',
+        onConfirm: () => navigation.navigate('Login'),
+      });
     } catch (e) {
-      setError(e?.message || 'Đăng ký thất bại, vui lòng thử lại.');
+      alert.error('Đăng ký thất bại', e?.message || 'Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -106,8 +106,6 @@ export default function RegisterScreen({ navigation }) {
               secureTextEntry
             />
 
-            {error ? <Text style={styles.error}>{error}</Text> : null}
-
             <Pressable
               onPress={onSubmit}
               disabled={loading}
@@ -120,22 +118,6 @@ export default function RegisterScreen({ navigation }) {
               <Text style={styles.submitText}>{loading ? 'Đang xử lý...' : 'Đăng ký'}</Text>
             </Pressable>
           </View>
-
-          <View style={styles.divider}>
-            <View style={styles.line} />
-            <Text style={styles.dividerText}>Hoặc</Text>
-            <View style={styles.line} />
-          </View>
-
-          <Pressable
-            onPress={() =>
-              navigation.navigate('ComingSoon', { title: 'Đăng ký bằng số điện thoại' })
-            }
-            style={({ pressed }) => [styles.phoneBtn, pressed && styles.pressed]}
-          >
-            <Ionicons name="phone-portrait-outline" size={20} color={colors.primary} />
-            <Text style={styles.phoneText}>Đăng ký bằng số điện thoại</Text>
-          </Pressable>
 
           <Text style={styles.footer}>
             Bạn đã có tài khoản?{' '}
@@ -203,23 +185,6 @@ const styles = StyleSheet.create({
   },
   submitText: { color: '#fff', fontSize: 17, fontWeight: '700' },
   blocked: { opacity: 0.6 },
-
-  divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginVertical: spacing.lg },
-  line: { flex: 1, height: 1, backgroundColor: colors.greenSoftBorder },
-  dividerText: { color: colors.textMuted, fontSize: 15 },
-
-  phoneBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: colors.primary,
-    backgroundColor: colors.surface,
-  },
-  phoneText: { color: colors.primary, fontSize: 16, fontWeight: '700' },
 
   footer: { textAlign: 'center', color: colors.textMuted, fontSize: 15, marginTop: spacing.xl },
   footerLink: { color: colors.primary, fontWeight: '800' },

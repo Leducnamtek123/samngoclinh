@@ -2,9 +2,12 @@ import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
+    ICultivationBedDetail,
     ICultivationBedItem,
+    ICultivationBedLocationsGenerateResult,
     ICultivationGardenSummary,
     ICultivationTreeAgeItem,
+    ICultivationTreeDetail,
 } from '@modules/cultivation/interfaces/cultivation.interface';
 import { CultivationBed, CultivationBedLocation, CultivationCareLog, CultivationGarden, CultivationTree, GardenBooking } from '@generated/prisma-client';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
@@ -511,11 +514,11 @@ export class CultivationRepository {
         });
     }
 
-    async getBedDetail(id: string, userId: string, isAdmin?: boolean): Promise<any | null> {
+    async getBedDetail(id: string, userId: string, isAdmin?: boolean): Promise<ICultivationBedDetail | null> {
         const bed = await this.databaseService.cultivationBed.findFirst({
             where: isAdmin ? { id } : { id, ownerUserId: userId },
         });
-        if (!bed) return null;
+        if (!bed) {return null;}
         const trees = await this.databaseService.cultivationTree.findMany({
             where: { bedCode: bed.code },
         });
@@ -525,11 +528,11 @@ export class CultivationRepository {
         };
     }
 
-    async getTreeDetail(id: string, userId: string, isAdmin?: boolean): Promise<any | null> {
+    async getTreeDetail(id: string, userId: string, isAdmin?: boolean): Promise<ICultivationTreeDetail | null> {
         const tree = await this.databaseService.cultivationTree.findFirst({
             where: isAdmin ? { id } : { id, ownerUserId: userId },
         });
-        if (!tree) return null;
+        if (!tree) {return null;}
         const careLogs = await this.databaseService.cultivationCareLog.findMany({
             where: { treeCode: tree.code },
             orderBy: { loggedAt: 'desc' },
@@ -547,7 +550,7 @@ export class CultivationRepository {
         });
     }
 
-    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<any> {
+    async generateBedLocations(bedCode: string, rows: number, cols: number): Promise<ICultivationBedLocationsGenerateResult> {
         return this.databaseService.$transaction(async (tx) => {
             await tx.cultivationBedLocation.deleteMany({
                 where: { bedCode },

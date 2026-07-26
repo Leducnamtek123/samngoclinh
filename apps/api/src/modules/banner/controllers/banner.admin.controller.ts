@@ -1,13 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put, Delete, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType, Banner } from '@generated/prisma-client';
+import { Banner, EnumRoleType } from '@generated/prisma-client';
 import { BannerService } from '../services/banner.service';
 import { UpsertBannerDto } from '../dtos/banner.dto';
+import { IBanner } from '../interfaces/banner.interface';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 
 @ApiTags('modules.admin.banner')
@@ -24,7 +25,7 @@ export class BannerAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
-    async listBanners(): Promise<IResponseReturn<any[]>> {
+    async listBanners(): Promise<IResponseReturn<IBanner[]>> {
         const data = await this.bannerService.listBanners();
         return { data };
     }

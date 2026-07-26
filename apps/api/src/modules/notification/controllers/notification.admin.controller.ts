@@ -14,6 +14,7 @@ import { EnumRoleType } from '@generated/prisma-client';
 import { NotificationService } from '@modules/notification/services/notification.service';
 import { NotificationAdminSendDoc } from '@modules/notification/docs/notification.admin.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { INotificationAdminSendResult } from '@modules/notification/interfaces/notification.interface';
 import { NotificationAdminSendRequestDto } from '@modules/notification/dtos/request/notification.admin-send.request.dto';
 
 @ApiTags('modules.admin.notification')
@@ -34,7 +35,7 @@ export class NotificationAdminController {
     async sendNotification(
         @Body() body: NotificationAdminSendRequestDto,
         @AuthJwtPayload('userId') creatorId: string
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<INotificationAdminSendResult>> {
         return this.notificationService.adminSendNotification({
             userId: body.userId,
             title: body.title,

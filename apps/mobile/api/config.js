@@ -22,8 +22,3 @@ export const API_BASE_URL = `${origin}/api/v1`;
 
 // Header x-api-key bắt buộc cho mọi endpoint (@ApiKeyProtected). Giá trị dạng `key:secret`.
 export const API_KEY = extra.apiKey || process.env.EXPO_PUBLIC_API_KEY || '';
-
-// Chế độ mock TẠM THỜI: mặc định BẬT để app chạy khi chưa có backend.
-// Tắt bằng app.json -> expo.extra.useMockApi = false, hoặc EXPO_PUBLIC_USE_MOCK_API=false.
-export const USE_MOCK_API =
-  extra.useMockApi === false || process.env.EXPO_PUBLIC_USE_MOCK_API === 'false' ? false : true;

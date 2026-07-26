@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Put, VERSION_NEUTRAL, UploadedFile, HttpStatus, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Logger, Param, Post, Put, UploadedFile, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -14,7 +14,7 @@ import { IFile } from '@common/file/interfaces/file.interface';
 import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
 import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
 import { RequestRequiredPipe } from '@common/request/pipes/request.required.pipe';
-import { v2 as cloudinary } from 'cloudinary';
+import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
 import {
     CatalogPlantCreateDto,
     CatalogPlantUpdateDto,
@@ -36,6 +36,8 @@ import {
     path: '/catalog',
 })
 export class CatalogAdminController {
+    private readonly logger = new Logger(CatalogAdminController.name);
+
     constructor(
         private readonly catalogService: CatalogService,
         private readonly configService: ConfigService
@@ -139,7 +141,7 @@ export class CatalogAdminController {
                     undefined,
             });
 
-            const uploadFromBuffer = (buffer: Buffer): Promise<any> => {
+            const uploadFromBuffer = (buffer: Buffer): Promise<UploadApiResponse> => {
                 return new Promise((resolve, reject) => {
                     const uploadStream = cloudinary.uploader.upload_stream(
                         {
@@ -163,9 +165,10 @@ export class CatalogAdminController {
                     url: result.secure_url,
                 },
             };
-        } catch (e: any) {
-            console.error('CLOUDINARY UPLOAD FAILED:', e);
-            throw new Error(`Cloudinary upload failed: ${e?.message || e}`);
+        } catch (e: unknown) {
+            this.logger.error(e, 'Cloudinary upload failed');
+            const message = e instanceof Error ? e.message : String(e);
+            throw new Error(`Cloudinary upload failed: ${message}`);
         }
     }
 }

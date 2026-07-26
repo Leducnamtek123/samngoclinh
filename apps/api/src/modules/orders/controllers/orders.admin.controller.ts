@@ -19,7 +19,7 @@ import {
     OrdersAdminListDoc,
     OrdersAdminUpdateStatusDoc,
 } from '@modules/orders/docs/orders.admin.doc';
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { OrdersAdminUpdateStatusRequestDto } from '@modules/orders/dtos/request/orders.admin-update-status.request.dto';

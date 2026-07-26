@@ -15,8 +15,8 @@ import { MarketplaceUpdateListingRequestDto } from '@modules/marketplace/dtos/re
 import {
     MarketplaceProviderCreateDoc,
     MarketplaceProviderDeleteDoc,
-    MarketplaceProviderUpdateDoc,
     MarketplaceProviderListMeDoc,
+    MarketplaceProviderUpdateDoc,
 } from '@modules/marketplace/docs/marketplace.provider.doc';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 

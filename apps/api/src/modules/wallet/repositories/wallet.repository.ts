@@ -4,6 +4,7 @@ import {
     IWalletSummary,
     IWalletTransactionItem,
 } from '@modules/wallet/interfaces/wallet.interface';
+import { WalletAccount, WalletTransaction } from '@generated/prisma-client';
 
 @Injectable()
 export class WalletRepository {
@@ -58,13 +59,13 @@ export class WalletRepository {
         }));
     }
 
-    async listAllTransactions(): Promise<any[]> {
+    async listAllTransactions(): Promise<WalletTransaction[]> {
         return this.databaseService.walletTransaction.findMany({
             orderBy: { occurredAt: 'desc' },
         });
     }
 
-    async adjustBalance(userId: string, amount: number, title: string): Promise<any> {
+    async adjustBalance(userId: string, amount: number, title: string): Promise<WalletAccount> {
         return this.databaseService.$transaction(async (tx) => {
             let wallet = await tx.walletAccount.findUnique({ where: { userId } });
             if (!wallet) {

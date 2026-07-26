@@ -46,7 +46,6 @@ import {
 } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
 import { FileService } from '@common/file/services/file.service';
-import { FirebaseService } from '@common/firebase/services/firebase.service';
 import { HelperService } from '@common/helper/services/helper.service';
 import {
     IPaginationEqual,
@@ -86,9 +85,6 @@ import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.req
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
-import { UserLoginSendOtpRequestDto } from '@modules/user/dtos/request/user.login-send-otp.request.dto';
-import { UserLoginFirebaseRequestDto } from '@modules/user/dtos/request/user.login-firebase.request.dto';
-import { UserLoginVerifyOtpRequestDto } from '@modules/user/dtos/request/user.login-verify-otp.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
     UserUpdateProfilePhotoRequestDto,
@@ -168,8 +164,7 @@ export class UserService implements IUserService {
         private readonly authTwoFactorUtil: AuthTwoFactorUtil,
         private readonly configService: ConfigService,
         private readonly databaseUtil: DatabaseUtil,
-        private readonly requestStoreService: RequestStoreService,
-        private readonly firebaseService: FirebaseService
+        private readonly requestStoreService: RequestStoreService
     ) {
         this.userRoleName =
             this.configService.get<string>('user.default.role')!;
@@ -925,89 +920,6 @@ export class UserService implements IUserService {
         );
     }
 
-    async sendLoginOtp({
-        phone,
-    }: UserLoginSendOtpRequestDto): Promise<{ otp: string }> {
-        const requestLog: IRequestLog =
-            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
-
-        // Find user by phone number
-        const user = await this.userRepository.findOneWithRoleByEmail(phone);
-        if (!user) {
-            throw new UserNotFoundException();
-        } else if (user.status !== EnumUserStatus.active) {
-            throw new UserInactiveForbiddenException();
-        }
-
-        const today = this.helperService.dateCreate();
-        const lastVerification =
-            await this.userRepository.findOneLatestByVerificationMobileNumber(user.id);
-        if (lastVerification) {
-            const canResendAt = this.helperService.dateForward(
-                lastVerification.createdAt,
-                Duration.fromObject({
-                    minutes: this.userUtil.verificationExpiredInMinutes,
-                })
-            );
-
-            if (today < canResendAt) {
-                throw new UserVerificationEmailResendLimitExceededException(
-                    this.helperService.dateDiff(today, canResendAt).minutes
-                );
-            }
-        }
-
-        const smsVerification =
-            this.userUtil.verificationCreateVerification(
-                user.id,
-                EnumVerificationType.mobileNumber
-            );
-
-        await this.userRepository.requestVerificationMobileNumber(
-            user.id,
-            phone,
-            smsVerification,
-            requestLog
-        );
-
-        return { otp: smsVerification.token };
-    }
-
-    async verifyLoginOtp({
-        phone,
-        otp,
-        from,
-        device,
-    }: UserLoginVerifyOtpRequestDto): Promise<IResponseReturn<UserLoginResponseDto>> {
-        const user = await this.userRepository.findOneWithRoleByEmail(phone);
-        if (!user) {
-            throw new UserNotFoundException();
-        } else if (user.status !== EnumUserStatus.active) {
-            throw new UserInactiveForbiddenException();
-        }
-
-        const verification =
-            await this.userRepository.findOneActiveByVerificationMobileNumberToken(
-                user.id,
-                otp
-            );
-
-        if (!verification) {
-            throw new UserTokenInvalidException();
-        }
-
-        // Mark OTP as used
-        await this.userRepository.markVerificationAsUsed(verification.id);
-
-        return this.handleLogin(
-            user,
-            device,
-            from,
-            EnumUserLoginWith.credential,
-            this.helperService.dateCreate()
-        );
-    }
-
     async loginWithSocial(
         email: string,
         loginWith: EnumUserLoginWith,
@@ -1065,67 +977,6 @@ export class UserService implements IUserService {
             device,
             from,
             loginWith,
-            this.helperService.dateCreate()
-        );
-    }
-
-    async loginWithFirebase({
-        idToken,
-        from,
-        device,
-    }: UserLoginFirebaseRequestDto): Promise<
-        IResponseReturn<UserLoginResponseDto>
-    > {
-        const requestLog: IRequestLog =
-            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
-
-        let phoneNumber: string | undefined;
-        try {
-            const decoded = await this.firebaseService.verifyIdToken(idToken);
-            phoneNumber = decoded.phone_number;
-        } catch {
-            throw new UserTokenInvalidException();
-        }
-
-        if (!phoneNumber) {
-            throw new UserTokenInvalidException();
-        }
-
-        let user = await this.userRepository.findOneWithRoleByEmail(
-            phoneNumber
-        );
-
-        if (!user) {
-            const [role, country] = await Promise.all([
-                this.roleRepository.existByName(this.userRoleName),
-                this.countryRepository.existByAlpha2Code(this.userCountryName),
-            ]);
-            if (!role) {
-                throw new RoleNotFoundException();
-            } else if (!country) {
-                throw new CountryNotFoundException();
-            }
-
-            const randomUsername = this.userUtil.createRandomUsername();
-            user = await this.userRepository.createByFirebasePhone(
-                phoneNumber,
-                randomUsername,
-                role.id,
-                country.id,
-                from,
-                requestLog
-            );
-        }
-
-        if (user.status !== EnumUserStatus.active) {
-            throw new UserInactiveForbiddenException();
-        }
-
-        return this.handleLogin(
-            user,
-            device,
-            from,
-            EnumUserLoginWith.credential,
             this.helperService.dateCreate()
         );
     }
@@ -1477,32 +1328,7 @@ export class UserService implements IUserService {
         const requestLog: IRequestLog =
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
 
-        if (!user.isVerified) {
-            const emailVerification =
-                this.userUtil.verificationCreateVerification(
-                    user.id,
-                    EnumVerificationType.email
-                ) as IUserVerificationEmailCreate;
-
-            await this.userRepository.requestVerificationEmail(
-                user.id,
-                user.email,
-                emailVerification,
-                requestLog
-            );
-
-            // @note: send notification after all creation
-            await this.notificationUtil.sendVerificationEmail(user.id, {
-                expiredAt: this.helperService.dateFormatToIso(
-                    emailVerification.expiredAt
-                ),
-                reference: emailVerification.reference,
-                link: emailVerification.encryptedLink,
-                expiredInMinutes: emailVerification.expiredInMinutes,
-            });
-
-            throw new UserEmailNotVerifiedException();
-        }
+        // @note email verification is NOT required to log in; verification is an optional protection step handled in the profile flow.
 
         if (!user.twoFactor?.enabled) {
             const tokens = await this.createTokenAndSession(

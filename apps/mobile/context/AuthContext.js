@@ -13,7 +13,6 @@ import {
   login as apiLogin,
   logout as apiLogout,
   setUnauthorizedHandler,
-  verifyLoginOtp,
 } from '../api/auth';
 import { clearSession, loadSession, saveSession } from '../api/storage';
 
@@ -52,12 +51,6 @@ export function AuthProvider({ children }) {
     return { mustChangePassword: !!res.mustChangePassword };
   };
 
-  // Đăng nhập bằng OTP số điện thoại.
-  const signInWithOtp = async ({ phone, otp }) => {
-    const res = await verifyLoginOtp({ phone, otp });
-    await establishSession({ accessToken: res.accessToken, refreshToken: res.refreshToken });
-  };
-
   const signOut = async () => {
     await apiLogout();
     await clearLocal();
@@ -67,23 +60,29 @@ export function AuthProvider({ children }) {
     return apiChangePassword({ oldPassword, newPassword });
   };
 
-  // Bootstrap: đọc token đã lưu, rồi để SERVER xác nhận còn hợp lệ không.
+  // Bootstrap: đọc token đã lưu -> hiện trạng thái đăng nhập ngay từ cache -> để SERVER xác nhận.
+  // Chỉ đăng xuất khi server TỪ CHỐI token (401 / phiên hết hạn). Lỗi mạng/offline thì GIỮ phiên
+  // để token còn hạn không bị mất chỉ vì mở app lúc mạng chập chờn.
   useEffect(() => {
     (async () => {
       try {
         const session = await loadSession();
         if (!session) return;
+        setToken(session.token);
+        setUser(session.user);
         try {
           const profile = await fetchProfile();
-          setToken(session.token);
           setUser(profile);
-        } catch {
-          await clearSession();
+        } catch (err) {
+          if (err?.status === 401 || err?.code === 'SESSION_EXPIRED') {
+            await clearLocal();
+          }
         }
       } finally {
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Refresh thất bại (401) -> phiên đã chết -> chỉ xoá cục bộ.
@@ -99,7 +98,6 @@ export function AuthProvider({ children }) {
       loading,
       isAuthenticated: !!token,
       signIn,
-      signInWithOtp,
       signOut,
       changePassword,
     }),

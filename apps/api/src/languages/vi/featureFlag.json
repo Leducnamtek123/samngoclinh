@@ -1,0 +1,13 @@
+{
+    "list": "Đã lấy danh sách cờ tính năng thành công.",
+    "updateMetadata": "Đã cập nhật metadata của cờ tính năng thành công.",
+    "updateStatus": "Đã cập nhật trạng thái cờ tính năng thành công.",
+    "error": {
+        "notFound": "Không tìm thấy cờ tính năng.",
+        "invalidMetadata": "Metadata của cờ tính năng không hợp lệ.",
+        "predefinedKeyEmpty": "Khóa định sẵn không được để trống.",
+        "predefinedKeyLengthExceeded": "Độ dài khóa định sẵn vượt quá mức cho phép.",
+        "predefinedKeyTypeInvalid": "Kiểu của khóa định sẵn không hợp lệ.",
+        "serviceUnavailable": "Dịch vụ cờ tính năng hiện không khả dụng."
+    }
+}

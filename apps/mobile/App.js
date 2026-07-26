@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AlertProvider } from './context/AlertContext';
 import MainTabs from './navigation/MainTabs';
 import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -73,8 +74,10 @@ export default function App() {
     <SafeAreaProvider>
       <AuthProvider>
         <NavigationContainer linking={linking}>
-          <StatusBar style="light" />
-          <RootNavigator />
+          <AlertProvider>
+            <StatusBar style="light" />
+            <RootNavigator />
+          </AlertProvider>
         </NavigationContainer>
       </AuthProvider>
     </SafeAreaProvider>

@@ -1,0 +1,24 @@
+{
+    "list": "Đã lấy danh sách điều khoản và chính sách thành công.",
+    "listAccepted": "Đã lấy danh sách điều khoản và chính sách đã chấp nhận thành công.",
+    "getContent": "Đã lấy nội dung điều khoản chính sách thành công.",
+    "create": "Đã tạo điều khoản chính sách mới thành công.",
+    "updateContent": "Đã cập nhật nội dung điều khoản chính sách thành công.",
+    "addContent": "Đã thêm nội dung vào điều khoản chính sách thành công.",
+    "removeContent": "Đã gỡ nội dung khỏi điều khoản chính sách thành công.",
+    "delete": "Đã xóa điều khoản chính sách thành công.",
+    "publish": "Đã xuất bản điều khoản chính sách thành công.",
+    "accept": "Đã chấp nhận điều khoản chính sách thành công.",
+    "generateContentPresign": "Đã tạo URL tải nội dung lên (presigned) thành công.",
+    "error": {
+        "notFound": "Không tìm thấy điều khoản chính sách.",
+        "exist": "Đã tồn tại điều khoản chính sách với tên này.",
+        "alreadyAccepted": "Bạn đã chấp nhận điều khoản chính sách này.",
+        "contentNotFound": "Không tìm thấy nội dung điều khoản chính sách.",
+        "contentExist": "Nội dung này đã tồn tại trong điều khoản chính sách.",
+        "contentEmpty": "Nội dung điều khoản chính sách không được để trống.",
+        "contentsLanguageMustBeUnique": "Mỗi ngôn ngữ chỉ được dùng một lần trong nội dung điều khoản chính sách.",
+        "requiredInvalid": "Giá trị trường bắt buộc không hợp lệ.",
+        "statusInvalid": "Trạng thái điều khoản chính sách không hợp lệ."
+    }
+}

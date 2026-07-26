@@ -1,0 +1,6 @@
+{
+    "checkAws": "Kiểm tra tình trạng AWS hoàn tất thành công.",
+    "checkDatabase": "Kiểm tra tình trạng cơ sở dữ liệu hoàn tất thành công.",
+    "checkInstance": "Kiểm tra tình trạng máy chủ hoàn tất thành công.",
+    "checkThirdParty": "Kiểm tra tình trạng dịch vụ bên thứ ba hoàn tất thành công."
+}

@@ -13,6 +13,7 @@ import { NotificationResponseDto } from '@modules/notification/dtos/response/not
 import { NotificationUserSettingResponseDto } from '@modules/notification/dtos/response/notification.user-setting.response.dto';
 import { NotificationAlreadyReadException } from '@modules/notification/exceptions/notification.already-read.exception';
 import { NotificationNotFoundException } from '@modules/notification/exceptions/notification.not-found.exception';
+import { INotificationAdminSendResult } from '@modules/notification/interfaces/notification.interface';
 import { INotificationService } from '@modules/notification/interfaces/notification.service.interface';
 import { NotificationRepository } from '@modules/notification/repositories/notification.repository';
 import { NotificationUtil } from '@modules/notification/utils/notification.util';
@@ -120,7 +121,7 @@ export class NotificationService implements INotificationService {
         body: string;
         priority?: string;
         createdBy: string;
-    }): Promise<IResponseReturn<any>> {
+    }): Promise<IResponseReturn<INotificationAdminSendResult>> {
         if (data.userId === 'all') {
             const userIds = await this.notificationRepository.getAllUserIds();
             const promises = userIds.map(userId =>

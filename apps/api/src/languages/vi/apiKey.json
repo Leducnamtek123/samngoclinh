@@ -1,0 +1,21 @@
+{
+    "list": "Đây là danh sách đầy đủ các API key của bạn.",
+    "create": "Tuyệt vời! API key mới của bạn đã được tạo thành công.",
+    "reset": "Hoàn tất! API key của bạn đã được đặt lại và sẵn sàng sử dụng.",
+    "update": "API key của bạn đã được cập nhật thành công.",
+    "updateDate": "Ngày của API key đã được làm mới thành công.",
+    "updateStatus": "Trạng thái API key đã được cập nhật thành công.",
+    "delete": "API key của bạn đã được gỡ bỏ an toàn.",
+    "error": {
+        "notFound": "Không tìm thấy API key này. Vui lòng kiểm tra lại và thử lại.",
+        "inactive": "API key này hiện đang không hoạt động.",
+        "expired": "API key này đã hết hạn. Bạn có muốn tạo key mới không?",
+        "xApiKey": {
+            "required": "Vui lòng cung cấp API key để tiếp tục.",
+            "notFound": "Không tìm thấy API key này trong hệ thống.",
+            "invalid": "Rất tiếc, API key này có vẻ không hợp lệ.",
+            "forbidden": "Bạn không có quyền sử dụng API key này.",
+            "predefinedNotFound": "Không tìm thấy API key định sẵn trong hệ thống."
+        }
+    }
+}

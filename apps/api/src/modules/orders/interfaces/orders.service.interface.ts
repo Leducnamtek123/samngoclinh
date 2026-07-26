@@ -1,4 +1,4 @@
-import { IResponseReturn, IResponsePagingReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';

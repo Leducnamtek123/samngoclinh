@@ -11,7 +11,11 @@ import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@generated/prisma-client';
+import {
+    EnumRoleType,
+    WalletAccount,
+    WalletTransaction,
+} from '@generated/prisma-client';
 import { WalletService } from '@modules/wallet/services/wallet.service';
 import {
     WalletAdminAdjustDoc,
@@ -35,7 +39,9 @@ export class WalletAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/transactions')
-    async listTransactions(): Promise<IResponseReturn<{ items: any[] }>> {
+    async listTransactions(): Promise<
+        IResponseReturn<{ items: WalletTransaction[] }>
+    > {
         return this.walletService.adminListTransactions();
     }
 
@@ -48,7 +54,7 @@ export class WalletAdminController {
     @Patch('/balance')
     async adjustBalance(
         @Body() body: WalletAdminAdjustRequestDto
-    ): Promise<IResponseReturn<any>> {
+    ): Promise<IResponseReturn<WalletAccount>> {
         return this.walletService.adminAdjustBalance(body.userId, body.amount, body.title);
     }
 }

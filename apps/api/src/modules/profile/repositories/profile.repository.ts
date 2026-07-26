@@ -1,6 +1,7 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
 import { IProfileSummary } from '@modules/profile/interfaces/profile.interface';
+import { BusinessProfile } from '@generated/prisma-client';
 
 @Injectable()
 export class ProfileRepository {
@@ -48,20 +49,22 @@ export class ProfileRepository {
         };
     }
 
-    async adminListBusinessProfiles(): Promise<any[]> {
+    async adminListBusinessProfiles(): Promise<BusinessProfile[]> {
         return this.databaseService.businessProfile.findMany({
             orderBy: { createdAt: 'desc' },
         });
     }
 
-    async updateRank(id: string, rank: string): Promise<any> {
+    async updateRank(id: string, rank: string): Promise<BusinessProfile> {
         return this.databaseService.businessProfile.update({
             where: { id },
             data: { rank },
         });
     }
 
-    async getBusinessProfileByUserId(userId: string): Promise<any> {
+    async getBusinessProfileByUserId(
+        userId: string
+    ): Promise<BusinessProfile | null> {
         return this.databaseService.businessProfile.findUnique({
             where: { userId },
         });

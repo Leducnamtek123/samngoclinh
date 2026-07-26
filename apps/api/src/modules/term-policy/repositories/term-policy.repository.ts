@@ -156,10 +156,10 @@ export class TermPolicyRepository {
         type: EnumTermPolicyType
     ): Promise<{
         id: string;
-        contents: Prisma.JsonArray;
+        contents: Prisma.JsonValue;
         status: EnumTermPolicyStatus;
     } | null> {
-        const result = await this.databaseService.termPolicy.findFirst({
+        return this.databaseService.termPolicy.findFirst({
             where: {
                 version,
                 type,
@@ -170,7 +170,6 @@ export class TermPolicyRepository {
                 status: true,
             },
         });
-        return result as any;
     }
 
     async accept(
@@ -240,7 +239,9 @@ export class TermPolicyRepository {
                 type,
                 version,
                 status: EnumTermPolicyStatus.draft,
-                contents: this.databaseUtil.toPlainArray(contents) as any,
+                contents: this.databaseUtil.toPlainArray(
+                    contents
+                ) as Prisma.InputJsonValue,
                 createdBy,
             },
         });
@@ -272,7 +273,9 @@ export class TermPolicyRepository {
                 id: termPolicyId,
             },
             data: {
-                contents: this.databaseUtil.toPlainArray(contents) as any,
+                contents: this.databaseUtil.toPlainArray(
+                    contents
+                ) as Prisma.InputJsonValue,
                 updatedBy,
             },
         });
@@ -291,7 +294,9 @@ export class TermPolicyRepository {
                 id: termPolicyId,
             },
             data: {
-                contents: this.databaseUtil.toPlainArray(contents) as any,
+                contents: this.databaseUtil.toPlainArray(
+                    contents
+                ) as Prisma.InputJsonValue,
                 updatedBy,
             },
         });
@@ -313,7 +318,9 @@ export class TermPolicyRepository {
                 id: termPolicyId,
             },
             data: {
-                contents: this.databaseUtil.toPlainArray(contents) as any,
+                contents: this.databaseUtil.toPlainArray(
+                    contents
+                ) as Prisma.InputJsonValue,
                 updatedBy,
             },
         });
@@ -333,7 +340,7 @@ export class TermPolicyRepository {
                 data: {
                     status: EnumTermPolicyStatus.published,
                     publishedAt: this.helperService.dateCreate(),
-                    contents: contents as any,
+                    contents: contents as unknown as Prisma.InputJsonValue,
                     updatedBy,
                 },
             }),
@@ -345,7 +352,7 @@ export class TermPolicyRepository {
                 data: {
                     termPolicy: {
                         [type]: false,
-                    } as any,
+                    } as Prisma.InputJsonValue,
                 },
             }),
         ]);
