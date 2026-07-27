@@ -24,9 +24,11 @@ import {
     UserProtected,
 } from '@modules/user/decorators/user.decorator';
 import {
+    UserSharedAddAddressDoc,
     UserSharedAddMobileNumberDoc,
     UserSharedChangePasswordDoc,
     UserSharedClaimUsernameDoc,
+    UserSharedDeleteAddressDoc,
     UserSharedDeleteMobileNumberDoc,
     UserSharedGeneratePhotoProfilePresignDoc,
     UserSharedLogoutDoc,
@@ -42,6 +44,7 @@ import {
     UserSharedUpdateProfileDoc,
     UserSharedUploadPhotoProfileDoc,
 } from '@modules/user/docs/user.shared.doc';
+import { UserAddAddressRequestDto } from '@modules/user/dtos/request/user.address.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
@@ -59,6 +62,7 @@ import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile
 import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { UserService } from '@modules/user/services/user.service';
@@ -119,7 +123,8 @@ export class UserSharedController {
     @UserSharedUpdateProfileDoc()
     @Response('user.updateProfile')
     @TermPolicyAcceptanceProtected()
-    @UserProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/profile/update')
@@ -208,7 +213,8 @@ export class UserSharedController {
     @UserSharedAddMobileNumberDoc()
     @Response('user.addMobileNumber')
     @TermPolicyAcceptanceProtected()
-    @UserProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/mobile-number/add')
@@ -223,7 +229,8 @@ export class UserSharedController {
     @UserSharedUpdateMobileNumberDoc()
     @Response('user.updateMobileNumber')
     @TermPolicyAcceptanceProtected()
-    @UserProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Put('/mobile-number/update/:mobileNumberId')
@@ -248,7 +255,8 @@ export class UserSharedController {
     @UserSharedDeleteMobileNumberDoc()
     @Response('user.deleteMobileNumber')
     @TermPolicyAcceptanceProtected()
-    @UserProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Delete('/mobile-number/delete/:mobileNumberId')
@@ -262,6 +270,44 @@ export class UserSharedController {
         mobileNumberId: string
     ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         return this.userService.deleteMobileNumber(userId, mobileNumberId);
+    }
+
+    @UserSharedAddAddressDoc()
+    @Response('user.addAddress')
+    @TermPolicyAcceptanceProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/address/add')
+    async addAddress(
+        @AuthJwtPayload('userId') userId: string,
+        @Body()
+        body: UserAddAddressRequestDto
+    ): Promise<IResponseReturn<UserAddressResponseDto>> {
+        return this.userService.addAddress(userId, {
+            detail: body.detail,
+            label: body.label ?? null,
+            recipient: body.recipient ?? null,
+            phone: body.phone ?? null,
+            isDefault: body.isDefault ?? false,
+        });
+    }
+
+    @UserSharedDeleteAddressDoc()
+    @Response('user.deleteAddress')
+    @TermPolicyAcceptanceProtected()
+    // @note email verification not required (verification handled in the profile flow)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Delete('/address/delete/:addressId')
+    async deleteAddress(
+        @AuthJwtPayload('userId') userId: string,
+        @Param('addressId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+        addressId: string
+    ): Promise<IResponseReturn<UserAddressResponseDto>> {
+        return this.userService.deleteAddress(userId, addressId);
     }
 
     @UserSharedClaimUsernameDoc()

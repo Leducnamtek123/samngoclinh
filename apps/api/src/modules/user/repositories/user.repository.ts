@@ -30,6 +30,7 @@ import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.re
 import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
 import {
     IUser,
+    IUserAddressCreate,
     IUserForgotPasswordCreate,
     IUserLogin,
     IUserLoginResult,
@@ -58,6 +59,7 @@ import {
     Prisma,
     TermPolicyUserAcceptance,
     User,
+    UserAddress,
     UserMobileNumber,
     Verification,
 } from '@generated/prisma-client';
@@ -256,6 +258,9 @@ export class UserRepository {
                         country: true,
                     },
                 },
+                addresses: {
+                    where: { deletedAt: null },
+                },
             },
         });
     }
@@ -271,6 +276,9 @@ export class UserRepository {
                     include: {
                         country: true,
                     },
+                },
+                addresses: {
+                    where: { deletedAt: null },
                 },
             },
         });
@@ -855,6 +863,59 @@ export class UserRepository {
         });
 
         return user.mobileNumbers[0];
+    }
+
+    async findOneAddress(
+        userId: string,
+        addressId: string
+    ): Promise<{ id: string } | null> {
+        return this.databaseService.userAddress.findFirst({
+            where: {
+                id: addressId,
+                userId,
+                deletedAt: null,
+            },
+            select: {
+                id: true,
+            },
+        });
+    }
+
+    async addAddress(
+        userId: string,
+        { detail, label, recipient, phone, isDefault }: IUserAddressCreate
+    ): Promise<UserAddress> {
+        return this.databaseService.userAddress.create({
+            data: {
+                userId,
+                detail,
+                label,
+                recipient,
+                phone,
+                isDefault,
+                createdBy: userId,
+            },
+        });
+    }
+
+    async softDeleteAddress(
+        userId: string,
+        addressId: string
+    ): Promise<UserAddress> {
+        const deletedAt = this.helperService.dateCreate();
+
+        return this.databaseService.userAddress.update({
+            where: {
+                id: addressId,
+                userId,
+                deletedAt: null,
+            },
+            data: {
+                deletedAt,
+                deletedBy: userId,
+                updatedBy: userId,
+            },
+        });
     }
 
     async claimUsername(

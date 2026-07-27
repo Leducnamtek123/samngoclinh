@@ -60,6 +60,13 @@ export function AuthProvider({ children }) {
     return apiChangePassword({ oldPassword, newPassword });
   };
 
+  // Lấy lại hồ sơ mới nhất từ server (dùng sau khi cập nhật thông tin cá nhân).
+  const refreshProfile = async () => {
+    const profile = await fetchProfile();
+    setUser(profile);
+    return profile;
+  };
+
   // Bootstrap: đọc token đã lưu -> hiện trạng thái đăng nhập ngay từ cache -> để SERVER xác nhận.
   // Chỉ đăng xuất khi server TỪ CHỐI token (401 / phiên hết hạn). Lỗi mạng/offline thì GIỮ phiên
   // để token còn hạn không bị mất chỉ vì mở app lúc mạng chập chờn.
@@ -100,6 +107,7 @@ export function AuthProvider({ children }) {
       signIn,
       signOut,
       changePassword,
+      refreshProfile,
     }),
     // Các hàm đóng gói trên setState setter + import ổn định nên không cần vào deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps

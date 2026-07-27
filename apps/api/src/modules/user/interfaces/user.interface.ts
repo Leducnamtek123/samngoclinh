@@ -7,6 +7,7 @@ import {
     Role,
     TwoFactor,
     User,
+    UserAddress,
     UserMobileNumber,
 } from '@generated/prisma-client';
 
@@ -21,7 +22,16 @@ export interface IUserMobileNumber extends UserMobileNumber {
 
 export interface IUserProfile extends IUser {
     mobileNumbers: IUserMobileNumber[];
+    addresses: UserAddress[];
     country: Country;
+}
+
+export interface IUserAddressCreate {
+    detail: string;
+    label: string | null;
+    recipient: string | null;
+    phone: string | null;
+    isDefault: boolean;
 }
 
 export interface IUserLogin {

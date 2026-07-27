@@ -164,6 +164,62 @@ export async function changePassword({ oldPassword, newPassword }) {
   );
 }
 
+// Cập nhật hồ sơ (tên + giới tính + ngày sinh). Backend yêu cầu countryId; gender bắt buộc ('male' | 'female').
+// birthDate ('YYYY-MM-DD') chỉ gửi khi có giá trị.
+export async function updateProfile({ name, gender, countryId, birthDate }) {
+  const body = { name, gender, countryId };
+  if (birthDate) body.birthDate = birthDate;
+  return withAuth((token) =>
+    apiRequest('/shared/user/profile/update', {
+      method: 'PUT',
+      body,
+      token,
+    })
+  );
+}
+
+// Thêm số điện thoại. Backend cần countryId + phoneCode + number (8-22 số).
+export async function addMobileNumber({ countryId, phoneCode, number }) {
+  return withAuth((token) =>
+    apiRequest('/shared/user/mobile-number/add', {
+      method: 'POST',
+      body: { countryId, phoneCode, number },
+      token,
+    })
+  );
+}
+
+// Xoá số điện thoại theo id.
+export async function deleteMobileNumber(mobileNumberId) {
+  return withAuth((token) =>
+    apiRequest(`/shared/user/mobile-number/delete/${mobileNumberId}`, {
+      method: 'DELETE',
+      token,
+    })
+  );
+}
+
+// Thêm địa chỉ. detail bắt buộc; label/recipient/phone/isDefault tuỳ chọn (field trống bị bỏ khi stringify).
+export async function addAddress({ detail, label, recipient, phone, isDefault }) {
+  return withAuth((token) =>
+    apiRequest('/shared/user/address/add', {
+      method: 'POST',
+      body: { detail, label, recipient, phone, isDefault },
+      token,
+    })
+  );
+}
+
+// Xoá địa chỉ theo id.
+export async function deleteAddress(addressId) {
+  return withAuth((token) =>
+    apiRequest(`/shared/user/address/delete/${addressId}`, {
+      method: 'DELETE',
+      token,
+    })
+  );
+}
+
 // Đăng xuất thiết bị hiện tại (best-effort): nuốt lỗi để client vẫn xoá token cục bộ.
 export async function logout() {
   try {

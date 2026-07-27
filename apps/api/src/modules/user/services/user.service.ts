@@ -24,6 +24,7 @@ import { UserInactiveForbiddenException } from '@modules/user/exceptions/user.in
 import { UserMobileNumberExistException } from '@modules/user/exceptions/user.mobile-number-exist.exception';
 import { UserMobileNumberInvalidException } from '@modules/user/exceptions/user.mobile-number-invalid.exception';
 import { UserMobileNumberNotFoundException } from '@modules/user/exceptions/user.mobile-number-not-found.exception';
+import { UserAddressNotFoundException } from '@modules/user/exceptions/user.address-not-found.exception';
 import { UserNotFoundException } from '@modules/user/exceptions/user.not-found.exception';
 import { UserNotFoundForbiddenException } from '@modules/user/exceptions/user.not-found-forbidden.exception';
 import { UserNotSelfException } from '@modules/user/exceptions/user.not-self.exception';
@@ -103,9 +104,11 @@ import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile
 import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.response.dto';
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
+    IUserAddressCreate,
     IUserVerificationEmailCreate,
 } from '@modules/user/interfaces/user.interface';
 import { IUserService } from '@modules/user/interfaces/user.service.interface';
@@ -647,6 +650,54 @@ export class UserService implements IUserService {
             );
 
             const mapped = this.userUtil.mapMobileNumber(updated);
+
+            return {
+                data: mapped,
+            };
+        } catch (err: unknown) {
+            throw new AppUnknownException(err);
+        }
+    }
+
+    async addAddress(
+        userId: string,
+        address: IUserAddressCreate
+    ): Promise<IResponseReturn<UserAddressResponseDto>> {
+        try {
+            const created = await this.userRepository.addAddress(
+                userId,
+                address
+            );
+
+            const mapped = this.userUtil.mapAddress(created);
+
+            return {
+                data: mapped,
+            };
+        } catch (err: unknown) {
+            throw new AppUnknownException(err);
+        }
+    }
+
+    async deleteAddress(
+        userId: string,
+        addressId: string
+    ): Promise<IResponseReturn<UserAddressResponseDto>> {
+        const checkExist = await this.userRepository.findOneAddress(
+            userId,
+            addressId
+        );
+        if (!checkExist) {
+            throw new UserAddressNotFoundException();
+        }
+
+        try {
+            const deleted = await this.userRepository.softDeleteAddress(
+                userId,
+                addressId
+            );
+
+            const mapped = this.userUtil.mapAddress(deleted);
 
             return {
                 data: mapped,

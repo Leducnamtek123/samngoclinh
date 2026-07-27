@@ -12,6 +12,10 @@ import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import PersonalInfoScreen from './screens/PersonalInfoScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import AddPhoneScreen from './screens/AddPhoneScreen';
+import AddAddressScreen from './screens/AddAddressScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import { colors } from './utils/theme';
 
@@ -56,6 +60,26 @@ function RootNavigator() {
         name="ChangePassword"
         component={ChangePasswordScreen}
         options={{ title: 'Đổi mật khẩu', headerShadowVisible: false }}
+      />
+      <Stack.Screen
+        name="PersonalInfo"
+        component={PersonalInfoScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddPhone"
+        component={AddPhoneScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddAddress"
+        component={AddAddressScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ComingSoon"

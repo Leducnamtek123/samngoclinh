@@ -5,6 +5,7 @@ import { IActivityLogMetadata } from '@modules/activity-log/interfaces/activity-
 import { UserListResponseDto } from '@modules/user/dtos/response/user.list.response.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserDto } from '@modules/user/dtos/user.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
@@ -19,6 +20,7 @@ import {
     EnumVerificationType,
     TwoFactor,
     User,
+    UserAddress,
 } from '@generated/prisma-client';
 import { ResponseUtil } from '@common/response/utils/response.util';
 import { Duration } from 'luxon';
@@ -175,6 +177,10 @@ export class UserUtil {
             UserMobileNumberResponseDto,
             mobileNumber
         );
+    }
+
+    mapAddress(address: UserAddress): UserAddressResponseDto {
+        return this.responseUtil.serialize(UserAddressResponseDto, address);
     }
 
     /** Maps a two-factor record to status, deriving the pending-confirmation flag. */

@@ -3,6 +3,7 @@ import { Expose, Type } from 'class-transformer';
 import { RoleDto } from '@modules/role/dtos/role.dto';
 import { CountryResponseDto } from '@modules/country/dtos/response/country.response.dto';
 import { UserDto } from '@modules/user/dtos/user.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 
 export class UserProfileResponseDto extends UserDto {
@@ -29,4 +30,12 @@ export class UserProfileResponseDto extends UserDto {
     @Expose()
     @Type(() => UserMobileNumberResponseDto)
     mobileNumbers?: UserMobileNumberResponseDto[];
+
+    @ApiProperty({
+        required: false,
+        type: [UserAddressResponseDto],
+    })
+    @Expose()
+    @Type(() => UserAddressResponseDto)
+    addresses?: UserAddressResponseDto[];
 }

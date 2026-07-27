@@ -22,7 +22,7 @@ const SECTIONS = [
   {
     title: 'Tài khoản',
     items: [
-      { icon: 'person-outline', label: 'Thông tin cá nhân', desc: 'Xem và cập nhật thông tin cá nhân' },
+      { icon: 'person-outline', label: 'Thông tin cá nhân', desc: 'Xem và cập nhật thông tin cá nhân', screen: 'PersonalInfo' },
       { icon: 'lock-closed-outline', label: 'Đổi mật khẩu', desc: 'Thay đổi mật khẩu tài khoản', screen: 'ChangePassword' },
       { icon: 'business-outline', label: 'Tài khoản ngân hàng', desc: 'Quản lý tài khoản ngân hàng của bạn' },
       { icon: 'card-outline', label: 'Giấy tờ tùy thân', desc: 'Quản lý giấy tờ tùy thân của bạn' },
