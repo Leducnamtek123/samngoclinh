@@ -30,7 +30,6 @@ export function ChangePasswordForm() {
 
   const { isSubmitting } = form.formState
 
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-y-2">
@@ -83,4 +82,3 @@ export function ChangePasswordForm() {
 }
 
 async function onSubmit(_data: ChangePasswordFormType) {}
-

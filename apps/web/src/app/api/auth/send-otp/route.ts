@@ -16,14 +16,15 @@ export async function POST(request: Request) {
       body: JSON.stringify({ phone }),
     });
 
-    const payload = await apiRes.json();
-
-    if (apiRes.status >= 400) {
+    if (!apiRes.ok) {
+      const payload = await apiRes.json().catch(() => null);
       return NextResponse.json(
         { message: payload?.message ?? 'Gửi mã OTP thất bại. Vui lòng thử lại sau.' },
         { status: apiRes.status }
       );
     }
+
+    const payload = await apiRes.json();
 
     return NextResponse.json({
       success: true,

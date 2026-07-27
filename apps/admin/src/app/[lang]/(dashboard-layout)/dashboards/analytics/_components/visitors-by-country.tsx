@@ -4,17 +4,22 @@ import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { VisitorsByCountryList } from "./visitors-by-country-list"
 
 export function VisitorsByCountry({ stats }: { stats: any }) {
-  const data = stats?.visitorsByCountry ? {
-    summary: {
-      totalVisitors: stats.visitorsByCountry.reduce((sum: number, c: any) => sum + c.visitors, 0)
-    },
-    countries: stats.visitorsByCountry.map((c: any) => ({
-      countryName: c.country,
-      countryCode: c.code.toUpperCase(),
-      visitors: c.visitors,
-      percentageChange: c.percentageChange
-    }))
-  } : visitorsByCountryData;
+  const data = stats?.visitorsByCountry
+    ? {
+        summary: {
+          totalVisitors: stats.visitorsByCountry.reduce(
+            (sum: number, c: any) => sum + c.visitors,
+            0
+          ),
+        },
+        countries: stats.visitorsByCountry.map((c: any) => ({
+          countryName: c.country,
+          countryCode: c.code.toUpperCase(),
+          visitors: c.visitors,
+          percentageChange: c.percentageChange,
+        })),
+      }
+    : visitorsByCountryData
 
   return (
     <DashboardCard title="Phân bố khách hàng theo Quốc gia">

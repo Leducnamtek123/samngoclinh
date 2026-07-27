@@ -2,13 +2,16 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { fetchApi } from "@/lib/api"
 import {
   createArticleAction,
-  updateArticleAction,
   deleteArticleAction,
-  updateSettingAction
+  updateArticleAction,
+  updateSettingAction,
 } from "@/app/actions/content"
+
+import { fetchApi } from "@/lib/api"
+
+import { useTranslation } from "@/providers/i18n-provider"
 
 type Article = {
   id: string
@@ -37,41 +40,42 @@ const slugify = (text: string) => {
   return text
     .toString()
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[đĐ]/g, 'd')
-    .replace(/[^a-z0-9\s-]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
 }
 
-import { useTranslation } from "@/providers/i18n-provider"
-
-export function useContentManager({ initialArticles, initialBannerSettings }: UseContentManagerProps) {
+export function useContentManager({
+  initialArticles,
+  initialBannerSettings,
+}: UseContentManagerProps) {
   const router = useRouter()
   const { t } = useTranslation()
-  
+
   // Navigation tabs: 'articles' | 'banner'
-  const [activeTab, setActiveTab] = useState<'articles' | 'banner'>('articles')
-  
+  const [activeTab, setActiveTab] = useState<"articles" | "banner">("articles")
+
   // Articles state
   const [articles, setArticles] = useState<Article[]>(initialArticles)
   const [isOpen, setIsOpen] = useState(false)
   const [editingArticle, setEditingArticle] = useState<Article | null>(null)
-  
+
   // Article form states
-  const [title, setTitle] = useState('')
-  const [category, setCategory] = useState('Tin tức')
-  const [image, setImage] = useState('')
-  const [summary, setSummary] = useState('')
+  const [title, setTitle] = useState("")
+  const [category, setCategory] = useState("Tin tức")
+  const [image, setImage] = useState("")
+  const [summary, setSummary] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState("")
 
   // Toast & Confirmation Dialog States
   const [successMsg, setSuccessMsg] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
-  
+
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     title: string
@@ -87,18 +91,34 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
   })
 
   // Banner settings states
-  const [homepageBanner1, setHomepageBanner1] = useState(initialBannerSettings.homepage_banner_image_1)
-  const [homepageBanner2, setHomepageBanner2] = useState(initialBannerSettings.homepage_banner_image_2)
-  const [homepageBanner3, setHomepageBanner3] = useState(initialBannerSettings.homepage_banner_image_3)
-  const [homepageBanner4, setHomepageBanner4] = useState(initialBannerSettings.homepage_banner_image_4)
-  const [homepageBanner5, setHomepageBanner5] = useState(initialBannerSettings.homepage_banner_image_5)
-  
-  const [aboutBanner, setAboutBanner] = useState(initialBannerSettings.about_banner_image)
-  const [newsBanner, setNewsBanner] = useState(initialBannerSettings.news_banner_image)
-  const [campaignsBanner, setCampaignsBanner] = useState(initialBannerSettings.campaigns_banner_image)
+  const [homepageBanner1, setHomepageBanner1] = useState(
+    initialBannerSettings.homepage_banner_image_1
+  )
+  const [homepageBanner2, setHomepageBanner2] = useState(
+    initialBannerSettings.homepage_banner_image_2
+  )
+  const [homepageBanner3, setHomepageBanner3] = useState(
+    initialBannerSettings.homepage_banner_image_3
+  )
+  const [homepageBanner4, setHomepageBanner4] = useState(
+    initialBannerSettings.homepage_banner_image_4
+  )
+  const [homepageBanner5, setHomepageBanner5] = useState(
+    initialBannerSettings.homepage_banner_image_5
+  )
+
+  const [aboutBanner, setAboutBanner] = useState(
+    initialBannerSettings.about_banner_image
+  )
+  const [newsBanner, setNewsBanner] = useState(
+    initialBannerSettings.news_banner_image
+  )
+  const [campaignsBanner, setCampaignsBanner] = useState(
+    initialBannerSettings.campaigns_banner_image
+  )
 
   const [bannerLoading, setBannerLoading] = useState(false)
-  const [bannerError, setBannerError] = useState('')
+  const [bannerError, setBannerError] = useState("")
   const [bannerSuccess, setBannerSuccess] = useState(false)
 
   const [uploadingImage, setUploadingImage] = useState(false)
@@ -108,7 +128,7 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
     if (!file) return
 
     setUploadingImage(true)
-    setError('')
+    setError("")
 
     const fd = new FormData()
     fd.append("file", file)
@@ -135,28 +155,28 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
 
   const openCreateModal = () => {
     setEditingArticle(null)
-    setTitle('')
-    setCategory('Tin tức')
-    setImage('')
-    setSummary('')
-    setError('')
+    setTitle("")
+    setCategory("Tin tức")
+    setImage("")
+    setSummary("")
+    setError("")
     setIsOpen(true)
   }
 
   const openEditModal = (article: Article) => {
     setEditingArticle(article)
     setTitle(article.title)
-    
+
     const reverseCategoryMap: Record<string, string> = {
-      'news': 'Tin tức',
-      'faq': 'Kiến thức',
-      'guide': 'Hướng dẫn sử dụng app',
-      'event': 'Sự kiện'
+      news: "Tin tức",
+      faq: "Kiến thức",
+      guide: "Hướng dẫn sử dụng app",
+      event: "Sự kiện",
     }
     setCategory(reverseCategoryMap[article.category] || article.category)
-    setImage(article.image || '')
-    setSummary(article.summary || '')
-    setError('')
+    setImage(article.image || "")
+    setSummary(article.summary || "")
+    setError("")
     setIsOpen(true)
   }
 
@@ -168,25 +188,27 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
     }
 
     setLoading(true)
-    setError('')
+    setError("")
 
     const categoryMap: Record<string, string> = {
-      'Tin tức': 'news',
-      'Kiến thức': 'faq',
-      'Hướng dẫn sử dụng app': 'guide',
-      'Sự kiện': 'event'
+      "Tin tức": "news",
+      "Kiến thức": "faq",
+      "Hướng dẫn sử dụng app": "guide",
+      "Sự kiện": "event",
     }
 
-    const dbCategory = categoryMap[category] || 'news'
+    const dbCategory = categoryMap[category] || "news"
     const generatedSlug = slugify(title)
 
     const payload = {
       slug: generatedSlug,
       title,
       category: dbCategory,
-      coverImage: image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8',
+      coverImage:
+        image ||
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8",
       summary,
-      status: 'published',
+      status: "published",
     }
 
     let res
@@ -202,13 +224,17 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
       setIsOpen(false)
       router.refresh()
       const updatedArticle = {
-        id: editingArticle?.id || 'new-' + Math.random(),
+        id: editingArticle?.id || "new-" + Math.random(),
         ...payload,
         image: payload.coverImage,
-        publishedAt: new Date().toLocaleDateString('vi-VN')
+        publishedAt: new Date().toLocaleDateString("vi-VN"),
       }
       if (editingArticle) {
-        setArticles(articles.map(a => a.id === editingArticle.id ? (updatedArticle as any) : a))
+        setArticles(
+          articles.map((a) =>
+            a.id === editingArticle.id ? (updatedArticle as any) : a
+          )
+        )
       } else {
         setArticles([updatedArticle as any, ...articles])
       }
@@ -225,7 +251,7 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
     try {
       const res = await deleteArticleAction(id)
       if (res.success) {
-        setArticles((prev) => prev.filter(a => a.id !== id))
+        setArticles((prev) => prev.filter((a) => a.id !== id))
         setSuccessMsg(t("messages.deleteSuccess"))
         router.refresh()
       } else {
@@ -253,22 +279,22 @@ export function useContentManager({ initialArticles, initialBannerSettings }: Us
   const handleSaveBanner = async (e: React.FormEvent) => {
     e.preventDefault()
     setBannerLoading(true)
-    setBannerError('')
+    setBannerError("")
     setBannerSuccess(false)
 
     try {
       const results = await Promise.all([
-        updateSettingAction('homepage_banner_image_1', homepageBanner1),
-        updateSettingAction('homepage_banner_image_2', homepageBanner2),
-        updateSettingAction('homepage_banner_image_3', homepageBanner3),
-        updateSettingAction('homepage_banner_image_4', homepageBanner4),
-        updateSettingAction('homepage_banner_image_5', homepageBanner5),
-        updateSettingAction('about_banner_image', aboutBanner),
-        updateSettingAction('news_banner_image', newsBanner),
-        updateSettingAction('campaigns_banner_image', campaignsBanner),
+        updateSettingAction("homepage_banner_image_1", homepageBanner1),
+        updateSettingAction("homepage_banner_image_2", homepageBanner2),
+        updateSettingAction("homepage_banner_image_3", homepageBanner3),
+        updateSettingAction("homepage_banner_image_4", homepageBanner4),
+        updateSettingAction("homepage_banner_image_5", homepageBanner5),
+        updateSettingAction("about_banner_image", aboutBanner),
+        updateSettingAction("news_banner_image", newsBanner),
+        updateSettingAction("campaigns_banner_image", campaignsBanner),
       ])
 
-      const failedResult = results.find(res => !res.success)
+      const failedResult = results.find((res) => !res.success)
 
       if (!failedResult) {
         setBannerSuccess(true)

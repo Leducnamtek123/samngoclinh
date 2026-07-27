@@ -1,14 +1,25 @@
 "use client"
 
 import React from "react"
+import {
+  Activity,
+  Calendar,
+  ChevronRight,
+  Droplets,
+  Flame,
+  Heart,
+  Loader2,
+  RefreshCw,
+  ShieldAlert,
+  Sprout,
+  User,
+} from "lucide-react"
+
+import type { CultivationBedLocation, Tree } from "./use-beds-table"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { 
-  ChevronRight, Sprout, User, Calendar, Activity, 
-  Droplets, ShieldAlert, Heart, RefreshCw, Flame, Loader2 
-} from "lucide-react"
-import type { CultivationBedLocation, Tree } from "./use-beds-table"
 
 interface BedsRightSidebarProps {
   rightSidebarOpen: boolean
@@ -57,7 +68,10 @@ const getHealthBadge = (health: string | undefined) => {
       )
     default:
       return (
-        <Badge variant="outline" className="text-[9px] font-bold py-0.5 rounded-md">
+        <Badge
+          variant="outline"
+          className="text-[9px] font-bold py-0.5 rounded-md"
+        >
           Chưa trồng
         </Badge>
       )
@@ -81,7 +95,9 @@ export function BedsRightSidebar({
   return (
     <div
       className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-all duration-300 ${
-        rightSidebarOpen ? "w-full lg:w-80" : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
+        rightSidebarOpen
+          ? "w-full lg:w-80"
+          : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
       }`}
     >
       <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
@@ -106,7 +122,9 @@ export function BedsRightSidebar({
             {/* Header Coordinate Card */}
             <div className="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-between">
               <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tọa độ ô đất</div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Tọa độ ô đất
+                </div>
                 <div className="text-sm font-bold text-slate-700 dark:text-slate-300 font-mono mt-0.5">
                   Hàng {activeLoc.row + 1} - Cột {activeLoc.col + 1}
                 </div>
@@ -119,7 +137,9 @@ export function BedsRightSidebar({
             {loadingTreeDetails ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3">
                 <Loader2 className="h-6 w-6 text-emerald-600 animate-spin" />
-                <span className="text-xs text-slate-400 font-semibold">Đang tải hồ sơ gốc sâm...</span>
+                <span className="text-xs text-slate-400 font-semibold">
+                  Đang tải hồ sơ gốc sâm...
+                </span>
               </div>
             ) : selectedTreeDetails ? (
               <>
@@ -130,7 +150,9 @@ export function BedsRightSidebar({
                       <h4 className="font-bold text-sm text-slate-800 dark:text-slate-100">
                         {selectedTreeDetails.name}
                       </h4>
-                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">Mã sâm: {selectedTreeDetails.code}</p>
+                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        Mã sâm: {selectedTreeDetails.code}
+                      </p>
                     </div>
                     {getHealthBadge(selectedTreeDetails.healthStatus)}
                   </div>
@@ -161,7 +183,11 @@ export function BedsRightSidebar({
                       </span>
                       <span className="font-semibold text-slate-700 dark:text-slate-350 font-mono">
                         {selectedTreeDetails.plantedAt
-                          ? new Date(selectedTreeDetails.plantedAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
+                          ? new Date(
+                              selectedTreeDetails.plantedAt
+                            ).toLocaleDateString("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
+                            })
                           : "N/A"}
                       </span>
                     </div>
@@ -172,7 +198,11 @@ export function BedsRightSidebar({
                       </span>
                       <span className="font-bold text-emerald-600 font-mono">
                         {selectedTreeDetails.expectedHarvestAt
-                          ? new Date(selectedTreeDetails.expectedHarvestAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
+                          ? new Date(
+                              selectedTreeDetails.expectedHarvestAt
+                            ).toLocaleDateString("vi-VN", {
+                              timeZone: "Asia/Ho_Chi_Minh",
+                            })
                           : "N/A"}
                       </span>
                     </div>
@@ -190,7 +220,9 @@ export function BedsRightSidebar({
 
                 {/* Operations Quick Card */}
                 <div className="bg-slate-50/50 dark:bg-slate-800/20 border border-slate-200/50 dark:border-slate-800 p-3 rounded-xl space-y-2">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Thao tác chăm sóc</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    Thao tác chăm sóc
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <Button
                       onClick={() => handleSingleWatering(activeLoc)}
@@ -198,7 +230,8 @@ export function BedsRightSidebar({
                       variant="outline"
                       className="h-8 text-[10px] font-semibold border-slate-200 hover:text-emerald-600"
                     >
-                      <Droplets className="h-3.5 w-3.5 mr-1 text-emerald-500" /> Tưới nước
+                      <Droplets className="h-3.5 w-3.5 mr-1 text-emerald-500" />{" "}
+                      Tưới nước
                     </Button>
                     <Button
                       onClick={() => handleSingleFertilizing(activeLoc)}
@@ -206,29 +239,44 @@ export function BedsRightSidebar({
                       variant="outline"
                       className="h-8 text-[10px] font-semibold border-slate-200 hover:text-amber-600"
                     >
-                      <Flame className="h-3.5 w-3.5 mr-1 text-amber-500" /> Bón phân
+                      <Flame className="h-3.5 w-3.5 mr-1 text-amber-500" /> Bón
+                      phân
                     </Button>
                   </div>
                 </div>
 
                 {/* Care logs chronological view */}
                 <div className="space-y-2.5">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nhật ký chăm sóc gốc sâm</div>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Nhật ký chăm sóc gốc sâm
+                  </div>
                   <ScrollArea className="h-[150px] w-full border rounded-lg p-2.5 bg-white dark:bg-slate-900/20">
                     {selectedTreeCareLogs.length === 0 ? (
-                      <div className="text-center py-8 text-[10px] text-slate-450 font-semibold">Chưa có hoạt động nào được ghi nhận.</div>
+                      <div className="text-center py-8 text-[10px] text-slate-450 font-semibold">
+                        Chưa có hoạt động nào được ghi nhận.
+                      </div>
                     ) : (
                       <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100 dark:before:bg-slate-800">
                         {selectedTreeCareLogs.map((log: any) => (
-                          <div key={log.id} className="relative pl-5 text-[10px]">
+                          <div
+                            key={log.id}
+                            className="relative pl-5 text-[10px]"
+                          >
                             <div className="absolute left-[5px] top-1.5 w-1.5 h-1.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-slate-900"></div>
                             <div className="flex justify-between items-center text-slate-400">
-                              <span className="font-bold">{log.title || "Chăm sóc"}</span>
+                              <span className="font-bold">
+                                {log.title || "Chăm sóc"}
+                              </span>
                               <span className="font-mono text-[9px]">
-                                {new Date(log.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                                {new Date(log.createdAt).toLocaleDateString(
+                                  "vi-VN",
+                                  { timeZone: "Asia/Ho_Chi_Minh" }
+                                )}
                               </span>
                             </div>
-                            <p className="text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{log.description}</p>
+                            <p className="text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+                              {log.description}
+                            </p>
                           </div>
                         ))}
                       </div>
@@ -241,7 +289,8 @@ export function BedsRightSidebar({
                 <Sprout className="h-8 w-8 text-slate-300" />
                 <div className="text-[11px]">Ô đất trống (Empty)</div>
                 <p className="text-[10px] text-slate-400 max-w-[200px] font-normal">
-                  Chưa có cây sâm Ngọc Linh nào được gieo trồng tại ô đất này. Kéo sâm thả vào để bắt đầu.
+                  Chưa có cây sâm Ngọc Linh nào được gieo trồng tại ô đất này.
+                  Kéo sâm thả vào để bắt đầu.
                 </p>
               </div>
             )}
@@ -251,7 +300,8 @@ export function BedsRightSidebar({
             <Sprout className="h-7 w-7 text-slate-350 animate-pulse" />
             <div className="text-xs">Chưa chọn vị trí ô đất</div>
             <p className="text-[10px] text-slate-400 max-w-[220px] font-medium leading-relaxed">
-              Vui lòng nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới trung tâm để xem và biên soạn hồ sơ cây sâm.
+              Vui lòng nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới trung
+              tâm để xem và biên soạn hồ sơ cây sâm.
             </p>
           </div>
         )}

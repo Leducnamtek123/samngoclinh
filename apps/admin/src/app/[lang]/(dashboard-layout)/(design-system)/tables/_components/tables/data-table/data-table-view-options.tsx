@@ -32,23 +32,21 @@ export function InvoiceTableViewOptions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {table
-          .getAllColumns()
-          .flatMap((column) => {
-            if (typeof column.accessorFn !== "undefined" && column.getCanHide()) {
-              return [
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id.replace("_", " ")}
-                </DropdownMenuCheckboxItem>
-              ]
-            }
-            return []
-          })}
+        {table.getAllColumns().flatMap((column) => {
+          if (typeof column.accessorFn !== "undefined" && column.getCanHide()) {
+            return [
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className="capitalize"
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.id.replace("_", " ")}
+              </DropdownMenuCheckboxItem>,
+            ]
+          }
+          return []
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   )

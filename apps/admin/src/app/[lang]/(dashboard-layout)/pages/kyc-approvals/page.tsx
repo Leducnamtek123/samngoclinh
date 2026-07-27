@@ -1,94 +1,112 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
-import { useApiQuery } from '@/hooks/use-api-query';
-import { useApiMutation } from '@/hooks/use-api-mutation';
-import { RoleGuard } from '@/components/guards/rbac-guard';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { UserCheck, CheckCircle2, XCircle, Eye, RefreshCw } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState } from "react"
+import { toast } from "sonner"
+import { CheckCircle2, Eye, RefreshCw, UserCheck, XCircle } from "lucide-react"
+
+import { useApiMutation } from "@/hooks/use-api-mutation"
+import { useApiQuery } from "@/hooks/use-api-query"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Textarea } from "@/components/ui/textarea"
+import { RoleGuard } from "@/components/guards/rbac-guard"
 
 interface KYCRequest {
-  id: string;
-  userId: string;
-  fullName?: string;
+  id: string
+  userId: string
+  fullName?: string
   user?: {
-    id: string;
-    email: string;
-    name?: string;
-  };
-  idNumber?: string;
-  idType?: string;
-  idFrontUrl?: string;
-  idBackUrl?: string;
-  selfieUrl?: string;
-  frontImage?: string;
-  backImage?: string;
-  portraitImage?: string;
-  status: string;
-  createdAt?: string;
-  submittedAt?: string;
+    id: string
+    email: string
+    name?: string
+  }
+  idNumber?: string
+  idType?: string
+  idFrontUrl?: string
+  idBackUrl?: string
+  selfieUrl?: string
+  frontImage?: string
+  backImage?: string
+  portraitImage?: string
+  status: string
+  createdAt?: string
+  submittedAt?: string
 }
 
 export default function KycApprovalsPage() {
-  const [selectedKyc, setSelectedKyc] = useState<KYCRequest | null>(null);
-  const [rejectReason, setRejectReason] = useState('');
-  const [showRejectForm, setShowRejectForm] = useState(false);
+  const [selectedKyc, setSelectedKyc] = useState<KYCRequest | null>(null)
+  const [rejectReason, setRejectReason] = useState("")
+  const [showRejectForm, setShowRejectForm] = useState(false)
 
-  const { data: response, isLoading, refetch, isError } = useApiQuery<{ items: KYCRequest[] } | KYCRequest[]>(
-    ['kyc-approvals'],
-    '/admin/identity-verification'
-  );
+  const {
+    data: response,
+    isLoading,
+    refetch,
+    isError,
+  } = useApiQuery<{ items: KYCRequest[] } | KYCRequest[]>(
+    ["kyc-approvals"],
+    "/admin/identity-verification"
+  )
 
-  const mutation = useApiMutation();
+  const mutation = useApiMutation()
 
-  const rawData = response?.data;
+  const rawData = response?.data
   const kycList: KYCRequest[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || [];
+    : (rawData as any)?.items || []
 
   const handleApprove = async (id: string) => {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/approve`,
-        method: 'PUT',
-      });
-      toast.success('Phê duyệt eKYC thành công');
-      setSelectedKyc(null);
-      refetch();
+        method: "PUT",
+      })
+      toast.success("Phê duyệt eKYC thành công")
+      setSelectedKyc(null)
+      refetch()
     } catch (error: any) {
-      toast.error(error?.message || 'Có lỗi xảy ra khi phê duyệt eKYC');
+      toast.error(error?.message || "Có lỗi xảy ra khi phê duyệt eKYC")
     }
-  };
+  }
 
   const handleReject = async (id: string) => {
     if (!rejectReason) {
-      toast.error('Vui lòng nhập lý do từ chối');
-      return;
+      toast.error("Vui lòng nhập lý do từ chối")
+      return
     }
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/reject`,
         data: { reason: rejectReason },
-        method: 'POST',
-      });
-      toast.success('Đã từ chối hồ sơ eKYC');
-      setSelectedKyc(null);
-      setShowRejectForm(false);
-      setRejectReason('');
-      refetch();
+        method: "POST",
+      })
+      toast.success("Đã từ chối hồ sơ eKYC")
+      setSelectedKyc(null)
+      setShowRejectForm(false)
+      setRejectReason("")
+      refetch()
     } catch (error: any) {
-      toast.error(error?.message || 'Có lỗi xảy ra khi từ chối eKYC');
+      toast.error(error?.message || "Có lỗi xảy ra khi từ chối eKYC")
     }
-  };
+  }
 
   return (
-    <RoleGuard allowedRoles={['SUPER_ADMIN', 'ADMIN']}>
+    <RoleGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
       <div className="container mx-auto p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -100,18 +118,27 @@ export default function KycApprovalsPage() {
               Xác minh thông tin giấy tờ và chân dung nhà đầu tư Sâm Ngọc Linh
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="gap-2"
+          >
             <RefreshCw className="w-4 h-4" /> Làm mới
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Danh sách Yêu cầu Duyệt eKYC</CardTitle>
+            <CardTitle className="text-base font-semibold">
+              Danh sách Yêu cầu Duyệt eKYC
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">Đang tải danh sách hồ sơ eKYC...</div>
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                Đang tải danh sách hồ sơ eKYC...
+              </div>
             ) : isError ? (
               <div className="py-8 text-center text-sm text-destructive">
                 Không thể kết nối đến hệ thống máy chủ. Vui lòng thử lại sau.
@@ -135,27 +162,36 @@ export default function KycApprovalsPage() {
                   {kycList.map((kyc) => (
                     <TableRow key={kyc.id}>
                       <TableCell className="font-medium">
-                        {kyc.fullName || kyc.user?.name || kyc.user?.email || kyc.userId}
+                        {kyc.fullName ||
+                          kyc.user?.name ||
+                          kyc.user?.email ||
+                          kyc.userId}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">{kyc.idNumber || '—'}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {kyc.idNumber || "—"}
+                      </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {kyc.submittedAt || kyc.createdAt ? new Date(kyc.submittedAt || kyc.createdAt!).toLocaleDateString('vi-VN') : '—'}
+                        {kyc.submittedAt || kyc.createdAt
+                          ? new Date(
+                              kyc.submittedAt || kyc.createdAt!
+                            ).toLocaleDateString("vi-VN")
+                          : "—"}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={
-                            kyc.status === 'APPROVED'
-                              ? 'default'
-                              : kyc.status === 'PENDING'
-                              ? 'outline'
-                              : 'destructive'
+                            kyc.status === "APPROVED"
+                              ? "default"
+                              : kyc.status === "PENDING"
+                                ? "outline"
+                                : "destructive"
                           }
                           className={
-                            kyc.status === 'APPROVED'
-                              ? 'bg-emerald-600 text-white'
-                              : kyc.status === 'PENDING'
-                              ? 'bg-amber-100 text-amber-800 border-amber-300'
-                              : ''
+                            kyc.status === "APPROVED"
+                              ? "bg-emerald-600 text-white"
+                              : kyc.status === "PENDING"
+                                ? "bg-amber-100 text-amber-800 border-amber-300"
+                                : ""
                           }
                         >
                           {kyc.status}
@@ -167,8 +203,8 @@ export default function KycApprovalsPage() {
                           size="sm"
                           className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
                           onClick={() => {
-                            setSelectedKyc(kyc);
-                            setShowRejectForm(false);
+                            setSelectedKyc(kyc)
+                            setShowRejectForm(false)
                           }}
                         >
                           <Eye className="w-4 h-4" /> Xem Hồ Sơ
@@ -183,44 +219,74 @@ export default function KycApprovalsPage() {
         </Card>
 
         {selectedKyc && (
-          <Dialog open={!!selectedKyc} onOpenChange={() => setSelectedKyc(null)}>
+          <Dialog
+            open={!!selectedKyc}
+            onOpenChange={() => setSelectedKyc(null)}
+          >
             <DialogContent className="sm:max-w-[650px]">
               <DialogHeader>
-                <DialogTitle>Chi tiết Hồ sơ eKYC - {selectedKyc.fullName || selectedKyc.user?.email || selectedKyc.id}</DialogTitle>
+                <DialogTitle>
+                  Chi tiết Hồ sơ eKYC -{" "}
+                  {selectedKyc.fullName ||
+                    selectedKyc.user?.email ||
+                    selectedKyc.id}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-2 gap-4 text-sm border-b pb-4">
                   <div>
                     <span className="text-muted-foreground">Khách hàng:</span>
-                    <p className="font-semibold">{selectedKyc.fullName || selectedKyc.user?.name || '—'}</p>
+                    <p className="font-semibold">
+                      {selectedKyc.fullName || selectedKyc.user?.name || "—"}
+                    </p>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Số CCCD/CMND:</span>
-                    <p className="font-semibold font-mono">{selectedKyc.idNumber || '—'}</p>
+                    <p className="font-semibold font-mono">
+                      {selectedKyc.idNumber || "—"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">Mặt trước CCCD</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Mặt trước CCCD
+                    </span>
                     <img
-                      src={selectedKyc.idFrontUrl || selectedKyc.frontImage || '/images/placeholder.png'}
+                      src={
+                        selectedKyc.idFrontUrl ||
+                        selectedKyc.frontImage ||
+                        "/images/placeholder.png"
+                      }
                       alt="Mặt trước CCCD"
                       className="w-full h-32 object-cover rounded border bg-muted"
                     />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">Mặt sau CCCD</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Mặt sau CCCD
+                    </span>
                     <img
-                      src={selectedKyc.idBackUrl || selectedKyc.backImage || '/images/placeholder.png'}
+                      src={
+                        selectedKyc.idBackUrl ||
+                        selectedKyc.backImage ||
+                        "/images/placeholder.png"
+                      }
                       alt="Mặt sau CCCD"
                       className="w-full h-32 object-cover rounded border bg-muted"
                     />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">Ảnh chân dung</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Ảnh chân dung
+                    </span>
                     <img
-                      src={selectedKyc.selfieUrl || selectedKyc.portraitImage || '/images/placeholder.png'}
+                      src={
+                        selectedKyc.selfieUrl ||
+                        selectedKyc.portraitImage ||
+                        "/images/placeholder.png"
+                      }
                       alt="Chân dung"
                       className="w-full h-32 object-cover rounded border bg-muted"
                     />
@@ -235,10 +301,18 @@ export default function KycApprovalsPage() {
                       onChange={(e) => setRejectReason(e.target.value)}
                     />
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setShowRejectForm(false)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowRejectForm(false)}
+                      >
                         Hủy
                       </Button>
-                      <Button variant="destructive" size="sm" onClick={() => handleReject(selectedKyc.id)}>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleReject(selectedKyc.id)}
+                      >
                         Xác nhận Từ chối
                       </Button>
                     </div>
@@ -266,5 +340,5 @@ export default function KycApprovalsPage() {
         )}
       </div>
     </RoleGuard>
-  );
+  )
 }

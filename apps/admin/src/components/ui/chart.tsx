@@ -1,8 +1,6 @@
 "use client"
 
 import { createContext, useContext, useId, useMemo } from "react"
-import type { TooltipProps, LegendProps, ResponsiveContainerProps } from "recharts"
-import { useRecharts } from "@/hooks/use-recharts"
 
 import type {
   CSSProperties,
@@ -10,8 +8,15 @@ import type {
   ComponentType,
   ReactNode,
 } from "react"
+import type {
+  LegendProps,
+  ResponsiveContainerProps,
+  TooltipProps,
+} from "recharts"
 
 import { cn } from "@/lib/utils"
+
+import { useRecharts } from "@/hooks/use-recharts"
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const
@@ -86,13 +91,7 @@ export function ChartContainer({
   )
 }
 
-function ChartStyle({
-  id,
-  config,
-}: {
-  id: string
-  config: ChartConfig
-}) {
+function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
   const colorConfig = Object.entries(config).filter(
     ([_, config]) => config.theme || config.color
   )

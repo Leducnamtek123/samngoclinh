@@ -23,8 +23,8 @@ export class BannerService {
             image: '/assets/images/banner_bg.png',
         },
         campaigns: {
-            title: 'Chương Trình Khuyến Mãi',
-            subtitle: 'Khám phá các ưu đãi đặc biệt và chương trình quà tặng hấp dẫn từ Rượu Sâm Ngọc Linh.',
+            title: 'Khuyến Mãi & Ưu Đãi',
+            subtitle: 'Các chương trình quà tặng đặc biệt dành cho khách hàng thân thiết.',
             image: '/assets/images/banner_bg.png',
         },
         about: {

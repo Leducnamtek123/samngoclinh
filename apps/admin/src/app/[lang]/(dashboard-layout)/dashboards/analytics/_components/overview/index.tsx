@@ -8,11 +8,26 @@ export function Overview({ stats }: { stats: any }) {
     averageValue: stats.totalRevenue || 452000000,
     percentageChange: 0.125,
     perMonth: [
-      { month: "January", value: Math.round((stats.totalRevenue || 452000000) * 0.7) },
-      { month: "February", value: Math.round((stats.totalRevenue || 452000000) * 0.8) },
-      { month: "March", value: Math.round((stats.totalRevenue || 452000000) * 0.85) },
-      { month: "April", value: Math.round((stats.totalRevenue || 452000000) * 0.9) },
-      { month: "May", value: Math.round((stats.totalRevenue || 452000000) * 0.95) },
+      {
+        month: "January",
+        value: Math.round((stats.totalRevenue || 452000000) * 0.7),
+      },
+      {
+        month: "February",
+        value: Math.round((stats.totalRevenue || 452000000) * 0.8),
+      },
+      {
+        month: "March",
+        value: Math.round((stats.totalRevenue || 452000000) * 0.85),
+      },
+      {
+        month: "April",
+        value: Math.round((stats.totalRevenue || 452000000) * 0.9),
+      },
+      {
+        month: "May",
+        value: Math.round((stats.totalRevenue || 452000000) * 0.95),
+      },
       { month: "June", value: stats.totalRevenue || 452000000 },
     ],
   }
@@ -21,12 +36,36 @@ export function Overview({ stats }: { stats: any }) {
     averageValue: stats.totalTrees || 1540,
     percentageChange: 0.082,
     perMonth: [
-      { month: "January", value: Math.round((stats.totalTrees || 1540) * 0.8), fill: "hsl(var(--chart-1))" },
-      { month: "February", value: Math.round((stats.totalTrees || 1540) * 0.82), fill: "hsl(var(--chart-2))" },
-      { month: "March", value: Math.round((stats.totalTrees || 1540) * 0.85), fill: "hsl(var(--chart-1))" },
-      { month: "April", value: Math.round((stats.totalTrees || 1540) * 0.9), fill: "hsl(var(--chart-2))" },
-      { month: "May", value: Math.round((stats.totalTrees || 1540) * 0.95), fill: "hsl(var(--chart-1))" },
-      { month: "June", value: stats.totalTrees || 1540, fill: "hsl(var(--chart-1))" },
+      {
+        month: "January",
+        value: Math.round((stats.totalTrees || 1540) * 0.8),
+        fill: "hsl(var(--chart-1))",
+      },
+      {
+        month: "February",
+        value: Math.round((stats.totalTrees || 1540) * 0.82),
+        fill: "hsl(var(--chart-2))",
+      },
+      {
+        month: "March",
+        value: Math.round((stats.totalTrees || 1540) * 0.85),
+        fill: "hsl(var(--chart-1))",
+      },
+      {
+        month: "April",
+        value: Math.round((stats.totalTrees || 1540) * 0.9),
+        fill: "hsl(var(--chart-2))",
+      },
+      {
+        month: "May",
+        value: Math.round((stats.totalTrees || 1540) * 0.95),
+        fill: "hsl(var(--chart-1))",
+      },
+      {
+        month: "June",
+        value: stats.totalTrees || 1540,
+        fill: "hsl(var(--chart-1))",
+      },
     ],
   }
 
@@ -34,10 +73,19 @@ export function Overview({ stats }: { stats: any }) {
     averageValue: stats.totalContracts || 42,
     percentageChange: 0.05,
     perMonth: [
-      { month: "January", value: Math.round((stats.totalContracts || 42) * 0.6) },
-      { month: "February", value: Math.round((stats.totalContracts || 42) * 0.7) },
+      {
+        month: "January",
+        value: Math.round((stats.totalContracts || 42) * 0.6),
+      },
+      {
+        month: "February",
+        value: Math.round((stats.totalContracts || 42) * 0.7),
+      },
       { month: "March", value: Math.round((stats.totalContracts || 42) * 0.8) },
-      { month: "April", value: Math.round((stats.totalContracts || 42) * 0.85) },
+      {
+        month: "April",
+        value: Math.round((stats.totalContracts || 42) * 0.85),
+      },
       { month: "May", value: Math.round((stats.totalContracts || 42) * 0.9) },
       { month: "June", value: stats.totalContracts || 42 },
     ],

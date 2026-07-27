@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/libs/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
-import { NotificationDrawer } from '@/components/NotificationDrawer';
+import { NotificationPopover } from '@/components/NotificationPopover';
+import { OrderDetailModal, OrderDetailData } from '@/components/OrderDetailModal';
 
 type UserHeaderMenuProps = {
   profile: {
@@ -35,8 +36,9 @@ const UKFlag = () => (
 export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(() => (typeof window !== 'undefined' ? getCartCount() : 0));
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const locale = useLocale();
@@ -49,8 +51,6 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
   // Sync cart count from localStorage
   useEffect(() => {
-    setCartCount(getCartCount());
-
     const handleUpdate = () => {
       setCartCount(getCartCount());
     };
@@ -65,6 +65,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setShowLangMenu(false);
+        setIsNotifOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -111,20 +112,33 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
       </a>
 
       {/* Notification Bell Icon */}
-      <button
-        onClick={() => setIsNotifOpen(true)}
-        className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
-        title="Thông báo"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-        </svg>
-        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
-      </button>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => {
+            setIsNotifOpen(!isNotifOpen);
+            setIsOpen(false);
+          }}
+          className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
+          title="Thông báo"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+        </button>
+
+        <NotificationPopover
+          isOpen={isNotifOpen}
+          onClose={() => setIsNotifOpen(false)}
+          onSelectOrder={(order) => setSelectedOrder(order)}
+        />
+      </div>
 
       {/* Hero Avatar Button */}
       <div className="relative">
         <button
+          type="button"
           onClick={() => {
             setIsOpen(!isOpen);
             setShowLangMenu(false);
@@ -136,7 +150,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
         {/* Dropdown Menu Card */}
         {isOpen && (
-          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 transition-[opacity,transform] duration-150 animate-in fade-in zoom-in-95">
             {/* User Info Header */}
             <div className="px-5 py-2.5 border-b border-gray-100">
               <p className="font-extrabold text-gray-900 text-sm">{fullName}</p>
@@ -150,6 +164,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
             <ul className="text-xs font-semibold text-gray-700 pt-1.5">
               <li>
                 <button
+                  type="button"
                   onClick={() => navigateToTab('info')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
@@ -161,6 +176,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
+                  type="button"
                   onClick={() => navigateToTab('orders')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
@@ -172,6 +188,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
+                  type="button"
                   onClick={() => navigateToTab('assets')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
@@ -183,6 +200,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
+                  type="button"
                   onClick={() => navigateToTab('kyc')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
@@ -194,6 +212,19 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               </li>
               <li>
                 <button
+                  type="button"
+                  onClick={() => navigateToTab('contracts')}
+                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Hợp đồng điện tử</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
                   onClick={() => navigateToTab('referral')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
                 >
@@ -211,6 +242,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
             {/* Language Switcher */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowLangMenu(!showLangMenu)}
                 className="w-full px-5 py-2 flex items-center justify-between text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
               >
@@ -235,8 +267,9 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
               {/* Sub-menu Language Selection */}
               {showLangMenu && (
-                <div className="bg-gray-50/70 border-y border-gray-100 py-1 space-y-0.5 animate-in fade-in duration-150">
+                <div className="bg-gray-50/70 border-y border-gray-100 py-1 space-y-0.5 transition-opacity duration-150 animate-in fade-in">
                   <button
+                    type="button"
                     onClick={() => switchLocale('vi')}
                     className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
                       locale === 'vi' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
@@ -251,6 +284,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                     )}
                   </button>
                   <button
+                    type="button"
                     onClick={() => switchLocale('en')}
                     className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
                       locale === 'en' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
@@ -273,6 +307,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
             {/* Sign Out Item in Red */}
             <button
+              type="button"
               onClick={handleSignOut}
               className="w-full px-5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-left transition-colors font-bold text-xs"
             >
@@ -285,7 +320,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
         )}
       </div>
 
-      <NotificationDrawer isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+      <OrderDetailModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
     </div>
   );
 };

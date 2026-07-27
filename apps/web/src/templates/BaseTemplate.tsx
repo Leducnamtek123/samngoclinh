@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+import { Link } from '@/libs/I18nNavigation';
 
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;
@@ -18,6 +20,7 @@ export const BaseTemplate = (props: {
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Hamburger button for Mobile */}
             <button
+              type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Toggle Navigation Menu"
@@ -32,16 +35,19 @@ export const BaseTemplate = (props: {
             </button>
 
             {/* Brand Logo */}
-            <a href="/" className="h-8 inline-flex items-center gap-2 group flex-shrink-0">
-              <img
+            <Link href="/" className="h-8 inline-flex items-center gap-2 group flex-shrink-0">
+              <Image
                 src="/assets/images/logo_ruou_sam.png?v=2"
                 alt="Rượu Sâm Ngọc Linh Logo"
+                width={32}
+                height={32}
+                unoptimized
                 className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
               />
               <span className="font-bold text-base sm:text-lg md:text-xl lg:text-[22px] tracking-tight text-primary font-display-lg whitespace-nowrap leading-none inline-flex items-center">
                 Rượu Sâm Ngọc Linh
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Center: Desktop Menu Links */}
@@ -63,26 +69,33 @@ export const BaseTemplate = (props: {
         {isMobileMenuOpen && (
           <div className="md:hidden fixed inset-0 z-50 flex">
             {/* Backdrop Overlay */}
-            <div
-              className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            <button
+              type="button"
+              aria-label="Đóng menu mobile"
+              className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-colors cursor-pointer border-0 w-full h-full text-left"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
             {/* Slide-out Drawer Content */}
-            <div className="relative w-4/5 max-w-xs bg-white h-full shadow-2xl flex flex-col py-6 px-5 overflow-y-auto z-10 animate-in slide-in-from-left duration-200">
+            <div className="relative w-4/5 max-w-xs bg-white h-full shadow-2xl flex flex-col py-6 px-5 overflow-y-auto z-10 transition-transform duration-200 animate-in slide-in-from-left">
               <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                <a href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                  <img
+                <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Image
                     src="/assets/images/logo_ruou_sam.png?v=2"
                     alt="Rượu Sâm Ngọc Linh Logo"
+                    width={28}
+                    height={28}
+                    unoptimized
                     className="w-7 h-7 object-contain"
                   />
                   <span className="font-bold text-base text-primary font-display-lg">
                     Rượu Sâm Ngọc Linh
                   </span>
-                </a>
+                </Link>
                 <button
+                  type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  aria-label="Đóng menu"
                   className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -93,7 +106,7 @@ export const BaseTemplate = (props: {
 
               {/* Navigation Links inside Drawer */}
               <nav className="flex-1">
-                <ul className="flex flex-col gap-3 text-sm font-semibold text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>
+                <ul className="flex flex-col gap-3 text-sm font-semibold text-gray-700">
                   {props.leftNav}
                 </ul>
               </nav>
@@ -125,17 +138,17 @@ export const BaseTemplate = (props: {
             <div className="space-y-3 sm:space-y-4">
               <h5 className="text-white font-bold text-sm">Sản phẩm</h5>
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><a className="hover:text-secondary transition-colors" href="/trading-floor">Marketplace</a></li>
-                <li><a className="hover:text-secondary transition-colors" href="/products">Vườn kỹ thuật số</a></li>
-                <li><a className="hover:text-secondary transition-colors" href="/ginseng">Gói chăm sóc</a></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/trading-floor">Marketplace</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/products">Vườn kỹ thuật số</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/ginseng">Gói chăm sóc</Link></li>
               </ul>
             </div>
             <div className="space-y-3 sm:space-y-4">
               <h5 className="text-white font-bold text-sm">Hỗ trợ</h5>
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><a className="hover:text-secondary transition-colors" href="/about">Liên hệ</a></li>
-                <li><a className="hover:text-secondary transition-colors" href="/news">Chính sách bảo mật</a></li>
-                <li><a className="hover:text-secondary transition-colors" href="/news">Điều khoản sử dụng</a></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/about">Liên hệ</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/news">Chính sách bảo mật</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/news">Điều khoản sử dụng</Link></li>
               </ul>
             </div>
           </div>

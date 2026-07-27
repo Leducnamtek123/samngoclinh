@@ -13,6 +13,7 @@ const betterStackSink: AsyncSink = async (record) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      // react-doctor-disable-next-line react-doctor/public-env-secret-name
       Authorization: `Bearer ${Env.NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN}`,
     },
     body: JSON.stringify(record),

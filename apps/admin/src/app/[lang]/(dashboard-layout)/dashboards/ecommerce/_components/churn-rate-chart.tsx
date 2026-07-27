@@ -1,9 +1,5 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { CSSProperties, ComponentProps } from "react"
 import type { ChurnRateType } from "../types"
 
@@ -11,6 +7,7 @@ import { camelCaseToTitleCase, formatPercent } from "@/lib/utils"
 
 import { useIsRtl } from "@/hooks/use-is-rtl"
 import { useRadius } from "@/hooks/use-radius"
+import { useRecharts } from "@/hooks/use-recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -56,14 +53,16 @@ function ModifiedChartTooltipContent(
 }
 
 export function ChurnRateChart({ data }: { data: ChurnRateType["months"] }) {
-  const recharts = useRecharts();
-    const isRtl = useIsRtl()
+  const recharts = useRecharts()
+  const isRtl = useIsRtl()
   const radius = useRadius()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis } = recharts;
-
-
-
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis } = recharts
 
   return (
     <ChartContainer config={{}} className="aspect-auto grow w-full">

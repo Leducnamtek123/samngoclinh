@@ -10,11 +10,11 @@ export async function fetchApiClient(endpoint: string, options: RequestInit = {}
     },
   });
 
-  const data = await res.json().catch(() => ({}));
-
   if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
     throw new Error(data.message || 'Có lỗi xảy ra khi gọi API.');
   }
 
+  const data = await res.json().catch(() => ({}));
   return data;
 }

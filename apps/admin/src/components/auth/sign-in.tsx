@@ -1,6 +1,6 @@
 import type { DictionaryType } from "@/lib/get-dictionary"
-import { I18nProvider } from "@/providers/i18n-provider"
 
+import { I18nProvider } from "@/providers/i18n-provider"
 import {
   Auth,
   AuthDescription,
@@ -13,10 +13,7 @@ import { SignInForm } from "./sign-in-form"
 export function SignIn({ dictionary }: { dictionary: DictionaryType }) {
   return (
     <I18nProvider dictionary={dictionary}>
-      <Auth
-        imgSrc="/images/ginseng_admin.png"
-        dictionary={dictionary}
-      >
+      <Auth imgSrc="/images/ginseng_admin.png" dictionary={dictionary}>
         <AuthHeader>
           <AuthTitle>Đăng nhập</AuthTitle>
           <AuthDescription>

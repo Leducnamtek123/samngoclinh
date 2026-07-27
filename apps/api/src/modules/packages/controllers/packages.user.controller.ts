@@ -25,10 +25,6 @@ export class PackagesUserController {
 
     @PackagesUserListCareDoc()
     @Response('packages.list')
-    @RoleProtected(EnumRoleType.user)
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
     @Get('/care')
     async listCare(): Promise<IResponseReturn<{ items: CarePackage[] }>> {
         return this.packagesService.listCare();
@@ -36,10 +32,6 @@ export class PackagesUserController {
 
     @PackagesUserListProtectionDoc()
     @Response('packages.list')
-    @RoleProtected(EnumRoleType.user)
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
     @Get('/protection')
     async listProtection(): Promise<IResponseReturn<{ items: ProtectionPackage[] }>> {
         return this.packagesService.listProtection();

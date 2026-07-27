@@ -25,7 +25,6 @@ export function ChatSidebarNotificationDropdown({
   notifications,
   setNotifications,
 }: ChatSidebarNotificationDropdownProps) {
-
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>

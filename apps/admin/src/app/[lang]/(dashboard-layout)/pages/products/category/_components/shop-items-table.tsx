@@ -1,15 +1,32 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Plus } from "lucide-react"
-import { ToastCard, ConfirmationDialog, ErrorState } from "@/components/ui/feedback-components"
-import { ShopItemsList } from "./shop-items-list"
-import { ShopItemDialog } from "./shop-item-dialog"
-import { useShopItemsManager } from "./use-shop-items-manager"
+
 import { useTranslation } from "@/providers/i18n-provider"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ConfirmationDialog,
+  ErrorState,
+  ToastCard,
+} from "@/components/ui/feedback-components"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ShopItemDialog } from "./shop-item-dialog"
+import { ShopItemsList } from "./shop-items-list"
+import { useShopItemsManager } from "./use-shop-items-manager"
 
 interface ShopItem {
   id: string
@@ -53,7 +70,11 @@ const categoryNameMap: Record<string, string> = {
   other: "Other",
 }
 
-export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError }: ShopItemsTableProps) {
+export function ShopItemsTable({
+  initialItems,
+  metadata,
+  errorMsg: initialError,
+}: ShopItemsTableProps) {
   const { t } = useTranslation()
   const {
     items,
@@ -99,12 +120,15 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight">{t("products.categories")}</h1>
-          <p className="text-muted-foreground">
-            {t("products.subtitle")}
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {t("products.categories")}
+          </h1>
+          <p className="text-muted-foreground">{t("products.subtitle")}</p>
         </div>
-        <Button onClick={openCreateDialog} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button
+          onClick={openCreateDialog}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+        >
           <Plus className="size-4 mr-2" />
           {t("products.addProduct")}
         </Button>
@@ -126,12 +150,17 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-xs"
               />
-              <Select value={categoryFilter} onValueChange={handleCategoryFilterChange}>
+              <Select
+                value={categoryFilter}
+                onValueChange={handleCategoryFilterChange}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder={t("products.categories")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
+                  <SelectItem value="all">
+                    {t("common.actions.filter")}: All
+                  </SelectItem>
                   {categoryOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
@@ -166,9 +195,24 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         formData={dialogState.formData}
         categoryOptions={categoryOptions}
         onChange={handleFormChange}
-        onSelectCategory={(val) => setDialogState((prev) => ({ ...prev, formData: { ...prev.formData, category: val } }))}
-        onSelectUnit={(val) => setDialogState((prev) => ({ ...prev, formData: { ...prev.formData, unit: val } }))}
-        onSelectStatus={(val) => setDialogState((prev) => ({ ...prev, formData: { ...prev.formData, status: val } }))}
+        onSelectCategory={(val) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, category: val },
+          }))
+        }
+        onSelectUnit={(val) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, unit: val },
+          }))
+        }
+        onSelectStatus={(val) =>
+          setDialogState((prev) => ({
+            ...prev,
+            formData: { ...prev.formData, status: val },
+          }))
+        }
         onImageFileChange={handleImageFileChange}
         onSubmit={handleFormSubmit}
         loading={dialogState.loading}
@@ -178,7 +222,9 @@ export function ShopItemsTable({ initialItems, metadata, errorMsg: initialError 
         onCropStateChange={setCropState}
         onCropComplete={handleCropComplete}
         onCropSave={handleCropSave}
-        onCloseCrop={() => setCropState((prev) => ({ ...prev, isOpen: false, imageSrc: null }))}
+        onCloseCrop={() =>
+          setCropState((prev) => ({ ...prev, isOpen: false, imageSrc: null }))
+        }
       />
 
       {/* Confirmation Dialog */}

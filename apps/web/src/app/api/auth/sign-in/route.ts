@@ -37,12 +37,20 @@ export async function POST(request: Request) {
       body: JSON.stringify(bodyPayload),
     });
 
-    const payload = await apiRes.json();
-
-    if (apiRes.status >= 400 || !payload.data?.tokens?.accessToken) {
+    if (!apiRes.ok) {
+      const payload = await apiRes.json().catch(() => null);
       return NextResponse.json(
         { message: payload?.message ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' },
         { status: apiRes.status }
+      );
+    }
+
+    const payload = await apiRes.json();
+
+    if (!payload.data?.tokens?.accessToken) {
+      return NextResponse.json(
+        { message: payload?.message ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' },
+        { status: 400 }
       );
     }
 

@@ -1,16 +1,33 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Trash2, Plus } from "lucide-react"
-import { ToastCard, ErrorState, ConfirmationDialog } from "@/components/ui/feedback-components"
-import { PlantsList } from "./plants-list"
-import { PlantDialog } from "./plant-dialog"
-import { usePlantsManager } from "./use-plants-manager"
+import { Plus, Trash2 } from "lucide-react"
+
 import { useTranslation } from "@/providers/i18n-provider"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ConfirmationDialog,
+  ErrorState,
+  ToastCard,
+} from "@/components/ui/feedback-components"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PlantDialog } from "./plant-dialog"
+import { PlantsList } from "./plants-list"
+import { usePlantsManager } from "./use-plants-manager"
 
 interface Plant {
   id: string
@@ -37,7 +54,11 @@ interface PlantsTableProps {
   errorMsg?: string
 }
 
-export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }: PlantsTableProps) {
+export function PlantsTable({
+  initialPlants,
+  metadata,
+  errorMsg: initialError,
+}: PlantsTableProps) {
   const { t } = useTranslation()
   const {
     plants,
@@ -75,7 +96,9 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
   } = usePlantsManager({ initialPlants, initialError })
 
   // Group age years for tabs dynamically
-  const ageYears = Array.from(new Set(plants.map((p) => p.ageYear))).sort((a, b) => a - b)
+  const ageYears = Array.from(new Set(plants.map((p) => p.ageYear))).sort(
+    (a, b) => a - b
+  )
 
   if (plants.length === 0 && errorMsg) {
     return (
@@ -93,7 +116,9 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{t("products.title")}</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+            {t("products.title")}
+          </h1>
           <p className="text-sm text-slate-400">{t("products.subtitle")}</p>
         </div>
         <div className="flex items-center gap-2 self-start md:self-auto">
@@ -130,14 +155,23 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
             />
           </div>
           <div className="w-full md:w-56">
-            <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
+            <Select
+              value={statusFilter}
+              onValueChange={handleStatusFilterChange}
+            >
               <SelectTrigger>
                 <SelectValue placeholder={t("products.fields.status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("common.actions.filter")}: All</SelectItem>
-                <SelectItem value="available">{t("common.status.active")}</SelectItem>
-                <SelectItem value="harvested">{t("common.status.completed")}</SelectItem>
+                <SelectItem value="all">
+                  {t("common.actions.filter")}: All
+                </SelectItem>
+                <SelectItem value="available">
+                  {t("common.status.active")}
+                </SelectItem>
+                <SelectItem value="harvested">
+                  {t("common.status.completed")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -154,7 +188,11 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
             {ageYears.map((age) => {
               const count = plants.filter((p) => p.ageYear === age).length
               return (
-                <TabsTrigger key={age} value={age.toString()} className="px-6 py-2">
+                <TabsTrigger
+                  key={age}
+                  value={age.toString()}
+                  className="px-6 py-2"
+                >
                   {age} y ({count})
                 </TabsTrigger>
               )
@@ -199,7 +237,9 @@ export function PlantsTable({ initialPlants, metadata, errorMsg: initialError }:
         onCropStateChange={setCropState}
         onCropComplete={handleCropComplete}
         onCropSubmit={handleCropSubmit}
-        onCloseCrop={() => setCropState((prev) => ({ ...prev, isOpen: false, imageSrc: null }))}
+        onCloseCrop={() =>
+          setCropState((prev) => ({ ...prev, isOpen: false, imageSrc: null }))
+        }
       />
 
       {/* Confirmation Dialog component */}

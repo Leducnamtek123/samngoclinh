@@ -1,5 +1,8 @@
 "use client"
 
+import type { UseFormReturn } from "react-hook-form"
+import type { ProfileInfoFormType } from "../../../types"
+
 import {
   FormControl,
   FormField,
@@ -16,43 +19,126 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { UseFormReturn } from "react-hook-form"
-import type { ProfileInfoFormType } from "../../../types"
 
 const US_STATES = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
-  "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
-  "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana",
-  "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
-  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  "New Hampshire", "New Jersey", "New Mexico", "New York",
-  "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
-  "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-  "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
-  "West Virginia", "Wisconsin", "Wyoming"
-];
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
+]
 
 const COUNTRIES = [
-  "United States", "Canada", "United Kingdom", "Australia",
-  "Germany", "France", "Japan", "China", "India", "Brazil"
-];
+  "United States",
+  "Canada",
+  "United Kingdom",
+  "Australia",
+  "Germany",
+  "France",
+  "Japan",
+  "China",
+  "India",
+  "Brazil",
+]
 
 const LANGUAGES = [
-  "English", "Spanish", "French", "German", "Chinese",
-  "Japanese", "Arabic", "portuguese", "Russian", "Hindi"
-];
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Chinese",
+  "Japanese",
+  "Arabic",
+  "portuguese",
+  "Russian",
+  "Hindi",
+]
 
 const TIMEZONES = [
-  "GMT-12:00", "GMT-11:00", "GMT-10:00", "GMT-09:00", "GMT-08:00",
-  "GMT-07:00", "GMT-06:00", "GMT-05:00", "GMT-04:00", "GMT-03:00",
-  "GMT-02:00", "GMT-01:00", "GMT+00:00", "GMT+01:00", "GMT+02:00",
-  "GMT+03:00", "GMT+04:00", "GMT+05:00", "GMT+06:00", "GMT+07:00",
-  "GMT+08:00", "GMT+09:00", "GMT+10:00", "GMT+11:00", "GMT+12:00"
-];
+  "GMT-12:00",
+  "GMT-11:00",
+  "GMT-10:00",
+  "GMT-09:00",
+  "GMT-08:00",
+  "GMT-07:00",
+  "GMT-06:00",
+  "GMT-05:00",
+  "GMT-04:00",
+  "GMT-03:00",
+  "GMT-02:00",
+  "GMT-01:00",
+  "GMT+00:00",
+  "GMT+01:00",
+  "GMT+02:00",
+  "GMT+03:00",
+  "GMT+04:00",
+  "GMT+05:00",
+  "GMT+06:00",
+  "GMT+07:00",
+  "GMT+08:00",
+  "GMT+09:00",
+  "GMT+10:00",
+  "GMT+11:00",
+  "GMT+12:00",
+]
 
 const CURRENCIES = [
-  "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "BRL"
-];
+  "USD",
+  "EUR",
+  "GBP",
+  "JPY",
+  "CAD",
+  "AUD",
+  "CHF",
+  "CNY",
+  "INR",
+  "BRL",
+]
 
 interface ProfileFieldsSectionProps {
   form: UseFormReturn<ProfileInfoFormType>
@@ -107,11 +193,7 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input
-                type="email"
-                placeholder="name@example.com"
-                {...field}
-              />
+              <Input type="email" placeholder="name@example.com" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

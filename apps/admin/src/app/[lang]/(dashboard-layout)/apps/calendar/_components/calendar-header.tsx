@@ -47,8 +47,6 @@ export function CalendarHeader() {
     }
   }
 
-
-
   return (
     <CardHeader className="justify-between items-center gap-4 space-y-0 md:flex-row">
       <div className="flex flex-wrap-reverse justify-center items-center gap-4">
@@ -151,4 +149,3 @@ const formatTitle = (date: Date, view: string) => {
     })
   }
 }
-

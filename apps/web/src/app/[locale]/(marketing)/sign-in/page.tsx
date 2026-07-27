@@ -26,7 +26,7 @@ export default async function SignInPage(props: SignInPageProps) {
 
   return (
     <div className="w-full">
-      <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-sm font-semibold text-gray-500">Đang tải...</div>}>
+      <Suspense fallback={null}>
         <SignInForm />
       </Suspense>
     </div>

@@ -23,22 +23,19 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { PercentageChangeBadge } from "./percentage-change-badge"
 
-const cardContentVariants = cva(
-  "flex flex-col justify-between gap-y-6",
-  {
-    variants: {
-      size: {
-        xs: "h-32",
-        sm: "h-64",
-        default: "h-96",
-        lg: "h-[29rem]",
-      },
+const cardContentVariants = cva("flex flex-col justify-between gap-y-6", {
+  variants: {
+    size: {
+      xs: "h-32",
+      sm: "h-64",
+      default: "h-96",
+      lg: "h-[29rem]",
     },
-    defaultVariants: {
-      size: "default",
-    },
-  }
-)
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
 
 interface DashboardCardProps extends ComponentProps<"div"> {
   title: string

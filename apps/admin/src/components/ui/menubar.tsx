@@ -214,11 +214,7 @@ type MenubarLabelProps = ComponentProps<typeof MenubarPrimitive.Label> & {
   inset?: boolean
 }
 
-function MenubarLabel({
-  className,
-  inset,
-  ...props
-}: MenubarLabelProps) {
+function MenubarLabel({ className, inset, ...props }: MenubarLabelProps) {
   return (
     <MenubarPrimitive.Label
       data-slot="menubar-label"

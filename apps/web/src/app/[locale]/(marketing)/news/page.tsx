@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/libs/Api';
 import { Link } from '@/libs/I18nNavigation';
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 async function getArticles() {
   try {
     const res = await fetchApi('/public/content/articles', {
-      cache: 'no-store'
+      next: { revalidate: 60 },
     });
     if (!res.ok) {
       return [];
@@ -35,7 +36,7 @@ async function getArticles() {
 
 async function getNewsBanner() {
   try {
-    const res = await fetchApi('/public/banners/news', { cache: 'no-store' });
+    const res = await fetchApi('/public/banners/news', { next: { revalidate: 60 } });
     if (res.ok) {
       const json = await res.json();
       return Array.isArray(json.data) ? json.data : [json.data];
@@ -81,7 +82,7 @@ export default async function NewsPage(props: NewsPageProps) {
   ]);
 
   const allCategories = Array.from(
-    new Set(allArticles.map((article: any) => article.category).filter(Boolean))
+    new Set(allArticles.flatMap((article: any) => article.category ? [article.category] : []))
   ) as string[];
 
   // Filter articles by search query
@@ -125,15 +126,7 @@ export default async function NewsPage(props: NewsPageProps) {
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       {/* Hero Banner Section */}
-      <PageBannerSlider 
-        banners={banner || []} 
-        badgeText="Tin tức & Sự kiện" 
-        badgeIcon={
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 4a2 2 0 00-2-2m-2 3h.01M5.5 8.5H6m-1 3.5h.01M5.5 12H6" />
-          </svg>
-        }
-      />
+      <PageBannerSlider banners={banner || []} />
 
       {/* Main Content Layout */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
@@ -149,14 +142,17 @@ export default async function NewsPage(props: NewsPageProps) {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {displayedArticles.map((article: any, idx: number) => (
-                    <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all flex flex-col justify-between">
+                    <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between">
                       <div>
                         <div className="h-52 overflow-hidden bg-gray-100 relative p-3">
                           <Link href={`/news/${article.slug}`}>
-                            <img
+                            <Image
                               className="w-full h-full object-cover rounded-2xl cursor-pointer"
                               src={article.image || newsImages[idx % newsImages.length]}
                               alt={article.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              unoptimized
                             />
                           </Link>
                           <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
@@ -213,7 +209,7 @@ export default async function NewsPage(props: NewsPageProps) {
                           ...(searchQuery ? { search: searchQuery } : {}),
                           page: (page - 1).toString(),
                         }).toString()}`}
-                        className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:text-primary hover:border-primary transition-all cursor-pointer"
+                        className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:text-primary hover:border-primary transition-colors cursor-pointer"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -222,6 +218,7 @@ export default async function NewsPage(props: NewsPageProps) {
                       </Link>
                     ) : (
                       <button
+                        type="button"
                         disabled
                         className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed opacity-50"
                       >
@@ -244,7 +241,7 @@ export default async function NewsPage(props: NewsPageProps) {
                             ...(searchQuery ? { search: searchQuery } : {}),
                             page: pageNum.toString(),
                           }).toString()}`}
-                          className={`w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${
+                          className={`w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition-colors ${
                             isActive
                               ? 'bg-primary text-white shadow-sm'
                               : 'bg-white border border-gray-200 text-gray-600 hover:text-primary hover:border-primary'
@@ -263,7 +260,7 @@ export default async function NewsPage(props: NewsPageProps) {
                           ...(searchQuery ? { search: searchQuery } : {}),
                           page: (page + 1).toString(),
                         }).toString()}`}
-                        className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:text-primary hover:border-primary transition-all cursor-pointer"
+                        className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:text-primary hover:border-primary transition-colors cursor-pointer"
                       >
                         <span>Trang tiếp theo</span>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
@@ -272,6 +269,7 @@ export default async function NewsPage(props: NewsPageProps) {
                       </Link>
                     ) : (
                       <button
+                        type="button"
                         disabled
                         className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed opacity-50"
                       >

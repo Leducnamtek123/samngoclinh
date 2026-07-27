@@ -7,10 +7,12 @@ export interface CartItem {
   category?: string;
 }
 
+const CART_KEY = 'cart_items:v1';
+
 export const getCartItems = (): CartItem[] => {
   if (typeof window === 'undefined') return [];
   try {
-    const saved = localStorage.getItem('cart_items');
+    const saved = localStorage.getItem(CART_KEY) || localStorage.getItem('cart_items');
     return saved ? JSON.parse(saved) : [];
   } catch {
     return [];
@@ -43,24 +45,22 @@ export const addToCart = (
     });
   }
 
-  localStorage.setItem('cart_items', JSON.stringify(items));
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
   window.dispatchEvent(new Event('cart_updated'));
 };
 
 export const updateCartQuantity = (id: string, delta: number): CartItem[] => {
   if (typeof window === 'undefined') return [];
   const items = getCartItems();
-  const next = items
-    .map((item) => {
-      if (item.id === id) {
-        const q = item.quantity + delta;
-        return q > 0 ? { ...item, quantity: q } : null;
-      }
-      return item;
-    })
-    .filter(Boolean) as CartItem[];
+  const next = items.flatMap((item) => {
+    if (item.id === id) {
+      const q = item.quantity + delta;
+      return q > 0 ? [{ ...item, quantity: q }] : [];
+    }
+    return [item];
+  });
 
-  localStorage.setItem('cart_items', JSON.stringify(next));
+  localStorage.setItem(CART_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event('cart_updated'));
   return next;
 };
@@ -69,13 +69,14 @@ export const removeFromCart = (id: string): CartItem[] => {
   if (typeof window === 'undefined') return [];
   const items = getCartItems();
   const next = items.filter((item) => item.id !== id);
-  localStorage.setItem('cart_items', JSON.stringify(next));
+  localStorage.setItem(CART_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event('cart_updated'));
   return next;
 };
 
 export const clearCart = () => {
   if (typeof window === 'undefined') return;
+  localStorage.removeItem(CART_KEY);
   localStorage.removeItem('cart_items');
   window.dispatchEvent(new Event('cart_updated'));
 };

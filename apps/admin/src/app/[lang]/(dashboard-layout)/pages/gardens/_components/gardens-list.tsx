@@ -1,11 +1,22 @@
 "use client"
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Pencil, Trash2 } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
-import { EmptyState, EmptySearchResult } from "@/components/ui/feedback-components"
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  EmptySearchResult,
+  EmptyState,
+} from "@/components/ui/feedback-components"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface Garden {
   id: string
@@ -101,14 +112,18 @@ export function GardensList({
                     onCheckedChange={() => onToggleSelect(garden.id)}
                   />
                 </TableCell>
-                <TableCell className="font-mono text-xs">{garden.code}</TableCell>
+                <TableCell className="font-mono text-xs">
+                  {garden.code}
+                </TableCell>
                 <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
                   {garden.name}
                 </TableCell>
                 <TableCell className="text-sm">
                   {garden.location || "Kon Tum"}
                 </TableCell>
-                <TableCell className="font-medium">{garden.totalBeds}</TableCell>
+                <TableCell className="font-medium">
+                  {garden.totalBeds}
+                </TableCell>
                 <TableCell className="text-emerald-600 dark:text-emerald-400 font-medium">
                   {garden.activeBeds}
                 </TableCell>
@@ -128,7 +143,9 @@ export function GardensList({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {new Date(garden.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                  {new Date(garden.createdAt).toLocaleDateString("vi-VN", {
+                    timeZone: "Asia/Ho_Chi_Minh",
+                  })}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">

@@ -41,7 +41,6 @@ services:
             timeout: 10s
             retries: 3
             start_period: 30s
-        profiles: ["apis"]
         deploy:
             resources:
                 limits:
@@ -201,7 +200,6 @@ services:
             args:
                 - NEXT_PUBLIC_API_URL=http://localhost:3000/api
                 - NEXT_PUBLIC_HOME_PATHNAME=/dashboards/analytics
-        profiles: ["admin"]
         hostname: admin
         ports:
             - 3003:3003
@@ -227,8 +225,7 @@ services:
                 - NEXT_PUBLIC_API_URL=http://localhost:3000/api
                 - NEXT_PUBLIC_API_KEY=local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP
                 - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cmVsYXhlZC10dXJrZXktNjcuY2xlcmsuYWNjb3VudHMuZGV2JA
-                - NEXT_PUBLIC_LOGGING_LEVEL=debug
-        profiles: ["web"]
+                - NEXT_PUBLIC_LOGGING_LEVEL=info
         hostname: web
         ports:
             - 3002:3002

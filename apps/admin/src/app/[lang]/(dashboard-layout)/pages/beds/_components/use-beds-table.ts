@@ -1,9 +1,16 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { useParams, useRouter, usePathname, useSearchParams } from "next/navigation"
-import { fetchApi } from "@/lib/api"
+import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation"
+
 import type { LocaleType } from "@/types"
+
+import { fetchApi } from "@/lib/api"
 
 export interface Bed {
   id: string
@@ -120,8 +127,12 @@ export function useBedsTable(
   })
 
   // Selected Bed Code (Dashboard State)
-  const [selectedBedCode, setSelectedBedCode] = useState<string>(initialBeds[0]?.code || "")
-  const [activeTab, setActiveTab] = useState<"grid" | "trees" | "overview" | "logs">("grid")
+  const [selectedBedCode, setSelectedBedCode] = useState<string>(
+    initialBeds[0]?.code || ""
+  )
+  const [activeTab, setActiveTab] = useState<
+    "grid" | "trees" | "overview" | "logs"
+  >("grid")
   const [locations, setLocations] = useState<CultivationBedLocation[]>([])
   const [trees, setTrees] = useState<Tree[]>([])
   const [users, setUsers] = useState<any[]>([])
@@ -137,8 +148,12 @@ export function useBedsTable(
   const [onlyEmpty, setOnlyEmpty] = useState(false)
 
   // Selected cell & right sidebar details
-  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
-  const [selectedTreeDetails, setSelectedTreeDetails] = useState<any | null>(null)
+  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(
+    null
+  )
+  const [selectedTreeDetails, setSelectedTreeDetails] = useState<any | null>(
+    null
+  )
   const [selectedTreeCareLogs, setSelectedTreeCareLogs] = useState<any[]>([])
   const [loadingTreeDetails, setLoadingTreeDetails] = useState(false)
 
@@ -157,7 +172,9 @@ export function useBedsTable(
   const [qrCodeData, setQrCodeData] = useState("")
 
   // Tooltip details on hover
-  const [hoveredCell, setHoveredCell] = useState<CultivationBedLocation | null>(null)
+  const [hoveredCell, setHoveredCell] = useState<CultivationBedLocation | null>(
+    null
+  )
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
 
   // Sync beds and metadata state when initialBeds/metadata changes during rendering
@@ -181,20 +198,23 @@ export function useBedsTable(
     localMetadataRef.current = metadata
   }, [metadata])
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   // Debounced search effect
   useEffect(() => {
@@ -210,19 +230,31 @@ export function useBedsTable(
   const [loadingMore, setLoadingMore] = useState(false)
 
   const loadMoreBeds = async () => {
-    if (loadingMore || !localMetadataRef.current || !localMetadataRef.current.hasNext) return
+    if (
+      loadingMore ||
+      !localMetadataRef.current ||
+      !localMetadataRef.current.hasNext
+    )
+      return
     setLoadingMore(true)
     try {
       const nextPage = localMetadataRef.current.page + 1
 
       const queryParams = new URLSearchParams()
       queryParams.append("page", nextPage.toString())
-      queryParams.append("perPage", (localMetadataRef.current.perPage || 10).toString())
+      queryParams.append(
+        "perPage",
+        (localMetadataRef.current.perPage || 10).toString()
+      )
       if (searchVal) queryParams.append("search", searchVal)
-      if (statusFilter && statusFilter !== "all") queryParams.append("status", statusFilter)
-      if (gardenFilter && gardenFilter !== "all") queryParams.append("gardenCode", gardenFilter)
+      if (statusFilter && statusFilter !== "all")
+        queryParams.append("status", statusFilter)
+      if (gardenFilter && gardenFilter !== "all")
+        queryParams.append("gardenCode", gardenFilter)
 
-      const res = await fetchApi(`/user/cultivation/beds?${queryParams.toString()}`)
+      const res = await fetchApi(
+        `/user/cultivation/beds?${queryParams.toString()}`
+      )
       const payload = await res.json()
       if (res.status < 400 && payload.data) {
         const newBeds = Array.isArray(payload.data) ? payload.data : []
@@ -288,7 +320,9 @@ export function useBedsTable(
     setSelectedTreeCareLogs([])
     try {
       // 1. Fetch grid cells
-      const locRes = await fetchApi(`/user/cultivation/beds/${bedCode}/locations`)
+      const locRes = await fetchApi(
+        `/user/cultivation/beds/${bedCode}/locations`
+      )
       const locPayload = await locRes.json()
       if (locRes.status < 400 && Array.isArray(locPayload.data)) {
         setLocations(locPayload.data)
@@ -315,7 +349,7 @@ export function useBedsTable(
   const getOwnerName = (userId: string | undefined) => {
     if (!userId) return "Chưa có chủ"
     const matched = users.find((u) => u.id === userId)
-    return matched ? (matched.name || matched.username) : "Khách hàng"
+    return matched ? matched.name || matched.username : "Khách hàng"
   }
 
   const handleCellClick = async (loc: CultivationBedLocation) => {
@@ -327,7 +361,9 @@ export function useBedsTable(
       setLoadingTreeDetails(true)
       const matchedTree = trees.find((t) => t.code === loc.treeCode)
       try {
-        const detailRes = await fetchApi(`/user/cultivation/care-logs?treeCode=${loc.treeCode}`)
+        const detailRes = await fetchApi(
+          `/user/cultivation/care-logs?treeCode=${loc.treeCode}`
+        )
         const detailPayload = await detailRes.json()
 
         setSelectedTreeDetails({
@@ -443,7 +479,9 @@ export function useBedsTable(
     if (!activeBed) return
     setLoadingGrid(true)
     try {
-      const sickTrees = trees.filter(t => t.bedCode === selectedBedCode && t.healthStatus !== "healthy")
+      const sickTrees = trees.filter(
+        (t) => t.bedCode === selectedBedCode && t.healthStatus !== "healthy"
+      )
       if (sickTrees.length === 0) {
         setSuccessMsg("Tất cả cây sâm trong luống hiện tại đã khỏe mạnh!")
         setLoadingGrid(false)
@@ -479,7 +517,9 @@ export function useBedsTable(
       const results = await Promise.all(updatePromises)
       const successCount = results.filter(Boolean).length
 
-      setSuccessMsg(`Đã tưới nước hàng loạt thành công cho ${successCount} gốc sâm!`)
+      setSuccessMsg(
+        `Đã tưới nước hàng loạt thành công cho ${successCount} gốc sâm!`
+      )
       loadBedLocations(selectedBedCode)
     } catch (e) {
       console.error(e)
@@ -538,16 +578,21 @@ export function useBedsTable(
     if (!activeBed) return
     setLoadingGrid(true)
     try {
-      const res = await fetchApi(`/user/cultivation/beds/${activeBed.code}/locations/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          rows: gridRows,
-          cols: gridCols,
-        }),
-      })
+      const res = await fetchApi(
+        `/user/cultivation/beds/${activeBed.code}/locations/generate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rows: gridRows,
+            cols: gridCols,
+          }),
+        }
+      )
       if (res.status < 400) {
-        setSuccessMsg(`Đã khởi tạo lưới sơ đồ ${gridRows}x${gridCols} thành công!`)
+        setSuccessMsg(
+          `Đã khởi tạo lưới sơ đồ ${gridRows}x${gridCols} thành công!`
+        )
         loadBedLocations(activeBed.code)
       } else {
         setErrorMsg("Không thể khởi tạo lưới vị trí.")
@@ -560,7 +605,10 @@ export function useBedsTable(
     }
   }
 
-  const handleDrop = async (e: React.DragEvent, destLoc: CultivationBedLocation) => {
+  const handleDrop = async (
+    e: React.DragEvent,
+    destLoc: CultivationBedLocation
+  ) => {
     e.preventDefault()
     if (destLoc.status !== "empty") return
 
@@ -600,7 +648,10 @@ export function useBedsTable(
     const target = e.target as HTMLElement
     if (target.closest("button") || target.closest(".grid-cell-btn")) return
     setIsPanning(true)
-    panStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y }
+    panStartRef.current = {
+      x: e.clientX - panOffset.x,
+      y: e.clientY - panOffset.y,
+    }
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -642,8 +693,12 @@ export function useBedsTable(
       width: formData.width ? parseFloat(String(formData.width)) : undefined,
       length: formData.length ? parseFloat(String(formData.length)) : undefined,
       soilType: formData.soilType || undefined,
-      lastFertilizedAt: formData.lastFertilizedAt ? new Date(formData.lastFertilizedAt).toISOString() : undefined,
-      lastWateredAt: formData.lastWateredAt ? new Date(formData.lastWateredAt).toISOString() : undefined,
+      lastFertilizedAt: formData.lastFertilizedAt
+        ? new Date(formData.lastFertilizedAt).toISOString()
+        : undefined,
+      lastWateredAt: formData.lastWateredAt
+        ? new Date(formData.lastWateredAt).toISOString()
+        : undefined,
       description: formData.description || undefined,
     }
 
@@ -657,7 +712,10 @@ export function useBedsTable(
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Đã xảy ra lỗi khi tạo luống sâm" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || "Đã xảy ra lỗi khi tạo luống sâm",
+          }))
         } else {
           setBeds((prev) => [payload.data, ...prev])
           setSuccessMsg(`Đã tạo luống sâm "${formData.name}" thành công!`)
@@ -667,27 +725,42 @@ export function useBedsTable(
         }
       } else {
         if (!dialogState.selectedBed) return
-        const res = await fetchApi(`/user/cultivation/beds/${dialogState.selectedBed.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payloadBody),
-        })
+        const res = await fetchApi(
+          `/user/cultivation/beds/${dialogState.selectedBed.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadBody),
+          }
+        )
 
         const payload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: payload?.message || "Đã xảy ra lỗi khi cập nhật luống sâm" }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: payload?.message || "Đã xảy ra lỗi khi cập nhật luống sâm",
+          }))
         } else {
           setBeds((prev) =>
-            prev.map((b) => (b.id === dialogState.selectedBed!.id ? { ...b, ...payload.data } : b))
+            prev.map((b) =>
+              b.id === dialogState.selectedBed!.id
+                ? { ...b, ...payload.data }
+                : b
+            )
           )
-          setSuccessMsg(`Cập nhật thông tin luống "${formData.name}" thành công!`)
+          setSuccessMsg(
+            `Cập nhật thông tin luống "${formData.name}" thành công!`
+          )
           setDialogState((prev) => ({ ...prev, isOpen: false }))
           router.refresh()
         }
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Không thể kết nối đến máy chủ API" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: "Không thể kết nối đến máy chủ API",
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -715,7 +788,10 @@ export function useBedsTable(
 
       if (res.status >= 400) {
         const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa luống trồng. Hãy kiểm tra xem luống có chứa cây sâm nào không.")
+        setErrorMsg(
+          payload?.message ||
+            "Không thể xóa luống trồng. Hãy kiểm tra xem luống có chứa cây sâm nào không."
+        )
       } else {
         const remaining = beds.filter((b) => b.id !== id)
         setBeds(remaining)
@@ -760,7 +836,9 @@ export function useBedsTable(
         setBeds((prev) =>
           prev.map((b) => (b.id === bed.id ? { ...b, status: newStatus } : b))
         )
-        setSuccessMsg(`Đã ${newStatus === "active" ? "mở lại" : "tạm ẩn"} luống ${bed.name}!`)
+        setSuccessMsg(
+          `Đã ${newStatus === "active" ? "mở lại" : "tạm ẩn"} luống ${bed.name}!`
+        )
         router.refresh()
       }
     } catch (e) {
@@ -799,11 +877,19 @@ export function useBedsTable(
       ageYear: bed.ageYear,
       treeCount: bed.treeCount,
       maxTrees: bed.maxTrees || 100,
-      width: bed.width !== undefined && bed.width !== null ? String(bed.width) : "",
-      length: bed.length !== undefined && bed.length !== null ? String(bed.length) : "",
+      width:
+        bed.width !== undefined && bed.width !== null ? String(bed.width) : "",
+      length:
+        bed.length !== undefined && bed.length !== null
+          ? String(bed.length)
+          : "",
       soilType: bed.soilType || "",
-      lastFertilizedAt: bed.lastFertilizedAt ? bed.lastFertilizedAt.substring(0, 10) : "",
-      lastWateredAt: bed.lastWateredAt ? bed.lastWateredAt.substring(0, 10) : "",
+      lastFertilizedAt: bed.lastFertilizedAt
+        ? bed.lastFertilizedAt.substring(0, 10)
+        : "",
+      lastWateredAt: bed.lastWateredAt
+        ? bed.lastWateredAt.substring(0, 10)
+        : "",
       description: bed.description || "",
     })
     setDialogState({
@@ -826,7 +912,11 @@ export function useBedsTable(
       const treeName = tree?.name.toLowerCase() || ""
       const treeCode = tree?.code.toLowerCase() || ""
       const owner = getOwnerName(tree?.ownerUserId).toLowerCase()
-      if (!treeName.includes(q) && !treeCode.includes(q) && !owner.includes(q)) {
+      if (
+        !treeName.includes(q) &&
+        !treeCode.includes(q) &&
+        !owner.includes(q)
+      ) {
         return false
       }
     }
@@ -848,11 +938,19 @@ export function useBedsTable(
 
   // Stats calculation
   const totalGridCells = locations.length
-  const healthyCount = locations.filter((loc) => getCellTree(loc.treeCode)?.healthStatus === "healthy").length
-  const sickCount = locations.filter((loc) => getCellTree(loc.treeCode)?.healthStatus === "sick").length
-  const deadCount = locations.filter((loc) => getCellTree(loc.treeCode)?.healthStatus === "dead").length
+  const healthyCount = locations.filter(
+    (loc) => getCellTree(loc.treeCode)?.healthStatus === "healthy"
+  ).length
+  const sickCount = locations.filter(
+    (loc) => getCellTree(loc.treeCode)?.healthStatus === "sick"
+  ).length
+  const deadCount = locations.filter(
+    (loc) => getCellTree(loc.treeCode)?.healthStatus === "dead"
+  ).length
   const emptyCount = locations.filter((loc) => loc.status === "empty").length
-  const plantedCount = locations.filter((loc) => loc.status === "planted").length
+  const plantedCount = locations.filter(
+    (loc) => loc.status === "planted"
+  ).length
 
   const filteredBeds = beds
 

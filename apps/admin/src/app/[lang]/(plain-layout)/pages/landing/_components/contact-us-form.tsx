@@ -33,8 +33,6 @@ export function ContactUsForm() {
 
   const { isSubmitting } = form.formState
 
-
-
   return (
     <Form {...form}>
       <Card asChild>
@@ -101,4 +99,3 @@ async function onSubmit(_data: ContactUsType) {
     description: "Your message has been sent successfully!",
   })
 }
-

@@ -2,15 +2,30 @@
 
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+
+import type { LocaleType } from "@/types"
+
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
-import type { LocaleType } from "@/types"
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Garden {
   id: string
@@ -142,7 +157,10 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
                   Chưa có khu vườn nào khả dụng. Hãy tạo vườn trước!
                 </div>
               ) : (
-                <Select value={formData.gardenCode} onValueChange={handleSelectGarden}>
+                <Select
+                  value={formData.gardenCode}
+                  onValueChange={handleSelectGarden}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Chọn khu vườn" />
                   </SelectTrigger>
@@ -189,11 +207,17 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(ensureLocalizedPathname("/pages/beds", locale))}
+                onClick={() =>
+                  router.push(ensureLocalizedPathname("/pages/beds", locale))
+                }
               >
                 Hủy bỏ
               </Button>
-              <Button type="submit" disabled={loading || gardens.length === 0} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+              <Button
+                type="submit"
+                disabled={loading || gardens.length === 0}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+              >
                 {loading ? "Đang xử lý..." : "Thêm mới"}
               </Button>
             </div>

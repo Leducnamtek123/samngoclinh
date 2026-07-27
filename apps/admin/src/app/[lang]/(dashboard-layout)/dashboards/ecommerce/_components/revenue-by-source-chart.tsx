@@ -1,13 +1,10 @@
 "use client"
 
-import { useRecharts } from "@/hooks/use-recharts";
-
-
-
 import type { RevenueBySourceType } from "../types"
 
 import { useIsRtl } from "@/hooks/use-is-rtl"
 import { useRadius } from "@/hooks/use-radius"
+import { useRecharts } from "@/hooks/use-recharts"
 import { ChartContainer } from "@/components/ui/chart"
 
 export function RevenueBySourceChart({
@@ -15,14 +12,16 @@ export function RevenueBySourceChart({
 }: {
   data: RevenueBySourceType["sources"]
 }) {
-  const recharts = useRecharts();
-    const isRtl = useIsRtl()
+  const recharts = useRecharts()
+  const isRtl = useIsRtl()
   const radius = useRadius()
-  if (!recharts) return <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">Đang tải...</div>;
-  const { Bar, BarChart, XAxis, YAxis } = recharts;
-
-
-
+  if (!recharts)
+    return (
+      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+        Đang tải...
+      </div>
+    )
+  const { Bar, BarChart, XAxis, YAxis } = recharts
 
   const chartData = data.reduce((acc: { [key: string]: number }, source) => {
     acc[source.name.toLocaleLowerCase()] = source.value

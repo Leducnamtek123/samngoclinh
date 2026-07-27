@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useEvent } from "@/hooks/use-event"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Tree {
   id: string
@@ -40,9 +43,11 @@ interface UseTreesManagerProps {
   initialError?: string
 }
 
-import { useTranslation } from "@/providers/i18n-provider"
-
-export function useTreesManager({ initialTrees, beds, initialError }: UseTreesManagerProps) {
+export function useTreesManager({
+  initialTrees,
+  beds,
+  initialError,
+}: UseTreesManagerProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -67,9 +72,9 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         const res = await fetchApi("/admin/user/list")
         const payload = await res.json()
         if (res.status < 400) {
-          const list = Array.isArray(payload.data) 
-            ? payload.data 
-            : (payload.data?.data || [])
+          const list = Array.isArray(payload.data)
+            ? payload.data
+            : payload.data?.data || []
           setUsers(list)
         }
       } catch (err) {
@@ -79,20 +84,23 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
     fetchUsers()
   }, [])
 
-  const createQueryString = useCallback((newParams: Record<string, string | null>) => {
-    const updatedSearchParams = new URLSearchParams(searchParams.toString())
-    for (const [key, value] of Object.entries(newParams)) {
-      if (value === null || value === "all" || value === "") {
-        updatedSearchParams.delete(key)
-      } else {
-        updatedSearchParams.set(key, value)
+  const createQueryString = useCallback(
+    (newParams: Record<string, string | null>) => {
+      const updatedSearchParams = new URLSearchParams(searchParams.toString())
+      for (const [key, value] of Object.entries(newParams)) {
+        if (value === null || value === "all" || value === "") {
+          updatedSearchParams.delete(key)
+        } else {
+          updatedSearchParams.set(key, value)
+        }
       }
-    }
-    if (!newParams.hasOwnProperty("page")) {
-      updatedSearchParams.set("page", "1")
-    }
-    return updatedSearchParams.toString()
-  }, [searchParams])
+      if (!newParams.hasOwnProperty("page")) {
+        updatedSearchParams.set("page", "1")
+      }
+      return updatedSearchParams.toString()
+    },
+    [searchParams]
+  )
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
@@ -110,7 +118,9 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
   }, [searchQuery, onSearch])
 
   const handlePageChange = (newPage: number) => {
-    router.push(`${pathname}?${createQueryString({ page: newPage.toString() })}`)
+    router.push(
+      `${pathname}?${createQueryString({ page: newPage.toString() })}`
+    )
   }
 
   const handleStatusFilterChange = (val: string) => {
@@ -120,9 +130,11 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
   const getOwnerName = (userId: string | undefined) => {
     if (!userId) return "System"
     const matched = users.find((u) => u.id === userId)
-    return matched ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim() : userId
+    return matched
+      ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim()
+      : userId
   }
-  
+
   const [errorMsg, setErrorMsg] = useState(initialError || "")
   const [successMsg, setSuccessMsg] = useState("")
 
@@ -181,7 +193,7 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
       expectedHarvestAt: "",
       priceBought: "",
       ownerUserId: "",
-    }
+    },
   })
 
   const filteredTrees = trees
@@ -206,7 +218,7 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         expectedHarvestAt: "",
         priceBought: "0",
         ownerUserId: "",
-      }
+      },
     })
   }
 
@@ -225,12 +237,21 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         status: tree.status,
         healthStatus: tree.healthStatus || "healthy",
         plantedAt: tree.plantedAt ? tree.plantedAt.substring(0, 10) : "",
-        lastCareDate: tree.lastCareDate ? tree.lastCareDate.substring(0, 10) : "",
-        nextCareDate: tree.nextCareDate ? tree.nextCareDate.substring(0, 10) : "",
-        expectedHarvestAt: tree.expectedHarvestAt ? tree.expectedHarvestAt.substring(0, 10) : "",
-        priceBought: tree.priceBought !== undefined && tree.priceBought !== null ? String(tree.priceBought) : "",
+        lastCareDate: tree.lastCareDate
+          ? tree.lastCareDate.substring(0, 10)
+          : "",
+        nextCareDate: tree.nextCareDate
+          ? tree.nextCareDate.substring(0, 10)
+          : "",
+        expectedHarvestAt: tree.expectedHarvestAt
+          ? tree.expectedHarvestAt.substring(0, 10)
+          : "",
+        priceBought:
+          tree.priceBought !== undefined && tree.priceBought !== null
+            ? String(tree.priceBought)
+            : "",
         ownerUserId: tree.ownerUserId || "",
-      }
+      },
     })
   }
 
@@ -250,11 +271,21 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         ageYear: Number(dialogState.formData.ageYear),
         quantity: Number(dialogState.formData.quantity),
         healthStatus: dialogState.formData.healthStatus,
-        plantedAt: dialogState.formData.plantedAt ? new Date(dialogState.formData.plantedAt).toISOString() : undefined,
-        lastCareDate: dialogState.formData.lastCareDate ? new Date(dialogState.formData.lastCareDate).toISOString() : undefined,
-        nextCareDate: dialogState.formData.nextCareDate ? new Date(dialogState.formData.nextCareDate).toISOString() : undefined,
-        expectedHarvestAt: dialogState.formData.expectedHarvestAt ? new Date(dialogState.formData.expectedHarvestAt).toISOString() : undefined,
-        priceBought: dialogState.formData.priceBought ? parseInt(dialogState.formData.priceBought) : undefined,
+        plantedAt: dialogState.formData.plantedAt
+          ? new Date(dialogState.formData.plantedAt).toISOString()
+          : undefined,
+        lastCareDate: dialogState.formData.lastCareDate
+          ? new Date(dialogState.formData.lastCareDate).toISOString()
+          : undefined,
+        nextCareDate: dialogState.formData.nextCareDate
+          ? new Date(dialogState.formData.nextCareDate).toISOString()
+          : undefined,
+        expectedHarvestAt: dialogState.formData.expectedHarvestAt
+          ? new Date(dialogState.formData.expectedHarvestAt).toISOString()
+          : undefined,
+        priceBought: dialogState.formData.priceBought
+          ? parseInt(dialogState.formData.priceBought)
+          : undefined,
         ownerUserId: dialogState.formData.ownerUserId || undefined,
         status: dialogState.formData.status,
       }
@@ -272,7 +303,10 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
         })
         const dataPayload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || t("messages.errorOccurred") }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: dataPayload?.message || t("messages.errorOccurred"),
+          }))
         } else {
           setTrees((prev) => [dataPayload.data, ...prev])
           setSuccessMsg(t("messages.createSuccess"))
@@ -280,19 +314,27 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
           router.refresh()
         }
       } else if (dialogState.mode === "edit" && dialogState.selectedTree) {
-        const res = await fetchApi(`/user/cultivation/trees/${dialogState.selectedTree.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        })
+        const res = await fetchApi(
+          `/user/cultivation/trees/${dialogState.selectedTree.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }
+        )
         const dataPayload = await res.json()
         if (res.status >= 400) {
-          setDialogState((prev) => ({ ...prev, error: dataPayload?.message || t("messages.errorOccurred") }))
+          setDialogState((prev) => ({
+            ...prev,
+            error: dataPayload?.message || t("messages.errorOccurred"),
+          }))
         } else {
           setTrees((prev) =>
-            prev.map((t) => (t.id === dialogState.selectedTree!.id ? dataPayload.data : t))
+            prev.map((t) =>
+              t.id === dialogState.selectedTree!.id ? dataPayload.data : t
+            )
           )
           setSuccessMsg(t("messages.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
@@ -350,7 +392,7 @@ export function useTreesManager({ initialTrees, beds, initialError }: UseTreesMa
       formData: {
         ...prev.formData,
         [name]: type === "number" ? parseInt(value) || 0 : value,
-      }
+      },
     }))
   }
 

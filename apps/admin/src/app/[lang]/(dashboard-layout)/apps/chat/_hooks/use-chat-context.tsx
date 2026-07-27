@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext } from "react"
+
 import type { ChatContextType } from "../types"
 
 export const ChatContext = createContext<ChatContextType | undefined>(undefined)

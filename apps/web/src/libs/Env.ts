@@ -16,6 +16,7 @@ export const Env = createEnv({
     NEXT_PUBLIC_LOGGING_LEVEL: z
       .enum(['error', 'info', 'debug', 'warning', 'trace', 'fatal'])
       .default('info'),
+    // react-doctor-disable-next-line react-doctor/public-env-secret-name
     NEXT_PUBLIC_BETTER_STACK_SOURCE_TOKEN: z.string().optional(),
     NEXT_PUBLIC_BETTER_STACK_INGESTING_HOST: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),

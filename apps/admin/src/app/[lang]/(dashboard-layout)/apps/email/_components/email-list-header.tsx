@@ -1,8 +1,4 @@
-import {
-  useParams,
-  useRouter,
-  useSearchParams,
-} from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight, RotateCw } from "lucide-react"
 
 import { useEmailContext } from "../_hooks/use-email-context"

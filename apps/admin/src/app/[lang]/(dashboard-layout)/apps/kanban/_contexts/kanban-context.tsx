@@ -1,7 +1,6 @@
 "use client"
 
-import { useReducer, useState, useMemo } from "react"
-import { KanbanContext } from "../_hooks/use-kanban-context"
+import { useMemo, useReducer, useState } from "react"
 
 import type { ReactNode } from "react"
 import type {
@@ -14,10 +13,10 @@ import type {
 
 import { teamMembersData } from "../_data/team-members"
 
+import { KanbanContext } from "../_hooks/use-kanban-context"
 import { KanbanReducer } from "../_reducers/kanban-reducer"
 
 // Create Kanban context
-
 
 interface KanbanProviderProps {
   kanbanData: ColumnType[]
@@ -114,39 +113,40 @@ export function KanbanProvider({ kanbanData, children }: KanbanProviderProps) {
     dispatch({ type: "selectTask", task })
   }
 
-  const contextValue = useMemo(() => ({
-    kanbanState,
-    kanbanAddTaskSidebarIsOpen,
-    setKanbanAddTaskSidebarIsOpen,
-    kanbanUpdateTaskSidebarIsOpen,
-    setKanbanUpdateTaskSidebarIsOpen,
-    kanbanAddColumnSidebarIsOpen,
-    setKanbanAddColumnSidebarIsOpen,
-    kanbanUpdateColumnSidebarIsOpen,
-    setKanbanUpdateColumnSidebarIsOpen,
-    handleAddColumn,
-    handleUpdateColumn,
-    handleDeleteColumn,
-    handleAddTask,
-    handleUpdateTask,
-    handleDeleteTask,
-    handleReorderColumns,
-    handleReorderTasks,
-    handleSelectColumn,
-    handleSelectTask,
-  }), [
-    kanbanState,
-    kanbanAddTaskSidebarIsOpen,
-    kanbanUpdateTaskSidebarIsOpen,
-    kanbanAddColumnSidebarIsOpen,
-    kanbanUpdateColumnSidebarIsOpen
-  ])
+  const contextValue = useMemo(
+    () => ({
+      kanbanState,
+      kanbanAddTaskSidebarIsOpen,
+      setKanbanAddTaskSidebarIsOpen,
+      kanbanUpdateTaskSidebarIsOpen,
+      setKanbanUpdateTaskSidebarIsOpen,
+      kanbanAddColumnSidebarIsOpen,
+      setKanbanAddColumnSidebarIsOpen,
+      kanbanUpdateColumnSidebarIsOpen,
+      setKanbanUpdateColumnSidebarIsOpen,
+      handleAddColumn,
+      handleUpdateColumn,
+      handleDeleteColumn,
+      handleAddTask,
+      handleUpdateTask,
+      handleDeleteTask,
+      handleReorderColumns,
+      handleReorderTasks,
+      handleSelectColumn,
+      handleSelectTask,
+    }),
+    [
+      kanbanState,
+      kanbanAddTaskSidebarIsOpen,
+      kanbanUpdateTaskSidebarIsOpen,
+      kanbanAddColumnSidebarIsOpen,
+      kanbanUpdateColumnSidebarIsOpen,
+    ]
+  )
 
   return (
-    <KanbanContext.Provider
-      value={contextValue}
-    >
+    <KanbanContext.Provider value={contextValue}>
       {children}
-      </KanbanContext.Provider>
+    </KanbanContext.Provider>
   )
 }

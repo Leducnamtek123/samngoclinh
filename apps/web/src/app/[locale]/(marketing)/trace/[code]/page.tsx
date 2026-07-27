@@ -90,8 +90,8 @@ export default async function TracePage(props: TracePageProps) {
           </h2>
 
           <div className="divide-y divide-gray-100">
-            {careLogs.map((log: any, idx: number) => (
-              <div key={idx} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            {careLogs.map((log: any) => (
+              <div key={log.id || `${log.date}-${log.action}`} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-gray-400 w-32 shrink-0">{log.date}</span>
                 <span className="text-sm font-medium text-gray-800 flex-grow">{log.action}</span>
               </div>

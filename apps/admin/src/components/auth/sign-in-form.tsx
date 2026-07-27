@@ -15,6 +15,7 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 import { ensureRedirectPathname } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
+import { useTranslation } from "@/providers/i18n-provider"
 import { ButtonLoading } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -26,7 +27,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useTranslation } from "@/providers/i18n-provider"
 
 export function SignInForm() {
   const { t } = useTranslation()
@@ -170,7 +170,8 @@ export function SignInForm() {
                   />
                 </FormControl>
                 <FormLabel className="text-sm font-normal text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-                  {t("auth.rememberMe") && t("auth.rememberMe") !== "auth.rememberMe"
+                  {t("auth.rememberMe") &&
+                  t("auth.rememberMe") !== "auth.rememberMe"
                     ? t("auth.rememberMe")
                     : "Ghi nhớ đăng nhập 30 ngày trên thiết bị này"}
                 </FormLabel>
@@ -179,7 +180,11 @@ export function SignInForm() {
           />
         </div>
 
-        <ButtonLoading isLoading={isSubmitting} disabled={isDisabled} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+        <ButtonLoading
+          isLoading={isSubmitting}
+          disabled={isDisabled}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+        >
           {t("navigation.signIn") || "Đăng nhập"}
         </ButtonLoading>
       </form>

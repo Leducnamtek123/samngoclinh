@@ -1,9 +1,11 @@
 import { PrismaAdapter } from "@auth/prisma-adapter"
+
 import type { NextAuthOptions } from "next-auth"
 import type { Adapter } from "next-auth/adapters"
 
-import { db } from "@/lib/prisma"
 import { API_KEY } from "@/lib/api-key"
+import { db } from "@/lib/prisma"
+
 import CredentialsProvider from "next-auth/providers/credentials"
 
 declare module "next-auth" {
@@ -56,7 +58,7 @@ async function refreshAccessToken(token: any) {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
-        "Authorization": `Bearer ${token.refreshToken}`,
+        Authorization: `Bearer ${token.refreshToken}`,
       },
     })
 
@@ -101,13 +103,16 @@ export const authOptions: NextAuthOptions = {
 
         if (credentials.accessToken) {
           try {
-            const res = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`, {
-              method: "GET",
-              headers: {
-                "Authorization": `Bearer ${credentials.accessToken}`,
-                "x-api-key": API_KEY,
-              },
-            })
+            const res = await fetch(
+              `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${credentials.accessToken}`,
+                  "x-api-key": API_KEY,
+                },
+              }
+            )
 
             const payload = await res.json()
 
@@ -115,11 +120,22 @@ export const authOptions: NextAuthOptions = {
               return null
             }
 
-            const userRole = payload.data.role?.name || payload.data.role || (payload.data.email?.includes('superadmin') ? 'SUPER_ADMIN' : payload.data.email?.includes('admin') ? 'ADMIN' : 'USER');
+            const userRole =
+              payload.data.role?.name ||
+              payload.data.role ||
+              (payload.data.email?.includes("superadmin")
+                ? "SUPER_ADMIN"
+                : payload.data.email?.includes("admin")
+                  ? "ADMIN"
+                  : "USER")
 
             return {
               id: payload.data.id,
-              name: payload.data.fullName || payload.data.name || payload.data.username || "Admin",
+              name:
+                payload.data.fullName ||
+                payload.data.name ||
+                payload.data.username ||
+                "Admin",
               email: payload.data.email,
               avatar: payload.data.avatarUrl || null,
               status: "ONLINE",
@@ -135,49 +151,71 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const res = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/public/user/login/credential`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": API_KEY,
-            },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-              from: "website",
-              device: {
-                fingerprint: "admin-fingerprint"
-              }
-            }),
-          })
+          const res = await fetch(
+            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/public/user/login/credential`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": API_KEY,
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+                from: "website",
+                device: {
+                  fingerprint: "admin-fingerprint",
+                },
+              }),
+            }
+          )
 
           const payload = await res.json()
 
           if (res.status >= 400 || !payload.data?.tokens?.accessToken) {
-            throw new Error(payload?.message ?? "Invalid login credentials. Please check your information.")
+            throw new Error(
+              payload?.message ??
+                "Invalid login credentials. Please check your information."
+            )
           }
 
           const accessToken = payload.data.tokens.accessToken
           const refreshToken = payload.data.tokens.refreshToken || ""
           const isRemember = credentials.rememberMe !== "false"
-          const expiresIn = isRemember ? (30 * 24 * 60 * 60) : (payload.data.tokens.expiresIn || 86400)
+          const expiresIn = isRemember
+            ? 30 * 24 * 60 * 60
+            : payload.data.tokens.expiresIn || 86400
 
-          const profileRes = await fetch(`${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${accessToken}`,
-              "x-api-key": API_KEY,
-            },
-          })
+          const profileRes = await fetch(
+            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "x-api-key": API_KEY,
+              },
+            }
+          )
 
           const profilePayload = await profileRes.json()
 
-          const userEmail = profilePayload.data?.email || credentials.email;
-          const userRole = profilePayload.data?.role?.name || profilePayload.data?.role || (userEmail?.includes('superadmin') ? 'SUPER_ADMIN' : userEmail?.includes('admin') ? 'ADMIN' : 'USER');
+          const userEmail = profilePayload.data?.email || credentials.email
+          const userRole =
+            profilePayload.data?.role?.name ||
+            profilePayload.data?.role ||
+            (userEmail?.includes("superadmin")
+              ? "SUPER_ADMIN"
+              : userEmail?.includes("admin")
+                ? "ADMIN"
+                : "USER")
 
           return {
             id: profilePayload.data?.id || "admin-id",
-            name: profilePayload.data?.fullName || profilePayload.data?.name || profilePayload.data?.username || "Admin",
+            name:
+              profilePayload.data?.fullName ||
+              profilePayload.data?.name ||
+              profilePayload.data?.username ||
+              "Admin",
             email: userEmail,
             avatar: profilePayload.data?.avatarUrl || null,
             status: "ONLINE",
@@ -188,7 +226,9 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (e: unknown) {
           throw new Error(
-            e instanceof Error ? e.message : "Login failed. Unable to connect to server."
+            e instanceof Error
+              ? e.message
+              : "Login failed. Unable to connect to server."
           )
         }
       },
@@ -233,7 +273,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.error) {
-        (session as any).error = token.error
+        ;(session as any).error = token.error
       }
 
       return session
@@ -241,10 +281,10 @@ export const authOptions: NextAuthOptions = {
   },
 }
 
-if (typeof window === 'undefined') {
-  (globalThis as any).getServerSessionToken = async () => {
-    const { getServerSession } = require("next-auth");
-    const session = await getServerSession(authOptions);
-    return (session?.user as any)?.accessToken || null;
-  };
+if (typeof window === "undefined") {
+  ;(globalThis as any).getServerSessionToken = async () => {
+    const { getServerSession } = require("next-auth")
+    const session = await getServerSession(authOptions)
+    return (session?.user as any)?.accessToken || null
+  }
 }

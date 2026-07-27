@@ -1,12 +1,19 @@
 "use client"
 
 import React from "react"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
-import { useTranslation } from "@/providers/i18n-provider"
 
-export function TableSkeleton({ cols = 5, rows = 5 }: { cols?: number; rows?: number }) {
+import { useTranslation } from "@/providers/i18n-provider"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+
+export function TableSkeleton({
+  cols = 5,
+  rows = 5,
+}: {
+  cols?: number
+  rows?: number
+}) {
   const { t } = useTranslation()
   return (
     <div className="space-y-4 w-full animate-pulse">
@@ -31,7 +38,10 @@ export function TableSkeleton({ cols = 5, rows = 5 }: { cols?: number; rows?: nu
         {/* Rows */}
         <div className="divide-y divide-border">
           {Array.from({ length: rows }).map((_, r) => (
-            <div key={r} className="p-4 flex justify-between gap-4 items-center">
+            <div
+              key={r}
+              className="p-4 flex justify-between gap-4 items-center"
+            >
               <Skeleton className="h-4 flex-1 max-w-[150px] font-medium" />
               <Skeleton className="h-4 flex-1 max-w-[120px]" />
               <Skeleton className="h-4 flex-1 max-w-[80px]" />
@@ -47,11 +57,21 @@ export function TableSkeleton({ cols = 5, rows = 5 }: { cols?: number; rows?: nu
         <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
           <Skeleton className="h-4 w-48" />
           <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="sm" disabled className="h-8 text-xs flex items-center gap-1 opacity-50">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled
+              className="h-8 text-xs flex items-center gap-1 opacity-50"
+            >
               <ChevronLeft className="h-3.5 w-3.5" />
               <span>{t("common.actions.back")}</span>
             </Button>
-            <Button variant="outline" size="sm" disabled className="h-8 text-xs flex items-center gap-1 opacity-50">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled
+              className="h-8 text-xs flex items-center gap-1 opacity-50"
+            >
               <span>{t("common.actions.confirm")}</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>
@@ -80,7 +100,10 @@ export function BedsSkeleton() {
         </div>
         <div className="flex-1 space-y-3 overflow-hidden">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="p-4 border border-border/60 rounded-xl space-y-3 bg-muted/10">
+            <div
+              key={i}
+              className="p-4 border border-border/60 rounded-xl space-y-3 bg-muted/10"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Skeleton className="h-4 w-4 rounded-full" />

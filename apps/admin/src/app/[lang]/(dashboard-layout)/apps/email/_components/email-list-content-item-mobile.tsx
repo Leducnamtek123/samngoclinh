@@ -94,11 +94,7 @@ export function EmailListContentItemMoblie({
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="More actions"
-          >
+          <Button variant="ghost" size="icon" aria-label="More actions">
             <EllipsisVertical className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>

@@ -1,15 +1,16 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { toast } from "sonner"
 import { Check, ImageIcon, LinkIcon, Palette, Type, Unlink } from "lucide-react"
-import { fetchApi } from "@/lib/api"
 
 import type { DynamicIconNameType } from "@/types"
 import type { ChainedCommands, Editor } from "@tiptap/react"
-import type { FormEvent } from "react"
 
+import { fetchApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { InputFile } from "@/components/ui/input-file"
@@ -180,8 +181,6 @@ function AlignmentHandler({
   )
 }
 
-import { useTranslation } from "@/providers/i18n-provider"
-
 function ImageHandler({ editor }: { editor: Editor }) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
@@ -204,11 +203,11 @@ function ImageHandler({ editor }: { editor: Editor }) {
         editor.chain().focus().setImage({ src: payload.data.url }).run()
         setIsOpen(false)
       } else {
-        alert(payload?.message || t("messages.errorOccurred"))
+        toast.error(payload?.message || t("messages.errorOccurred"))
       }
     } catch (err) {
       console.error(err)
-      alert(t("messages.networkError"))
+      toast.error(t("messages.networkError"))
     } finally {
       setUploading(false)
     }
@@ -229,11 +228,17 @@ function ImageHandler({ editor }: { editor: Editor }) {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-3">
         <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{t("common.actions.import", "Upload Image")}</p>
+          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+            {t("common.actions.import", "Upload Image")}
+          </p>
           <div className="flex items-center gap-2">
             <InputFile onValueChange={handleFileChange} disabled={uploading} />
           </div>
-          {uploading && <p className="text-[10px] text-emerald-600 animate-pulse font-medium">{t("common.status.pending")}</p>}
+          {uploading && (
+            <p className="text-[10px] text-emerald-600 animate-pulse font-medium">
+              {t("common.status.pending")}
+            </p>
+          )}
         </div>
       </PopoverContent>
     </Popover>
@@ -265,12 +270,15 @@ function LinkHandler({ editor }: { editor: Editor }) {
       <Unlink className="h-4 w-4" />
     </Button>
   ) : (
-    <Popover open={isOpen} onOpenChange={(open) => {
-      setIsOpen(open)
-      if (open) {
-        setLinkUrl(editor.getAttributes("link").href || "")
-      }
-    }}>
+    <Popover
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open)
+        if (open) {
+          setLinkUrl(editor.getAttributes("link").href || "")
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           type="button"
@@ -283,7 +291,9 @@ function LinkHandler({ editor }: { editor: Editor }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex flex-col gap-2 w-80 p-3">
-        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{t("common.actions.add", "Insert Link")}</p>
+        <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+          {t("common.actions.add", "Insert Link")}
+        </p>
         <div className="flex gap-2">
           <Input
             autoFocus

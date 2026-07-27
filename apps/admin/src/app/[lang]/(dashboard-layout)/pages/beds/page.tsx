@@ -1,8 +1,11 @@
 import { Suspense } from "react"
+
 import type { Metadata } from "next"
+
 import { fetchApi } from "@/lib/api"
-import { BedsTable } from "./_components/beds-table"
+
 import { BedsSkeleton } from "@/components/ui/loading-skeletons"
+import { BedsTable } from "./_components/beds-table"
 
 export const metadata: Metadata = {
   title: "Luống | Sâm Ngọc Linh Admin",
@@ -66,14 +69,19 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("status", status)
-    if (gardenCode && gardenCode !== "all") queryParams.append("gardenCode", gardenCode)
+    if (gardenCode && gardenCode !== "all")
+      queryParams.append("gardenCode", gardenCode)
 
-    const res = await fetchApi(`/user/cultivation/beds?${queryParams.toString()}`)
+    const res = await fetchApi(
+      `/user/cultivation/beds?${queryParams.toString()}`
+    )
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load beds"
     } else {
-      beds = Array.isArray(payload.data?.items) ? payload.data.items : (payload.data || [])
+      beds = Array.isArray(payload.data?.items)
+        ? payload.data.items
+        : payload.data || []
       metadata = payload.metadata || null
     }
 
@@ -90,8 +98,8 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
   return (
     <div className="w-full p-4 md:p-6">
       <Suspense fallback={<BedsSkeleton />}>
-        <BedsTable 
-          initialBeds={beds} 
+        <BedsTable
+          initialBeds={beds}
           metadata={metadata}
           gardens={gardens}
           errorMsg={errorMsg}
