@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { ChevronLeft, ChevronRight, Search } from "lucide-react"
+import { Search } from "lucide-react"
 
 import { useEvent } from "@/hooks/use-event"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ToastCard } from "@/components/ui/feedback-components"
@@ -210,36 +211,7 @@ export function OrdersTable({
           </Table>
 
           {/* Pagination Controls */}
-          {metadata && (
-            <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
-                {metadata.count} đơn hàng)
-              </span>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!metadata.hasPrevious}
-                  onClick={() => handlePageChange(metadata.page - 1)}
-                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                  <span>Trước</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!metadata.hasNext}
-                  onClick={() => handlePageChange(metadata.page + 1)}
-                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-                >
-                  <span>Kế tiếp</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          )}
+          <Pagination metadata={metadata} onPageChange={handlePageChange} />
         </div>
       )}
 

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Cropper from "react-easy-crop"
 import {
@@ -25,6 +26,7 @@ import {
 import { ToastCard } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Pagination } from "@/components/ui/app-pagination"
 import {
   Select,
   SelectContent,
@@ -73,7 +75,9 @@ export function BannersManager({
   const {
     banners,
     errorMsg,
+    setErrorMsg,
     successMsg,
+    setSuccessMsg,
     isDialogOpen,
     setIsDialogOpen,
     dialogMode,
@@ -204,8 +208,21 @@ function BannersTable({
   handleEditClick,
   setDeletingId,
 }: BannersTableProps) {
+  const [page, setPage] = useState(1)
+  const perPage = 10
+  const totalPages = Math.ceil(sortedBanners.length / perPage) || 1
+  const paginatedBanners = sortedBanners.slice((page - 1) * perPage, page * perPage)
+  const metadata = {
+    page,
+    perPage,
+    totalPage: totalPages,
+    count: sortedBanners.length,
+    hasNext: page < totalPages,
+    hasPrevious: page > 1,
+  }
+
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm p-4">
       <Table>
         <TableHeader className="bg-slate-50">
           <TableRow>
@@ -230,7 +247,7 @@ function BannersTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedBanners.length === 0 ? (
+          {paginatedBanners.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={6}
@@ -240,7 +257,7 @@ function BannersTable({
               </TableCell>
             </TableRow>
           ) : (
-            sortedBanners.map((banner) => (
+            paginatedBanners.map((banner) => (
               <TableRow key={banner.id} className="hover:bg-slate-50/50">
                 <TableCell className="font-bold text-slate-700">
                   <span className="bg-slate-100 text-slate-800 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
@@ -299,6 +316,7 @@ function BannersTable({
           )}
         </TableBody>
       </Table>
+      <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
     </div>
   )
 }
