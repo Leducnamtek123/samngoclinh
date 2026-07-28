@@ -136,6 +136,13 @@ export class UserDto extends DatabaseResponseDto {
     gender?: EnumUserGender;
 
     @ApiProperty({
+        example: faker.date.past(),
+        required: false,
+    })
+    @Expose()
+    birthDate?: Date;
+
+    @ApiProperty({
         required: false,
         description: 'Last login time of user',
         example: faker.date.recent(),

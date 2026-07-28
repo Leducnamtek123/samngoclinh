@@ -22,6 +22,16 @@ export const UserDocParamsMobileNumberId: ApiParamOptions[] = [
     },
 ];
 
+export const UserDocParamsAddressId: ApiParamOptions[] = [
+    {
+        name: 'addressId',
+        allowEmptyValue: false,
+        required: true,
+        type: 'string',
+        example: faker.database.mongodbObjectId(),
+    },
+];
+
 export const UserDocQueryList: ApiQueryOptions[] = [
     {
         name: 'roleId',

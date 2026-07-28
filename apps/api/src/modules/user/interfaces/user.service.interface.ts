@@ -40,8 +40,12 @@ import {
 import { UserListResponseDto } from '@modules/user/dtos/response/user.list.response.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.response.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
-import { IUser } from '@modules/user/interfaces/user.interface';
+import {
+    IUser,
+    IUserAddressCreate,
+} from '@modules/user/interfaces/user.interface';
 import { EnumUserLoginWith, Prisma } from '@generated/prisma-client';
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
@@ -125,6 +129,14 @@ export interface IUserService {
         userId: string,
         mobileNumberId: string
     ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+    addAddress(
+        userId: string,
+        address: IUserAddressCreate
+    ): Promise<IResponseReturn<UserAddressResponseDto>>;
+    deleteAddress(
+        userId: string,
+        addressId: string
+    ): Promise<IResponseReturn<UserAddressResponseDto>>;
     claimUsername(
         userId: string,
         { username }: UserClaimUsernameRequestDto

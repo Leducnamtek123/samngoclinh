@@ -12,6 +12,11 @@ import RegisterScreen from './screens/RegisterScreen';
 import LoginScreen from './screens/LoginScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import PersonalInfoScreen from './screens/PersonalInfoScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import AddAddressScreen from './screens/AddAddressScreen';
+import KycScreen from './screens/KycScreen';
+import AddKycScreen from './screens/AddKycScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import { colors } from './utils/theme';
 
@@ -57,6 +62,23 @@ function RootNavigator() {
         component={ChangePasswordScreen}
         options={{ title: 'Đổi mật khẩu', headerShadowVisible: false }}
       />
+      <Stack.Screen
+        name="PersonalInfo"
+        component={PersonalInfoScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddAddress"
+        component={AddAddressScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="Kyc" component={KycScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AddKyc" component={AddKycScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="ComingSoon"
         component={ComingSoonScreen}
