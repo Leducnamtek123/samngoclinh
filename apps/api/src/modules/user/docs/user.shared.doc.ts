@@ -10,7 +10,11 @@ import {
 import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 import { FileUploadSingleRequestDto } from '@common/file/dtos/file.single.dto';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
-import { UserDocParamsMobileNumberId } from '@modules/user/constants/user.doc.constant';
+import {
+    UserDocParamsAddressId,
+    UserDocParamsMobileNumberId,
+} from '@modules/user/constants/user.doc.constant';
+import { UserAddAddressRequestDto } from '@modules/user/dtos/request/user.address.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
@@ -28,6 +32,7 @@ import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile
 import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { HttpStatus, applyDecorators } from '@nestjs/common';
 
@@ -234,6 +239,50 @@ export function UserSharedDeleteMobileNumberDoc(): MethodDecorator {
         }),
         DocResponse('user.deleteMobileNumber', {
             dto: UserMobileNumberResponseDto,
+        })
+    );
+}
+
+export function UserSharedAddAddressDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user add address',
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserAddAddressRequestDto,
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.addAddress', {
+            httpStatus: HttpStatus.CREATED,
+            dto: UserAddressResponseDto,
+        })
+    );
+}
+
+export function UserSharedDeleteAddressDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user delete address',
+        }),
+        DocRequest({
+            params: UserDocParamsAddressId,
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.deleteAddress', {
+            dto: UserAddressResponseDto,
         })
     );
 }

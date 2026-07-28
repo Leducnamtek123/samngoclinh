@@ -1,13 +1,14 @@
 import { IsArray, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class IdentityVerificationSubmitRequestDto {
+    @IsOptional()
     @IsString()
-    @MinLength(1)
-    fullName: string;
+    fullName?: string;
 
+    @IsOptional()
     @IsString()
     @MinLength(6)
-    identityNumber: string;
+    identityNumber?: string;
 
     @IsArray()
     @IsString({ each: true })

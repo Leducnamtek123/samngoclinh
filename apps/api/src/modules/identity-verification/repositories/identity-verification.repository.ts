@@ -25,8 +25,8 @@ export class IdentityVerificationRepository {
             data: {
                 code,
                 userId,
-                fullName: payload.fullName,
-                identityNumber: payload.identityNumber,
+                fullName: payload.fullName ?? '',
+                identityNumber: payload.identityNumber ?? '',
                 status: 'pending',
                 frontImageUrl: payload.frontImageUrl,
                 backImageUrl: payload.backImageUrl,

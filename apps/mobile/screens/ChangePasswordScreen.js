@@ -8,7 +8,7 @@ import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
 export default function ChangePasswordScreen({ navigation }) {
-  const { changePassword } = useAuth();
+  const { changePassword, signOut } = useAuth();
   const alert = useAlert();
 
   const [oldPassword, setOldPassword] = useState('');
@@ -17,16 +17,34 @@ export default function ChangePasswordScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
-    if (newPassword.length < 8)
-      return alert.error('Mật khẩu chưa hợp lệ', 'Mật khẩu mới tối thiểu 8 ký tự.');
-    if (newPassword !== confirmPassword)
+    if (!oldPassword) return alert.error('Thiếu thông tin', 'Vui lòng nhập mật khẩu hiện tại.');
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(newPassword)) {
+      return alert.error(
+        'Mật khẩu chưa hợp lệ',
+        'Mật khẩu mới tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số.'
+      );
+    }
+    if (newPassword === oldPassword) {
+      return alert.error('Mật khẩu chưa hợp lệ', 'Mật khẩu mới phải khác mật khẩu hiện tại.');
+    }
+    if (newPassword !== confirmPassword) {
       return alert.error('Mật khẩu không khớp', 'Mật khẩu xác nhận không khớp.');
+    }
     setLoading(true);
     try {
       await changePassword({ oldPassword, newPassword });
-      alert.success('Thành công', 'Mật khẩu đã được đổi.', {
-        onConfirm: () => navigation.goBack(),
-      });
+      // Backend xoá toàn bộ session khi đổi mật khẩu -> đăng xuất & yêu cầu đăng nhập lại.
+      alert.success(
+        'Đổi mật khẩu thành công',
+        'Vì lý do bảo mật, vui lòng đăng nhập lại bằng mật khẩu mới.',
+        {
+          confirmText: 'Đăng nhập',
+          onConfirm: async () => {
+            await signOut();
+            navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+          },
+        }
+      );
     } catch (e) {
       alert.error('Đổi mật khẩu thất bại', e?.message || 'Vui lòng thử lại.');
     } finally {
@@ -47,7 +65,7 @@ export default function ChangePasswordScreen({ navigation }) {
         label="Mật khẩu mới"
         value={newPassword}
         onChangeText={setNewPassword}
-        placeholder="Tối thiểu 8 ký tự"
+        placeholder="≥ 8 ký tự, có chữ hoa, thường và số"
         secureTextEntry
       />
       <FormField

@@ -91,10 +91,31 @@ model UserMobileNumber {
   user          User           @relation("UserMobileNumberUser", fields: [userId], references: [id])
   verifications Verification[] @relation("UserMobileNumberVerification")
 
-  @@unique(fields: [userId, countryId, phoneCode, number])
+  @@unique(fields: [countryId, phoneCode, number])
   @@index(fields: [userId, isVerified])
   @@map("UserMobiles")
 }
+
+model UserAddress {
+  id        String    @id @default(uuid())
+  userId    String
+  label     String?
+  recipient String?
+  phone     String?
+  detail    String
+  isDefault Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  createdBy String?
+  updatedAt DateTime  @updatedAt
+  updatedBy String?
+  deletedAt DateTime?
+  deletedBy String?
+  user      User      @relation("UserAddresses", fields: [userId], references: [id])
+
+  @@index(fields: [userId, deletedAt])
+  @@map("UserAddresses")
+}
+
 
 model User {
   id              String @id @default(uuid())
@@ -113,6 +134,7 @@ model User {
   signUpWith      EnumUserSignUpWith
   status          EnumUserStatus     @default(active)
   gender          EnumUserGender?
+  birthDate       DateTime?
   countryId       String
   lastLoginAt     DateTime?
   lastIPAddress   String?
@@ -129,6 +151,7 @@ model User {
   deletedBy String?
 
   mobileNumbers           UserMobileNumber[]         @relation("UserMobileNumberUser")
+  addresses               UserAddress[]              @relation("UserAddresses")
   verifications           Verification[]             @relation("UserVerifications")
   passwordHistories       PasswordHistory[]          @relation("UserPasswordHistories")
   activityLogs            ActivityLog[]              @relation("UserActivityLogs")
