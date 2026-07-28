@@ -78,7 +78,7 @@ export default function KycApprovalsPage() {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/approve`,
-        method: "PUT",
+        method: "PATCH",
       })
       toast.success("Phê duyệt eKYC thành công")
       setSelectedKyc(null)
@@ -96,8 +96,8 @@ export default function KycApprovalsPage() {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/reject`,
-        data: { reason: rejectReason },
-        method: "POST",
+        data: { note: rejectReason },
+        method: "PATCH",
       })
       toast.success("Đã từ chối hồ sơ eKYC")
       setSelectedKyc(null)
