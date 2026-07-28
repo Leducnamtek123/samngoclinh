@@ -9,7 +9,7 @@
     "delete": "Term policy deleted successfully.",
     "publish": "Term policy published successfully.",
     "accept": "Term policy accepted successfully.",
-    "generateContentPresign": "Presigned URL for content upload generated successfully.",
+    "uploadContent": "Term policy content uploaded successfully.",
     "error": {
         "notFound": "Term policy not found.",
         "exist": "A term policy with this name already exists.",

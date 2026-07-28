@@ -17,11 +17,12 @@ const origin = (
   DEFAULT_ORIGIN
 ).replace(/\/+$/, '');
 
+// Origin gốc (không kèm /api/v1) — dùng để ghép URL file tĩnh, vd ảnh /uploads/...
+export const API_ORIGIN = origin;
+
 // Global prefix `/api` + URI versioning `/v1` (khớp main.ts của backend).
 export const API_BASE_URL = `${origin}/api/v1`;
 
-// Một số endpoint là VERSION_NEUTRAL (không có `/v1`), vd identity-verification.
-export const API_BASE_NEUTRAL = `${origin}/api`;
 
 // Header x-api-key bắt buộc cho mọi endpoint (@ApiKeyProtected). Giá trị dạng `key:secret`.
 export const API_KEY = extra.apiKey || process.env.EXPO_PUBLIC_API_KEY || '';

@@ -1,5 +1,4 @@
 import { AppUnknownException } from '@app/exceptions/app.unknown.exception';
-import { AwsServiceUnavailableException } from '@common/aws/exceptions/aws.service-unavailable.exception';
 import { CountryNotFoundException } from '@modules/country/exceptions/country.not-found.exception';
 import { RoleNotFoundException } from '@modules/role/exceptions/role.not-found.exception';
 import { SessionNotFoundException } from '@modules/session/exceptions/session.not-found.exception';
@@ -37,15 +36,13 @@ import { UserUsernameContainBadWordException } from '@modules/user/exceptions/us
 import { UserUsernameExistException } from '@modules/user/exceptions/user.username-exist.exception';
 import { UserUsernameNotAllowedException } from '@modules/user/exceptions/user.username-not-allowed.exception';
 import { UserVerificationEmailResendLimitExceededException } from '@modules/user/exceptions/user.verification-email-resend-limit-exceeded.exception';
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
-import { IAwsS3, IAwsS3Presign } from '@common/aws/interfaces/aws.interface';
-import { AwsS3Service } from '@common/aws/services/aws.s3.service';
 import { DatabaseIdResponseDto } from '@common/database/dtos/response/database.id.response.dto';
 import {
     EnumFileExtensionDocument,
     EnumFileExtensionImage,
 } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
+import { RequestParamRequiredException } from '@common/request/exceptions/request.param-required.exception';
 import { FileService } from '@common/file/services/file.service';
 import { HelperService } from '@common/helper/services/helper.service';
 import {
@@ -84,13 +81,9 @@ import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.cla
 import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
 import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
-import {
-    UserUpdateProfilePhotoRequestDto,
-    UserUpdateProfileRequestDto,
-} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserUpdateProfileRequestDto } from '@modules/user/dtos/request/user.profile.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
 import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
 import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
@@ -105,6 +98,8 @@ import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.res
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
+import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
@@ -114,7 +109,7 @@ import {
 import { IUserService } from '@modules/user/interfaces/user.service.interface';
 import { UserRepository } from '@modules/user/repositories/user.repository';
 import { UserUtil } from '@modules/user/utils/user.util';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
     EnumUserLoginFrom,
     EnumUserLoginWith,
@@ -145,7 +140,6 @@ import { IActivityLogMetadata } from '@modules/activity-log/interfaces/activity-
 
 @Injectable()
 export class UserService implements IUserService {
-    private readonly logger = new Logger(UserService.name);
 
     private readonly userRoleName: string;
     private readonly userCountryName: string;
@@ -156,7 +150,6 @@ export class UserService implements IUserService {
         private readonly countryRepository: CountryRepository,
         private readonly roleRepository: RoleRepository,
         private readonly passwordHistoryRepository: PasswordHistoryRepository,
-        private readonly awsS3Service: AwsS3Service,
         private readonly helperService: HelperService,
         private readonly fileService: FileService,
         private readonly notificationUtil: NotificationUtil,
@@ -452,58 +445,6 @@ export class UserService implements IUserService {
         }
     }
 
-    async generatePhotoProfilePresign(
-        userId: string,
-        { extension, size }: UserGeneratePhotoProfileRequestDto
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>> {
-        const key: string =
-            this.userUtil.createRandomFilenamePhotoProfileWithPath(userId, {
-                extension,
-            });
-
-        const aws: IAwsS3Presign | null =
-            await this.awsS3Service.presignPutItem(
-                {
-                    key,
-                    size,
-                },
-                {
-                    forceUpdate: true,
-                }
-            );
-
-        if (!aws) {
-            throw new AwsServiceUnavailableException();
-        }
-
-        return { data: aws };
-    }
-
-    async updatePhotoProfile(
-        userId: string,
-        { photoKey, size }: UserUpdateProfilePhotoRequestDto
-    ): Promise<void> {
-        const requestLog: IRequestLog =
-            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
-
-        try {
-            const aws: IAwsS3 = this.awsS3Service.mapPresign({
-                key: photoKey,
-                size,
-            });
-
-            await this.userRepository.updatePhotoProfile(
-                userId,
-                aws,
-                requestLog
-            );
-
-            return;
-        } catch (err: unknown) {
-            throw new AppUnknownException(err);
-        }
-    }
-
     async deleteSelf(userId: string): Promise<void> {
         const requestLog: IRequestLog =
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
@@ -696,6 +637,54 @@ export class UserService implements IUserService {
         }
     }
 
+    async getIdentityDocument(
+        userId: string
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto | null>> {
+        const document =
+            await this.userRepository.findIdentityDocument(userId);
+
+        return {
+            data: document
+                ? this.userUtil.mapIdentityDocument(document)
+                : null,
+        };
+    }
+
+    async saveIdentityDocument(
+        userId: string,
+        frontFile: IFile | null,
+        backFile: IFile | null
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
+        if (!frontFile) {
+            throw new RequestParamRequiredException('front');
+        }
+        if (!backFile) {
+            throw new RequestParamRequiredException('back');
+        }
+
+        try {
+            const saved = await this.userRepository.saveIdentityDocument(
+                userId,
+                {
+                    frontImageUrl: this.fileService.saveFileToLocal(
+                        frontFile,
+                        'identity'
+                    ),
+                    backImageUrl: this.fileService.saveFileToLocal(
+                        backFile,
+                        'identity'
+                    ),
+                }
+            );
+
+            return {
+                data: this.userUtil.mapIdentityDocument(saved),
+            };
+        } catch (err: unknown) {
+            throw new AppUnknownException(err);
+        }
+    }
+
     async deleteAddress(
         userId: string,
         addressId: string
@@ -772,29 +761,13 @@ export class UserService implements IUserService {
                     extension,
                 });
 
-            const aws: IAwsS3 | null = await this.awsS3Service.putItem({
-                key,
-                size: file.size,
-                file: file.buffer,
-            });
+            const photo = this.fileService.saveBufferToKey(file.buffer, key);
 
-            if (aws) {
-                this.logger.debug(
-                    {
-                        userId,
-                        fileSize: file.size,
-                        awsKey: aws.key,
-                        awsBucket: aws.bucket,
-                    },
-                    `Photo profile uploaded to S3 with key: ${key}`
-                );
-
-                await this.userRepository.updatePhotoProfile(
-                    userId,
-                    aws,
-                    requestLog
-                );
-            }
+            await this.userRepository.updatePhotoProfile(
+                userId,
+                photo,
+                requestLog
+            );
 
             return;
         } catch (err: unknown) {
@@ -1256,6 +1229,97 @@ export class UserService implements IUserService {
                 reference: emailVerification.reference,
                 link: emailVerification.encryptedLink,
                 expiredInMinutes: emailVerification.expiredInMinutes,
+            });
+
+            return;
+        } catch (err: unknown) {
+            throw new AppUnknownException(err);
+        }
+    }
+
+    async requestEmailVerificationOtp(userId: string): Promise<void> {
+        const requestLog: IRequestLog =
+            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
+
+        const user = await this.userRepository.findOneById(userId);
+        if (!user) {
+            throw new UserNotFoundException();
+        } else if (user.isVerified) {
+            throw new UserEmailAlreadyVerifiedException();
+        } else if (!user.email || user.email.endsWith('@phone.iwefarm.local')) {
+            throw new UserNotFoundException();
+        }
+
+        const lastVerification =
+            await this.userRepository.findOneLatestByVerificationEmail(user.id);
+        if (lastVerification) {
+            const today = this.helperService.dateCreate();
+            const canResendAt = this.helperService.dateForward(
+                lastVerification.createdAt,
+                Duration.fromObject({
+                    minutes: this.userUtil.verificationExpiredInMinutes,
+                })
+            );
+
+            if (today < canResendAt) {
+                throw new UserVerificationEmailResendLimitExceededException(
+                    this.helperService.dateDiff(today, canResendAt).minutes
+                );
+            }
+        }
+
+        try {
+            const verification = this.userUtil.verificationCreateEmailOtp();
+
+            await this.userRepository.requestVerificationEmail(
+                user.id,
+                user.email,
+                verification,
+                requestLog
+            );
+
+            await this.notificationUtil.sendVerificationEmail(user.id, {
+                otp: verification.token,
+                expiredAt: this.helperService.dateFormatToIso(
+                    verification.expiredAt
+                ),
+                reference: verification.reference,
+                link: verification.encryptedLink,
+                expiredInMinutes: verification.expiredInMinutes,
+            });
+
+            return;
+        } catch (err: unknown) {
+            throw new AppUnknownException(err);
+        }
+    }
+
+    async confirmEmailVerificationOtp(
+        userId: string,
+        { otp }: UserConfirmEmailVerificationRequestDto
+    ): Promise<void> {
+        const requestLog: IRequestLog =
+            this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
+
+        const hashedToken = this.userUtil.hashedToken(otp);
+        const verification =
+            await this.userRepository.findOneActiveByVerificationEmailTokenAndUser(
+                userId,
+                hashedToken
+            );
+        if (!verification) {
+            throw new UserTokenInvalidException();
+        }
+
+        try {
+            await this.userRepository.verifyEmail(
+                verification.id,
+                verification.userId,
+                requestLog
+            );
+
+            await this.notificationUtil.sendVerifiedEmail(verification.userId, {
+                reference: verification.reference,
             });
 
             return;

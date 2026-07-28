@@ -1,19 +1,20 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
 import {
     Doc,
     DocAuth,
     DocGuard,
     DocRequest,
+    DocRequestFile,
     DocResponse,
     DocResponsePaging,
 } from '@common/doc/decorators/doc.decorator';
 import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
 import {
     TermPolicyDocParamsGetContent,
     TermPolicyDocParamsId,
     TermPolicyListAdminDocQuery,
 } from '@modules/term-policy/constants/term-policy.doc.constant';
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyUploadContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.upload-content.request.dto';
 import { TermPolicyContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.content.request.dto';
 import { TermPolicyCreateRequestDto } from '@modules/term-policy/dtos/request/term-policy.create.request.dto';
 import { TermPolicyRemoveContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.remove-content.request.dto';
@@ -91,10 +92,10 @@ export function TermPolicyAdminDeleteDoc(): MethodDecorator {
     );
 }
 
-export function TermPolicyAdminGenerateContentPresignDoc(): MethodDecorator {
+export function TermPolicyAdminUploadContentDoc(): MethodDecorator {
     return applyDecorators(
         Doc({
-            summary: 'Generate presign url for term or policy content upload',
+            summary: 'Upload term or policy content file (stored locally)',
         }),
         DocAuth({
             jwtAccessToken: true,
@@ -105,16 +106,12 @@ export function TermPolicyAdminGenerateContentPresignDoc(): MethodDecorator {
             role: true,
             termPolicy: true,
         }),
-        DocRequest({
-            bodyType: EnumDocRequestBodyType.json,
-            dto: TermPolicyContentPresignRequestDto,
+        DocRequestFile({
+            dto: TermPolicyUploadContentRequestDto,
         }),
-        DocResponse<AwsS3PresignResponseDto>(
-            'termPolicy.generateContentPresign',
-            {
-                dto: AwsS3PresignResponseDto,
-            }
-        )
+        DocResponse<LocalStorageResponseDto>('termPolicy.uploadContent', {
+            dto: LocalStorageResponseDto,
+        })
     );
 }
 
@@ -206,7 +203,7 @@ export function TermPolicyAdminGetContentDoc(): MethodDecorator {
             params: TermPolicyDocParamsGetContent,
         }),
         DocResponse('termPolicy.getContent', {
-            dto: AwsS3PresignResponseDto,
+            dto: LocalStorageResponseDto,
         })
     );
 }

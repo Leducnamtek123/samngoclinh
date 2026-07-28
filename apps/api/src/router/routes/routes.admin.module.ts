@@ -12,8 +12,6 @@ import { SessionAdminController } from '@modules/session/controllers/session.adm
 import { TermPolicyAdminController } from '@modules/term-policy/controllers/term-policy.admin.controller';
 import { UserAdminController } from '@modules/user/controllers/user.admin.controller';
 import { UserModule } from '@modules/user/user.module';
-import { IdentityVerificationAdminController } from '@modules/identity-verification/controllers/identity-verification.admin.controller';
-import { IdentityVerificationModule } from '@modules/identity-verification/identity-verification.module';
 import { CultivationAdminController } from '@modules/cultivation/controllers/cultivation.admin.controller';
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { EContractAdminController } from '@modules/e-contract/controllers/e-contract.admin.controller';
@@ -60,7 +58,6 @@ import { Module } from '@nestjs/common';
         FeatureFlagAdminController,
         BackofficeAdminController,
         DeviceAdminController,
-        IdentityVerificationAdminController,
         CultivationAdminController,
         EContractAdminController,
         PackagesAdminController,
@@ -83,7 +80,6 @@ import { Module } from '@nestjs/common';
         PasswordHistoryModule,
         DeviceModule,
         BackofficeModule,
-        IdentityVerificationModule,
         CultivationModule,
         EContractModule,
         PackagesModule,

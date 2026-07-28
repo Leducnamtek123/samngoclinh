@@ -1,4 +1,6 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
+import { FileUploadSingle } from '@common/file/decorators/file.decorator';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
+import { IFile } from '@common/file/interfaces/file.interface';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
 import {
     PaginationOffsetQuery,
@@ -40,14 +42,14 @@ import {
     TermPolicyAdminAddContentDoc,
     TermPolicyAdminCreateDoc,
     TermPolicyAdminDeleteDoc,
-    TermPolicyAdminGenerateContentPresignDoc,
     TermPolicyAdminGetContentDoc,
     TermPolicyAdminListDoc,
     TermPolicyAdminPublishDoc,
     TermPolicyAdminRemoveContentDoc,
     TermPolicyAdminUpdateContentDoc,
+    TermPolicyAdminUploadContentDoc,
 } from '@modules/term-policy/docs/term-policy.admin.doc';
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyUploadContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.upload-content.request.dto';
 import { TermPolicyContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.content.request.dto';
 import { TermPolicyCreateRequestDto } from '@modules/term-policy/dtos/request/term-policy.create.request.dto';
 import { TermPolicyRemoveContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.remove-content.request.dto';
@@ -65,6 +67,7 @@ import {
     Patch,
     Post,
     Put,
+    UploadedFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -158,8 +161,8 @@ export class TermPolicyAdminController {
         return this.termPolicyService.deleteByAdmin(termPolicyId);
     }
 
-    @TermPolicyAdminGenerateContentPresignDoc()
-    @Response('termPolicy.generateContentPresign')
+    @TermPolicyAdminUploadContentDoc()
+    @Response('termPolicy.uploadContent')
     @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
@@ -173,12 +176,14 @@ export class TermPolicyAdminController {
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
+    @FileUploadSingle()
     @HttpCode(HttpStatus.OK)
-    @Post('/generate/content/presign')
-    async generate(
-        @Body() body: TermPolicyContentPresignRequestDto
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>> {
-        return this.termPolicyService.generateContentPresignByAdmin(body);
+    @Post('/upload/content')
+    async uploadContent(
+        @UploadedFile(RequestRequiredPipe) file: IFile,
+        @Body() body: TermPolicyUploadContentRequestDto
+    ): Promise<IResponseReturn<LocalStorageResponseDto>> {
+        return this.termPolicyService.uploadContentByAdmin(file, body);
     }
 
     @TermPolicyAdminUpdateContentDoc()
@@ -279,7 +284,7 @@ export class TermPolicyAdminController {
         @Param('termPolicyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         termPolicyId: string,
         @Param('language', RequestRequiredPipe) language: EnumMessageLanguage
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>> {
+    ): Promise<IResponseReturn<LocalStorageResponseDto>> {
         return this.termPolicyService.getContentByAdmin(termPolicyId, language);
     }
 

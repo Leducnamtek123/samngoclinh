@@ -89,7 +89,6 @@ export function AuthProvider({ children }) {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Refresh thất bại (401) -> phiên đã chết -> chỉ xoá cục bộ.

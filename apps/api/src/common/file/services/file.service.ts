@@ -1,9 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { IFileService } from '@common/file/interfaces/file.service.interface';
-import { IFileRandomFilenameOptions } from '@common/file/interfaces/file.interface';
+import {
+    IFile,
+    IFileRandomFilenameOptions,
+    ILocalStorage,
+} from '@common/file/interfaces/file.interface';
 import { HelperService } from '@common/helper/services/helper.service';
+import {
+    mkdirSync,
+    readFileSync,
+    renameSync,
+    rmSync,
+    statSync,
+    writeFileSync,
+} from 'fs';
 import Mime from 'mime';
 import Papa from 'papaparse';
+import { dirname, join } from 'path';
 
 @Injectable()
 export class FileService implements IFileService {
@@ -60,5 +73,67 @@ export class FileService implements IFileService {
     extractFilenameFromPath(filePath: string): string {
         const parts = filePath.split('/');
         return parts[parts.length - 1];
+    }
+
+    /**
+     * Lưu file upload (multipart) vào thư mục local `uploads/<subdir>` và trả về URL tương đối
+     * (`/uploads/<subdir>/<file>`), phục vụ tĩnh qua prefix `/uploads`.
+     */
+    saveFileToLocal(file: IFile, subdir: string): string {
+        const extension =
+            Mime.getExtension(file.mimetype) ??
+            this.extractExtensionFromFilename(file.originalname) ??
+            'bin';
+        const filename = `${this.helperService.randomString(16)}.${extension}`;
+        const absoluteDir = join(process.cwd(), 'uploads', subdir);
+
+        mkdirSync(absoluteDir, { recursive: true });
+        writeFileSync(join(absoluteDir, filename), file.buffer);
+
+        return `/uploads/${subdir}/${filename}`;
+    }
+
+    buildLocalStorage(key: string, size: number): ILocalStorage {
+        return {
+            key,
+            url: `/uploads/${key}`,
+            mime: this.extractMimeFromFilename(key) ?? 'application/octet-stream',
+            extension: this.extractExtensionFromFilename(key),
+            size,
+        };
+    }
+
+    saveBufferToKey(buffer: Buffer, key: string): ILocalStorage {
+        const absolute = join(process.cwd(), 'uploads', key);
+
+        mkdirSync(dirname(absolute), { recursive: true });
+        writeFileSync(absolute, buffer);
+
+        return this.buildLocalStorage(key, buffer.length);
+    }
+
+    readLocalByKey(key: string): Buffer {
+        return readFileSync(join(process.cwd(), 'uploads', key));
+    }
+
+    /** Di chuyển từng file (theo key) sang thư mục đích, giữ nguyên tên; trả descriptor mới. */
+    moveLocalToDir(items: { key: string }[], toDir: string): ILocalStorage[] {
+        return items.map(item => {
+            const filename = this.extractFilenameFromPath(item.key);
+            const newKey = `${toDir}/${filename}`;
+            const to = join(process.cwd(), 'uploads', newKey);
+
+            mkdirSync(dirname(to), { recursive: true });
+            renameSync(join(process.cwd(), 'uploads', item.key), to);
+
+            return this.buildLocalStorage(newKey, statSync(to).size);
+        });
+    }
+
+    deleteLocalDir(dir: string): void {
+        rmSync(join(process.cwd(), 'uploads', dir), {
+            recursive: true,
+            force: true,
+        });
     }
 }

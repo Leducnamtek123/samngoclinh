@@ -111,17 +111,6 @@ export const migrationBusinessData: Record<
             items: Record<string, unknown>[];
             metadata: Record<string, unknown>;
         }[];
-        identityVerificationRequests: {
-            code: string;
-            fullName: string;
-            identityNumber: string;
-            status: string;
-            frontImageUrl: string;
-            backImageUrl: string;
-            documentFiles: string[];
-            note: string;
-            metadata: Record<string, unknown>;
-        }[];
         businessProfile: {
             fullName: string;
             referralCode: string;
@@ -410,19 +399,6 @@ export const migrationBusinessData: Record<
                     },
                 ],
                 metadata: {},
-            },
-        ],
-        identityVerificationRequests: [
-            {
-                code: 'kyc-provider-001',
-                fullName: 'CÔNG TY CỔ PHẦN DƯỢC LIỆU TRÀ LINH',
-                identityNumber: '0316915652',
-                status: 'verified',
-                frontImageUrl: 'https://example.com/front.jpg',
-                backImageUrl: 'https://example.com/back.jpg',
-                documentFiles: [],
-                note: 'Seed data for local development.',
-                metadata: { source: 'site profile' },
             },
         ],
         businessProfile: {

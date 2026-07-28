@@ -10,7 +10,7 @@ import {
     EnumUserSignUpWith,
     EnumUserStatus,
 } from '@generated/prisma-client';
-import { AwsS3ResponseDto } from '@common/aws/dtos/response/aws.s3.response.dto';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
 import { RoleDto } from '@modules/role/dtos/role.dto';
 import { UserTermPolicyDto } from '@modules/user/dtos/user.term-policy.dto';
 import { UserTwoFactorDto } from '@modules/user/dtos/user.two-factor.dto';
@@ -184,11 +184,11 @@ export class UserDto extends DatabaseResponseDto {
 
     @ApiProperty({
         required: false,
-        type: AwsS3ResponseDto,
+        type: LocalStorageResponseDto,
     })
     @Expose()
-    @Type(() => AwsS3ResponseDto)
-    photo?: AwsS3ResponseDto;
+    @Type(() => LocalStorageResponseDto)
+    photo?: LocalStorageResponseDto;
 
     @ApiProperty({
         required: true,

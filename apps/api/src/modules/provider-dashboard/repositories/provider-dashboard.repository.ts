@@ -14,11 +14,6 @@ export class ProviderDashboardRepository {
             },
         });
 
-        const kycCount =
-            await this.databaseService.identityVerificationRequest.count({
-                where: { status: 'pending' },
-            });
-
         const gardensCount = await this.databaseService.cultivationGarden.count(
             {
                 where: { ownerUserId: userId },
@@ -42,7 +37,7 @@ export class ProviderDashboardRepository {
 
         return {
             plantsOnHand: treeAgg._sum.quantity ?? 0,
-            pendingApprovals: kycCount,
+            pendingApprovals: 0,
             gardens: gardensCount,
             beds: bedsCount,
             relatedOrders: ordersCount,

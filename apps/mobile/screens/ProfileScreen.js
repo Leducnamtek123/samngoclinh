@@ -105,7 +105,7 @@ export default function ProfileScreen({ navigation }) {
                 <Pressable
                   style={({ pressed }) => [styles.verifyPill, pressed && styles.pressed]}
                   hitSlop={6}
-                  onPress={() => navigation.navigate('ComingSoon', { title: 'Xác thực email' })}
+                  onPress={() => navigation.navigate('VerifyEmail')}
                 >
                   <Ionicons name="alert-circle" size={14} color="#fff" />
                   <Text style={styles.verifyText}>Chưa xác thực</Text>

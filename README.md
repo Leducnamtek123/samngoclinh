@@ -91,6 +91,17 @@ pnpm start:dev
 >
 > Compose (v2.3.3) validate mọi `env_file` khi parse và chưa hỗ trợ `required: false`, nên các service Docker trỏ tới file luôn tồn tại: `apis` → `apps/api/.env` (tạo ở bước 1), `admin`/`web` → `.env.example` (đã commit). Nhờ vậy `docker compose up -d` chạy được ngay sau bước 1, không cần tạo `.env` cho admin/web. `jwks-server` đọc khóa JWKS từ `apps/api/keys/` (sinh ở bước 2).
 
+> **Email (SMTP).** Gửi email (OTP xác thực email, mật khẩu tạm khi quên mật khẩu, thông báo) dùng SMTP qua nodemailer. Điền các biến sau trong `.env`; bỏ trống thì việc gửi email thất bại nhưng các luồng khác vẫn chạy.
+>
+> | Biến | Mặc định | Ý nghĩa |
+> |---|---|---|
+> | `SMTP_HOST` | *(trống)* | Host SMTP server (vd `smtp.gmail.com`) |
+> | `SMTP_PORT` | `587` | Cổng SMTP (`587` cho STARTTLS, `465` cho SSL) |
+> | `SMTP_SECURE` | `false` | Đặt `true` khi dùng cổng SSL `465`; để `false` cho `587` |
+> | `SMTP_USER` | *(trống)* | Tài khoản đăng nhập SMTP |
+> | `SMTP_PASSWORD` | *(trống)* | Mật khẩu (Gmail dùng App Password, không phải mật khẩu tài khoản) |
+> | `SMTP_FROM` | *(trống)* | Địa chỉ người gửi hiển thị (vd `no-reply@iwefarm.local`) |
+
 ---
 
 ### 2. Trang quản trị — `apps/admin`

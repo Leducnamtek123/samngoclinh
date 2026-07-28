@@ -219,23 +219,6 @@ export class MigrationBusinessSeed
                         },
                     })
                 ),
-                ...this.data.identityVerificationRequests.map(item =>
-                    this.databaseService.identityVerificationRequest.upsert({
-                        where: { code: item.code },
-                        create: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            userId: provider.id,
-                            createdBy: provider.id,
-                        },
-                        update: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            userId: provider.id,
-                            updatedBy: provider.id,
-                        },
-                    })
-                ),
                 this.databaseService.businessProfile.upsert({
                     where: { userId: provider.id },
                     create: {
@@ -266,7 +249,6 @@ export class MigrationBusinessSeed
 
         try {
             await this.databaseService.$transaction([
-                this.databaseService.identityVerificationRequest.deleteMany({}),
                 this.databaseService.order.deleteMany({}),
                 this.databaseService.walletTransaction.deleteMany({}),
                 this.databaseService.walletAccount.deleteMany({}),

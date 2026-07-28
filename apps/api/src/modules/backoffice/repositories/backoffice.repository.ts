@@ -18,11 +18,6 @@ export class BackofficeRepository {
             'cultivation',
         ];
 
-        const pendingKycCount =
-            await this.databaseService.identityVerificationRequest.count({
-                where: { status: 'pending' },
-            });
-
         const activeProvidersCount = await this.databaseService.user.count({
             where: {
                 status: 'active',
@@ -190,7 +185,7 @@ export class BackofficeRepository {
 
         return {
             domains,
-            totalPendingApprovals: pendingKycCount,
+            totalPendingApprovals: 0,
             totalActiveProviders: activeProvidersCount,
             totalArticles: articlesCount,
             totalGardens,
