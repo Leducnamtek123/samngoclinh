@@ -14,8 +14,9 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import PersonalInfoScreen from './screens/PersonalInfoScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
-import AddPhoneScreen from './screens/AddPhoneScreen';
 import AddAddressScreen from './screens/AddAddressScreen';
+import KycScreen from './screens/KycScreen';
+import AddKycScreen from './screens/AddKycScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
 import { colors } from './utils/theme';
 
@@ -72,15 +73,12 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="AddPhone"
-        component={AddPhoneScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="AddAddress"
         component={AddAddressScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="Kyc" component={KycScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="AddKyc" component={AddKycScreen} options={{ headerShown: false }} />
       <Stack.Screen
         name="ComingSoon"
         component={ComingSoonScreen}

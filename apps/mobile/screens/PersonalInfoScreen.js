@@ -6,19 +6,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
-import { deleteAddress, deleteMobileNumber } from '../api/auth';
+import { deleteAddress } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { confirm } from '../utils/confirm';
 import { colors, spacing } from '../utils/theme';
 
 const GENDER_LABELS = { male: 'Nam', female: 'Nữ' };
-const ROLE_LABELS = {
-  superadmin: 'Quản trị cấp cao',
-  admin: 'Quản trị viên',
-  provider: 'Nhà cung cấp',
-  user: 'Người dùng',
-};
 
 function formatDate(value) {
   if (!value) return null;
@@ -37,25 +31,9 @@ export default function PersonalInfoScreen({ navigation }) {
   const name = user?.name || 'Người dùng';
   const gender = GENDER_LABELS[user?.gender] || 'Chưa cập nhật';
   const birthDate = formatDate(user?.birthDate) || 'Chưa cập nhật';
-  const referralCode = user?.referralCode || user?.inviteCode || 'Chưa cập nhật';
-  const role = ROLE_LABELS[user?.role?.type || user?.role?.name] || 'Chưa xác định';
-  const createdAt = formatDate(user?.createdAt) || 'Chưa cập nhật';
   const addresses = user?.addresses || [];
-  const phones = user?.mobileNumbers || [];
-
-  const onDeletePhone = async (item) => {
-    const ok = await confirm({
-      title: 'Xoá số điện thoại',
-      message: `Xoá +${item.phoneCode} ${item.number}?`,
-    });
-    if (!ok) return;
-    try {
-      await deleteMobileNumber(item.id);
-      await refreshProfile();
-    } catch (e) {
-      alert.error('Xoá thất bại', e?.message || 'Vui lòng thử lại.');
-    }
-  };
+  const phone = user?.mobileNumbers?.[0] || null;
+  const phoneDisplay = phone ? `+${phone.phoneCode} ${phone.number}` : 'Chưa cập nhật';
 
   const onDeleteAddress = async (item) => {
     const ok = await confirm({
@@ -102,55 +80,14 @@ export default function PersonalInfoScreen({ navigation }) {
             )}
           </View>
           <Text style={styles.name}>{name}</Text>
-          <View style={styles.badges}>
-            <View style={styles.tierBadge}>
-              <Text style={styles.tierText}>{user?.tier || 'Đồng'}</Text>
-            </View>
-            <View style={styles.levelBadge}>
-              <Text style={styles.levelText}>Cấp {user?.level ?? 1}</Text>
-            </View>
-          </View>
         </View>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Thông tin cá nhân</Text>
           <InfoRow icon="mail-outline" label="Email" value={user?.email || 'Chưa cập nhật'} />
           <InfoRow icon="person-outline" label="Giới tính" value={gender} />
-          <InfoRow icon="calendar-outline" label="Ngày sinh" value={birthDate} last />
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Số điện thoại</Text>
-          {phones.length > 0 ? (
-            phones.map((item) => (
-              <View key={item.id} style={styles.phoneRow}>
-                <Ionicons
-                  name="call-outline"
-                  size={20}
-                  color={colors.primary}
-                  style={styles.infoIcon}
-                />
-                <Text style={styles.phoneValue}>
-                  +{item.phoneCode} {item.number}
-                </Text>
-                <Pressable hitSlop={8} onPress={() => onDeletePhone(item)}>
-                  <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                </Pressable>
-              </View>
-            ))
-          ) : (
-            <View style={styles.empty}>
-              <Ionicons name="call-outline" size={40} color={colors.border} />
-              <Text style={styles.emptyText}>Chưa có số điện thoại</Text>
-            </View>
-          )}
-          <Pressable
-            style={({ pressed }) => [styles.addBtn, pressed && styles.pressed]}
-            onPress={() => navigation.navigate('AddPhone')}
-          >
-            <Ionicons name="add" size={20} color="#fff" />
-            <Text style={styles.addText}>Thêm số điện thoại</Text>
-          </Pressable>
+          <InfoRow icon="calendar-outline" label="Ngày sinh" value={birthDate} />
+          <InfoRow icon="call-outline" label="Số điện thoại" value={phoneDisplay} last />
         </View>
 
         <View style={styles.card}>
@@ -191,12 +128,6 @@ export default function PersonalInfoScreen({ navigation }) {
           </Pressable>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Thông tin tài khoản</Text>
-          <InfoRow icon="qr-code-outline" label="Mã giới thiệu" value={referralCode} />
-          <InfoRow icon="shield-checkmark-outline" label="Vai trò" value={role} />
-          <InfoRow icon="time-outline" label="Ngày tạo" value={createdAt} last />
-        </View>
       </ScrollView>
     </View>
   );
@@ -272,22 +203,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.md,
   },
-  badges: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
-  tierBadge: {
-    backgroundColor: colors.accent,
-    borderRadius: 16,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  tierText: { color: '#fff', fontSize: 14, fontWeight: '700' },
-  levelBadge: {
-    backgroundColor: '#EFEFEF',
-    borderRadius: 16,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-  },
-  levelText: { color: colors.text, fontSize: 14, fontWeight: '600' },
-
   card: {
     backgroundColor: colors.surface,
     borderRadius: 16,
@@ -317,9 +232,6 @@ const styles = StyleSheet.create({
   infoText: { flex: 1 },
   infoLabel: { fontSize: 13, color: colors.textMuted },
   infoValue: { fontSize: 16, color: colors.text, fontWeight: '500', marginTop: 2 },
-
-  phoneRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm },
-  phoneValue: { flex: 1, fontSize: 16, color: colors.text, fontWeight: '500' },
 
   addressRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.sm },
   addressText: { flex: 1 },

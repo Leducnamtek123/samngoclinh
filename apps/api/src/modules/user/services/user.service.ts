@@ -537,7 +537,7 @@ export class UserService implements IUserService {
 
         const [checkValidMobileNumber, checkExist] = await Promise.all([
             this.userUtil.checkMobileNumber(checkCountry.phoneCode, phoneCode),
-            this.userRepository.existMobileNumber(userId, {
+            this.userRepository.existMobileNumber({
                 number,
                 countryId: checkCountry.id,
                 phoneCode,
@@ -566,6 +566,12 @@ export class UserService implements IUserService {
                 data: mapped,
             };
         } catch (err: unknown) {
+            if (
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === 'P2002'
+            ) {
+                throw new UserMobileNumberExistException();
+            }
             throw new AppUnknownException(err);
         }
     }
@@ -589,7 +595,6 @@ export class UserService implements IUserService {
         }
 
         const checkExist = await this.userRepository.existMobileNumber(
-            userId,
             { number, countryId, phoneCode },
             mobileNumberId
         );
@@ -623,6 +628,12 @@ export class UserService implements IUserService {
                 data: mapped,
             };
         } catch (err: unknown) {
+            if (
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === 'P2002'
+            ) {
+                throw new UserMobileNumberExistException();
+            }
             throw new AppUnknownException(err);
         }
     }
@@ -655,6 +666,12 @@ export class UserService implements IUserService {
                 data: mapped,
             };
         } catch (err: unknown) {
+            if (
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === 'P2002'
+            ) {
+                throw new UserMobileNumberExistException();
+            }
             throw new AppUnknownException(err);
         }
     }

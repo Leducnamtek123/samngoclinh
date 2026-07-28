@@ -689,7 +689,6 @@ export class UserRepository {
     }
 
     async existMobileNumber(
-        userId: string,
         { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
         excludeId?: string
     ): Promise<{ id: string } | null> {
@@ -698,9 +697,6 @@ export class UserRepository {
                 number,
                 countryId,
                 phoneCode,
-                user: {
-                    id: userId,
-                },
                 ...(excludeId
                     ? {
                           id: { not: excludeId },

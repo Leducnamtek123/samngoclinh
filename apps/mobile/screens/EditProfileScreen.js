@@ -16,7 +16,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 import IconField from '../components/IconField';
 import PrimaryButton from '../components/PrimaryButton';
-import { updateProfile } from '../api/auth';
+import {
+  addMobileNumber,
+  deleteMobileNumber,
+  updateMobileNumber,
+  updateProfile,
+} from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
@@ -31,9 +36,11 @@ export default function EditProfileScreen({ navigation }) {
   const { user, refreshProfile } = useAuth();
   const alert = useAlert();
 
+  const existingPhone = user?.mobileNumbers?.[0] || null;
   const [name, setName] = useState(user?.name || '');
   const [gender, setGender] = useState(user?.gender || null);
   const [birthDate, setBirthDate] = useState((user?.birthDate || '').slice(0, 10));
+  const [phone, setPhone] = useState(existingPhone?.number || '');
   const [loading, setLoading] = useState(false);
 
   const onSave = async () => {
@@ -43,9 +50,27 @@ export default function EditProfileScreen({ navigation }) {
     if (trimmedBirth && !/^\d{4}-\d{2}-\d{2}$/.test(trimmedBirth)) {
       return alert.error('Ngày sinh không hợp lệ', 'Vui lòng nhập theo định dạng YYYY-MM-DD.');
     }
+    const digits = phone.replace(/\D/g, '');
+    if (digits && digits.length < 8) {
+      return alert.error('Số điện thoại không hợp lệ', 'Nhập số hợp lệ (tối thiểu 8 số) hoặc để trống.');
+    }
     setLoading(true);
     try {
       await updateProfile({ name: name.trim(), gender, countryId: user?.countryId, birthDate: trimmedBirth });
+      const phoneCode = user?.country?.phoneCode?.[0] || '84';
+      if (digits) {
+        if (!existingPhone) {
+          await addMobileNumber({ countryId: user?.countryId, phoneCode, number: digits });
+        } else if (digits !== existingPhone.number) {
+          await updateMobileNumber(existingPhone.id, {
+            countryId: user?.countryId,
+            phoneCode,
+            number: digits,
+          });
+        }
+      } else if (existingPhone) {
+        await deleteMobileNumber(existingPhone.id);
+      }
       await refreshProfile();
       alert.success('Thành công', 'Đã cập nhật thông tin cá nhân.', {
         confirmText: 'Xong',
@@ -121,6 +146,16 @@ export default function EditProfileScreen({ navigation }) {
               keyboardType="numbers-and-punctuation"
               autoCapitalize="none"
               maxLength={10}
+            />
+
+            <Text style={[styles.label, styles.labelSpacer]}>Số điện thoại</Text>
+            <IconField
+              icon="call-outline"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="Số điện thoại"
+              keyboardType="phone-pad"
+              maxLength={20}
             />
           </View>
 

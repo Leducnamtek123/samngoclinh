@@ -6,7 +6,7 @@
 //  - Interceptor (withAuth): gặp 401 -> tự refresh -> retry 1 lần -> vẫn fail thì đăng xuất.
 //  - Mọi endpoint yêu cầu header x-api-key (@ApiKeyProtected) và trả về vỏ chuẩn { statusCode, message, data }.
 
-import { API_BASE_URL, API_KEY } from './config';
+import { API_BASE_NEUTRAL, API_BASE_URL, API_KEY } from './config';
 import { getDeviceInfo } from './device';
 import { getRefreshToken, getToken, updateTokens } from './storage';
 
@@ -32,7 +32,7 @@ export class HttpError extends Error {
 // Gọi API backend: tự parse JSON, bóc vỏ { data }, và map lỗi thành HttpError.
 // KHÔNG kèm interceptor — dùng trực tiếp cho endpoint public (login, refresh, forgot/reset)
 // hoặc bên trong withAuth cho endpoint cần token.
-async function apiRequest(path, { method = 'GET', body, token } = {}) {
+async function apiRequest(path, { method = 'GET', body, token, baseUrl = API_BASE_URL } = {}) {
   const headers = { Accept: 'application/json', 'x-custom-lang': 'vi' };
   if (API_KEY) headers['x-api-key'] = API_KEY;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
@@ -40,7 +40,7 @@ async function apiRequest(path, { method = 'GET', body, token } = {}) {
 
   let res;
   try {
-    res = await fetch(`${API_BASE_URL}${path}`, {
+    res = await fetch(`${baseUrl}${path}`, {
       method,
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -189,6 +189,17 @@ export async function addMobileNumber({ countryId, phoneCode, number }) {
   );
 }
 
+// Cập nhật số điện thoại theo id.
+export async function updateMobileNumber(mobileNumberId, { countryId, phoneCode, number }) {
+  return withAuth((token) =>
+    apiRequest(`/shared/user/mobile-number/update/${mobileNumberId}`, {
+      method: 'PUT',
+      body: { countryId, phoneCode, number },
+      token,
+    })
+  );
+}
+
 // Xoá số điện thoại theo id.
 export async function deleteMobileNumber(mobileNumberId) {
   return withAuth((token) =>
@@ -215,6 +226,28 @@ export async function deleteAddress(addressId) {
   return withAuth((token) =>
     apiRequest(`/shared/user/address/delete/${addressId}`, {
       method: 'DELETE',
+      token,
+    })
+  );
+}
+
+// Trạng thái xác minh danh tính (KYC). Endpoint VERSION_NEUTRAL nên dùng base /api (không /v1).
+export async function getKycStatus() {
+  return withAuth((token) =>
+    apiRequest('/user/identity-verification/status', {
+      baseUrl: API_BASE_NEUTRAL,
+      token,
+    })
+  );
+}
+
+// Gửi hồ sơ xác minh danh tính. Ảnh là base64 data URL (backend lưu chuỗi, không upload S3).
+export async function submitKyc({ frontImageUrl, backImageUrl }) {
+  return withAuth((token) =>
+    apiRequest('/user/identity-verification/submit', {
+      method: 'POST',
+      baseUrl: API_BASE_NEUTRAL,
+      body: { frontImageUrl, backImageUrl },
       token,
     })
   );
