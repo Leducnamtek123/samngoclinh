@@ -6,6 +6,7 @@ import { CheckCircle2, Eye, RefreshCw, UserCheck, XCircle } from "lucide-react"
 
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,15 +53,17 @@ export default function KycApprovalsPage() {
   const [selectedKyc, setSelectedKyc] = useState<KYCRequest | null>(null)
   const [rejectReason, setRejectReason] = useState("")
   const [showRejectForm, setShowRejectForm] = useState(false)
+  const [page, setPage] = useState(1)
+  const perPage = 10
 
   const {
     data: response,
     isLoading,
     refetch,
     isError,
-  } = useApiQuery<{ items: KYCRequest[] } | KYCRequest[]>(
-    ["kyc-approvals"],
-    "/admin/identity-verification"
+  } = useApiQuery<any>(
+    ["kyc-approvals", page],
+    `/admin/identity-verification?page=${page}&perPage=${perPage}`
   )
 
   const mutation = useApiMutation()
@@ -68,13 +71,14 @@ export default function KycApprovalsPage() {
   const rawData = response?.data
   const kycList: KYCRequest[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || []
+    : (rawData as any)?.items || (rawData as any)?.data || []
+  const metadata = response?.metadata || null
 
   const handleApprove = async (id: string) => {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/approve`,
-        method: "PUT",
+        method: "PATCH",
       })
       toast.success("Phê duyệt eKYC thành công")
       setSelectedKyc(null)
@@ -92,8 +96,8 @@ export default function KycApprovalsPage() {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/reject`,
-        data: { reason: rejectReason },
-        method: "POST",
+        data: { note: rejectReason },
+        method: "PATCH",
       })
       toast.success("Đã từ chối hồ sơ eKYC")
       setSelectedKyc(null)
@@ -148,72 +152,75 @@ export default function KycApprovalsPage() {
                 Chưa có yêu cầu duyệt eKYC nào đang chờ xử lý.
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Khách Hàng</TableHead>
-                    <TableHead>Số Giấy Tờ (CCCD/CMND)</TableHead>
-                    <TableHead>Ngày Gửi</TableHead>
-                    <TableHead>Trạng Thái</TableHead>
-                    <TableHead className="text-right">Thao Tác</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {kycList.map((kyc) => (
-                    <TableRow key={kyc.id}>
-                      <TableCell className="font-medium">
-                        {kyc.fullName ||
-                          kyc.user?.name ||
-                          kyc.user?.email ||
-                          kyc.userId}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {kyc.idNumber || "—"}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {kyc.submittedAt || kyc.createdAt
-                          ? new Date(
-                              kyc.submittedAt || kyc.createdAt!
-                            ).toLocaleDateString("vi-VN")
-                          : "—"}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            kyc.status === "APPROVED"
-                              ? "default"
-                              : kyc.status === "PENDING"
-                                ? "outline"
-                                : "destructive"
-                          }
-                          className={
-                            kyc.status === "APPROVED"
-                              ? "bg-emerald-600 text-white"
-                              : kyc.status === "PENDING"
-                                ? "bg-amber-100 text-amber-800 border-amber-300"
-                                : ""
-                          }
-                        >
-                          {kyc.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
-                          onClick={() => {
-                            setSelectedKyc(kyc)
-                            setShowRejectForm(false)
-                          }}
-                        >
-                          <Eye className="w-4 h-4" /> Xem Hồ Sơ
-                        </Button>
-                      </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Khách Hàng</TableHead>
+                      <TableHead>Số Giấy Tờ (CCCD/CMND)</TableHead>
+                      <TableHead>Ngày Gửi</TableHead>
+                      <TableHead>Trạng Thái</TableHead>
+                      <TableHead className="text-right">Thao Tác</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {kycList.map((kyc) => (
+                      <TableRow key={kyc.id}>
+                        <TableCell className="font-medium">
+                          {kyc.fullName ||
+                            kyc.user?.name ||
+                            kyc.user?.email ||
+                            kyc.userId}
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {kyc.idNumber || "—"}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {kyc.submittedAt || kyc.createdAt
+                            ? new Date(
+                                kyc.submittedAt || kyc.createdAt!
+                              ).toLocaleDateString("vi-VN")
+                            : "—"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              kyc.status === "APPROVED"
+                                ? "default"
+                                : kyc.status === "PENDING"
+                                  ? "outline"
+                                  : "destructive"
+                            }
+                            className={
+                              kyc.status === "APPROVED"
+                                ? "bg-emerald-600 text-white"
+                                : kyc.status === "PENDING"
+                                  ? "bg-amber-100 text-amber-800 border-amber-300"
+                                  : ""
+                            }
+                          >
+                            {kyc.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
+                            onClick={() => {
+                              setSelectedKyc(kyc)
+                              setShowRejectForm(false)
+                            }}
+                          >
+                            <Eye className="w-4 h-4" /> Xem Hồ Sơ
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
+              </>
             )}
           </CardContent>
         </Card>

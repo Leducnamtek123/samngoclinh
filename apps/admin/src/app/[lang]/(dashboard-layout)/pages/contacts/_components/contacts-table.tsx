@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import {
   Calendar,
-  ChevronLeft,
-  ChevronRight,
   Eye,
   Mail,
   Phone,
@@ -16,6 +14,7 @@ import {
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -265,36 +264,7 @@ export function ContactsTable({
           </Table>
 
           {/* Pagination Controls */}
-          {metadata && (
-            <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">
-                Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
-                {metadata.count} tin nhắn)
-              </span>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!metadata.hasPrevious}
-                  onClick={() => handlePageChange(metadata.page - 1)}
-                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-                >
-                  <ChevronLeft className="h-3.5 w-3.5" />
-                  <span>Trước</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={!metadata.hasNext}
-                  onClick={() => handlePageChange(metadata.page + 1)}
-                  className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-                >
-                  <span>Kế tiếp</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          )}
+          <Pagination metadata={metadata} onPageChange={handlePageChange} />
         </div>
       )}
 

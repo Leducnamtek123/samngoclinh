@@ -6,6 +6,7 @@ import { Droplets, Plus, RefreshCw, Sprout, Thermometer } from "lucide-react"
 
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -56,14 +57,17 @@ export default function CareLogsPage() {
     humidity: "85",
   })
 
+  const [page, setPage] = useState(1)
+  const perPage = 10
+
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<CareLog[] | { items: CareLog[] }>(
-    ["care-logs"],
-    "/user/cultivation/logs"
+  } = useApiQuery<any>(
+    ["care-logs", page],
+    `/user/cultivation/logs?page=${page}&perPage=${perPage}`
   )
 
   const mutation = useApiMutation()
@@ -71,7 +75,10 @@ export default function CareLogsPage() {
   const rawData = response?.data
   const careLogs: CareLog[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || []
+    : Array.isArray(rawData?.items)
+      ? rawData.items
+      : []
+  const metadata = response?.metadata || response?.data?.metadata || null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -244,61 +251,64 @@ export default function CareLogsPage() {
                 để tạo nhật ký đầu tiên!
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Mã Cây / Luống</TableHead>
-                    <TableHead>Hoạt Động</TableHead>
-                    <TableHead>Thông Số Môi Trường</TableHead>
-                    <TableHead>Mô Tả</TableHead>
-                    <TableHead>Thời Gian</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {careLogs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="font-medium">
-                        {log.treeCode ||
-                          log.bedCode ||
-                          log.gardenName ||
-                          log.id}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="secondary"
-                          className="bg-emerald-100 text-emerald-800 border-emerald-200"
-                        >
-                          {log.action || log.activityType || "Chăm sóc định kỳ"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          {log.temperature && (
-                            <span className="flex items-center gap-1">
-                              <Thermometer className="w-3.5 h-3.5 text-amber-500" />{" "}
-                              {log.temperature}°C
-                            </span>
-                          )}
-                          {log.humidity && (
-                            <span className="flex items-center gap-1">
-                              <Droplets className="w-3.5 h-3.5 text-blue-500" />{" "}
-                              {log.humidity}%
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-md text-sm">
-                        {log.description || log.notes || "—"}
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {log.createdAt
-                          ? new Date(log.createdAt).toLocaleString("vi-VN")
-                          : "—"}
-                      </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mã Cây / Luống</TableHead>
+                      <TableHead>Hoạt Động</TableHead>
+                      <TableHead>Thông Số Môi Trường</TableHead>
+                      <TableHead>Mô Tả</TableHead>
+                      <TableHead>Thời Gian</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {careLogs.map((log) => (
+                      <TableRow key={log.id}>
+                        <TableCell className="font-medium">
+                          {log.treeCode ||
+                            log.bedCode ||
+                            log.gardenName ||
+                            log.id}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="secondary"
+                            className="bg-emerald-100 text-emerald-800 border-emerald-200"
+                          >
+                            {log.action || log.activityType || "Chăm sóc định kỳ"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            {log.temperature && (
+                              <span className="flex items-center gap-1">
+                                <Thermometer className="w-3.5 h-3.5 text-amber-500" />{" "}
+                                {log.temperature}°C
+                              </span>
+                            )}
+                            {log.humidity && (
+                              <span className="flex items-center gap-1">
+                                <Droplets className="w-3.5 h-3.5 text-blue-500" />{" "}
+                                {log.humidity}%
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-md text-sm">
+                          {log.description || log.notes || "—"}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {log.createdAt
+                            ? new Date(log.createdAt).toLocaleString("vi-VN")
+                            : "—"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
+              </>
             )}
           </CardContent>
         </Card>

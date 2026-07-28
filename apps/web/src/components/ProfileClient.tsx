@@ -137,6 +137,20 @@ export const ProfileClient = ({
     };
   }, [tabs]);
 
+  // Sync address book from backend profile if available
+  useEffect(() => {
+    if (profile?.addresses && Array.isArray(profile.addresses) && profile.addresses.length > 0) {
+      const apiAddresses: AddressItem[] = profile.addresses.map((a: any) => ({
+        id: a.id,
+        name: a.recipient || a.label || profile?.fullName || profile?.name || 'Nhà đầu tư',
+        phone: a.phone || '',
+        address: a.detail,
+        isDefault: !!a.isDefault,
+      }));
+      setAddresses(apiAddresses);
+    }
+  }, [profile?.addresses]);
+
   const handleCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopyToast(`Đã sao chép ${label}!`);
@@ -146,9 +160,13 @@ export const ProfileClient = ({
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     setEditSaving(true);
-    fetchApiClient('/user/profile', {
+    fetchApiClient('/v1/shared/user/profile/update', {
       method: 'PUT',
-      body: JSON.stringify({ fullName: editName, phone: editPhone }),
+      body: JSON.stringify({
+        name: editName,
+        gender: profile?.gender || 'male',
+        countryId: profile?.countryId || profile?.country?.id,
+      }),
     })
       .then(() => {
         toast.success('Cập nhật thông tin cá nhân thành công!');
@@ -156,8 +174,19 @@ export const ProfileClient = ({
         refetchProfile();
       })
       .catch(() => {
-        toast.success('Đã lưu thông tin tạm thời.');
-        setIsEditModalOpen(false);
+        fetchApiClient('/user/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ fullName: editName, phone: editPhone }),
+        })
+          .then(() => {
+            toast.success('Cập nhật thông tin cá nhân thành công!');
+            setIsEditModalOpen(false);
+            refetchProfile();
+          })
+          .catch(() => {
+            toast.success('Đã lưu thông tin tạm thời.');
+            setIsEditModalOpen(false);
+          });
       })
       .finally(() => {
         setEditSaving(false);
@@ -190,7 +219,7 @@ export const ProfileClient = ({
     }
   };
 
-  const handleAddAddress = (e: React.FormEvent) => {
+  const handleAddAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     const newAddr: AddressItem = {
       id: Date.now().toString(),
@@ -199,6 +228,20 @@ export const ProfileClient = ({
       address: newAddrDetails,
       isDefault: addresses.length === 0,
     };
+    try {
+      await fetchApiClient('/v1/shared/user/address/add', {
+        method: 'POST',
+        body: JSON.stringify({
+          detail: newAddrDetails,
+          recipient: newAddrName,
+          phone: newAddrPhone,
+          isDefault: addresses.length === 0,
+        }),
+      });
+      refetchProfile();
+    } catch {
+      // Local fallback
+    }
     const updated = [...addresses, newAddr];
     setAddresses(updated);
     localStorage.setItem('user_addresses:v1', JSON.stringify(updated));
@@ -215,7 +258,15 @@ export const ProfileClient = ({
     localStorage.setItem('user_addresses:v1', JSON.stringify(updated));
   };
 
-  const deleteAddress = (id: string) => {
+  const deleteAddress = async (id: string) => {
+    try {
+      await fetchApiClient(`/v1/shared/user/address/delete/${id}`, {
+        method: 'DELETE',
+      });
+      refetchProfile();
+    } catch {
+      // Local fallback
+    }
     const updated = addresses.filter(a => a.id !== id);
     setAddresses(updated);
     localStorage.setItem('user_addresses:v1', JSON.stringify(updated));

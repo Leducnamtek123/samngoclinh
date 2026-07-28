@@ -2,8 +2,6 @@
 
 import Image from "next/image"
 import {
-  ChevronLeft,
-  ChevronRight,
   ImageIcon,
   Pencil,
   Trash2,
@@ -12,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Pagination } from "@/components/ui/app-pagination"
 import {
   Table,
   TableBody,
@@ -175,36 +174,7 @@ export function NewsList({
       </Table>
 
       {/* Pagination Controls */}
-      {metadata && (
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between">
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {metadata.page} / {metadata.totalPage} (Tổng số{" "}
-            {metadata.count} bài viết)
-          </span>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasPrevious}
-              onClick={() => handlePageChange(metadata.page - 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              <span>Trước</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasNext}
-              onClick={() => handlePageChange(metadata.page + 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <span>Kế tiếp</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-4" />
     </Card>
   )
 }

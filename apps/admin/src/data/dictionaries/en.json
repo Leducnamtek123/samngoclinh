@@ -209,6 +209,8 @@
       "view": "View Details",
       "actions": "Actions",
       "back": "Back",
+      "previous": "Previous",
+      "next": "Next",
       "submit": "Submit",
       "reset": "Reset",
       "copy": "Copy",

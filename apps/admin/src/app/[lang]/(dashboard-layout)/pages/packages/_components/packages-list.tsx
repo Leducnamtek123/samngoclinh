@@ -5,6 +5,7 @@ import { Pencil, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/feedback-components"
+import { Pagination } from "@/components/ui/app-pagination"
 import {
   Table,
   TableBody,
@@ -40,6 +41,8 @@ interface CarePackagesListProps {
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (price: number) => string
+  metadata?: any
+  handlePageChange?: (page: number) => void
 }
 
 export function CarePackagesList({
@@ -48,6 +51,8 @@ export function CarePackagesList({
   onDelete,
   onOpenCreate,
   formatVND,
+  metadata,
+  handlePageChange,
 }: CarePackagesListProps) {
   return (
     <div className="rounded-md border">
@@ -123,6 +128,9 @@ export function CarePackagesList({
           )}
         </TableBody>
       </Table>
+      {handlePageChange && metadata && (
+        <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-2" />
+      )}
     </div>
   )
 }
@@ -133,6 +141,8 @@ interface ProtectionPackagesListProps {
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (price: number) => string
+  metadata?: any
+  handlePageChange?: (page: number) => void
 }
 
 export function ProtectionPackagesList({
@@ -141,6 +151,8 @@ export function ProtectionPackagesList({
   onDelete,
   onOpenCreate,
   formatVND,
+  metadata,
+  handlePageChange,
 }: ProtectionPackagesListProps) {
   return (
     <div className="rounded-md border">
@@ -216,6 +228,9 @@ export function ProtectionPackagesList({
           )}
         </TableBody>
       </Table>
+      {handlePageChange && metadata && (
+        <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-2" />
+      )}
     </div>
   )
 }
