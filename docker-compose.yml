@@ -6,6 +6,7 @@ services:
             context: .
             dockerfile: ci/dockerfile
         hostname: apis
+        profiles: ["apis"]
         ports:
             - 3000:3000
         env_file:

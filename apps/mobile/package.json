@@ -4,8 +4,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "expo start",
-    "dev": "expo start",
+    "dev:mobile": "expo start",
     "tunnel": "expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",

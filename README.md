@@ -73,7 +73,7 @@ pnpm db:generate
 pnpm migration:fresh
 
 # 5. Chạy API (hot reload)
-pnpm start:dev
+pnpm dev:api
 ```
 
 | | |
@@ -113,7 +113,7 @@ cd apps/admin
 cp .env.example .env       # DATABASE_URL mặc định = file:./dev.db
 pnpm exec prisma generate  # sinh Prisma Client (fix "@prisma/client did not initialize yet")
 pnpm migrate               # tạo schema vào SQLite (prisma migrate dev)
-pnpm dev                   # http://localhost:3003
+pnpm dev:admin                   # http://localhost:3003
 ```
 
 > **Lỗi `@prisma/client did not initialize yet`** (kể cả sau khi `prisma generate`): do `prisma/schema.prisma` đặt `output = "../node_modules/.prisma/client"`. Trên pnpm monorepo, `@prisma/client` bị hoist lên root nên tìm client trong `.pnpm` store, còn `output` lại đẩy client sinh ra vào `apps/admin/node_modules/.prisma/client` → không khớp, nạp phải stub.
@@ -151,7 +151,7 @@ echo 'DATABASE_URL=postgresql://postgres:postgres123@localhost:5435/vismarttech'
 
   ```bash
   pnpm db:migrate      # áp migration bằng drizzle-kit
-  pnpm dev:next        # Next tại http://localhost:3002
+  pnpm dev:web        # Next tại http://localhost:3002
   ```
 
 ---
@@ -163,7 +163,7 @@ echo 'DATABASE_URL=postgresql://postgres:postgres123@localhost:5435/vismarttech'
 ```bash
 cd apps/mobile
 pnpm install
-pnpm start                # Expo Dev Tools: a (Android), i (iOS), w (web)
+pnpm dev:mobile                # Expo Dev Tools: a (Android), i (iOS), w (web)
 ```
 
 **Chạy qua tunnel** (test trên điện thoại thật qua internet, không cần chung wifi):

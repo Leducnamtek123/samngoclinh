@@ -13,7 +13,7 @@
     "private": true,
     "license": "MIT",
     "scripts": {
-        "dev": "pnpm run start:dev",
+        "dev:api": "pnpm run start:dev",
         "preinstall": "npx only-allow pnpm",
         "prebuild": "rimraf dist",
         "clean": "rimraf dist && rimraf node_modules && pnpm store prune",
