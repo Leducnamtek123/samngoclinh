@@ -116,6 +116,19 @@ export class MigrationBusinessSeed
                         },
                     })
                 ),
+                ...this.data.banners.map(item =>
+                    this.databaseService.banner.upsert({
+                        where: { id: item.id },
+                        create: {
+                            ...item,
+                            createdBy: provider.id,
+                        },
+                        update: {
+                            ...item,
+                            updatedBy: provider.id,
+                        },
+                    })
+                ),
                 ...this.data.cultivationGardens.map(item =>
                     this.databaseService.cultivationGarden.upsert({
                         where: { code: item.code },
@@ -249,6 +262,7 @@ export class MigrationBusinessSeed
 
         try {
             await this.databaseService.$transaction([
+                this.databaseService.banner.deleteMany({}),
                 this.databaseService.order.deleteMany({}),
                 this.databaseService.walletTransaction.deleteMany({}),
                 this.databaseService.walletAccount.deleteMany({}),

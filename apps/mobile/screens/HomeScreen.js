@@ -1,16 +1,74 @@
 // Trang chủ iWE FARM: header, banner, lối tắt, giới thiệu, số liệu, tin tức, liên hệ.
-// Ảnh (banner/cây sâm/thumbnail tin) hiện là placeholder — thay bằng <Image source> khi có asset.
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// Banner/tin tức/số liệu/liên hệ lấy từ API (public), ẩn khi không có dữ liệu; quickActions tĩnh.
+import { useEffect, useState } from 'react';
+import {
+  Image,
+  Linking,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useAuth } from '../context/AuthContext';
+import { fetchBanners } from '../api/banner';
+import { fetchArticles } from '../api/content';
+import { fetchSetting } from '../api/setting';
+import { toStaticUrl } from '../api/config';
 import { colors, spacing } from '../utils/theme';
-import { contactInfo, farmStats, newsArticles, quickActions } from '../data/mock';
+import { quickActions } from '../data/mock';
+
+// Banner tĩnh dùng khi API lỗi/không kết nối được (giữ trang chủ không trống).
+const FALLBACK_BANNERS = [
+  {
+    id: 'fallback',
+    title: 'iWE FARM',
+    subtitle: 'Khám phá các dịch vụ chúng tôi và bắt đầu phát triển trại của bạn.',
+  },
+];
+
+const mapArticle = (a) => ({
+  id: a.id,
+  title: a.title,
+  excerpt: a.summary,
+  image: a.coverImage,
+});
 
 export default function HomeScreen({ navigation }) {
   const { user } = useAuth();
   const insets = useSafeAreaInsets();
+  const [banners, setBanners] = useState(FALLBACK_BANNERS);
+  const [articles, setArticles] = useState([]);
+  const [stats, setStats] = useState([]);
+  const [contact, setContact] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+
+    fetchBanners('home')
+      .then((data) => active && data.length && setBanners(data))
+      .catch(() => {});
+
+    fetchArticles({ perPage: 5 })
+      .then((data) => active && data.length && setArticles(data.map(mapArticle)))
+      .catch(() => {});
+
+    fetchSetting('homeStats')
+      .then((data) => active && Array.isArray(data) && data.length && setStats(data))
+      .catch(() => {});
+
+    fetchSetting('homeContact')
+      .then((data) => active && data && setContact(data))
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const onAction = {
     buy: () => navigation.navigate('Planting'),
@@ -37,7 +95,7 @@ export default function HomeScreen({ navigation }) {
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + spacing.xl }]}
         showsVerticalScrollIndicator={false}
       >
-        <Banner />
+        <Banner banners={banners} />
 
         <View style={styles.actionsRow}>
           {quickActions.map((a) => (
@@ -47,18 +105,24 @@ export default function HomeScreen({ navigation }) {
 
         <Intro user={user} />
 
-        <View style={styles.statsGrid}>
-          {farmStats.map(({ key, ...s }) => (
-            <StatCard key={key} {...s} />
-          ))}
-        </View>
+        {stats.length ? (
+          <View style={styles.statsGrid}>
+            {stats.map((s, i) => (
+              <StatCard key={i} icon={s.icon} value={s.value} label={s.label} />
+            ))}
+          </View>
+        ) : null}
 
-        <SectionHeader title="Thông tin" action="Xem tất cả" />
-        {newsArticles.map((n) => (
-          <NewsCard key={n.id} title={n.title} excerpt={n.excerpt} />
-        ))}
+        {articles.length ? (
+          <>
+            <SectionHeader title="Thông tin" action="Xem tất cả" />
+            {articles.map((n) => (
+              <NewsCard key={n.id} title={n.title} excerpt={n.excerpt} image={n.image} />
+            ))}
+          </>
+        ) : null}
 
-        <ContactBlock />
+        {contact ? <ContactBlock contact={contact} /> : null}
       </ScrollView>
 
       <Pressable style={[styles.support, { bottom: insets.bottom + spacing.lg }]}>
@@ -68,24 +132,43 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-function Banner() {
+function Banner({ banners }) {
+  const { width } = useWindowDimensions();
+  const slideWidth = width - spacing.lg * 2;
+  const [index, setIndex] = useState(0);
+
   return (
     <View style={styles.bannerWrap}>
-      <View style={styles.banner}>
-        <View style={styles.bannerBadge}>
-          <Ionicons name="leaf" size={12} color={colors.primary} />
-          <Text style={styles.bannerBadgeText}>iWE FARM</Text>
-        </View>
-        <Text style={styles.bannerTitle}>iWE FARM</Text>
-        <Text style={styles.bannerDesc}>
-          Khám phá các dịch vụ chúng tôi và bắt đầu phát triển trại của bạn.
-        </Text>
-      </View>
-      <View style={styles.dots}>
-        {[0, 1, 2].map((i) => (
-          <View key={i} style={[styles.dot, i === 0 && styles.dotActive]} />
+      <ScrollView
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={(e) =>
+          setIndex(Math.round(e.nativeEvent.contentOffset.x / slideWidth))
+        }
+      >
+        {banners.map((b) => (
+          <View key={b.id} style={[styles.banner, { width: slideWidth }]}>
+            <View style={styles.bannerBadge}>
+              <Ionicons name="leaf" size={12} color={colors.primary} />
+              <Text style={styles.bannerBadgeText}>iWE FARM</Text>
+            </View>
+            <Text style={styles.bannerTitle} numberOfLines={2}>
+              {b.title}
+            </Text>
+            <Text style={styles.bannerDesc} numberOfLines={3}>
+              {b.subtitle}
+            </Text>
+          </View>
         ))}
-      </View>
+      </ScrollView>
+      {banners.length > 1 ? (
+        <View style={styles.dots}>
+          {banners.map((b, i) => (
+            <View key={b.id} style={[styles.dot, i === index && styles.dotActive]} />
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -146,12 +229,17 @@ function SectionHeader({ title, action }) {
   );
 }
 
-function NewsCard({ title, excerpt }) {
+function NewsCard({ title, excerpt, image }) {
+  const uri = toStaticUrl(image);
   return (
     <Pressable style={({ pressed }) => [styles.news, pressed && styles.pressed]}>
-      <View style={styles.newsThumb}>
-        <Ionicons name="image-outline" size={26} color={colors.textMuted} />
-      </View>
+      {uri ? (
+        <Image source={{ uri }} style={styles.newsThumb} resizeMode="cover" />
+      ) : (
+        <View style={styles.newsThumb}>
+          <Ionicons name="image-outline" size={26} color={colors.textMuted} />
+        </View>
+      )}
       <View style={styles.newsBody}>
         <Text style={styles.newsTitle} numberOfLines={2}>
           {title}
@@ -164,22 +252,22 @@ function NewsCard({ title, excerpt }) {
   );
 }
 
-function ContactBlock() {
+function ContactBlock({ contact }) {
   return (
     <View style={styles.contact}>
       <Text style={styles.contactHeading}>Thông tin liên hệ</Text>
-      <ContactRow icon="location-outline" label="Địa chỉ" value={contactInfo.address} />
+      <ContactRow icon="location-outline" label="Địa chỉ" value={contact.address} />
       <ContactRow
         icon="call-outline"
         label="Điện thoại"
-        value={contactInfo.phone}
-        onPress={() => Linking.openURL(`tel:${contactInfo.phone.replace(/\s/g, '')}`)}
+        value={contact.phone}
+        onPress={() => Linking.openURL(`tel:${contact.phone.replace(/\s/g, '')}`)}
       />
       <ContactRow
         icon="mail-outline"
         label="Email"
-        value={contactInfo.email}
-        onPress={() => Linking.openURL(`mailto:${contactInfo.email}`)}
+        value={contact.email}
+        onPress={() => Linking.openURL(`mailto:${contact.email}`)}
       />
     </View>
   );

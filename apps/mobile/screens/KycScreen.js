@@ -14,12 +14,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 import { getIdentityDocument } from '../api/auth';
-import { API_ORIGIN } from '../api/config';
+import { toStaticUrl } from '../api/config';
 import { colors, spacing } from '../utils/theme';
-
-// Ảnh backend trả về dạng URL tương đối (/uploads/...) -> ghép origin để hiển thị.
-const toImageUri = (url) =>
-  !url || url.startsWith('http') || url.startsWith('data:') ? url : `${API_ORIGIN}${url}`;
 
 export default function KycScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -59,9 +55,9 @@ export default function KycScreen({ navigation }) {
       return (
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <Text style={styles.label}>Ảnh mặt trước</Text>
-          <Image source={{ uri: toImageUri(doc.frontImageUrl) }} style={styles.preview} resizeMode="cover" />
+          <Image source={{ uri: toStaticUrl(doc.frontImageUrl) }} style={styles.preview} resizeMode="cover" />
           <Text style={[styles.label, styles.labelSpacer]}>Ảnh mặt sau</Text>
-          <Image source={{ uri: toImageUri(doc.backImageUrl) }} style={styles.preview} resizeMode="cover" />
+          <Image source={{ uri: toStaticUrl(doc.backImageUrl) }} style={styles.preview} resizeMode="cover" />
           <Pressable
             style={({ pressed }) => [styles.addBtn, pressed && styles.pressed]}
             onPress={() => navigation.navigate('AddKyc')}

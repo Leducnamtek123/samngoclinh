@@ -57,6 +57,14 @@ export const migrationBusinessData: Record<
             status: string;
             sortOrder: number;
         }[];
+        banners: {
+            id: string;
+            pageKey: string;
+            title: string;
+            subtitle: string;
+            image: string;
+            order: number;
+        }[];
         cultivationGardens: {
             code: string;
             name: string;
@@ -123,6 +131,34 @@ export const migrationBusinessData: Record<
     }
 > = {
     [EnumAppEnvironment.local]: {
+        banners: [
+            {
+                id: 'banner-home-1',
+                pageKey: 'home',
+                title: 'SÂM NGỌC LINH KON TUM',
+                subtitle: 'Báu vật của đại ngàn, thần dược của sức khỏe.',
+                image: '/assets/images/banner_bg.png',
+                order: 0,
+            },
+            {
+                id: 'banner-home-2',
+                pageKey: 'home',
+                title: 'Trồng sâm cùng iWE FARM',
+                subtitle:
+                    'Minh bạch nguồn gốc, chuẩn gen, trồng đúng vùng ngay trên điện thoại.',
+                image: '/assets/images/banner_bg.png',
+                order: 1,
+            },
+            {
+                id: 'banner-home-3',
+                pageKey: 'home',
+                title: 'Khuyến mãi & ưu đãi',
+                subtitle:
+                    'Các chương trình quà tặng đặc biệt dành cho khách hàng thân thiết.',
+                image: '/assets/images/banner_bg.png',
+                order: 2,
+            },
+        ],
         catalogPlants: [
             {
                 code: 'plant-1y',
