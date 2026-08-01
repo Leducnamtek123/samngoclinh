@@ -1,9 +1,11 @@
 // Trang chủ iWE FARM: header, banner, lối tắt, giới thiệu, số liệu, tin tức, liên hệ.
 // Banner/tin tức/số liệu/liên hệ lấy từ API (public), ẩn khi không có dữ liệu; quickActions tĩnh.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   Image,
   Linking,
+  PanResponder,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -45,6 +47,7 @@ export default function HomeScreen({ navigation }) {
   const [articles, setArticles] = useState([]);
   const [stats, setStats] = useState([]);
   const [contact, setContact] = useState(null);
+  const [about, setAbout] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -63,6 +66,10 @@ export default function HomeScreen({ navigation }) {
 
     fetchSetting('homeContact')
       .then((data) => active && data && setContact(data))
+      .catch(() => {});
+
+    fetchSetting('homeAbout')
+      .then((data) => active && data?.description && setAbout(data.description))
       .catch(() => {});
 
     return () => {
@@ -103,7 +110,7 @@ export default function HomeScreen({ navigation }) {
           ))}
         </View>
 
-        <Intro user={user} />
+        <Intro user={user} about={about} />
 
         {stats.length ? (
           <View style={styles.statsGrid}>
@@ -135,37 +142,105 @@ export default function HomeScreen({ navigation }) {
 function Banner({ banners }) {
   const { width } = useWindowDimensions();
   const slideWidth = width - spacing.lg * 2;
+  const count = banners.length;
   const [index, setIndex] = useState(0);
+  const translateX = useRef(new Animated.Value(0)).current;
+
+  // Refs để PanResponder (tạo 1 lần) luôn đọc giá trị hiện tại.
+  const indexRef = useRef(0);
+  const slideWidthRef = useRef(slideWidth);
+  const countRef = useRef(count);
+  const draggingRef = useRef(false);
+  slideWidthRef.current = slideWidth;
+  countRef.current = count;
+
+  const goTo = useCallback(
+    (i, animated = true) => {
+      const c = countRef.current || 1;
+      const clamped = ((i % c) + c) % c;
+      indexRef.current = clamped;
+      setIndex(clamped);
+      const toValue = -clamped * slideWidthRef.current;
+      if (animated) {
+        Animated.spring(translateX, {
+          toValue,
+          useNativeDriver: true,
+          bounciness: 0,
+          speed: 14,
+        }).start();
+      } else {
+        translateX.setValue(toValue);
+      }
+    },
+    [translateX]
+  );
+
+  const pan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, g) =>
+        Math.abs(g.dx) > 6 && Math.abs(g.dx) > Math.abs(g.dy),
+      onPanResponderGrant: () => {
+        draggingRef.current = true;
+      },
+      onPanResponderMove: (_, g) => {
+        translateX.setValue(-indexRef.current * slideWidthRef.current + g.dx);
+      },
+      onPanResponderRelease: (_, g) => {
+        draggingRef.current = false;
+        const w = slideWidthRef.current;
+        let next = indexRef.current;
+        if (g.dx < -w * 0.25 || g.vx < -0.35) next = indexRef.current + 1;
+        else if (g.dx > w * 0.25 || g.vx > 0.35) next = indexRef.current - 1;
+        next = Math.max(0, Math.min(countRef.current - 1, next));
+        goTo(next);
+      },
+      onPanResponderTerminate: () => {
+        draggingRef.current = false;
+        goTo(indexRef.current);
+      },
+    })
+  ).current;
+
+  // Giữ đúng vị trí khi slideWidth đổi (xoay/resize màn).
+  useEffect(() => {
+    goTo(indexRef.current, false);
+  }, [slideWidth, goTo]);
+
+  // Auto-slide chậm (8.5s), tạm dừng khi đang kéo.
+  useEffect(() => {
+    if (count <= 1) return undefined;
+    const timer = setInterval(() => {
+      if (!draggingRef.current) goTo(indexRef.current + 1);
+    }, 8500);
+    return () => clearInterval(timer);
+  }, [count, goTo]);
 
   return (
     <View style={styles.bannerWrap}>
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) =>
-          setIndex(Math.round(e.nativeEvent.contentOffset.x / slideWidth))
-        }
-      >
-        {banners.map((b) => (
-          <View key={b.id} style={[styles.banner, { width: slideWidth }]}>
-            <View style={styles.bannerBadge}>
-              <Ionicons name="leaf" size={12} color={colors.primary} />
-              <Text style={styles.bannerBadgeText}>iWE FARM</Text>
+      <View style={[styles.bannerViewport, { width: slideWidth }]} {...pan.panHandlers}>
+        <Animated.View style={[styles.bannerRow, { transform: [{ translateX }] }]}>
+          {banners.map((b) => (
+            <View key={b.id} style={[styles.banner, { width: slideWidth }]}>
+              <View style={styles.bannerBadge}>
+                <Ionicons name="leaf" size={12} color={colors.primary} />
+                <Text style={styles.bannerBadgeText}>iWE FARM</Text>
+              </View>
+              <Text style={styles.bannerTitle} numberOfLines={2}>
+                {b.title}
+              </Text>
+              <Text style={styles.bannerDesc} numberOfLines={3}>
+                {b.subtitle}
+              </Text>
             </View>
-            <Text style={styles.bannerTitle} numberOfLines={2}>
-              {b.title}
-            </Text>
-            <Text style={styles.bannerDesc} numberOfLines={3}>
-              {b.subtitle}
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
-      {banners.length > 1 ? (
+          ))}
+        </Animated.View>
+      </View>
+      {count > 1 ? (
         <View style={styles.dots}>
           {banners.map((b, i) => (
-            <View key={b.id} style={[styles.dot, i === index && styles.dotActive]} />
+            <Pressable key={b.id} hitSlop={8} onPress={() => goTo(i)}>
+              <View style={[styles.dot, i === index && styles.dotActive]} />
+            </Pressable>
           ))}
         </View>
       ) : null}
@@ -187,7 +262,7 @@ function QuickAction({ icon, label, onPress }) {
   );
 }
 
-function Intro({ user }) {
+function Intro({ user, about }) {
   const name = user?.name || user?.email;
   return (
     <View style={styles.intro}>
@@ -197,8 +272,8 @@ function Intro({ user }) {
       <Text style={styles.introTitle}>iWE FARM</Text>
       {name ? <Text style={styles.introHello}>Xin chào, {name}</Text> : null}
       <Text style={styles.introDesc}>
-        Ứng dụng iWE FARM ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen
-        – trồng đúng vùng ngay trên điện thoại.
+        {about ||
+          'Ứng dụng iWE FARM ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen – trồng đúng vùng ngay trên điện thoại.'}
       </Text>
     </View>
   );
@@ -313,6 +388,8 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: spacing.xl },
 
   bannerWrap: { paddingHorizontal: spacing.lg, paddingTop: spacing.lg },
+  bannerViewport: { overflow: 'hidden' },
+  bannerRow: { flexDirection: 'row' },
   banner: {
     backgroundColor: colors.primary,
     borderRadius: 16,
