@@ -1,16 +1,51 @@
-// Trồng sâm — "Tất cả cây trồng": danh sách nhóm cây theo tuổi.
-// Ảnh cây là placeholder (icon trên nền bán nguyệt xanh) — thay bằng <Image source> khi có asset.
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+// Trồng sâm — "Tất cả cây trồng": danh sách sâm giống theo tuổi (GET /public/catalog/plants).
+// Chạm thẻ mở màn chi tiết cây trồng.
+import { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors, spacing } from '../utils/theme';
-import { plantingGroups } from '../data/mock';
+import { groupThousands } from '../utils/format';
+import { fetchPlants } from '../api/catalog';
+import { toStaticUrl } from '../api/config';
 
 export default function PlantingScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const [showSupport, setShowSupport] = useState(true);
+
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const load = useCallback(async (mode) => {
+    if (mode === 'refresh') setRefreshing(true);
+    else setLoading(true);
+    try {
+      const rows = await fetchPlants({ perPage: 50 });
+      setPlants(rows);
+    } catch {
+      setPlants([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load('initial');
+  }, [load]);
+
+  const onOpen = (plant) => navigation.navigate('PlantDetail', { id: plant.id, plant });
 
   return (
     <View style={styles.root}>
@@ -28,10 +63,17 @@ export default function PlantingScreen({ navigation }) {
       <ScrollView
         contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + spacing.xl }]}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => load('refresh')} />
+        }
       >
-        {plantingGroups.map((g) => (
-          <GroupCard key={g.id} age={g.age} />
-        ))}
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+        ) : plants.length ? (
+          plants.map((p) => <PlantCard key={p.id} plant={p} onOpen={onOpen} />)
+        ) : (
+          <Text style={styles.empty}>Chưa có cây trồng nào.</Text>
+        )}
       </ScrollView>
 
       {showSupport ? (
@@ -48,21 +90,40 @@ export default function PlantingScreen({ navigation }) {
   );
 }
 
-function GroupCard({ age }) {
+function PlantCard({ plant, onOpen }) {
+  const [imgError, setImgError] = useState(false);
+  const image = imgError ? null : toStaticUrl(plant.images?.[0]);
+  const inStock = (plant.stock ?? 0) > 0;
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={() => onOpen(plant)}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
       <View style={styles.cardLeft}>
-        <Text style={styles.cardLabel}>Nhóm cây trồng</Text>
-        <Text style={styles.cardAge}>{age} Tuổi</Text>
-        <Pressable style={({ pressed }) => [styles.cta, pressed && styles.pressed]}>
+        <Text style={styles.cardLabel}>Cây Sâm Ngọc Linh</Text>
+        <Text style={styles.cardAge}>{plant.ageYear} Tuổi</Text>
+        <Text style={styles.cardPrice}>{groupThousands(plant.price)}đ</Text>
+        <Text style={styles.cardStock}>{inStock ? `Còn ${plant.stock} cây` : 'Hết cây'}</Text>
+        <View style={styles.cta}>
           <Text style={styles.ctaText}>Xem ngay</Text>
-        </Pressable>
+        </View>
       </View>
       <View style={styles.cardArt}>
-        <View style={styles.arc} />
-        <Ionicons name="leaf" size={52} color={colors.primary} />
+        {image ? (
+          <Image
+            source={{ uri: image }}
+            style={styles.cardImg}
+            resizeMode="cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <>
+            <View style={styles.arc} />
+            <Ionicons name="leaf" size={52} color={colors.primary} />
+          </>
+        )}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -81,13 +142,15 @@ const styles = StyleSheet.create({
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
 
   scroll: { padding: spacing.lg, gap: spacing.lg },
+  loader: { marginTop: spacing.xl },
+  empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 
   card: {
     flexDirection: 'row',
     backgroundColor: colors.surface,
     borderRadius: 18,
     overflow: 'hidden',
-    minHeight: 150,
+    minHeight: 160,
     elevation: 2,
     shadowColor: '#000',
     shadowOpacity: 0.08,
@@ -96,7 +159,9 @@ const styles = StyleSheet.create({
   },
   cardLeft: { flex: 1, padding: spacing.lg, justifyContent: 'center' },
   cardLabel: { fontSize: 15, fontStyle: 'italic', color: colors.textMuted },
-  cardAge: { fontSize: 34, fontWeight: '800', color: colors.text, marginTop: 2, marginBottom: spacing.md },
+  cardAge: { fontSize: 32, fontWeight: '800', color: colors.text, marginTop: 2 },
+  cardPrice: { fontSize: 18, fontWeight: '800', color: colors.primary, marginTop: spacing.xs },
+  cardStock: { fontSize: 13, color: colors.textMuted, marginBottom: spacing.md },
   cta: {
     alignSelf: 'flex-start',
     borderWidth: 1.5,
@@ -108,10 +173,11 @@ const styles = StyleSheet.create({
   ctaText: { color: colors.primary, fontSize: 15, fontWeight: '700' },
 
   cardArt: {
-    width: 150,
+    width: 140,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  cardImg: { width: '100%', height: '100%' },
   arc: {
     position: 'absolute',
     width: 220,

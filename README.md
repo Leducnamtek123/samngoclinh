@@ -67,7 +67,7 @@ pnpm generate:keys --direct-insert
 cd ../..
 docker compose up -d
 
-# 4. Prisma client + đẩy schema + seed dữ liệu
+# 4. Prisma client + đẩy schema + seed dữ liệu (migration:fresh = reset sạch DB rồi seed lại)
 cd apps/api
 pnpm db:generate
 pnpm migration:fresh
@@ -75,6 +75,8 @@ pnpm migration:fresh
 # 5. Chạy API (hot reload)
 pnpm dev:api
 ```
+
+> **Seed dữ liệu mẫu.** `pnpm migration:fresh` reset sạch DB rồi seed lại (mất toàn bộ dữ liệu hiện có). Chỉ muốn thêm/cập nhật dữ liệu mẫu (cây trồng, sản phẩm, ...) mà giữ nguyên dữ liệu đang có thì chạy `pnpm migration:seed` (upsert theo `code`, không xóa). Dữ liệu mẫu định nghĩa trong `apps/api/src/migration/data/migration.business.data.ts`.
 
 | | |
 |---|---|

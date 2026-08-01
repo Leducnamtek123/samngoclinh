@@ -202,6 +202,64 @@ export const migrationBusinessData: Record<
                 ],
                 description: 'Cây sâm 3 năm phổ biến trên trang bán hàng.',
             },
+            {
+                code: 'plant-4y',
+                name: 'Cây Sâm Ngọc Linh 4 năm',
+                ageYear: 4,
+                price: 1650000,
+                stock: 95,
+                status: 'available',
+                orderCount: 41,
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
+                description:
+                    'Cây sâm 4 năm tuổi, củ phát triển ổn định, giá trị tích lũy cao.',
+            },
+            {
+                code: 'plant-5y',
+                name: 'Cây Sâm Ngọc Linh 5 năm',
+                ageYear: 5,
+                price: 2900000,
+                stock: 60,
+                status: 'available',
+                orderCount: 28,
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
+                description:
+                    'Cây sâm 5 năm tuổi, hàm lượng saponin cao, phù hợp đầu tư dài hạn.',
+            },
+            {
+                code: 'plant-6y',
+                name: 'Cây Sâm Ngọc Linh 6 năm',
+                ageYear: 6,
+                price: 4500000,
+                stock: 34,
+                status: 'available',
+                orderCount: 19,
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
+                description: 'Cây sâm 6 năm tuổi đạt chuẩn thu hoạch, dược tính cao.',
+            },
+            {
+                code: 'plant-10y',
+                name: 'Cây Sâm Ngọc Linh 10 năm',
+                ageYear: 10,
+                price: 12500000,
+                stock: 8,
+                status: 'available',
+                orderCount: 6,
+                images: [
+                    '/images/kon_tum_ginseng.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
+                description: 'Cây sâm cổ 10 năm tuổi quý hiếm, số lượng giới hạn.',
+            },
         ],
         catalogProducts: [
             {

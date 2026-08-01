@@ -1,5 +1,5 @@
-// Chi tiết sản phẩm: ảnh, giá, tồn kho, mô tả + hành động mua (khách -> Login).
-// Nhận { id, product } từ danh sách để vẽ ngay, rồi fetch bản đầy đủ (mô tả/ảnh) theo id.
+// Chi tiết cây trồng: ảnh, tuổi, giá, tồn kho, mô tả + đăng ký trồng (khách -> Login).
+// Nhận { id, plant } từ danh sách để vẽ ngay, rồi fetch bản đầy đủ theo id.
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,33 +15,25 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
-import { fetchShopItem } from '../api/catalog';
+import { fetchPlant } from '../api/catalog';
 import { toStaticUrl } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import ImageCarousel from '../components/ImageCarousel';
 
-const CATEGORY_LABELS = {
-  beverage: 'Đồ uống',
-  tea: 'Trà & Thảo mộc',
-  food: 'Thực phẩm',
-  supplement: 'Thực phẩm bổ sung',
-  personal_care: 'Chăm sóc cá nhân',
-};
-
-export default function ProductDetailScreen({ navigation, route }) {
+export default function PlantDetailScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const requireAuth = useRequireAuth();
   const { width } = useWindowDimensions();
 
-  const { id, product: initial } = route.params || {};
-  const [product, setProduct] = useState(initial || null);
+  const { id, plant: initial } = route.params || {};
+  const [plant, setPlant] = useState(initial || null);
   const [loading, setLoading] = useState(!initial);
 
   const load = useCallback(async () => {
     if (!id) return;
     try {
-      const data = await fetchShopItem(id);
-      if (data) setProduct((prev) => ({ ...prev, ...data }));
+      const data = await fetchPlant(id);
+      if (data) setPlant((prev) => ({ ...prev, ...data }));
     } catch {
       // giữ dữ liệu đã truyền từ danh sách nếu fetch lỗi
     } finally {
@@ -53,13 +45,11 @@ export default function ProductDetailScreen({ navigation, route }) {
     load();
   }, [load]);
 
-  const onAddToCart = () =>
-    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Giỏ hàng' }));
-  const onBuyNow = () =>
-    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Thanh toán' }));
+  const onRegister = () =>
+    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Đăng ký trồng' }));
 
-  const images = (product?.images || []).map(toStaticUrl).filter(Boolean);
-  const inStock = (product?.stock ?? 0) > 0;
+  const images = (plant?.images || []).map(toStaticUrl).filter(Boolean);
+  const inStock = (plant?.stock ?? 0) > 0;
 
   return (
     <View style={styles.root}>
@@ -68,16 +58,14 @@ export default function ProductDetailScreen({ navigation, route }) {
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </Pressable>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          Chi tiết sản phẩm
+          Chi tiết cây trồng
         </Text>
-        <Pressable hitSlop={8} onPress={onAddToCart}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
-        </Pressable>
+        <View style={styles.headerSpacer} />
       </View>
 
-      {loading && !product ? (
+      {loading && !plant ? (
         <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
-      ) : product ? (
+      ) : plant ? (
         <>
           <ScrollView
             contentContainerStyle={{ paddingBottom: spacing.xl }}
@@ -85,15 +73,11 @@ export default function ProductDetailScreen({ navigation, route }) {
           >
             <ImageCarousel images={images} width={width} />
             <View style={styles.body}>
-              {product.category ? (
-                <Text style={styles.category}>
-                  {CATEGORY_LABELS[product.category] || product.category}
-                </Text>
-              ) : null}
-              <Text style={styles.name}>{product.name}</Text>
+              <Text style={styles.age}>{plant.ageYear} năm tuổi</Text>
+              <Text style={styles.name}>{plant.name}</Text>
               <Text style={styles.price}>
-                {groupThousands(product.price)}đ
-                {product.unit ? <Text style={styles.unit}> / {product.unit}</Text> : null}
+                {groupThousands(plant.price)}đ
+                <Text style={styles.unit}> / cây</Text>
               </Text>
               <View style={styles.stockRow}>
                 <Ionicons
@@ -101,14 +85,12 @@ export default function ProductDetailScreen({ navigation, route }) {
                   size={18}
                   color={inStock ? colors.primary : colors.textMuted}
                 />
-                <Text style={styles.stock}>
-                  {inStock ? `Còn ${product.stock} ${product.unit || ''}`.trim() : 'Hết hàng'}
-                </Text>
+                <Text style={styles.stock}>{inStock ? `Còn ${plant.stock} cây` : 'Hết cây'}</Text>
               </View>
-              {product.description ? (
+              {plant.description ? (
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Mô tả</Text>
-                  <Text style={styles.desc}>{product.description}</Text>
+                  <Text style={styles.desc}>{plant.description}</Text>
                 </View>
               ) : null}
             </View>
@@ -116,27 +98,21 @@ export default function ProductDetailScreen({ navigation, route }) {
 
           <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>
             <Pressable
-              onPress={onAddToCart}
-              style={({ pressed }) => [styles.cartBtn, pressed && styles.pressed]}
-            >
-              <Ionicons name="cart-outline" size={22} color={colors.primary} />
-              <Text style={styles.cartText}>Thêm vào giỏ</Text>
-            </Pressable>
-            <Pressable
-              onPress={onBuyNow}
+              onPress={onRegister}
               disabled={!inStock}
               style={({ pressed }) => [
-                styles.buyBtn,
-                !inStock && styles.buyDisabled,
+                styles.registerBtn,
+                !inStock && styles.registerDisabled,
                 pressed && styles.pressed,
               ]}
             >
-              <Text style={styles.buyText}>{inStock ? 'Mua ngay' : 'Hết hàng'}</Text>
+              <Ionicons name="leaf" size={20} color="#fff" />
+              <Text style={styles.registerText}>{inStock ? 'Đăng ký trồng' : 'Hết cây'}</Text>
             </Pressable>
           </View>
         </>
       ) : (
-        <Text style={styles.empty}>Không tải được sản phẩm.</Text>
+        <Text style={styles.empty}>Không tải được cây trồng.</Text>
       )}
     </View>
   );
@@ -154,12 +130,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.header,
   },
   headerTitle: { flex: 1, color: '#fff', fontSize: 20, fontWeight: '700' },
+  headerSpacer: { width: 24 },
 
   loader: { marginTop: spacing.xl },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 
   body: { padding: spacing.lg, gap: spacing.sm },
-  category: {
+  age: {
     alignSelf: 'flex-start',
     fontSize: 12,
     fontWeight: '700',
@@ -181,36 +158,22 @@ const styles = StyleSheet.create({
   desc: { fontSize: 15, lineHeight: 22, color: colors.text },
 
   footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  cartBtn: {
+  registerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
     height: 52,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.primary,
-  },
-  cartText: { color: colors.primary, fontSize: 15, fontWeight: '700' },
-  buyBtn: {
-    flex: 1,
-    height: 52,
     borderRadius: 12,
     backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  buyDisabled: { backgroundColor: colors.textMuted },
-  buyText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  registerDisabled: { backgroundColor: colors.textMuted },
+  registerText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   pressed: { opacity: 0.85 },
 });

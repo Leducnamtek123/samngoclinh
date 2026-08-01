@@ -8,19 +8,6 @@ export const quickActions = [
   { key: 'promo', icon: 'pricetags-outline', label: 'Khuyến mãi' },
 ];
 
-// PlantingScreen — nhóm cây theo tuổi.
-export const plantingGroups = [1, 2, 3, 4, 5, 6].map((age) => ({ id: String(age), age }));
-
-// PromoScreen — số suất còn lại + danh sách cây ưu đãi.
-export const promoSlotsLeft = 23;
-
-export const promoPlants = [1, 2, 3, 4].map((n) => ({
-  id: String(n),
-  name: 'Cây Sâm Ngọc Linh 2026',
-  note: 'Cây sâm 1 năm',
-  price: 84758,
-}));
-
 // ProductsScreen — danh mục sản phẩm.
 export const products = [
   { id: '1', name: 'RƯỢU SÂM NGỌC LINH NGUYÊN CÂY - NGUYÊN CỦ', price: 7000000, sold: 0, icon: 'wine' },
