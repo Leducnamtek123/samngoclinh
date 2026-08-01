@@ -26,6 +26,17 @@ async function bootstrap(): Promise<void> {
         { prefix: '/uploads' }
     );
 
+    // @note ảnh danh mục/seed dùng chung với web app (apps/web/public), phục vụ cho mobile
+    const webPublic: string = join(process.cwd(), '..', 'web', 'public');
+    (app as unknown as NestExpressApplication).useStaticAssets(
+        join(webPublic, 'images'),
+        { prefix: '/images' }
+    );
+    (app as unknown as NestExpressApplication).useStaticAssets(
+        join(webPublic, 'assets'),
+        { prefix: '/assets' }
+    );
+
     const configService = app.get(ConfigService);
     const env: string = configService.get<string>('app.env')!;
     const timezone: string = configService.get<string>('app.timezone')!;

@@ -19,6 +19,7 @@ import KycScreen from './screens/KycScreen';
 import AddKycScreen from './screens/AddKycScreen';
 import VerifyEmailScreen from './screens/VerifyEmailScreen';
 import ComingSoonScreen from './screens/ComingSoonScreen';
+import ProductDetailScreen from './screens/ProductDetailScreen';
 import { colors } from './utils/theme';
 
 const Stack = createNativeStackNavigator();
@@ -81,6 +82,11 @@ function RootNavigator() {
       <Stack.Screen name="Kyc" component={KycScreen} options={{ headerShown: false }} />
       <Stack.Screen name="AddKyc" component={AddKycScreen} options={{ headerShown: false }} />
       <Stack.Screen name="VerifyEmail" component={VerifyEmailScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="ComingSoon"
         component={ComingSoonScreen}

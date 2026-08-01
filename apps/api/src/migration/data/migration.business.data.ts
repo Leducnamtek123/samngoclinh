@@ -249,6 +249,96 @@ export const migrationBusinessData: Record<
                 ],
                 description: 'Sản phẩm chăm sóc cá nhân từ thảo dược.',
             },
+            {
+                code: 'product-honey',
+                name: 'Mật ong rừng ngâm Sâm Ngọc Linh 500ml',
+                category: 'food',
+                unit: 'hũ',
+                price: 1250000,
+                stock: 60,
+                status: 'available',
+                featured: true,
+                images: [
+                    '/images/products/honey.png',
+                    '/images/kon_tum_ginseng.png',
+                ],
+                description:
+                    'Mật ong rừng nguyên chất ngâm lát sâm Ngọc Linh, bồi bổ sức khỏe mỗi ngày.',
+            },
+            {
+                code: 'product-tea-bag',
+                name: 'Trà túi lọc Sâm Ngọc Linh hộp 25 gói',
+                category: 'tea',
+                unit: 'hộp',
+                price: 480000,
+                stock: 120,
+                status: 'available',
+                featured: false,
+                images: ['/images/products/tea_box.png'],
+                description:
+                    'Trà túi lọc tiện lợi, hương sâm dịu nhẹ, dùng nóng hoặc lạnh đều ngon.',
+            },
+            {
+                code: 'product-wine-slice',
+                name: 'Rượu Sâm Ngọc Linh ngâm lát 1 lít',
+                category: 'beverage',
+                unit: 'chai',
+                price: 2200000,
+                stock: 30,
+                status: 'available',
+                featured: true,
+                images: [
+                    '/images/products/wine_root.png',
+                    '/assets/images/logo_ruou_sam.png',
+                ],
+                description:
+                    'Rượu ngâm lát sâm Ngọc Linh, vị êm, thích hợp làm quà biếu.',
+            },
+            {
+                code: 'product-extract',
+                name: 'Cao Sâm Ngọc Linh cô đặc 100g',
+                category: 'food',
+                unit: 'lọ',
+                price: 4500000,
+                stock: 15,
+                status: 'available',
+                featured: false,
+                images: [
+                    '/images/products/honey.png',
+                    '/images/kon_tum_ginseng.png',
+                ],
+                description:
+                    'Cao sâm cô đặc từ củ sâm Ngọc Linh, pha cùng nước ấm hoặc mật ong.',
+            },
+            {
+                code: 'product-capsule',
+                name: 'Viên nang Sâm Ngọc Linh hộp 60 viên',
+                category: 'supplement',
+                unit: 'hộp',
+                price: 1650000,
+                stock: 80,
+                status: 'available',
+                featured: true,
+                images: ['/images/kon_tum_ginseng.png'],
+                description:
+                    'Viên nang chiết xuất sâm Ngọc Linh, tiện dùng cho người bận rộn.',
+            },
+            {
+                code: 'product-tea-slice-large',
+                name: 'Sâm Ngọc Linh cắt lát sấy thăng hoa 20g',
+                category: 'tea',
+                unit: 'gói',
+                price: 6800000,
+                stock: 10,
+                status: 'available',
+                featured: false,
+                images: [
+                    '/images/products/tea_slice.png',
+                    '/images/products/tea_box.png',
+                ],
+                description:
+                    'Gói lát sâm sấy thăng hoa loại lớn, giữ trọn dưỡng chất và hương vị.',
+            },
         ],
         promotionCampaigns: [
             {
