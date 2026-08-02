@@ -1,4 +1,4 @@
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyContentMetaRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-meta.request.dto';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 
 export class TermPolicyContentRequestDto extends PickType(
-    TermPolicyContentPresignRequestDto,
+    TermPolicyContentMetaRequestDto,
     ['language', 'size'] as const
 ) {
     @ApiProperty({

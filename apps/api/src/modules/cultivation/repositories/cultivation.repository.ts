@@ -6,6 +6,8 @@ import {
     ICultivationBedItem,
     ICultivationBedLocationsGenerateResult,
     ICultivationGardenSummary,
+    ICultivationPublicBedDetail,
+    ICultivationPublicBedItem,
     ICultivationTreeAgeItem,
     ICultivationTreeDetail,
 } from '@modules/cultivation/interfaces/cultivation.interface';
@@ -624,5 +626,90 @@ export class CultivationRepository {
                 ...ownerUserId,
             },
         });
+    }
+
+    async listPublicBedsByAge(ageYear: number): Promise<ICultivationPublicBedItem[]> {
+        const beds = await this.databaseService.cultivationBed.findMany({
+            where: { ageYear, status: 'active' },
+            orderBy: { name: 'asc' },
+        });
+        if (beds.length === 0) {
+            return [];
+        }
+
+        const gardenCodes = [...new Set(beds.map(b => b.gardenCode))];
+        const gardens = await this.databaseService.cultivationGarden.findMany({
+            where: { code: { in: gardenCodes } },
+            select: { code: true, name: true, images: true },
+        });
+        const gardenMap = new Map(gardens.map(g => [g.code, g]));
+
+        const catalog = await this.databaseService.catalogPlant.findFirst({
+            where: { ageYear },
+            select: { price: true, images: true },
+        });
+
+        return beds.map(b => {
+            const garden = gardenMap.get(b.gardenCode);
+            const images = garden?.images.length ? garden.images : (catalog?.images ?? []);
+            return {
+                code: b.code,
+                name: b.name,
+                gardenCode: b.gardenCode,
+                gardenName: garden?.name ?? '',
+                ageYear: b.ageYear,
+                treeCount: b.treeCount,
+                price: catalog?.price ?? 0,
+                images,
+                status: b.status,
+            };
+        });
+    }
+
+    async getPublicBedDetail(code: string): Promise<ICultivationPublicBedDetail | null> {
+        const bed = await this.databaseService.cultivationBed.findFirst({
+            where: { code, status: 'active' },
+        });
+        if (!bed) {
+            return null;
+        }
+
+        const [garden, tree, careLogs, catalog] = await Promise.all([
+            this.databaseService.cultivationGarden.findUnique({
+                where: { code: bed.gardenCode },
+                select: { name: true, images: true },
+            }),
+            this.databaseService.cultivationTree.findFirst({
+                where: { bedCode: bed.code },
+                orderBy: { createdAt: 'asc' },
+            }),
+            this.databaseService.cultivationCareLog.findMany({
+                where: { bedCode: bed.code },
+                orderBy: { loggedAt: 'desc' },
+                take: 20,
+            }),
+            this.databaseService.catalogPlant.findFirst({
+                where: { ageYear: bed.ageYear },
+                select: { price: true, images: true, description: true },
+            }),
+        ]);
+
+        const images = garden?.images.length ? garden.images : (catalog?.images ?? []);
+
+        return {
+            code: bed.code,
+            name: bed.name,
+            gardenCode: bed.gardenCode,
+            gardenName: garden?.name ?? '',
+            ageYear: bed.ageYear,
+            treeCount: bed.treeCount,
+            status: bed.status,
+            price: catalog?.price ?? 0,
+            plantedAt: tree?.plantedAt ?? null,
+            healthStatus: tree?.healthStatus ?? null,
+            images,
+            description: catalog?.description ?? bed.description,
+            careLogs,
+        };
     }
 }

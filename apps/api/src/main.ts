@@ -1,7 +1,9 @@
 import './instrument';
 
 import { NestApplication, NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Logger, VersioningType } from '@nestjs/common';
+import { join } from 'path';
 import { AppModule } from '@app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { useContainer, validate } from 'class-validator';
@@ -18,6 +20,22 @@ async function bootstrap(): Promise<void> {
     });
 
     app.useLogger(app.get(PinoLogger));
+
+    (app as unknown as NestExpressApplication).useStaticAssets(
+        join(process.cwd(), 'uploads'),
+        { prefix: '/uploads' }
+    );
+
+    // @note ảnh danh mục/seed dùng chung với web app (apps/web/public), phục vụ cho mobile
+    const webPublic: string = join(process.cwd(), '..', 'web', 'public');
+    (app as unknown as NestExpressApplication).useStaticAssets(
+        join(webPublic, 'images'),
+        { prefix: '/images' }
+    );
+    (app as unknown as NestExpressApplication).useStaticAssets(
+        join(webPublic, 'assets'),
+        { prefix: '/assets' }
+    );
 
     const configService = app.get(ConfigService);
     const env: string = configService.get<string>('app.env')!;

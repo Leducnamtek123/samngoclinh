@@ -1,5 +1,7 @@
-import { IAwsS3 } from '@common/aws/interfaces/aws.interface';
-import { IFileRandomFilenameOptions } from '@common/file/interfaces/file.interface';
+import {
+    IFileRandomFilenameOptions,
+    ILocalStorage,
+} from '@common/file/interfaces/file.interface';
 import { FileService } from '@common/file/services/file.service';
 import { HelperService } from '@common/helper/services/helper.service';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
@@ -102,7 +104,7 @@ export class TermPolicyUtil {
 
     /** Re-attaches each content language to its moved S3 item by matching filenames. */
     mapPublicContent(
-        newItems: IAwsS3[],
+        newItems: ILocalStorage[],
         contents: TermContentDto[]
     ): TermContentDto[] {
         return newItems.map(item => {

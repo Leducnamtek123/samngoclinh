@@ -22,6 +22,7 @@ export interface INotificationVerificationEmailPayload {
     expiredAt: string;
     expiredInMinutes: number;
     reference: string;
+    otp?: string;
 }
 
 export type INotificationVerifiedEmailPayload = Pick<

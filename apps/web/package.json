@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev:spotlight": "npx @spotlightjs/spotlight",
-    "dev:next": "next dev -p 3002 --webpack",
+    "dev:web": "next dev -p 3002 --webpack",
     "dev": "run-p db-server:file dev:*",
     "build:next": "next build --webpack",
     "build-local": "run-p db-server:memory build:next --race",

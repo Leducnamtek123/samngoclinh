@@ -12,7 +12,6 @@ import {
     MaxLength,
     Min,
     MinLength,
-    ValidateIf,
 } from 'class-validator';
 import { EnumAppEnvironment } from '@app/enums/app.enum';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
@@ -232,57 +231,27 @@ export class AppEnvDto {
 
     @IsOptional()
     @IsString()
-    AWS_S3_IAM_CREDENTIAL_KEY?: string;
+    SMTP_HOST?: string;
 
     @IsOptional()
     @IsString()
-    AWS_S3_IAM_CREDENTIAL_SECRET?: string;
-
-    @IsNotEmpty()
-    @IsString()
-    @ValidateIf(
-        o => o.AWS_S3_IAM_CREDENTIAL_KEY || o.AWS_S3_IAM_CREDENTIAL_SECRET
-    )
-    AWS_S3_IAM_ARN?: string;
+    SMTP_PORT?: string;
 
     @IsOptional()
     @IsString()
-    AWS_S3_REGION?: string;
+    SMTP_SECURE?: string;
 
     @IsOptional()
     @IsString()
-    AWS_S3_PUBLIC_BUCKET?: string;
+    SMTP_USER?: string;
 
     @IsOptional()
     @IsString()
-    AWS_S3_PUBLIC_CDN?: string;
+    SMTP_PASSWORD?: string;
 
     @IsOptional()
     @IsString()
-    AWS_S3_PRIVATE_BUCKET?: string;
-
-    @IsOptional()
-    @IsString()
-    AWS_S3_PRIVATE_CDN?: string;
-
-    @IsOptional()
-    @IsString()
-    AWS_SES_IAM_CREDENTIAL_KEY?: string;
-
-    @IsOptional()
-    @IsString()
-    AWS_SES_IAM_CREDENTIAL_SECRET?: string;
-
-    @IsNotEmpty()
-    @IsString()
-    @ValidateIf(
-        o => o.AWS_SES_IAM_CREDENTIAL_KEY || o.AWS_SES_IAM_CREDENTIAL_SECRET
-    )
-    AWS_SES_IAM_ARN?: string;
-
-    @IsOptional()
-    @IsString()
-    AWS_SES_REGION?: string;
+    SMTP_FROM?: string;
 
     @IsNotEmpty()
     @IsString()

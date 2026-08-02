@@ -1,8 +1,8 @@
-import { IAwsS3 } from '@common/aws/interfaces/aws.interface';
+import { ILocalStorage } from '@common/file/interfaces/file.interface';
 
 export interface ITermPolicyTemplateService {
-    importTermsOfService(): Promise<IAwsS3 | null>;
-    importPrivacy(): Promise<IAwsS3 | null>;
-    importCookie(): Promise<IAwsS3 | null>;
-    importMarketing(): Promise<IAwsS3 | null>;
+    importTermsOfService(): Promise<ILocalStorage | null>;
+    importPrivacy(): Promise<ILocalStorage | null>;
+    importCookie(): Promise<ILocalStorage | null>;
+    importMarketing(): Promise<ILocalStorage | null>;
 }

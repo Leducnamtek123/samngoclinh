@@ -4,24 +4,9 @@ import {
     DocAuth,
     DocResponse,
 } from '@common/doc/decorators/doc.decorator';
-import { HealthAwsResponseDto } from '@modules/health/dtos/response/health.aws.response.dto';
 import { HealthDatabaseResponseDto } from '@modules/health/dtos/response/health.database.response.dto';
 import { HealthInstanceResponseDto } from '@modules/health/dtos/response/health.instance.response.dto';
 import { HealthThirdPartyResponseDto } from '@modules/health/dtos/response/health.sentry.response.dto';
-
-export function HealthSystemCheckAwsDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc({
-            summary: 'health check api for aws',
-        }),
-        DocAuth({
-            xApiKey: true,
-        }),
-        DocResponse<HealthAwsResponseDto>('health.checkAws', {
-            dto: HealthAwsResponseDto,
-        })
-    );
-}
 
 export function HealthSystemCheckDatabaseDoc(): MethodDecorator {
     return applyDecorators(

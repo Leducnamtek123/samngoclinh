@@ -3,8 +3,6 @@ import { CartModule } from '@modules/cart/cart.module';
 import { CultivationUserController } from '@modules/cultivation/controllers/cultivation.user.controller';
 import { CultivationProviderController } from '@modules/cultivation/controllers/cultivation.provider.controller';
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
-import { IdentityVerificationUserController } from '@modules/identity-verification/controllers/identity-verification.user.controller';
-import { IdentityVerificationModule } from '@modules/identity-verification/identity-verification.module';
 import { OrdersUserController } from '@modules/orders/controllers/orders.user.controller';
 import { OrdersModule } from '@modules/orders/orders.module';
 import { ProfileUserController } from '@modules/profile/controllers/profile.user.controller';
@@ -33,7 +31,6 @@ import { Module } from '@nestjs/common';
         CultivationUserController,
         CultivationProviderController,
         CartUserController,
-        IdentityVerificationUserController,
         MarketplaceProviderController,
         EContractUserController,
         PackagesUserController,
@@ -47,7 +44,6 @@ import { Module } from '@nestjs/common';
         OrdersModule,
         CultivationModule,
         CartModule,
-        IdentityVerificationModule,
         MarketplaceModule,
         EContractModule,
         PackagesModule,

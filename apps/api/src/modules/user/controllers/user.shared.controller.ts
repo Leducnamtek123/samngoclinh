@@ -1,5 +1,7 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
-import { FileUploadSingle } from '@common/file/decorators/file.decorator';
+import {
+    FileUploadMultipleFields,
+    FileUploadSingle,
+} from '@common/file/decorators/file.decorator';
 import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
 import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
@@ -28,34 +30,33 @@ import {
     UserSharedAddMobileNumberDoc,
     UserSharedChangePasswordDoc,
     UserSharedClaimUsernameDoc,
+    UserSharedConfirmEmailVerificationDoc,
     UserSharedDeleteAddressDoc,
     UserSharedDeleteMobileNumberDoc,
-    UserSharedGeneratePhotoProfilePresignDoc,
+    UserSharedGetIdentityDocumentDoc,
     UserSharedLogoutDoc,
     UserSharedProfileDoc,
     UserSharedRefreshDoc,
+    UserSharedRequestEmailVerificationDoc,
+    UserSharedSaveIdentityDocumentDoc,
     UserSharedTwoFactorDisableDoc,
     UserSharedTwoFactorEnableDoc,
     UserSharedTwoFactorRegenerateBackupDoc,
     UserSharedTwoFactorSetupDoc,
     UserSharedTwoFactorStatusDoc,
     UserSharedUpdateMobileNumberDoc,
-    UserSharedUpdatePhotoProfileDoc,
     UserSharedUpdateProfileDoc,
     UserSharedUploadPhotoProfileDoc,
 } from '@modules/user/docs/user.shared.doc';
 import { UserAddAddressRequestDto } from '@modules/user/dtos/request/user.address.request.dto';
+import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
-import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import {
     UserAddMobileNumberRequestDto,
     UserUpdateMobileNumberRequestDto,
 } from '@modules/user/dtos/request/user.mobile-number.request.dto';
-import {
-    UserUpdateProfilePhotoRequestDto,
-    UserUpdateProfileRequestDto,
-} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserUpdateProfileRequestDto } from '@modules/user/dtos/request/user.profile.request.dto';
 import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
 import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
@@ -63,6 +64,7 @@ import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
+import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { UserService } from '@modules/user/services/user.service';
@@ -78,6 +80,7 @@ import {
     Post,
     Put,
     UploadedFile,
+    UploadedFiles,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -135,37 +138,6 @@ export class UserSharedController {
         body: UserUpdateProfileRequestDto
     ): Promise<void> {
         return this.userService.updateProfile(userId, body);
-    }
-
-    @UserSharedGeneratePhotoProfilePresignDoc()
-    @Response('user.generatePhotoProfilePresign')
-    @TermPolicyAcceptanceProtected()
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/profile/generate-presign/photo')
-    async generatePhotoProfilePresign(
-        @AuthJwtPayload('userId')
-        userId: string,
-        @Body() body: UserGeneratePhotoProfileRequestDto
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>> {
-        return this.userService.generatePhotoProfilePresign(userId, body);
-    }
-
-    @UserSharedUpdatePhotoProfileDoc()
-    @Response('user.updatePhotoProfile')
-    @TermPolicyAcceptanceProtected()
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
-    @Put('/profile/update/photo')
-    async updatePhotoProfile(
-        @AuthJwtPayload('userId')
-        userId: string,
-        @Body() body: UserUpdateProfilePhotoRequestDto
-    ): Promise<void> {
-        return this.userService.updatePhotoProfile(userId, body);
     }
 
     @UserSharedUploadPhotoProfileDoc()
@@ -292,6 +264,73 @@ export class UserSharedController {
             phone: body.phone ?? null,
             isDefault: body.isDefault ?? false,
         });
+    }
+
+    @UserSharedGetIdentityDocumentDoc()
+    @Response('user.getIdentityDocument')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/identity-document')
+    async getIdentityDocument(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto | null>> {
+        return this.userService.getIdentityDocument(userId);
+    }
+
+    @UserSharedSaveIdentityDocumentDoc()
+    @Response('user.saveIdentityDocument')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @FileUploadMultipleFields([
+        { field: 'front', maxFiles: 1 },
+        { field: 'back', maxFiles: 1 },
+    ])
+    @RequestTimeout('1m')
+    @Put('/identity-document')
+    async saveIdentityDocument(
+        @AuthJwtPayload('userId') userId: string,
+        @UploadedFiles()
+        files: { front?: IFile[]; back?: IFile[] }
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
+        return this.userService.saveIdentityDocument(
+            userId,
+            files.front?.[0] ?? null,
+            files.back?.[0] ?? null
+        );
+    }
+
+    @UserSharedRequestEmailVerificationDoc()
+    @Response('user.requestEmailVerification')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/verify-email/request')
+    async requestEmailVerification(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<void> {
+        return this.userService.requestEmailVerificationOtp(userId);
+    }
+
+    @UserSharedConfirmEmailVerificationDoc()
+    @Response('user.confirmEmailVerification')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/verify-email/confirm')
+    async confirmEmailVerification(
+        @AuthJwtPayload('userId') userId: string,
+        @Body()
+        body: UserConfirmEmailVerificationRequestDto
+    ): Promise<void> {
+        return this.userService.confirmEmailVerificationOtp(userId, body);
     }
 
     @UserSharedDeleteAddressDoc()

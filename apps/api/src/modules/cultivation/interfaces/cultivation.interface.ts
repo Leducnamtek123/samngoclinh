@@ -28,3 +28,31 @@ export interface ICultivationTreeAgeItem {
     ageYear: number;
     count: number;
 }
+
+export interface ICultivationPublicBedItem {
+    code: string;
+    name: string;
+    gardenCode: string;
+    gardenName: string;
+    ageYear: number;
+    treeCount: number;
+    price: number;
+    images: string[];
+    status: string;
+}
+
+export interface ICultivationPublicBedDetail {
+    code: string;
+    name: string;
+    gardenCode: string;
+    gardenName: string;
+    ageYear: number;
+    treeCount: number;
+    status: string;
+    price: number;
+    plantedAt: Date | null;
+    healthStatus: string | null;
+    images: string[];
+    description: string | null;
+    careLogs: CultivationCareLog[];
+}

@@ -785,29 +785,18 @@ model Order {
   @@map("Orders")
 }
 
-model IdentityVerificationRequest {
-  id              String @id @default(uuid())
-  code            String
-  userId          String
-  fullName        String
-  identityNumber  String
-  status          String
-  frontImageUrl   String
-  backImageUrl    String
-  documentFiles   String[] @default([])
-  note            String?
-  submittedAt     DateTime @default(now())
-  reviewedAt      DateTime?
-  metadata        Json?
+model UserIdentityDocument {
+  id            String @id @default(uuid())
+  userId        String @unique
+  frontImageUrl String
+  backImageUrl  String
 
   createdAt DateTime @default(now())
   createdBy String?
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  @@unique(fields: [code])
-  @@index(fields: [userId, status, submittedAt(sort: Desc)])
-  @@map("IdentityVerificationRequests")
+  @@map("UserIdentityDocuments")
 }
 
 model BusinessProfile {

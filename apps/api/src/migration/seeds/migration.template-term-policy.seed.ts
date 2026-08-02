@@ -1,4 +1,3 @@
-import { AwsS3Service } from '@common/aws/services/aws.s3.service';
 import { DatabaseService } from '@common/database/services/database.service';
 import { DatabaseUtil } from '@common/database/utils/database.util';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
@@ -13,7 +12,7 @@ import { Logger } from '@nestjs/common';
 import { Command } from 'nest-commander';
 
 /**
- * Uploads term policy documents to S3 and writes their published records; removal is a no-op. Throws if S3 is uninitialized.
+ * Saves term policy document templates to local storage and writes their published records; removal is a no-op.
  */
 @Command({
     name: 'template-termPolicy',
@@ -29,7 +28,6 @@ export class MigrationTemplateTermPolicySeed
     constructor(
         private readonly termPolicyTemplateService: TermPolicyTemplateService,
         private readonly databaseService: DatabaseService,
-        private readonly awsS3Service: AwsS3Service,
         private readonly databaseUtil: DatabaseUtil
     ) {
         super();
@@ -37,15 +35,6 @@ export class MigrationTemplateTermPolicySeed
 
     async seed(): Promise<void> {
         this.logger.log('Seeding Term Policies...');
-
-        const isS3Initialized = this.awsS3Service.isInitialized();
-        if (!isS3Initialized) {
-            this.logger.error(
-                'AWS S3 is not initialized. Cannot seed term policies.'
-            );
-
-            throw new Error('AWS S3 is not initialized');
-        }
 
         try {
             const [

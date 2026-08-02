@@ -1,4 +1,3 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
 import {
     Doc,
     DocAuth,
@@ -15,17 +14,15 @@ import {
     UserDocParamsMobileNumberId,
 } from '@modules/user/constants/user.doc.constant';
 import { UserAddAddressRequestDto } from '@modules/user/dtos/request/user.address.request.dto';
+import { UserSaveIdentityDocumentRequestDto } from '@modules/user/dtos/request/user.identity-document.request.dto';
+import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
-import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import {
     UserAddMobileNumberRequestDto,
     UserUpdateMobileNumberRequestDto,
 } from '@modules/user/dtos/request/user.mobile-number.request.dto';
-import {
-    UserUpdateProfilePhotoRequestDto,
-    UserUpdateProfileRequestDto,
-} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserUpdateProfileRequestDto } from '@modules/user/dtos/request/user.profile.request.dto';
 import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
 import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
@@ -33,6 +30,7 @@ import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
+import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { HttpStatus, applyDecorators } from '@nestjs/common';
 
@@ -89,51 +87,6 @@ export function UserSharedUpdateProfileDoc(): MethodDecorator {
             jwtAccessToken: true,
         }),
         DocResponse('user.updateProfile')
-    );
-}
-
-export function UserSharedGeneratePhotoProfilePresignDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc({
-            summary: 'generate upload photo profile presign',
-        }),
-        DocGuard({
-            termPolicy: true,
-        }),
-        DocAuth({
-            xApiKey: true,
-            jwtAccessToken: true,
-        }),
-        DocRequest({
-            bodyType: EnumDocRequestBodyType.json,
-            dto: UserGeneratePhotoProfileRequestDto,
-        }),
-        DocResponse<AwsS3PresignResponseDto>(
-            'user.generatePhotoProfilePresign',
-            {
-                dto: AwsS3PresignResponseDto,
-            }
-        )
-    );
-}
-
-export function UserSharedUpdatePhotoProfileDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc({
-            summary: 'update photo profile',
-        }),
-        DocGuard({
-            termPolicy: true,
-        }),
-        DocAuth({
-            xApiKey: true,
-            jwtAccessToken: true,
-        }),
-        DocRequest({
-            bodyType: EnumDocRequestBodyType.json,
-            dto: UserUpdateProfilePhotoRequestDto,
-        }),
-        DocResponse('user.updatePhotoProfile')
     );
 }
 
@@ -263,6 +216,81 @@ export function UserSharedAddAddressDoc(): MethodDecorator {
             httpStatus: HttpStatus.CREATED,
             dto: UserAddressResponseDto,
         })
+    );
+}
+
+export function UserSharedGetIdentityDocumentDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user get identity document (CCCD front/back)',
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.getIdentityDocument', {
+            dto: UserIdentityDocumentResponseDto,
+        })
+    );
+}
+
+export function UserSharedSaveIdentityDocumentDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user save identity document (CCCD front/back, no verification)',
+        }),
+        DocRequestFile({
+            dto: UserSaveIdentityDocumentRequestDto,
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.saveIdentityDocument', {
+            dto: UserIdentityDocumentResponseDto,
+        })
+    );
+}
+
+export function UserSharedRequestEmailVerificationDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user request email verification OTP',
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.requestEmailVerification')
+    );
+}
+
+export function UserSharedConfirmEmailVerificationDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user confirm email verification OTP',
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserConfirmEmailVerificationRequestDto,
+        }),
+        DocGuard({
+            termPolicy: true,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.confirmEmailVerification')
     );
 }
 

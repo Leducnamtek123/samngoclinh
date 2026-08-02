@@ -6,7 +6,7 @@
 //  - Interceptor (withAuth): gặp 401 -> tự refresh -> retry 1 lần -> vẫn fail thì đăng xuất.
 //  - Mọi endpoint yêu cầu header x-api-key (@ApiKeyProtected) và trả về vỏ chuẩn { statusCode, message, data }.
 
-import { API_BASE_NEUTRAL, API_BASE_URL, API_KEY } from './config';
+import { API_BASE_URL, API_KEY } from './config';
 import { getDeviceInfo } from './device';
 import { getRefreshToken, getToken, updateTokens } from './storage';
 
@@ -33,9 +33,11 @@ export class HttpError extends Error {
 // KHÔNG kèm interceptor — dùng trực tiếp cho endpoint public (login, refresh, forgot/reset)
 // hoặc bên trong withAuth cho endpoint cần token.
 async function apiRequest(path, { method = 'GET', body, token, baseUrl = API_BASE_URL } = {}) {
+  const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
   const headers = { Accept: 'application/json', 'x-custom-lang': 'vi' };
   if (API_KEY) headers['x-api-key'] = API_KEY;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  // FormData tự set Content-Type kèm boundary — không tự ép application/json.
+  if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
 
   let res;
@@ -43,7 +45,7 @@ async function apiRequest(path, { method = 'GET', body, token, baseUrl = API_BAS
     res = await fetch(`${baseUrl}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });
   } catch {
     throw new HttpError(0, 'Không kết nối được máy chủ. Vui lòng kiểm tra mạng.', 'NETWORK_ERROR');
@@ -153,6 +155,24 @@ export async function requestPasswordReset({ email }) {
   return apiRequest('/public/user/password/forgot', { method: 'POST', body: { email } });
 }
 
+// Xác thực email: gửi OTP tới email tài khoản.
+export async function requestEmailVerification() {
+  return withAuth((token) =>
+    apiRequest('/shared/user/verify-email/request', { method: 'POST', token })
+  );
+}
+
+// Xác nhận OTP xác thực email.
+export async function confirmEmailVerification({ otp }) {
+  return withAuth((token) =>
+    apiRequest('/shared/user/verify-email/confirm', {
+      method: 'POST',
+      body: { otp },
+      token,
+    })
+  );
+}
+
 // Đổi mật khẩu khi đã đăng nhập.
 export async function changePassword({ oldPassword, newPassword }) {
   return withAuth((token) =>
@@ -231,23 +251,29 @@ export async function deleteAddress(addressId) {
   );
 }
 
-// Trạng thái xác minh danh tính (KYC). Endpoint VERSION_NEUTRAL nên dùng base /api (không /v1).
-export async function getKycStatus() {
-  return withAuth((token) =>
-    apiRequest('/user/identity-verification/status', {
-      baseUrl: API_BASE_NEUTRAL,
-      token,
-    })
-  );
+// Giấy tờ tùy thân: lấy ảnh CCCD đã lưu (mặt trước/sau) hoặc null nếu chưa có.
+export async function getIdentityDocument() {
+  return withAuth((token) => apiRequest('/shared/user/identity-document', { token }));
 }
 
-// Gửi hồ sơ xác minh danh tính. Ảnh là base64 data URL (backend lưu chuỗi, không upload S3).
-export async function submitKyc({ frontImageUrl, backImageUrl }) {
+// Ép một asset của image-picker thành phần tử file cho FormData (RN cần {uri,name,type}).
+function toFormFile(asset) {
+  const uri = asset?.uri ?? asset;
+  const name = asset?.fileName || uri.split('/').pop() || 'image.jpg';
+  const type = asset?.mimeType || 'image/jpeg';
+  return { uri, name, type };
+}
+
+// Lưu ảnh CCCD (mặt trước/sau) — upload multipart, backend ghi file vào local.
+export async function saveIdentityDocument({ front, back }) {
+  const formData = new FormData();
+  formData.append('front', toFormFile(front));
+  formData.append('back', toFormFile(back));
+
   return withAuth((token) =>
-    apiRequest('/user/identity-verification/submit', {
-      method: 'POST',
-      baseUrl: API_BASE_NEUTRAL,
-      body: { frontImageUrl, backImageUrl },
+    apiRequest('/shared/user/identity-document', {
+      method: 'PUT',
+      body: formData,
       token,
     })
   );

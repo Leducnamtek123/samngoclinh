@@ -21,6 +21,8 @@ import { BannerPublicController } from '@modules/banner/controllers/banner.publi
 import { BannerModule } from '@modules/banner/banner.module';
 import { SepayPublicController } from '@modules/sepay/controllers/sepay.public.controller';
 import { SepayModule } from '@modules/sepay/sepay.module';
+import { CultivationPublicController } from '@modules/cultivation/controllers/cultivation.public.controller';
+import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { Module } from '@nestjs/common';
 
 /**
@@ -40,6 +42,7 @@ import { Module } from '@nestjs/common';
         SettingPublicController,
         BannerPublicController,
         SepayPublicController,
+        CultivationPublicController,
     ],
     providers: [],
     exports: [],
@@ -55,6 +58,7 @@ import { Module } from '@nestjs/common';
         SettingModule,
         BannerModule,
         SepayModule,
+        CultivationModule,
     ],
 })
 export class RoutesPublicModule {}

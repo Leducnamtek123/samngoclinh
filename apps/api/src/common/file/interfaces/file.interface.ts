@@ -26,3 +26,11 @@ export interface IFileRandomFilenameOptions {
     extension: EnumFileExtension;
     randomLength?: number;
 }
+
+export interface ILocalStorage {
+    key: string;
+    url: string;
+    mime: string;
+    extension: string;
+    size: number;
+}

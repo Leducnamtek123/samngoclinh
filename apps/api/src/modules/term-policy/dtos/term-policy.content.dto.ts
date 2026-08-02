@@ -1,9 +1,9 @@
-import { AwsS3ResponseDto } from '@common/aws/dtos/response/aws.s3.response.dto';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class TermContentDto extends AwsS3ResponseDto {
+export class TermContentDto extends LocalStorageResponseDto {
     @ApiProperty({
         required: true,
         description: 'Language of the term document',

@@ -1,4 +1,4 @@
-// Thêm giấy tờ tùy thân — chọn ảnh mặt trước/sau (base64 data URL) rồi gửi xác thực.
+// Thêm giấy tờ tùy thân — chọn ảnh mặt trước/sau rồi upload (multipart) lên backend, không xác minh.
 import { useState } from 'react';
 import {
   Image,
@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
 import PrimaryButton from '../components/PrimaryButton';
-import { submitKyc } from '../api/auth';
+import { saveIdentityDocument } from '../api/auth';
 import { useAlert } from '../context/AlertContext';
 import { colors, spacing } from '../utils/theme';
 
@@ -28,16 +28,15 @@ export default function AddKycScreen({ navigation }) {
   const [backImage, setBackImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Ảnh base64 lớn nên nén quality 0.5; tạo data URL để backend lưu chuỗi (không upload S3).
+  // Giữ nguyên asset (uri) để upload multipart; nén quality 0.5 cho nhẹ.
   const pickImage = async (setter) => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.5,
-      base64: true,
     });
     if (result.canceled) return;
     const asset = result.assets?.[0];
-    if (asset?.base64) setter(`data:image/jpeg;base64,${asset.base64}`);
+    if (asset?.uri) setter(asset);
   };
 
   const onSubmit = async () => {
@@ -46,16 +45,16 @@ export default function AddKycScreen({ navigation }) {
     }
     setLoading(true);
     try {
-      await submitKyc({
-        frontImageUrl: frontImage,
-        backImageUrl: backImage,
+      await saveIdentityDocument({
+        front: frontImage,
+        back: backImage,
       });
-      alert.success('Thành công', 'Đã gửi hồ sơ xác minh. Vui lòng chờ duyệt.', {
+      alert.success('Thành công', 'Đã lưu giấy tờ tùy thân.', {
         confirmText: 'Xong',
         onConfirm: () => navigation.goBack(),
       });
     } catch (e) {
-      alert.error('Gửi thất bại', e?.message || 'Vui lòng thử lại.');
+      alert.error('Lưu thất bại', e?.message || 'Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -85,14 +84,14 @@ export default function AddKycScreen({ navigation }) {
           <View style={styles.card}>
             <Text style={styles.label}>Ảnh mặt trước</Text>
             <ImagePickerBox
-              image={frontImage}
+              image={frontImage?.uri}
               placeholder="Chọn ảnh mặt trước"
               onPress={() => pickImage(setFrontImage)}
             />
 
             <Text style={[styles.label, styles.labelSpacer]}>Ảnh mặt sau</Text>
             <ImagePickerBox
-              image={backImage}
+              image={backImage?.uri}
               placeholder="Chọn ảnh mặt sau"
               onPress={() => pickImage(setBackImage)}
             />
@@ -101,11 +100,11 @@ export default function AddKycScreen({ navigation }) {
           <View style={styles.infoBox}>
             <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
             <Text style={styles.infoText}>
-              Chọn đủ ảnh mặt trước và mặt sau để kiểm tra thông tin trước khi tải lên.
+              Chọn đủ ảnh mặt trước và mặt sau của căn cước rồi lưu lại.
             </Text>
           </View>
 
-          <PrimaryButton title="Gửi xác thực" onPress={onSubmit} loading={loading} />
+          <PrimaryButton title="Lưu" onPress={onSubmit} loading={loading} />
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

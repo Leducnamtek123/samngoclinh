@@ -34,6 +34,11 @@ export interface IUserAddressCreate {
     isDefault: boolean;
 }
 
+export interface IUserIdentityDocumentSave {
+    frontImageUrl: string;
+    backImageUrl: string;
+}
+
 export interface IUserLogin {
     loginFrom: EnumUserLoginFrom;
     loginWith: EnumUserLoginWith;

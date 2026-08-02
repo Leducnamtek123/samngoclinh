@@ -67,14 +67,16 @@ pnpm generate:keys --direct-insert
 cd ../..
 docker compose up -d
 
-# 4. Prisma client + đẩy schema + seed dữ liệu
+# 4. Prisma client + đẩy schema + seed dữ liệu (migration:fresh = reset sạch DB rồi seed lại)
 cd apps/api
 pnpm db:generate
 pnpm migration:fresh
 
 # 5. Chạy API (hot reload)
-pnpm start:dev
+pnpm dev:api
 ```
+
+> **Seed dữ liệu mẫu.** `pnpm migration:fresh` reset sạch DB rồi seed lại (mất toàn bộ dữ liệu hiện có). Chỉ muốn thêm/cập nhật dữ liệu mẫu (cây trồng, sản phẩm, ...) mà giữ nguyên dữ liệu đang có thì chạy `pnpm migration:seed` (upsert theo `code`, không xóa). Dữ liệu mẫu định nghĩa trong `apps/api/src/migration/data/migration.business.data.ts`.
 
 | | |
 |---|---|
@@ -91,6 +93,17 @@ pnpm start:dev
 >
 > Compose (v2.3.3) validate mọi `env_file` khi parse và chưa hỗ trợ `required: false`, nên các service Docker trỏ tới file luôn tồn tại: `apis` → `apps/api/.env` (tạo ở bước 1), `admin`/`web` → `.env.example` (đã commit). Nhờ vậy `docker compose up -d` chạy được ngay sau bước 1, không cần tạo `.env` cho admin/web. `jwks-server` đọc khóa JWKS từ `apps/api/keys/` (sinh ở bước 2).
 
+> **Email (SMTP).** Gửi email (OTP xác thực email, mật khẩu tạm khi quên mật khẩu, thông báo) dùng SMTP qua nodemailer. Điền các biến sau trong `.env`; bỏ trống thì việc gửi email thất bại nhưng các luồng khác vẫn chạy.
+>
+> | Biến | Mặc định | Ý nghĩa |
+> |---|---|---|
+> | `SMTP_HOST` | *(trống)* | Host SMTP server (vd `smtp.gmail.com`) |
+> | `SMTP_PORT` | `587` | Cổng SMTP (`587` cho STARTTLS, `465` cho SSL) |
+> | `SMTP_SECURE` | `false` | Đặt `true` khi dùng cổng SSL `465`; để `false` cho `587` |
+> | `SMTP_USER` | *(trống)* | Tài khoản đăng nhập SMTP |
+> | `SMTP_PASSWORD` | *(trống)* | Mật khẩu (Gmail dùng App Password, không phải mật khẩu tài khoản) |
+> | `SMTP_FROM` | *(trống)* | Địa chỉ người gửi hiển thị (vd `no-reply@iwefarm.local`) |
+
 ---
 
 ### 2. Trang quản trị — `apps/admin`
@@ -102,7 +115,7 @@ cd apps/admin
 cp .env.example .env       # DATABASE_URL mặc định = file:./dev.db
 pnpm exec prisma generate  # sinh Prisma Client (fix "@prisma/client did not initialize yet")
 pnpm migrate               # tạo schema vào SQLite (prisma migrate dev)
-pnpm dev                   # http://localhost:3003
+pnpm dev:admin                   # http://localhost:3003
 ```
 
 > **Lỗi `@prisma/client did not initialize yet`** (kể cả sau khi `prisma generate`): do `prisma/schema.prisma` đặt `output = "../node_modules/.prisma/client"`. Trên pnpm monorepo, `@prisma/client` bị hoist lên root nên tìm client trong `.pnpm` store, còn `output` lại đẩy client sinh ra vào `apps/admin/node_modules/.prisma/client` → không khớp, nạp phải stub.
@@ -140,7 +153,7 @@ echo 'DATABASE_URL=postgresql://postgres:postgres123@localhost:5435/vismarttech'
 
   ```bash
   pnpm db:migrate      # áp migration bằng drizzle-kit
-  pnpm dev:next        # Next tại http://localhost:3002
+  pnpm dev:web        # Next tại http://localhost:3002
   ```
 
 ---
@@ -152,7 +165,7 @@ echo 'DATABASE_URL=postgresql://postgres:postgres123@localhost:5435/vismarttech'
 ```bash
 cd apps/mobile
 pnpm install
-pnpm start                # Expo Dev Tools: a (Android), i (iOS), w (web)
+pnpm dev:mobile                # Expo Dev Tools: a (Android), i (iOS), w (web)
 ```
 
 **Chạy qua tunnel** (test trên điện thoại thật qua internet, không cần chung wifi):
