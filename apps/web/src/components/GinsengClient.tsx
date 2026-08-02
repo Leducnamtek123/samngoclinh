@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
+import { usePublicCultivationBeds } from '@/hooks/queries/useCultivation';
 import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { addToCart } from '@/utils/cart';
@@ -25,6 +26,9 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   const [selectedAges, setSelectedAges] = useState<number[]>([]);
   const [minPrice, setMinPrice] = useState(50000);
   const [maxPrice, setMaxPrice] = useState(1000000);
+
+  const [viewMode, setViewMode] = useState<'catalog' | 'beds'>('catalog');
+  const { data: publicBeds } = usePublicCultivationBeds(selectedAges[0]);
 
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<any | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
@@ -127,23 +131,73 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
           />
 
           <div className="lg:col-span-3 space-y-6">
-            <div className="relative w-full">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Tìm kiếm sản phẩm sâm giống..."
-                aria-label="Tìm kiếm sản phẩm sâm giống"
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-[#1C3F24] bg-white shadow-xs"
-              />
-              <div className="absolute left-3.5 top-3 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+            <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+              <div className="relative w-full sm:w-2/3">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Tìm kiếm sản phẩm sâm giống hoặc mã luống..."
+                  aria-label="Tìm kiếm sản phẩm sâm giống"
+                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-[#1C3F24] bg-white shadow-xs"
+                />
+                <div className="absolute left-3.5 top-3 text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex bg-gray-200/80 p-1 rounded-xl w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('catalog')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                    viewMode === 'catalog' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  🌱 Catalog
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('beds')}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                    viewMode === 'beds' ? 'bg-white text-[#1C3F24] shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  🏞️ Vườn Luống Farm
+                </button>
               </div>
             </div>
 
-            {isLoading ? (
+            {viewMode === 'beds' ? (
+              <div className="space-y-4">
+                <h3 className="text-sm font-extrabold text-gray-900">Danh sách Luống Canh Tác Sâm Công Khai tại Nông Trại</h3>
+                {!publicBeds || !Array.isArray(publicBeds) || publicBeds.length === 0 ? (
+                  <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center text-gray-500 text-xs">
+                    Chưa tìm thấy luống sâm phù hợp với tuổi lựa chọn.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {publicBeds.map((bed: any) => (
+                      <div key={bed.code || bed.id} className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-xs hover:border-[#1C3F24] transition-colors">
+                        <div className="flex justify-between items-center">
+                          <span className="font-extrabold text-sm text-[#1C3F24]">Luống #{bed.code}</span>
+                          <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">
+                            {bed.ageYear} tuổi
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 font-medium">📍 {bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}</p>
+                        <div className="text-xs text-gray-600 space-y-1">
+                          <p>🌱 Số cây sâm: <span className="font-bold text-gray-800">{bed.treeCount || 50} cây</span></p>
+                          <p>📅 Ngày trồng: <span className="font-bold text-gray-800">{bed.plantedAt ? new Date(bed.plantedAt).toLocaleDateString('vi-VN') : 'Mới trồng'}</span></p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((n) => (
                   <div key={n} className="bg-white border border-gray-200 rounded-2xl overflow-hidden p-5 space-y-4 animate-pulse">

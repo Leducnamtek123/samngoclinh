@@ -10,6 +10,16 @@ export function useCatalogPlants(initialData?: any) {
   });
 }
 
+export function useCatalogPlant(id: string, initialData?: any) {
+  return useQuery({
+    queryKey: ['catalog', 'plants', id],
+    queryFn: () => fetchApiClient(`/public/catalog/plants/${id}`).then((res) => res.data),
+    initialData,
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export function useCatalogShopItems(initialData?: any) {
   return useQuery({
     queryKey: ['catalog', 'shop-items'],
@@ -18,3 +28,14 @@ export function useCatalogShopItems(initialData?: any) {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+export function useCatalogShopItem(id: string, initialData?: any) {
+  return useQuery({
+    queryKey: ['catalog', 'shop-items', id],
+    queryFn: () => fetchApiClient(`/public/catalog/shop-items/${id}`).then((res) => res.data),
+    initialData,
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+

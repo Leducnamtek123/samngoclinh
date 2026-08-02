@@ -1,9 +1,11 @@
-'use client';
-
-import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { OrderDetailData } from '@/components/OrderDetailModal';
+import {
+  useNotificationsList,
+  useMarkNotificationRead,
+  useMarkAllNotificationsRead,
+} from '@/hooks/queries/useNotifications';
 
 export type NotificationItem = {
   id: string;
@@ -27,6 +29,55 @@ type NotificationPopoverProps = {
   onSelectOrder: (order: OrderDetailData) => void;
 };
 
+const NOTIFICATION_I18N: Record<string, Record<string, { title: string; body: string }>> = {
+  vi: {
+    welcome: { title: 'Chào mừng', body: 'Chào mừng bạn. Rất vui khi có bạn đồng hành.' },
+    welcomeByAdmin: { title: 'Chào mừng', body: 'Tài khoản của bạn đã được tạo thành công.' },
+    welcomeSocial: { title: 'Chào mừng', body: 'Tài khoản của bạn đã sẵn sàng sử dụng.' },
+    verificationEmail: { title: 'Xác thực email', body: 'Vui lòng xác thực địa chỉ email để kích hoạt tài khoản.' },
+    verifiedEmail: { title: 'Đã xác thực email', body: 'Địa chỉ email của bạn đã được xác thực thành công.' },
+    mobileNumberVerified: { title: 'Đã xác thực số điện thoại', body: 'Số điện thoại của bạn đã được xác thực thành công.' },
+    changePassword: { title: 'Đã đổi mật khẩu', body: 'Mật khẩu của bạn đã được thay đổi thành công.' },
+    forgotPassword: { title: 'Quên mật khẩu', body: 'Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn.' },
+    publishTermPolicy: { title: 'Cập nhật điều khoản chính sách', body: 'Điều khoản chính sách đã có bản cập nhật mới. Vui lòng xem lại.' },
+    newDeviceLogin: { title: 'Đăng nhập thiết bị mới', body: 'Phát hiện một lượt đăng nhập mới vào tài khoản của bạn từ thiết bị mới.' },
+    resetTwoFactorByAdmin: { title: 'Đặt lại xác thực hai lớp', body: 'Xác thực hai lớp của bạn đã được đặt lại.' },
+    temporaryPasswordByAdmin: { title: 'Mật khẩu tạm thời', body: 'Một mật khẩu tạm thời đã được thiết lập cho tài khoản.' },
+    resetPassword: { title: 'Đặt lại mật khẩu', body: 'Mật khẩu của bạn đã được đặt lại thành công.' },
+    userAcceptTermPolicy: { title: 'Đã chấp nhận điều khoản chính sách', body: 'Bạn đã chấp nhận phiên bản mới của điều khoản chính sách.' },
+  },
+  en: {
+    welcome: { title: 'Welcome', body: 'Welcome aboard. We are glad to have you.' },
+    welcomeByAdmin: { title: 'Welcome', body: 'Your account has been created by admin.' },
+    welcomeSocial: { title: 'Welcome', body: 'Your account is ready to use.' },
+    verificationEmail: { title: 'Email Verification', body: 'Please verify your email address to activate your account.' },
+    verifiedEmail: { title: 'Email Verified', body: 'Your email address has been verified successfully.' },
+    mobileNumberVerified: { title: 'Mobile Number Verified', body: 'Your mobile number has been verified successfully.' },
+    changePassword: { title: 'Password Changed', body: 'Your password has been changed successfully.' },
+    forgotPassword: { title: 'Forgot Password', body: 'We received a request to reset your password.' },
+    publishTermPolicy: { title: 'Term Policy Update', body: 'A new term policy version has been published.' },
+    newDeviceLogin: { title: 'New Device Login', body: 'New device login detected on your account.' },
+    resetTwoFactorByAdmin: { title: 'Two-Factor Authentication Reset', body: 'Your two-factor authentication has been reset.' },
+    temporaryPasswordByAdmin: { title: 'Temporary Password', body: 'A temporary password has been set for your account.' },
+    resetPassword: { title: 'Password Reset', body: 'Your password has been reset successfully.' },
+    userAcceptTermPolicy: { title: 'Term Policy Accepted', body: 'You have accepted the new term policy version.' },
+  },
+};
+
+const formatNotificationString = (input: string, locale: string, type: 'title' | 'body'): string => {
+  if (!input) return '';
+  if (input.startsWith('notification.notify.')) {
+    const parts = input.split('.'); // ['notification', 'notify', '<key>', 'title'|'body']
+    const key = parts[2];
+    const field = parts[3] as 'title' | 'body' || type;
+    const langDict = NOTIFICATION_I18N[locale] || NOTIFICATION_I18N.vi;
+    if (key && langDict && langDict[key]) {
+      return langDict[key][field] || input;
+    }
+  }
+  return input;
+};
+
 export const NotificationPopover = ({
   isOpen,
   onClose,
@@ -35,113 +86,39 @@ export const NotificationPopover = ({
   const locale = useLocale();
   const router = useRouter();
 
-  const [notifications, setNotifications] = useState<NotificationItem[]>([
-    {
-      id: 'NOTIF-ORD-1',
-      type: 'order',
-      title: '🛒 Đơn hàng mới thanh toán online',
-      message:
-        'Đơn hàng #ORD178489580790129 của Trần Thị Thanh Trang gồm Cây Sâm Ngọc Linh 2026 ×6 (962.394 đ) đã được tạo với tổng tiền 1.032.330 đ và đang chờ thanh toán...',
-      read: false,
-      timestamp: 'khoảng 6 giờ trước',
-      details: {
-        orderCode: '#ORD178489580790129',
-        customerName: 'Trần Thị Thanh Trang',
-        productSummary: 'Cây Sâm Ngọc Linh 2026 ×6 (962.394 đ)',
-        totalAmount: '1.032.330 đ',
-      },
-      orderPayload: {
-        code: 'ORD178489580790129',
-        createdAt: '2026-07-24 18:30',
-        status: 'PAID',
-        totalAmount: 1032330,
-        user: {
-          fullName: 'Trần Thị Thanh Trang',
-          email: 'thanhtrang@gmail.com',
-          phone: '0909004740',
-        },
-        items: [
-          {
-            name: 'Cây Sâm Ngọc Linh 2026',
-            quantity: 6,
-            price: 962394,
-            treePrice: 86834,
-            careFee: 50800,
-            protectionFee: 21709,
-            imageUrl: '/assets/images/kon_tum_ginseng.png',
-          },
-        ],
-        shippingMethod: 'Nhận trực tiếp tại vườn',
-        paymentMethod: 'Thanh toán trực tuyến',
-      },
-    },
-    {
-      id: 'NOTIF-ORD-2',
-      type: 'order',
-      title: '🛒 Đơn hàng mới thanh toán online',
-      message:
-        'Đơn hàng #ORD1784895360511504 của Trần Thị Thanh Trang gồm Cây Sâm Ngọc Linh 2026 ×1 (72.720 đ) đã được tạo với tổng tiền 79.992 đ và đang chờ thanh toán...',
-      read: false,
-      timestamp: 'khoảng 6 giờ trước',
-      details: {
-        orderCode: '#ORD1784895360511504',
-        customerName: 'Trần Thị Thanh Trang',
-        productSummary: 'Cây Sâm Ngọc Linh 2026 ×1 (72.720 đ)',
-        totalAmount: '79.992 đ',
-      },
-      orderPayload: {
-        code: 'ORD1784895360511504',
-        createdAt: '2026-07-24 18:00',
-        status: 'PENDING',
-        totalAmount: 79992,
-        user: {
-          fullName: 'Trần Thị Thanh Trang',
-          email: 'thanhtrang@gmail.com',
-          phone: '0909004740',
-        },
-        items: [
-          {
-            name: 'Cây Sâm Ngọc Linh 2026',
-            quantity: 1,
-            price: 72720,
-            treePrice: 45000,
-            careFee: 20000,
-            protectionFee: 7720,
-            imageUrl: '/assets/images/kon_tum_ginseng.png',
-          },
-        ],
-        shippingMethod: 'Nhận trực tiếp tại vườn',
-        paymentMethod: 'Thanh toán qua VietQR',
-      },
-    },
-    {
-      id: 'NOTIF-TREE-1',
-      type: 'tree',
-      title: '🌱 Cây sâm Ngọc Linh đã được trồng thành công',
-      message:
-        'Cây sâm mã #SAM-0128 của bạn tại Vườn Kon Tum đã hoàn tất quy trình gieo trồng và bảo vệ định kỳ.',
-      read: true,
-      timestamp: '1 ngày trước',
-    },
-  ]);
+  // Real API hooks
+  const { data: apiNotifications } = useNotificationsList(isOpen);
+  const markReadMutation = useMarkNotificationRead();
+  const markAllReadMutation = useMarkAllNotificationsRead();
 
   if (!isOpen) return null;
 
+  const rawItems = Array.isArray(apiNotifications) ? apiNotifications : [];
+  const notifications: NotificationItem[] = rawItems.map((item: any) => ({
+    id: item.id || item._id,
+    type: item.type || 'system',
+    title: formatNotificationString(item.title || item.titleKey || 'Thông báo hệ thống', locale, 'title'),
+    message: formatNotificationString(item.message || item.body || item.content || item.description || '', locale, 'body'),
+    read: !!item.read || !!item.isRead,
+    timestamp: item.createdAt ? new Date(item.createdAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN') : 'Mới đây',
+    details: item.details,
+    orderPayload: item.orderPayload,
+  }));
+
   const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllReadMutation.mutate();
   };
 
   const handleNotificationClick = (item: NotificationItem) => {
-    // Mark as read
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
-    );
+    if (!item.read) {
+      markReadMutation.mutate(item.id);
+    }
     onClose();
 
     if (item.type === 'order' && item.orderPayload) {
       onSelectOrder(item.orderPayload);
     } else if (item.type === 'tree') {
-      router.push(`/${locale}/profile?tabs=trees`);
+      router.push(`/${locale}/profile?tabs=assets`);
     } else if (item.type === 'contract') {
       router.push(`/${locale}/profile?tabs=contracts`);
     } else {

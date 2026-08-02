@@ -63,7 +63,7 @@ export default function KycApprovalsPage() {
     isError,
   } = useApiQuery<any>(
     ["kyc-approvals", page],
-    `/admin/identity-verification?page=${page}&perPage=${perPage}`
+    `/admin/user/list?page=${page}&perPage=${perPage}`
   )
 
   const mutation = useApiMutation()
@@ -78,7 +78,7 @@ export default function KycApprovalsPage() {
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/approve`,
-        method: "PATCH",
+        method: "POST",
       })
       toast.success("Phê duyệt eKYC thành công")
       setSelectedKyc(null)
@@ -97,7 +97,7 @@ export default function KycApprovalsPage() {
       await mutation.mutateAsync({
         endpoint: `/admin/identity-verification/${id}/reject`,
         data: { note: rejectReason },
-        method: "PATCH",
+        method: "POST",
       })
       toast.success("Đã từ chối hồ sơ eKYC")
       setSelectedKyc(null)

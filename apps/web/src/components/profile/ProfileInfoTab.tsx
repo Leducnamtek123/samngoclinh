@@ -8,6 +8,7 @@ type ProfileInfoTabProps = {
   editPhone: string;
   onEditClick: () => void;
   onCopyText: (text: string, label: string) => void;
+  onVerifyEmailClick?: () => void;
 };
 
 export const ProfileInfoTab = ({
@@ -20,7 +21,10 @@ export const ProfileInfoTab = ({
   editPhone,
   onEditClick,
   onCopyText,
+  onVerifyEmailClick,
 }: ProfileInfoTabProps) => {
+  const isEmailVerified = !!(profile?.isEmailVerified || profile?.emailVerified);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center border-b border-gray-100 pb-4">
@@ -44,7 +48,22 @@ export const ProfileInfoTab = ({
         </div>
         <div className="space-y-1">
           <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
-          <p className="text-sm font-semibold text-gray-800">{email}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-gray-800">{email}</p>
+            {isEmailVerified ? (
+              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                ✓ Đã xác thực
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={onVerifyEmailClick}
+                className="bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors cursor-pointer"
+              >
+                Xác thực ngay
+              </button>
+            )}
+          </div>
         </div>
         <div className="space-y-1">
           <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Hạng tài khoản</span>
@@ -80,3 +99,4 @@ export const ProfileInfoTab = ({
     </div>
   );
 };
+

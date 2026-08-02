@@ -18,29 +18,30 @@ export default async function ProfilePage(props: {
   let user: any = null
 
   try {
-    let res = await fetchApi("/user/profile/me")
+    let res = await fetchApi("/v1/shared/user/profile")
     if (!res.ok) {
       res = await fetchApi("/user/profile")
     }
-    const payload = await res.json()
-    if (res.ok && payload.data) {
-      const profile = payload.data
-      const nameParts = profile.name
-        ? profile.name.trim().split(/\s+/)
-        : ["Admin"]
-      const firstName = nameParts.slice(0, -1).join(" ") || "Admin"
-      const lastName = nameParts[nameParts.length - 1] || "User"
+    if (res.ok) {
+      const payload = await res.json()
+      if (payload.data) {
+        const profile = payload.data
+        const fullName = (profile.name || profile.username || "").trim()
+        const nameParts = fullName ? fullName.split(/\s+/) : []
+        const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0] || ""
+        const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
 
-      user = {
-        id: profile.id,
-        name: profile.name || profile.username,
-        firstName,
-        lastName,
-        email: profile.email,
-        username: profile.username,
-        role: profile.role?.name || profile.role,
-        phoneNumber: profile.mobileNumbers?.[0]?.number || profile.phone || "",
-        avatar: profile.photo?.url || profile.avatar || "",
+        user = {
+          id: profile.id || "",
+          name: fullName,
+          firstName,
+          lastName,
+          email: profile.email || "",
+          username: profile.username || "",
+          role: profile.role?.name || profile.role || "",
+          phoneNumber: profile.mobileNumbers?.[0]?.number || profile.phone || "",
+          avatar: profile.photo?.url || profile.avatar || "",
+        }
       }
     }
   } catch (error) {

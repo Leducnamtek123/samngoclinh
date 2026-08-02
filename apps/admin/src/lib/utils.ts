@@ -10,11 +10,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getInitials(fullName: string) {
-  if (fullName.length === 0) return ""
+export function getInitials(fullName?: string) {
+  if (!fullName || typeof fullName !== "string" || fullName.trim().length === 0) return ""
 
   // Split the name by spaces
-  const names = fullName.split(" ")
+  const names = fullName.trim().split(/\s+/)
   // Extract the first letter of each name and convert it to uppercase
   const initials = names.map((name) => name.charAt(0).toUpperCase()).join("")
 
@@ -225,13 +225,14 @@ export function formatDistance(value: string | number | Date) {
 }
 
 export function formatNumberToCompact(
-  value: number,
+  value: number = 0,
   locales: LocaleType = "en"
 ) {
+  const safeValue = typeof value === "number" && !isNaN(value) ? value : 0
   if (locales === "vi") {
-    return compactFormatterVi.format(value)
+    return compactFormatterVi.format(safeValue)
   }
-  return compactFormatterEn.format(value)
+  return compactFormatterEn.format(safeValue)
 }
 
 export function timeToDate(timeString: string, baseDate = new Date()) {

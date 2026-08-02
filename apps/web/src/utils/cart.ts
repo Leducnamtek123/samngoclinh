@@ -47,6 +47,15 @@ export const addToCart = (
 
   localStorage.setItem(CART_KEY, JSON.stringify(items));
   window.dispatchEvent(new Event('cart_updated'));
+
+  // Sync background call to API if session exists
+  try {
+    fetch('/api/proxy/cart/item', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: product.id, quantity }),
+    }).catch(() => {});
+  } catch {}
 };
 
 export const updateCartQuantity = (id: string, delta: number): CartItem[] => {

@@ -4,14 +4,16 @@ type ProfileKycTabProps = {
   profile: any;
   kycStatusData: any;
   kycErrorMsg: string;
-  kycFullName: string;
-  setKycFullName: (val: string) => void;
-  kycIdentityNumber: string;
-  setKycIdentityNumber: (val: string) => void;
+  kycFullName?: string;
+  setKycFullName?: (val: string) => void;
+  kycIdentityNumber?: string;
+  setKycIdentityNumber?: (val: string) => void;
   frontImagePreview: string;
   setFrontImagePreview: (val: string) => void;
   backImagePreview: string;
   setBackImagePreview: (val: string) => void;
+  setFrontFile: (file: File | null) => void;
+  setBackFile: (file: File | null) => void;
   submitKycMutation: any;
   onSubmit: (e: React.FormEvent) => void;
 };
@@ -20,25 +22,28 @@ export const ProfileKycTab = ({
   profile,
   kycStatusData,
   kycErrorMsg,
-  kycFullName,
-  setKycFullName,
-  kycIdentityNumber,
-  setKycIdentityNumber,
   frontImagePreview,
   setFrontImagePreview,
   backImagePreview,
   setBackImagePreview,
+  setFrontFile,
+  setBackFile,
   submitKycMutation,
   onSubmit,
 }: ProfileKycTabProps) => {
+  const existingFront = kycStatusData?.front || frontImagePreview;
+  const existingBack = kycStatusData?.back || backImagePreview;
+  const isVerified = profile?.verified || kycStatusData?.status === 'VERIFIED';
+  const isPending = kycStatusData?.status === 'PENDING';
+
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-bold text-gray-900">Căn cước công danh (KYC)</h3>
+        <h3 className="text-lg font-bold text-gray-900">Căn cước công dân (KYC)</h3>
         <p className="text-xs text-gray-400 font-medium">Quản lý trạng thái xác minh thông tin cá nhân và tài khoản</p>
       </div>
 
-      {profile?.verified || kycStatusData?.status === 'VERIFIED' ? (
+      {isVerified ? (
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-2xl space-y-3 shadow-xs">
           <div className="flex items-center gap-2.5 font-bold text-base">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -50,16 +55,16 @@ export const ProfileKycTab = ({
             Thông tin căn cước công dân (CCCD/CMND) của bạn đã được đối soát hợp lệ trên hệ thống. Bạn hiện có đầy đủ quyền lợi giao dịch và đăng bán trên Sàn Giao Dịch P2P.
           </p>
         </div>
-      ) : kycStatusData?.status === 'PENDING' ? (
+      ) : isPending ? (
         <div className="bg-amber-50 border border-amber-200 text-amber-900 p-6 rounded-2xl space-y-3 shadow-xs">
           <div className="flex items-center gap-2.5 font-bold text-base">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-amber-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Hồ sơ đang chờ xét duyệt
+            Hồ sơ đã được lưu thành công
           </div>
           <p className="text-xs text-amber-800 leading-relaxed font-medium">
-            Hồ sơ eKYC của bạn đã được gửi thành công. Ban quản trị đang tiến hành kiểm tra thông tin. Kết quả sẽ được cập nhật sớm nhất.
+            Hồ sơ eKYC của bạn đã được tải lên thành công. Kết quả sẽ được đối soát tự động trên hệ thống.
           </p>
         </div>
       ) : (
@@ -89,34 +94,6 @@ export const ProfileKycTab = ({
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
-            <div className="space-y-1.5">
-              <label htmlFor="kycFullNameInput" className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Họ và tên trên giấy tờ *</label>
-              <input
-                id="kycFullNameInput"
-                type="text"
-                required
-                value={kycFullName}
-                onChange={(e) => setKycFullName(e.target.value)}
-                placeholder="Nhập họ và tên đầy đủ"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 font-medium focus:ring-1 focus:ring-[#1C3F24] focus:outline-none"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label htmlFor="kycIdentityNumberInput" className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Số CMND / CCCD *</label>
-              <input
-                id="kycIdentityNumberInput"
-                type="text"
-                required
-                value={kycIdentityNumber}
-                onChange={(e) => setKycIdentityNumber(e.target.value)}
-                placeholder="Nhập số định danh 9 hoặc 12 số"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 font-medium focus:ring-1 focus:ring-[#1C3F24] focus:outline-none"
-              />
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
             <div className="space-y-2">
               <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Ảnh mặt trước CMND/CCCD *</span>
@@ -128,14 +105,15 @@ export const ProfileKycTab = ({
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
+                      setFrontFile(file);
                       const reader = new FileReader();
                       reader.onload = (ev) => setFrontImagePreview(ev.target?.result as string);
                       reader.readAsDataURL(file);
                     }
                   }}
                 />
-                {frontImagePreview ? (
-                  <Image src={frontImagePreview} alt="Mặt trước" width={200} height={144} unoptimized className="max-h-36 object-contain rounded-lg shadow-xs" />
+                {existingFront ? (
+                  <Image src={existingFront} alt="Mặt trước" width={200} height={144} unoptimized className="max-h-36 object-contain rounded-lg shadow-xs" />
                 ) : (
                   <span className="text-xs text-gray-500 font-bold flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -158,14 +136,15 @@ export const ProfileKycTab = ({
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (file) {
+                      setBackFile(file);
                       const reader = new FileReader();
                       reader.onload = (ev) => setBackImagePreview(ev.target?.result as string);
                       reader.readAsDataURL(file);
                     }
                   }}
                 />
-                {backImagePreview ? (
-                  <Image src={backImagePreview} alt="Mặt sau" width={200} height={144} unoptimized className="max-h-36 object-contain rounded-lg shadow-xs" />
+                {existingBack ? (
+                  <Image src={existingBack} alt="Mặt sau" width={200} height={144} unoptimized className="max-h-36 object-contain rounded-lg shadow-xs" />
                 ) : (
                   <span className="text-xs text-gray-500 font-bold flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
