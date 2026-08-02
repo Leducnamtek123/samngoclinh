@@ -90,7 +90,34 @@ export const migrationBusinessData: Record<
             ageYear: number;
             quantity: number;
             status: string;
+            plantedAt?: string;
+            healthStatus?: string;
             metadata: Record<string, unknown>;
+        }[];
+        cultivationCareLogs: {
+            code: string;
+            bedCode: string;
+            action: string;
+            title: string;
+            description: string;
+            status: string;
+            loggedAt: string;
+        }[];
+        carePackages: {
+            code: string;
+            name: string;
+            price: number;
+            durationMonths: number;
+            description: string;
+            status: string;
+        }[];
+        protectionPackages: {
+            code: string;
+            name: string;
+            price: number;
+            coverage: string;
+            description: string;
+            status: string;
         }[];
         walletAccounts: {
             balancePoint: number;
@@ -476,6 +503,15 @@ export const migrationBusinessData: Record<
                 totalTrees: 40459,
                 metadata: { source: 'dashboard summary' },
             },
+            {
+                code: 'garden-noang-1',
+                name: 'Noàng Sâm 2026 Số 1',
+                status: 'active',
+                totalBeds: 15,
+                activeBeds: 15,
+                totalTrees: 30000,
+                metadata: { location: 'Trà Linh, Nam Trà My, Quảng Nam' },
+            },
         ],
         cultivationBeds: [
             {
@@ -505,6 +541,87 @@ export const migrationBusinessData: Record<
                 status: 'active',
                 metadata: {},
             },
+            {
+                code: 'bed-11',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 11',
+                ageYear: 1,
+                treeCount: 54,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-12',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 12',
+                ageYear: 1,
+                treeCount: 62,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-13',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 13',
+                ageYear: 1,
+                treeCount: 48,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-14',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 14',
+                ageYear: 1,
+                treeCount: 71,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-21',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 21',
+                ageYear: 2,
+                treeCount: 33,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-31',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 31',
+                ageYear: 3,
+                treeCount: 25,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-41',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 41',
+                ageYear: 4,
+                treeCount: 40,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-51',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 51',
+                ageYear: 5,
+                treeCount: 22,
+                status: 'active',
+                metadata: {},
+            },
+            {
+                code: 'bed-61',
+                gardenCode: 'garden-noang-1',
+                name: 'Luống 61',
+                ageYear: 6,
+                treeCount: 15,
+                status: 'active',
+                metadata: {},
+            },
         ],
         cultivationTrees: [
             {
@@ -514,6 +631,8 @@ export const migrationBusinessData: Record<
                 ageYear: 1,
                 quantity: 6454,
                 status: 'available',
+                plantedAt: '2025-12-31T00:00:00.000Z',
+                healthStatus: 'healthy',
                 metadata: {},
             },
             {
@@ -523,7 +642,210 @@ export const migrationBusinessData: Record<
                 ageYear: 2,
                 quantity: 20644,
                 status: 'available',
+                plantedAt: '2024-11-15T00:00:00.000Z',
+                healthStatus: 'healthy',
                 metadata: {},
+            },
+            {
+                code: 'tree-3y-main',
+                bedCode: 'bed-03',
+                name: 'Cây 3 năm tuổi',
+                ageYear: 3,
+                quantity: 13164,
+                status: 'available',
+                plantedAt: '2023-10-20T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-11',
+                bedCode: 'bed-11',
+                name: 'Cây Sâm Ngọc Linh 2026',
+                ageYear: 1,
+                quantity: 54,
+                status: 'available',
+                plantedAt: '2025-12-31T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-12',
+                bedCode: 'bed-12',
+                name: 'Cây Sâm Ngọc Linh 2026',
+                ageYear: 1,
+                quantity: 62,
+                status: 'available',
+                plantedAt: '2025-12-28T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-13',
+                bedCode: 'bed-13',
+                name: 'Cây Sâm Ngọc Linh 2026',
+                ageYear: 1,
+                quantity: 48,
+                status: 'available',
+                plantedAt: '2025-12-25T00:00:00.000Z',
+                healthStatus: 'good',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-14',
+                bedCode: 'bed-14',
+                name: 'Cây Sâm Ngọc Linh 2026',
+                ageYear: 1,
+                quantity: 71,
+                status: 'available',
+                plantedAt: '2025-12-20T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-21',
+                bedCode: 'bed-21',
+                name: 'Cây Sâm Ngọc Linh 2025',
+                ageYear: 2,
+                quantity: 33,
+                status: 'available',
+                plantedAt: '2024-11-10T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-31',
+                bedCode: 'bed-31',
+                name: 'Cây Sâm Ngọc Linh 2024',
+                ageYear: 3,
+                quantity: 25,
+                status: 'available',
+                plantedAt: '2023-10-15T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-41',
+                bedCode: 'bed-41',
+                name: 'Cây Sâm Ngọc Linh 2023',
+                ageYear: 4,
+                quantity: 40,
+                status: 'available',
+                plantedAt: '2022-09-10T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-51',
+                bedCode: 'bed-51',
+                name: 'Cây Sâm Ngọc Linh 2022',
+                ageYear: 5,
+                quantity: 22,
+                status: 'available',
+                plantedAt: '2021-08-05T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+            {
+                code: 'tree-bed-61',
+                bedCode: 'bed-61',
+                name: 'Cây Sâm Ngọc Linh 2021',
+                ageYear: 6,
+                quantity: 15,
+                status: 'available',
+                plantedAt: '2020-07-01T00:00:00.000Z',
+                healthStatus: 'healthy',
+                metadata: {},
+            },
+        ],
+        cultivationCareLogs: [
+            {
+                code: 'clog-bed11-01',
+                bedCode: 'bed-11',
+                action: 'watering',
+                title: 'Tưới nước định kỳ',
+                description: 'Đã tưới nước và kiểm tra độ ẩm đất vào buổi sáng.',
+                status: 'done',
+                loggedAt: '2026-07-15T01:00:00.000Z',
+            },
+            {
+                code: 'clog-bed11-02',
+                bedCode: 'bed-11',
+                action: 'fertilizing',
+                title: 'Bón phân hữu cơ',
+                description: 'Bón phân vi sinh, làm cỏ quanh gốc và che chắn sương.',
+                status: 'done',
+                loggedAt: '2026-06-28T02:00:00.000Z',
+            },
+            {
+                code: 'clog-bed11-03',
+                bedCode: 'bed-11',
+                action: 'inspection',
+                title: 'Kiểm tra sâu bệnh',
+                description: 'Kiểm tra lá và thân, không phát hiện dấu hiệu sâu bệnh.',
+                status: 'done',
+                loggedAt: '2026-06-10T02:30:00.000Z',
+            },
+            {
+                code: 'clog-bed01-01',
+                bedCode: 'bed-01',
+                action: 'watering',
+                title: 'Tưới nước định kỳ',
+                description: 'Tưới nước và kiểm tra hệ thống thoát nước của luống.',
+                status: 'done',
+                loggedAt: '2026-07-12T01:15:00.000Z',
+            },
+            {
+                code: 'clog-bed21-01',
+                bedCode: 'bed-21',
+                action: 'fertilizing',
+                title: 'Bón phân bổ sung',
+                description: 'Bón phân hữu cơ vi sinh cho luống cây 2 năm tuổi.',
+                status: 'done',
+                loggedAt: '2026-07-05T03:00:00.000Z',
+            },
+        ],
+        carePackages: [
+            {
+                code: 'care-1y',
+                name: '1 năm chăm sóc',
+                price: 50800,
+                durationMonths: 12,
+                description: 'Chăm sóc, tưới nước và bón phân định kỳ trong 1 năm.',
+                status: 'active',
+            },
+            {
+                code: 'care-2y',
+                name: '2 năm chăm sóc',
+                price: 96500,
+                durationMonths: 24,
+                description: 'Gói chăm sóc trọn gói trong 2 năm.',
+                status: 'active',
+            },
+            {
+                code: 'care-3y',
+                name: '3 năm chăm sóc',
+                price: 135000,
+                durationMonths: 36,
+                description: 'Gói chăm sóc trọn gói trong 3 năm.',
+                status: 'active',
+            },
+        ],
+        protectionPackages: [
+            {
+                code: 'protect-1y',
+                name: '1 năm bảo vệ cây',
+                price: 22785,
+                coverage: 'Bảo hiểm rủi ro cây trong 1 năm.',
+                description: 'Đền bù nếu cây chết do thiên tai hoặc sâu bệnh trong 1 năm.',
+                status: 'active',
+            },
+            {
+                code: 'protect-2y',
+                name: '2 năm bảo vệ cây',
+                price: 42000,
+                coverage: 'Bảo hiểm rủi ro cây trong 2 năm.',
+                description: 'Bảo vệ và đền bù rủi ro cho cây trong 2 năm.',
+                status: 'active',
             },
         ],
         walletAccounts: [

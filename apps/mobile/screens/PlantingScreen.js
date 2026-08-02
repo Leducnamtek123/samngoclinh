@@ -45,7 +45,11 @@ export default function PlantingScreen({ navigation }) {
     load('initial');
   }, [load]);
 
-  const onOpen = (plant) => navigation.navigate('PlantDetail', { id: plant.id, plant });
+  const onOpen = (plant) =>
+    navigation.navigate('TreeList', {
+      ageYear: plant.ageYear,
+      title: `Cây trồng ${plant.ageYear} tuổi`,
+    });
 
   return (
     <View style={styles.root}>

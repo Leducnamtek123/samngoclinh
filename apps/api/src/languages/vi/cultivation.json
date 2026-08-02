@@ -1,5 +1,7 @@
 {
     "trees": "Đã tải danh mục cây thành công.",
     "gardens": "Đã tải thông tin vườn thành công.",
-    "beds": "Đã tải danh sách luống trồng thành công."
+    "beds": "Đã tải danh sách luống trồng thành công.",
+    "publicBeds": "Đã tải danh sách luống trồng thành công.",
+    "publicBedDetail": "Đã tải chi tiết luống trồng thành công."
 }
