@@ -116,6 +116,19 @@ export class MigrationBusinessSeed
                         },
                     })
                 ),
+                ...this.data.banners.map(item =>
+                    this.databaseService.banner.upsert({
+                        where: { id: item.id },
+                        create: {
+                            ...item,
+                            createdBy: provider.id,
+                        },
+                        update: {
+                            ...item,
+                            updatedBy: provider.id,
+                        },
+                    })
+                ),
                 ...this.data.cultivationGardens.map(item =>
                     this.databaseService.cultivationGarden.upsert({
                         where: { code: item.code },
@@ -165,6 +178,34 @@ export class MigrationBusinessSeed
                             ownerUserId: provider.id,
                             updatedBy: provider.id,
                         },
+                    })
+                ),
+                ...this.data.cultivationCareLogs.map(item =>
+                    this.databaseService.cultivationCareLog.upsert({
+                        where: { code: item.code },
+                        create: {
+                            ...item,
+                            loggedAt: new Date(item.loggedAt),
+                            createdBy: provider.id,
+                        },
+                        update: {
+                            ...item,
+                            loggedAt: new Date(item.loggedAt),
+                        },
+                    })
+                ),
+                ...this.data.carePackages.map(item =>
+                    this.databaseService.carePackage.upsert({
+                        where: { code: item.code },
+                        create: { ...item },
+                        update: { ...item },
+                    })
+                ),
+                ...this.data.protectionPackages.map(item =>
+                    this.databaseService.protectionPackage.upsert({
+                        where: { code: item.code },
+                        create: { ...item },
+                        update: { ...item },
                     })
                 ),
                 ...this.data.walletAccounts.map(item =>
@@ -219,23 +260,6 @@ export class MigrationBusinessSeed
                         },
                     })
                 ),
-                ...this.data.identityVerificationRequests.map(item =>
-                    this.databaseService.identityVerificationRequest.upsert({
-                        where: { code: item.code },
-                        create: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            userId: provider.id,
-                            createdBy: provider.id,
-                        },
-                        update: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            userId: provider.id,
-                            updatedBy: provider.id,
-                        },
-                    })
-                ),
                 this.databaseService.businessProfile.upsert({
                     where: { userId: provider.id },
                     create: {
@@ -266,10 +290,13 @@ export class MigrationBusinessSeed
 
         try {
             await this.databaseService.$transaction([
-                this.databaseService.identityVerificationRequest.deleteMany({}),
+                this.databaseService.banner.deleteMany({}),
                 this.databaseService.order.deleteMany({}),
                 this.databaseService.walletTransaction.deleteMany({}),
                 this.databaseService.walletAccount.deleteMany({}),
+                this.databaseService.carePackage.deleteMany({}),
+                this.databaseService.protectionPackage.deleteMany({}),
+                this.databaseService.cultivationCareLog.deleteMany({}),
                 this.databaseService.cultivationTree.deleteMany({}),
                 this.databaseService.cultivationBed.deleteMany({}),
                 this.databaseService.cultivationGarden.deleteMany({}),

@@ -1,4 +1,3 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
 import { DatabaseIdResponseDto } from '@common/database/dtos/response/database.id.response.dto';
 import { IFile } from '@common/file/interfaces/file.interface';
 import {
@@ -22,13 +21,9 @@ import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.cla
 import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
 import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
 import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
-import {
-    UserUpdateProfilePhotoRequestDto,
-    UserUpdateProfileRequestDto,
-} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserUpdateProfileRequestDto } from '@modules/user/dtos/request/user.profile.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
 import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
 import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
@@ -41,6 +36,8 @@ import { UserListResponseDto } from '@modules/user/dtos/response/user.list.respo
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
+import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
@@ -107,14 +104,6 @@ export interface IUserService {
         userId: string,
         { countryId, ...data }: UserUpdateProfileRequestDto
     ): Promise<void>;
-    generatePhotoProfilePresign(
-        userId: string,
-        { extension, size }: UserGeneratePhotoProfileRequestDto
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>>;
-    updatePhotoProfile(
-        userId: string,
-        { photoKey, size }: UserUpdateProfilePhotoRequestDto
-    ): Promise<void>;
     deleteSelf(userId: string): Promise<void>;
     addMobileNumber(
         userId: string,
@@ -133,6 +122,19 @@ export interface IUserService {
         userId: string,
         address: IUserAddressCreate
     ): Promise<IResponseReturn<UserAddressResponseDto>>;
+    getIdentityDocument(
+        userId: string
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto | null>>;
+    saveIdentityDocument(
+        userId: string,
+        frontFile: IFile | null,
+        backFile: IFile | null
+    ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>>;
+    requestEmailVerificationOtp(userId: string): Promise<void>;
+    confirmEmailVerificationOtp(
+        userId: string,
+        { otp }: UserConfirmEmailVerificationRequestDto
+    ): Promise<void>;
     deleteAddress(
         userId: string,
         addressId: string

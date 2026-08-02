@@ -5,6 +5,8 @@ import { CultivationRepository } from '@modules/cultivation/repositories/cultiva
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
 import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.garden.response.dto';
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
+import { CultivationPublicBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed.response.dto';
+import { CultivationPublicBedDetailResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed-detail.response.dto';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
@@ -31,6 +33,32 @@ export class CultivationService implements ICultivationService {
 
         return {
             data: groups,
+        };
+    }
+
+    async publicBedsByAge(
+        ageYear: number | null
+    ): Promise<IResponseReturn<CultivationPublicBedResponseDto[]>> {
+        const beds =
+            ageYear === null
+                ? []
+                : await this.cultivationRepository.listPublicBedsByAge(ageYear);
+
+        return {
+            data: beds,
+        };
+    }
+
+    async publicBedDetail(
+        code: string
+    ): Promise<IResponseReturn<CultivationPublicBedDetailResponseDto>> {
+        const detail = await this.cultivationRepository.getPublicBedDetail(code);
+        if (!detail) {
+            throw new NotFoundException('Bed not found');
+        }
+
+        return {
+            data: detail,
         };
     }
 

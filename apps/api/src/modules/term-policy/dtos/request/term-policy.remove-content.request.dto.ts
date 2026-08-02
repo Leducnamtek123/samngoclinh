@@ -1,7 +1,7 @@
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyContentMetaRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-meta.request.dto';
 import { PickType } from '@nestjs/swagger';
 
 export class TermPolicyRemoveContentRequestDto extends PickType(
-    TermPolicyContentPresignRequestDto,
+    TermPolicyContentMetaRequestDto,
     ['language'] as const
 ) {}

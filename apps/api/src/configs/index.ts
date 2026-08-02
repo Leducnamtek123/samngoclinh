@@ -1,7 +1,6 @@
 import AppConfig from '@configs/app.config';
 import AuthConfig from '@configs/auth.config';
 import DatabaseConfig from '@configs/database.config';
-import AwsConfig from '@configs/aws.config';
 import UserConfig from '@configs/user.config';
 import RequestConfig from '@configs/request.config';
 import DocConfig from '@configs/doc.config';
@@ -20,12 +19,12 @@ import FirebaseConfig from '@configs/firebase.config';
 import CloudinaryConfig from '@configs/cloudinary.config';
 import SepayConfig from '@configs/sepay.config';
 import PaymentConfig from '@configs/payment.config';
+import SmtpConfig from '@configs/smtp.config';
 
 export default [
     AppConfig,
     AuthConfig,
     DatabaseConfig,
-    AwsConfig,
     UserConfig,
     RequestConfig,
     DocConfig,
@@ -44,4 +43,5 @@ export default [
     CloudinaryConfig,
     SepayConfig,
     PaymentConfig,
+    SmtpConfig,
 ];

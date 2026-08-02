@@ -50,8 +50,6 @@ async function main(): Promise<void> {
   const teaUrl = await uploadToCloudinary('/images/news/news2.png');
   const avatarHaUrl = await uploadToCloudinary('/images/news/news3.png');
   const avatarTuanUrl = await uploadToCloudinary('/images/news/news4.png');
-  const kycFrontUrl = await uploadToCloudinary('/images/banners/homepage_banner_4.png');
-  const kycBackUrl = await uploadToCloudinary('/images/banners/homepage_banner_5.png');
 
   // 1. Ensure Roles exist
   console.log('Ensuring roles exist...');
@@ -422,21 +420,6 @@ async function main(): Promise<void> {
       where: { code: b.code },
       update: { visitDate: b.visitDate, status: b.status },
       create: b
-    });
-  }
-
-  // 11. Ensure Identity Verification Requests exist
-  console.log('Ensuring identity verification requests exist...');
-  const kycRequests = [
-    { code: 'KYC-001', userId: customerMinh.id, fullName: 'Hoàng Quốc Minh', identityNumber: '025689745', status: 'approved', frontImageUrl: kycFrontUrl, backImageUrl: kycBackUrl },
-    { code: 'KYC-002', userId: customerVy.id, fullName: 'Lê Thảo Vy', identityNumber: '197548625', status: 'pending', frontImageUrl: kycFrontUrl, backImageUrl: kycBackUrl },
-    { code: 'KYC-003', userId: customerDuc.id, fullName: 'Phạm Minh Đức', identityNumber: '289564172', status: 'pending', frontImageUrl: kycFrontUrl, backImageUrl: kycBackUrl }
-  ];
-  for (const k of kycRequests) {
-    await prisma.identityVerificationRequest.upsert({
-      where: { code: k.code },
-      update: { status: k.status, frontImageUrl: k.frontImageUrl, backImageUrl: k.backImageUrl },
-      create: k
     });
   }
 

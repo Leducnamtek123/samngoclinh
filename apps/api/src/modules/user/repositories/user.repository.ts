@@ -1,4 +1,4 @@
-import { IAwsS3 } from '@common/aws/interfaces/aws.interface';
+import { ILocalStorage } from '@common/file/interfaces/file.interface';
 import { DatabaseService } from '@common/database/services/database.service';
 import { DatabaseUtil } from '@common/database/utils/database.util';
 import { HelperService } from '@common/helper/services/helper.service';
@@ -32,6 +32,7 @@ import {
     IUser,
     IUserAddressCreate,
     IUserForgotPasswordCreate,
+    IUserIdentityDocumentSave,
     IUserLogin,
     IUserLoginResult,
     IUserProfile,
@@ -60,6 +61,7 @@ import {
     TermPolicyUserAcceptance,
     User,
     UserAddress,
+    UserIdentityDocument,
     UserMobileNumber,
     Verification,
 } from '@generated/prisma-client';
@@ -360,6 +362,29 @@ export class UserRepository {
         });
     }
 
+    async findOneActiveByVerificationEmailTokenAndUser(
+        userId: string,
+        token: string
+    ): Promise<Verification | null> {
+        const today = this.helperService.dateCreate();
+
+        return this.databaseService.verification.findFirst({
+            where: {
+                userId,
+                token,
+                isUsed: false,
+                type: EnumVerificationType.email,
+                expiredAt: {
+                    gt: today,
+                },
+                user: {
+                    deletedAt: null,
+                    status: EnumUserStatus.active,
+                },
+            },
+        });
+    }
+
     async findOneLatestByVerificationEmail(
         userId: string
     ): Promise<Verification | null> {
@@ -619,7 +644,7 @@ export class UserRepository {
 
     async updatePhotoProfile(
         userId: string,
-        photo: IAwsS3,
+        photo: ILocalStorage,
         { ipAddress, userAgent, geoLocation }: IRequestLog
     ): Promise<User> {
         return this.databaseService.user.update({
@@ -909,6 +934,34 @@ export class UserRepository {
             data: {
                 deletedAt,
                 deletedBy: userId,
+                updatedBy: userId,
+            },
+        });
+    }
+
+    async findIdentityDocument(
+        userId: string
+    ): Promise<UserIdentityDocument | null> {
+        return this.databaseService.userIdentityDocument.findUnique({
+            where: { userId },
+        });
+    }
+
+    async saveIdentityDocument(
+        userId: string,
+        { frontImageUrl, backImageUrl }: IUserIdentityDocumentSave
+    ): Promise<UserIdentityDocument> {
+        return this.databaseService.userIdentityDocument.upsert({
+            where: { userId },
+            create: {
+                userId,
+                frontImageUrl,
+                backImageUrl,
+                createdBy: userId,
+            },
+            update: {
+                frontImageUrl,
+                backImageUrl,
                 updatedBy: userId,
             },
         });

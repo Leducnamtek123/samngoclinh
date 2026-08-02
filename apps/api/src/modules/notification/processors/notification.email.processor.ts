@@ -19,17 +19,17 @@ import {
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
 import { NotificationEmailProcessorService } from '@modules/notification/services/notification.email.processor.service';
 import {
-    AwsSESRateLimitDurationInMs,
-    AwsSESRateLimitPerDuration,
-} from '@common/aws/constants/aws.constant';
+    EmailRateLimitDurationInMs,
+    EmailRateLimitPerDuration,
+} from '@modules/notification/constants/notification.constant';
 
 /**
- * Consumes the email queue; rate-limited to stay under the AWS SES send quota.
+ * Consumes the email queue; rate-limited to throttle outgoing SMTP sends.
  */
 @QueueProcessor(EnumQueue.notificationEmail, {
     limiter: {
-        max: AwsSESRateLimitPerDuration,
-        duration: AwsSESRateLimitDurationInMs,
+        max: EmailRateLimitPerDuration,
+        duration: EmailRateLimitDurationInMs,
     },
 })
 export class NotificationEmailProcessor extends QueueProcessorBase {

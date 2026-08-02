@@ -1,4 +1,5 @@
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
+import { IFile } from '@common/file/interfaces/file.interface';
 import {
     IPaginationIn,
     IPaginationQueryCursorParams,
@@ -9,7 +10,7 @@ import {
     IResponseReturn,
 } from '@common/response/interfaces/response.interface';
 import { TermPolicyAcceptRequestDto } from '@modules/term-policy/dtos/request/term-policy.accept.request.dto';
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyUploadContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.upload-content.request.dto';
 import { TermPolicyContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.content.request.dto';
 import { TermPolicyCreateRequestDto } from '@modules/term-policy/dtos/request/term-policy.create.request.dto';
 import { TermPolicyRemoveContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.remove-content.request.dto';
@@ -56,14 +57,10 @@ export interface ITermPolicyService {
     deleteByAdmin(
         termPolicyId: string
     ): Promise<IResponseReturn<TermPolicyResponseDto>>;
-    generateContentPresignByAdmin({
-        language,
-        size,
-        type,
-        version,
-    }: TermPolicyContentPresignRequestDto): Promise<
-        IResponseReturn<AwsS3PresignResponseDto>
-    >;
+    uploadContentByAdmin(
+        file: IFile,
+        { language, type, version }: TermPolicyUploadContentRequestDto
+    ): Promise<IResponseReturn<LocalStorageResponseDto>>;
     updateContentByAdmin(
         termPolicyId: string,
         { key, size, language }: TermPolicyContentRequestDto,

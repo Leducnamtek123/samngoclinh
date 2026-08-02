@@ -1,14 +1,26 @@
-// Cửa hàng — "Tất cả sản phẩm": tìm kiếm + lưới sản phẩm.
-// Dữ liệu tĩnh & ảnh placeholder (icon) — thay bằng authFetch danh mục + <Image source> khi có endpoint/asset.
-import { useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+// Cửa hàng — "Tất cả sản phẩm": tìm kiếm server-side + lưới sản phẩm (phân trang, kéo làm mới).
+// Dữ liệu từ GET /public/catalog/shop-items; chạm thẻ mở màn chi tiết.
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
-import { products } from '../data/mock';
+import { fetchShopItems } from '../api/catalog';
+import { toStaticUrl } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+
+const PER_PAGE = 12;
 
 export default function ProductsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -16,10 +28,44 @@ export default function ProductsScreen({ navigation }) {
   const [query, setQuery] = useState('');
   const [showSupport, setShowSupport] = useState(true);
 
-  const data = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return q ? products.filter((p) => p.name.toLowerCase().includes(q)) : products;
-  }, [query]);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const pageRef = useRef(1);
+  const hasMoreRef = useRef(true);
+
+  const load = useCallback(async (search, page, mode) => {
+    if (mode === 'more') setLoadingMore(true);
+    else if (mode === 'refresh') setRefreshing(true);
+    else setLoading(true);
+    try {
+      const rows = await fetchShopItems({ search, page, perPage: PER_PAGE });
+      pageRef.current = page;
+      hasMoreRef.current = rows.length === PER_PAGE;
+      setItems((prev) => (mode === 'more' ? [...prev, ...rows] : rows));
+    } catch {
+      if (mode !== 'more') setItems([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+      setLoadingMore(false);
+    }
+  }, []);
+
+  // Tải trang đầu; tải lại (debounce 400ms) mỗi khi đổi từ khoá tìm kiếm (search server-side).
+  useEffect(() => {
+    const t = setTimeout(() => load(query, 1, 'initial'), query ? 400 : 0);
+    return () => clearTimeout(t);
+  }, [query, load]);
+
+  const onEndReached = () => {
+    if (!loading && !loadingMore && hasMoreRef.current) {
+      load(query, pageRef.current + 1, 'more');
+    }
+  };
+
+  const onOpen = (item) => navigation.navigate('ProductDetail', { id: item.id, product: item });
 
   // Hành động mua hàng: khách -> Login; đã đăng nhập -> mở màn tương ứng (hiện là placeholder).
   const onAddToCart = () => requireAuth(() => navigation.navigate('ComingSoon', { title: 'Giỏ hàng' }));
@@ -41,13 +87,17 @@ export default function ProductsScreen({ navigation }) {
       </View>
 
       <FlatList
-        data={data}
+        data={items}
         keyExtractor={(item) => item.id}
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + spacing.xl }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        onEndReachedThreshold={0.4}
+        onEndReached={onEndReached}
+        refreshing={refreshing}
+        onRefresh={() => load(query, 1, 'refresh')}
         ListHeaderComponent={
           <View style={styles.search}>
             <Ionicons name="search" size={20} color={colors.textMuted} />
@@ -61,9 +111,23 @@ export default function ProductsScreen({ navigation }) {
             />
           </View>
         }
-        ListEmptyComponent={<Text style={styles.empty}>Không tìm thấy sản phẩm phù hợp.</Text>}
+        ListEmptyComponent={
+          loading ? (
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+          ) : (
+            <Text style={styles.empty}>Không tìm thấy sản phẩm phù hợp.</Text>
+          )
+        }
+        ListFooterComponent={
+          loadingMore ? <ActivityIndicator color={colors.primary} style={styles.loader} /> : null
+        }
         renderItem={({ item }) => (
-          <ProductCard item={item} onAddToCart={onAddToCart} onBuyNow={onBuyNow} />
+          <ProductCard
+            item={item}
+            onOpen={onOpen}
+            onAddToCart={onAddToCart}
+            onBuyNow={onBuyNow}
+          />
         )}
       />
 
@@ -81,32 +145,47 @@ export default function ProductsScreen({ navigation }) {
   );
 }
 
-function ProductCard({ item, onAddToCart, onBuyNow }) {
+function ProductCard({ item, onOpen, onAddToCart, onBuyNow }) {
+  const [imgError, setImgError] = useState(false);
+  const image = imgError ? null : toStaticUrl(item.images?.[0]);
   return (
     <View style={styles.card}>
-      <View style={styles.cardArt}>
-        <Ionicons name={item.icon} size={44} color={colors.primary} />
-      </View>
-      <View style={styles.cardBody}>
-        <Text style={styles.cardName} numberOfLines={2}>
-          {item.name}
-        </Text>
-        <Text style={styles.cardPrice}>{groupThousands(item.price)}đ</Text>
-        <Text style={styles.cardSold}>Đã bán {item.sold}</Text>
-        <View style={styles.actions}>
-          <Pressable
-            onPress={onAddToCart}
-            style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
-          >
-            <Ionicons name="cart-outline" size={20} color={colors.textMuted} />
-          </Pressable>
-          <Pressable
-            onPress={onBuyNow}
-            style={({ pressed }) => [styles.buyBtn, pressed && styles.pressed]}
-          >
-            <Text style={styles.buyText}>Mua ngay</Text>
-          </Pressable>
+      <Pressable onPress={() => onOpen(item)} style={({ pressed }) => pressed && styles.pressed}>
+        <View style={styles.cardArt}>
+          {image ? (
+            <Image
+              source={{ uri: image }}
+              style={styles.cardImg}
+              resizeMode="cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <Ionicons name="leaf" size={44} color={colors.primary} />
+          )}
         </View>
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardName} numberOfLines={2}>
+            {item.name}
+          </Text>
+          <Text style={styles.cardPrice}>{groupThousands(item.price)}đ</Text>
+          <Text style={styles.cardSold}>
+            {item.stock > 0 ? `Còn ${item.stock} ${item.unit || ''}`.trim() : 'Hết hàng'}
+          </Text>
+        </View>
+      </Pressable>
+      <View style={styles.cardActions}>
+        <Pressable
+          onPress={onAddToCart}
+          style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+        >
+          <Ionicons name="cart-outline" size={20} color={colors.textMuted} />
+        </Pressable>
+        <Pressable
+          onPress={onBuyNow}
+          style={({ pressed }) => [styles.buyBtn, pressed && styles.pressed]}
+        >
+          <Text style={styles.buyText}>Mua ngay</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -165,11 +244,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardBody: { padding: spacing.md, gap: spacing.xs },
+  cardImg: { width: '100%', height: '100%' },
+  loader: { marginTop: spacing.xl },
+  cardInfo: { paddingHorizontal: spacing.md, paddingTop: spacing.md, gap: spacing.xs },
   cardName: { fontSize: 14, fontWeight: '700', color: colors.text, minHeight: 38 },
   cardPrice: { fontSize: 18, fontWeight: '800', color: colors.primary, marginTop: spacing.xs },
   cardSold: { fontSize: 13, color: colors.textMuted },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.sm },
+  cardActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+  },
   iconBtn: {
     width: 40,
     height: 40,

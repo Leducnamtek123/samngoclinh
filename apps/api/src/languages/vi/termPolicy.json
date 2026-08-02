@@ -9,7 +9,7 @@
     "delete": "Đã xóa điều khoản chính sách thành công.",
     "publish": "Đã xuất bản điều khoản chính sách thành công.",
     "accept": "Đã chấp nhận điều khoản chính sách thành công.",
-    "generateContentPresign": "Đã tạo URL tải nội dung lên (presigned) thành công.",
+    "uploadContent": "Đã tải nội dung điều khoản lên thành công.",
     "error": {
         "notFound": "Không tìm thấy điều khoản chính sách.",
         "exist": "Đã tồn tại điều khoản chính sách với tên này.",

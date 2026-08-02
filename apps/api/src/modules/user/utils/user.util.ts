@@ -6,6 +6,7 @@ import { UserListResponseDto } from '@modules/user/dtos/response/user.list.respo
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserDto } from '@modules/user/dtos/user.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
+import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
@@ -13,6 +14,7 @@ import {
     IUserMobileNumber,
     IUserProfile,
     IUserVerificationCreate,
+    IUserVerificationEmailCreate,
 } from '@modules/user/interfaces/user.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -21,6 +23,7 @@ import {
     TwoFactor,
     User,
     UserAddress,
+    UserIdentityDocument,
 } from '@generated/prisma-client';
 import { ResponseUtil } from '@common/response/utils/response.util';
 import { Duration } from 'luxon';
@@ -183,6 +186,15 @@ export class UserUtil {
         return this.responseUtil.serialize(UserAddressResponseDto, address);
     }
 
+    mapIdentityDocument(
+        document: UserIdentityDocument
+    ): UserIdentityDocumentResponseDto {
+        return this.responseUtil.serialize(
+            UserIdentityDocumentResponseDto,
+            document
+        );
+    }
+
     /** Maps a two-factor record to status, deriving the pending-confirmation flag. */
     mapTwoFactor(twoFactor: TwoFactor): UserTwoFactorStatusResponseDto {
         return {
@@ -275,6 +287,23 @@ export class UserUtil {
     }
 
     /** Builds an OTP verification for mobile numbers or a tokenized link verification for email. */
+    verificationCreateEmailOtp(): IUserVerificationEmailCreate {
+        const token = this.verificationCreateOtp();
+        const hashedToken = this.hashedToken(token);
+
+        return {
+            type: EnumVerificationType.email,
+            reference: this.verificationCreateReference(),
+            expiredAt: this.verificationSetExpiredDate(),
+            expiredInMinutes: this.verificationExpiredInMinutes,
+            resendInMinutes: this.verificationResendInMinutes,
+            token,
+            hashedToken,
+            link: '',
+            encryptedLink: '',
+        };
+    }
+
     verificationCreateVerification(
         userId: string,
         type: EnumVerificationType

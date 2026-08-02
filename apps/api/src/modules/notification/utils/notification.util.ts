@@ -200,6 +200,7 @@ export class NotificationUtil {
             expiredInMinutes,
             link,
             reference,
+            otp,
         }: INotificationVerificationEmailPayload
     ): Promise<void> {
         await this.notificationQueue.add(
@@ -211,6 +212,7 @@ export class NotificationUtil {
                     expiredAt,
                     expiredInMinutes,
                     reference,
+                    otp,
                 },
                 proceedBy: userId,
             } as INotificationWorkerPayload<INotificationVerificationEmailPayload>,

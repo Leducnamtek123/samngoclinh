@@ -2,6 +2,8 @@ import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfa
 import { CultivationTreeResponseDto } from '@modules/cultivation/dtos/response/cultivation.tree.response.dto';
 import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.garden.response.dto';
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
+import { CultivationPublicBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed.response.dto';
+import { CultivationPublicBedDetailResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed-detail.response.dto';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
@@ -22,6 +24,8 @@ import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/reque
 
 export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
+    publicBedsByAge(ageYear: number | null): Promise<IResponseReturn<CultivationPublicBedResponseDto[]>>;
+    publicBedDetail(code: string): Promise<IResponseReturn<CultivationPublicBedDetailResponseDto>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;
     gardensList(userId: string, isAdmin?: boolean): Promise<IResponseReturn<CultivationGarden[]>>;
     gardensPaginated(

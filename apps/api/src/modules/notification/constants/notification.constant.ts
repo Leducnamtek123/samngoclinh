@@ -23,3 +23,9 @@ export const NotificationSettingUpdateAllowedCombinations: {
         channels: [EnumNotificationChannel.email, EnumNotificationChannel.push],
     },
 ];
+
+/**
+ * Throttle for the email queue processor (max sends per duration window).
+ */
+export const EmailRateLimitPerDuration = 10;
+export const EmailRateLimitDurationInMs = 1000;

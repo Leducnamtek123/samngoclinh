@@ -1,4 +1,4 @@
-import { AwsSESService } from '@common/aws/services/aws.ses.service';
+import { NotificationSmtpService } from '@modules/notification/services/notification.smtp.service';
 import { HelperService } from '@common/helper/services/helper.service';
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
 import { INotificationEmailProcessorService } from '@modules/notification/interfaces/notification.email.processor.service.interface';
@@ -40,7 +40,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
     private readonly defaultTemplateData: Record<string, string>;
 
     constructor(
-        private readonly awsSESService: AwsSESService,
+        private readonly smtpService: NotificationSmtpService,
         private readonly helperService: HelperService,
         private readonly configService: ConfigService,
         private readonly userRepository: UserRepository,
@@ -72,7 +72,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         try {
             const { email, username, bcc, cc } = job.data.send;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.welcome,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -101,7 +101,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         try {
             const { email, username, bcc, cc } = job.data.send;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.welcomeSocial,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -135,7 +135,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 passwordCreatedAt,
             } = job.data.data!;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.welcomeByAdmin,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -181,7 +181,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 encryptedPasswordString
             );
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.temporaryPasswordByAdmin,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -220,7 +220,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         try {
             const { email, username, cc, bcc } = job.data.send;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.changePassword,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -249,7 +249,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         try {
             const { email, username, cc, bcc } = job.data.send;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.resetPassword,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -282,15 +282,18 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 reference,
                 link: encryptedLink,
                 expiredInMinutes,
+                otp,
             } = job.data.data!;
 
-            const link = this.userUtil.decryptedLink(userId, encryptedLink);
+            const link = encryptedLink
+                ? this.userUtil.decryptedLink(userId, encryptedLink)
+                : '';
             const expiredAtFormatted = this.helperService.dateFormatToRFC2822(
                 this.helperService.dateCreateFromIso(expiredAt)
             );
             const expiredInMinutesFormatted = String(expiredInMinutes);
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.verificationEmail,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -298,6 +301,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                     ...this.defaultTemplateData,
                     username,
                     link,
+                    otp: otp ?? '',
                     reference,
                     expiredAt: expiredAtFormatted,
                     expiredInMinutes: expiredInMinutesFormatted,
@@ -324,7 +328,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
             const { email, username, cc, bcc } = job.data.send;
             const { reference } = job.data.data!;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.verifiedEmail,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -362,7 +366,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
 
             const link = this.userUtil.decryptedLink(userId, encryptedLink);
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.forgotPassword,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -398,7 +402,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
             const { email, username, cc, bcc } = job.data.send;
             const { reference, mobileNumber } = job.data.data!;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.verifiedMobileNumber,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -435,7 +439,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         try {
             const { email, username, cc, bcc } = job.data.send;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.resetTwoFactorByAdmin,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -476,7 +480,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 requestLog: { userAgent, ipAddress },
             } = job.data.data!;
 
-            const result = await this.awsSESService.send({
+            const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.newDeviceLogin,
                 recipients: [email],
                 sender: this.noreplyEmail,
@@ -519,7 +523,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
 
             const results = [];
             for (const chunk of userChunks) {
-                const result = await this.awsSESService.sendBulk({
+                const result = await this.smtpService.sendBulk({
                     templateName: EnumNotificationProcess.publishTermPolicy,
                     recipients: chunk.map(u => ({
                         recipient: u.email,

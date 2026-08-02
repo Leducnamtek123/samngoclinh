@@ -1,5 +1,5 @@
-import { IAwsS3 } from '@common/aws/interfaces/aws.interface';
-import { AwsS3Service } from '@common/aws/services/aws.s3.service';
+import { ILocalStorage } from '@common/file/interfaces/file.interface';
+import { FileService } from '@common/file/services/file.service';
 import { EnumFileExtensionTemplate } from '@common/file/enums/file.enum';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
 import { ITermPolicyTemplateService } from '@modules/term-policy/interfaces/term-policy.template-service.interface';
@@ -19,10 +19,10 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
 
     constructor(
         private readonly termPolicyUtil: TermPolicyUtil,
-        private readonly awsS3Service: AwsS3Service
+        private readonly fileService: FileService
     ) {}
 
-    async importTermsOfService(): Promise<IAwsS3 | null> {
+    async importTermsOfService(): Promise<ILocalStorage | null> {
         try {
             const templatePath = join(
                 this.templatesDir,
@@ -39,16 +39,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                     }
                 );
 
-            return this.awsS3Service.putItem(
-                {
-                    file: templateContent,
-                    key: randomKey,
-                    size: templateContent.length,
-                },
-                {
-                    forceUpdate: true,
-                }
-            );
+            return this.fileService.saveBufferToKey(templateContent, randomKey);
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to import terms of service');
 
@@ -56,7 +47,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
         }
     }
 
-    async importPrivacy(): Promise<IAwsS3 | null> {
+    async importPrivacy(): Promise<ILocalStorage | null> {
         try {
             const templatePath = join(
                 this.templatesDir,
@@ -73,16 +64,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                     }
                 );
 
-            return this.awsS3Service.putItem(
-                {
-                    file: templateContent,
-                    key: randomKey,
-                    size: templateContent.length,
-                },
-                {
-                    forceUpdate: true,
-                }
-            );
+            return this.fileService.saveBufferToKey(templateContent, randomKey);
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to import privacy');
 
@@ -90,7 +72,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
         }
     }
 
-    async importCookie(): Promise<IAwsS3 | null> {
+    async importCookie(): Promise<ILocalStorage | null> {
         try {
             const templatePath = join(
                 this.templatesDir,
@@ -107,16 +89,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                     }
                 );
 
-            return this.awsS3Service.putItem(
-                {
-                    file: templateContent,
-                    key: randomKey,
-                    size: templateContent.length,
-                },
-                {
-                    forceUpdate: true,
-                }
-            );
+            return this.fileService.saveBufferToKey(templateContent, randomKey);
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to import cookie');
 
@@ -124,7 +97,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
         }
     }
 
-    async importMarketing(): Promise<IAwsS3 | null> {
+    async importMarketing(): Promise<ILocalStorage | null> {
         try {
             const templatePath = join(
                 this.templatesDir,
@@ -141,16 +114,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                     }
                 );
 
-            return this.awsS3Service.putItem(
-                {
-                    file: templateContent,
-                    key: randomKey,
-                    size: templateContent.length,
-                },
-                {
-                    forceUpdate: true,
-                }
-            );
+            return this.fileService.saveBufferToKey(templateContent, randomKey);
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to import marketing');
 

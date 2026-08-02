@@ -1,9 +1,7 @@
 import { AppUnknownException } from '@app/exceptions/app.unknown.exception';
-import { AwsS3PresignResponseDto } from '@common/aws/dtos/response/aws.s3-presign.response.dto';
-import { IAwsS3Presign } from '@common/aws/interfaces/aws.interface';
-import { EnumAwsS3Accessibility } from '@common/aws/enums/aws.enum';
-import { AwsServiceUnavailableException } from '@common/aws/exceptions/aws.service-unavailable.exception';
-import { AwsS3Service } from '@common/aws/services/aws.s3.service';
+import { LocalStorageResponseDto } from '@common/file/dtos/file.local-storage.response.dto';
+import { IFile } from '@common/file/interfaces/file.interface';
+import { FileService } from '@common/file/services/file.service';
 import { EnumFileExtensionTemplate } from '@common/file/enums/file.enum';
 import { EnumMessageLanguage } from '@common/message/enums/message.enum';
 import {
@@ -18,7 +16,7 @@ import {
 import { AuthJwtAccessTokenInvalidException } from '@modules/auth/exceptions/auth.jwt-access-token-invalid.exception';
 import { NotificationUtil } from '@modules/notification/utils/notification.util';
 import { TermPolicyAcceptRequestDto } from '@modules/term-policy/dtos/request/term-policy.accept.request.dto';
-import { TermPolicyContentPresignRequestDto } from '@modules/term-policy/dtos/request/term-policy.content-presign.request.dto';
+import { TermPolicyUploadContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.upload-content.request.dto';
 import { TermPolicyContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.content.request.dto';
 import { TermPolicyCreateRequestDto } from '@modules/term-policy/dtos/request/term-policy.create.request.dto';
 import { TermPolicyRemoveContentRequestDto } from '@modules/term-policy/dtos/request/term-policy.remove-content.request.dto';
@@ -55,7 +53,7 @@ import {
 export class TermPolicyService implements ITermPolicyService {
     constructor(
         private readonly termPolicyRepository: TermPolicyRepository,
-        private readonly awsS3Service: AwsS3Service,
+        private readonly fileService: FileService,
         private readonly termPolicyUtil: TermPolicyUtil,
         private readonly notificationUtil: NotificationUtil,
         private readonly requestStoreService: RequestStoreService
@@ -214,15 +212,7 @@ export class TermPolicyService implements ITermPolicyService {
             const mappedContents: TermContentDto[] = contents.map(
                 ({ language, key, size }: TermPolicyContentRequestDto) => ({
                     language,
-                    ...this.awsS3Service.mapPresign(
-                        {
-                            key,
-                            size,
-                        },
-                        {
-                            access: EnumAwsS3Accessibility.private,
-                        }
-                    ),
+                    ...this.fileService.buildLocalStorage(key, size),
                 })
             );
             const created = await this.termPolicyRepository.create(
@@ -260,9 +250,7 @@ export class TermPolicyService implements ITermPolicyService {
             const contentPath = this.termPolicyUtil.getPath(termPolicy);
             const [deleted] = await Promise.all([
                 this.termPolicyRepository.delete(termPolicyId),
-                this.awsS3Service.deleteDir(contentPath, {
-                    access: EnumAwsS3Accessibility.private,
-                }),
+                this.fileService.deleteLocalDir(contentPath),
             ]);
 
             const mapped = this.termPolicyUtil.mapOne(deleted);
@@ -280,14 +268,10 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async generateContentPresignByAdmin({
-        language,
-        size,
-        type,
-        version,
-    }: TermPolicyContentPresignRequestDto): Promise<
-        IResponseReturn<AwsS3PresignResponseDto>
-    > {
+    async uploadContentByAdmin(
+        file: IFile,
+        { language, type, version }: TermPolicyUploadContentRequestDto
+    ): Promise<IResponseReturn<LocalStorageResponseDto>> {
         const termPolicy =
             await this.termPolicyRepository.existByVersionAndType(
                 version,
@@ -310,23 +294,7 @@ export class TermPolicyService implements ITermPolicyService {
                 }
             );
 
-        const aws: IAwsS3Presign | null =
-            await this.awsS3Service.presignPutItem(
-                {
-                    key,
-                    size,
-                },
-                {
-                    forceUpdate: true,
-                    access: EnumAwsS3Accessibility.private,
-                }
-            );
-
-        if (!aws) {
-            throw new AwsServiceUnavailableException();
-        }
-
-        return { data: aws };
+        return { data: this.fileService.saveBufferToKey(file.buffer, key) };
     }
 
     async updateContentByAdmin(
@@ -345,12 +313,7 @@ export class TermPolicyService implements ITermPolicyService {
         try {
             const mappedContent: TermContentDto = {
                 language,
-                ...this.awsS3Service.mapPresign(
-                    { key, size },
-                    {
-                        access: EnumAwsS3Accessibility.private,
-                    }
-                ),
+                ...this.fileService.buildLocalStorage(key, size),
             };
             const updated = await this.termPolicyRepository.updateContent(
                 termPolicyId,
@@ -394,12 +357,7 @@ export class TermPolicyService implements ITermPolicyService {
         try {
             const mappedContent: TermContentDto = {
                 language,
-                ...this.awsS3Service.mapPresign(
-                    { key, size },
-                    {
-                        access: EnumAwsS3Accessibility.private,
-                    }
-                ),
+                ...this.fileService.buildLocalStorage(key, size),
             };
             const updated = await this.termPolicyRepository.addContent(
                 termPolicyId,
@@ -462,7 +420,7 @@ export class TermPolicyService implements ITermPolicyService {
     async getContentByAdmin(
         termPolicyId: string,
         language: EnumMessageLanguage
-    ): Promise<IResponseReturn<AwsS3PresignResponseDto>> {
+    ): Promise<IResponseReturn<LocalStorageResponseDto>> {
         const termPolicy =
             await this.termPolicyRepository.findOneById(termPolicyId);
         if (!termPolicy) {
@@ -477,16 +435,12 @@ export class TermPolicyService implements ITermPolicyService {
             throw new TermPolicyContentNotFoundException();
         }
 
-        const awsPresign: IAwsS3Presign | null =
-            await this.awsS3Service.presignGetItem(existContent.key, {
-                access: EnumAwsS3Accessibility.private,
-            });
-
-        if (!awsPresign) {
-            throw new AwsServiceUnavailableException();
-        }
-
-        return { data: awsPresign };
+        return {
+            data: this.fileService.buildLocalStorage(
+                existContent.key,
+                existContent.size
+            ),
+        };
     }
 
     async publishByAdmin(
@@ -510,10 +464,9 @@ export class TermPolicyService implements ITermPolicyService {
                 this.termPolicyUtil.getContentPublicPath(termPolicy);
             const contents = termPolicy.contents as unknown as TermContentDto[];
 
-            const newItems = await this.awsS3Service.moveItems(
+            const newItems = this.fileService.moveLocalToDir(
                 contents,
-                contentPublicPath,
-                {}
+                contentPublicPath
             );
 
             const newContents = this.termPolicyUtil.mapPublicContent(
@@ -529,9 +482,7 @@ export class TermPolicyService implements ITermPolicyService {
                     newContents,
                     updatedBy
                 ),
-                this.awsS3Service.deleteDir(contentPath, {
-                    access: EnumAwsS3Accessibility.private,
-                }),
+                this.fileService.deleteLocalDir(contentPath),
             ]);
 
             // @note: send email after all creation
