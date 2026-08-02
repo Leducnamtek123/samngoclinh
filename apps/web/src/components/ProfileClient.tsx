@@ -17,6 +17,7 @@ import { ProfileOrdersTab } from './profile/ProfileOrdersTab';
 import { ProfileTreesTab } from './profile/ProfileTreesTab';
 import { ProfileKycTab } from './profile/ProfileKycTab';
 import { ProfileContractsTab } from './profile/ProfileContractsTab';
+import { VerifyEmailModal } from './profile/VerifyEmailModal';
 
 type ProfileClientProps = {
   locale: string;
@@ -59,6 +60,7 @@ export const ProfileClient = ({
   // Edit Profile Modal State
   // react-doctor-disable-next-line react-doctor/prefer-useReducer
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
   const [viewingOrderDetail, setViewingOrderDetail] = useState<OrderDetailData | null>(null);
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
@@ -103,6 +105,8 @@ export const ProfileClient = ({
   const [kycIdentityNumber, setKycIdentityNumber] = useState('');
   const [frontImagePreview, setFrontImagePreview] = useState<string>('');
   const [backImagePreview, setBackImagePreview] = useState<string>('');
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
   const [kycErrorMsg, setKycErrorMsg] = useState('');
 
   // Pre-fill profile edit fields
@@ -196,21 +200,15 @@ export const ProfileClient = ({
   const handleKycSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setKycErrorMsg('');
-    if (!kycFullName || !kycIdentityNumber) {
-      setKycErrorMsg('Vui lòng điền đầy đủ họ tên và số CCCD/CMND.');
-      return;
-    }
-    if (!frontImagePreview || !backImagePreview) {
+    if (!frontFile || !backFile) {
       setKycErrorMsg('Vui lòng tải lên cả mặt trước và mặt sau của CMND/CCCD.');
       return;
     }
 
     try {
       await submitKycMutation.mutateAsync({
-        fullName: kycFullName,
-        identityNumber: kycIdentityNumber,
-        frontImageUrl: frontImagePreview,
-        backImageUrl: backImagePreview,
+        front: frontFile,
+        back: backFile,
       });
       toast.success('Gửi hồ sơ eKYC thành công!');
       refetchKycStatus();
@@ -386,6 +384,7 @@ export const ProfileClient = ({
               editPhone={editPhone}
               onEditClick={() => setIsEditModalOpen(true)}
               onCopyText={handleCopyText}
+              onVerifyEmailClick={() => setIsVerifyEmailOpen(true)}
             />
           )}
 
@@ -565,6 +564,8 @@ export const ProfileClient = ({
               setFrontImagePreview={setFrontImagePreview}
               backImagePreview={backImagePreview}
               setBackImagePreview={setBackImagePreview}
+              setFrontFile={setFrontFile}
+              setBackFile={setBackFile}
               submitKycMutation={submitKycMutation}
               onSubmit={handleKycSubmit}
             />
@@ -702,6 +703,13 @@ export const ProfileClient = ({
           onClose={() => setSelectedContractId(null)}
         />
       )}
+
+      {/* Verify Email Modal */}
+      <VerifyEmailModal
+        isOpen={isVerifyEmailOpen}
+        onClose={() => setIsVerifyEmailOpen(false)}
+        userEmail={email}
+      />
     </div>
   );
 };
