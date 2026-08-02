@@ -17,7 +17,9 @@ import { ProfileOrdersTab } from './profile/ProfileOrdersTab';
 import { ProfileTreesTab } from './profile/ProfileTreesTab';
 import { ProfileKycTab } from './profile/ProfileKycTab';
 import { ProfileContractsTab } from './profile/ProfileContractsTab';
+import { ProfileSettingsTab } from './profile/ProfileSettingsTab';
 import { VerifyEmailModal } from './profile/VerifyEmailModal';
+import { AccountLayout } from '@/components/account/AccountLayout';
 
 type ProfileClientProps = {
   locale: string;
@@ -86,9 +88,7 @@ export const ProfileClient = ({
     } catch {
       // fallback
     }
-    return [
-      { id: '1', name: profile?.fullName || 'Nhà đầu tư', phone: business?.phone || '0901234567', address: 'Số 123 Đường Nam Trà My, Kon Tum', isDefault: true }
-    ];
+    return [];
   });
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [newAddrName, setNewAddrName] = useState('');
@@ -327,7 +327,7 @@ export const ProfileClient = ({
   const safeAddresses = Array.isArray(addresses) ? addresses : [];
 
   const fullName = profile?.fullName || 'Nhà đầu tư';
-  const email = profile?.email || 'user@mail.com';
+  const email = profile?.email || '';
   const rank = profile?.rank || 'Đồng';
   const referralCode = profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
 
@@ -343,36 +343,24 @@ export const ProfileClient = ({
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Tab Selection */}
-        <div className="flex border-b border-gray-200 bg-white rounded-t-2xl px-4 pt-2 overflow-x-auto gap-2">
-          {[
-            { id: 'info', label: 'Thông tin cá nhân' },
-            { id: 'orders', label: 'Lịch sử đơn hàng' },
-            { id: 'trees', label: 'Tài sản cây sâm' },
-            { id: 'address', label: 'Sổ địa chỉ' },
-            { id: 'pin', label: 'Mã PIN' },
-            { id: 'kyc', label: 'Xác minh KYC' },
-            { id: 'contracts', label: 'Hợp đồng điện tử' },
-            { id: 'referral', label: 'Mã giới thiệu' },
-          ].map((tabItem) => (
-            <button
-              key={tabItem.id}
-              type="button"
-              onClick={() => setTabs(tabItem.id)}
-              className={`px-4 py-3 text-xs font-bold transition-colors border-b-2 whitespace-nowrap cursor-pointer ${
-                tabs === tabItem.id
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-800'
-              }`}
-            >
-              {tabItem.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Contents */}
-        <div className="bg-white border border-gray-200 rounded-b-2xl p-6 sm:p-8 shadow-sm">
+      <AccountLayout
+        activeTab={tabs === 'trees' ? 'assets' : tabs}
+        onSelectTab={(tabKey) => {
+          setTabs(tabKey);
+          if (typeof window !== 'undefined') {
+            window.history.pushState(null, '', `/${locale}/profile?tabs=${tabKey}`);
+          }
+        }}
+        profile={{
+          fullName,
+          email,
+          rank,
+        }}
+        ordersCount={safeOrders.length > 0 ? safeOrders.length : undefined}
+        treesCount={safeTrees.length > 0 ? safeTrees.length : undefined}
+        contractsCount={Array.isArray(contractsData) && contractsData.length > 0 ? contractsData.length : undefined}
+      >
+        <div className="bg-white border border-gray-100/80 rounded-2xl p-6 sm:p-8 shadow-xs">
           {tabs === 'info' && (
             <ProfileInfoTab
               fullName={fullName}
@@ -411,14 +399,14 @@ export const ProfileClient = ({
                 <button
                   type="button"
                   onClick={() => setIsAddAddressOpen(true)}
-                  className="bg-primary hover:bg-primary-hover text-white font-bold px-4 py-2 rounded-xl text-xs transition-colors shadow-sm cursor-pointer"
+                  className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-4 py-2 rounded-xl text-xs transition-colors shadow-xs cursor-pointer"
                 >
                   + Thêm địa chỉ mới
                 </button>
               </div>
 
               {isAddAddressOpen && (
-                <form onSubmit={handleAddAddress} className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4">
+                <form onSubmit={handleAddAddress} className="bg-gray-50 border border-gray-200/80 rounded-xl p-5 space-y-4">
                   <h4 className="font-bold text-gray-900 text-sm">Thêm địa chỉ giao hàng mới</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <input
@@ -453,7 +441,7 @@ export const ProfileClient = ({
                     <button type="button" onClick={() => setIsAddAddressOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg text-xs cursor-pointer">
                       Hủy
                     </button>
-                    <button type="submit" className="px-4 py-2 bg-primary text-white font-bold rounded-lg text-xs cursor-pointer">
+                    <button type="submit" className="px-4 py-2 bg-emerald-800 text-white font-bold rounded-lg text-xs cursor-pointer">
                       Lưu địa chỉ
                     </button>
                   </div>
@@ -481,7 +469,7 @@ export const ProfileClient = ({
 
                       <div className="flex gap-2 text-xs font-bold">
                         {!addr.isDefault && (
-                          <button type="button" onClick={() => setDefaultAddress(addr.id)} className="text-primary hover:underline cursor-pointer">
+                          <button type="button" onClick={() => setDefaultAddress(addr.id)} className="text-emerald-800 hover:underline cursor-pointer">
                             Đặt mặc định
                           </button>
                         )}
@@ -523,7 +511,7 @@ export const ProfileClient = ({
                     placeholder="••••••"
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-center tracking-widest text-lg font-bold focus:ring-1 focus:ring-primary focus:outline-none"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-center tracking-widest text-lg font-bold focus:ring-1 focus:ring-emerald-800 focus:outline-none"
                   />
                 </div>
 
@@ -537,13 +525,13 @@ export const ProfileClient = ({
                     placeholder="••••••"
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-center tracking-widest text-lg font-bold focus:ring-1 focus:ring-primary focus:outline-none"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-center tracking-widest text-lg font-bold focus:ring-1 focus:ring-emerald-800 focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-xl transition-colors text-xs shadow-md cursor-pointer"
+                  className="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold py-3 rounded-xl transition-colors text-xs shadow-md cursor-pointer"
                 >
                   Lưu mã PIN bảo mật
                 </button>
@@ -587,16 +575,16 @@ export const ProfileClient = ({
                   <p className="text-xs text-gray-400 font-medium">Chia sẻ mã giới thiệu để nhận thêm điểm thưởng ưu đãi</p>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4">
+                <div className="bg-gray-50 border border-gray-200/80 rounded-xl p-5 space-y-4">
                   <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
                     <div>
                       <span className="text-xs text-gray-500 font-semibold uppercase block">Mã giới thiệu của bạn</span>
-                      <span className="text-2xl font-black text-primary tracking-widest">{referralCode}</span>
+                      <span className="text-2xl font-black text-emerald-800 tracking-widest">{referralCode}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleCopyText(referralCode, 'Mã giới thiệu')}
-                      className="bg-primary hover:bg-primary-hover text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-sm flex items-center gap-1.5 cursor-pointer"
+                      className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>Sao chép mã</span>
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -624,8 +612,10 @@ export const ProfileClient = ({
               </div>
             </div>
           )}
+
+          {tabs === 'settings' && <ProfileSettingsTab locale={locale} />}
         </div>
-      </div>
+      </AccountLayout>
 
       {/* Edit Profile Modal */}
       {isEditModalOpen && (
