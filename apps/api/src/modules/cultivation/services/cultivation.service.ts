@@ -1,4 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as QRCode from 'qrcode';
 import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ICultivationService } from '@modules/cultivation/interfaces/cultivation.service.interface';
 import { CultivationRepository } from '@modules/cultivation/repositories/cultivation.repository';
@@ -26,7 +28,10 @@ import {
 
 @Injectable()
 export class CultivationService implements ICultivationService {
-    constructor(private readonly cultivationRepository: CultivationRepository) {}
+    constructor(
+        private readonly cultivationRepository: CultivationRepository,
+        private readonly configService: ConfigService
+    ) {}
 
     async trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>> {
         const groups = await this.cultivationRepository.getTreeAgeGroups(userId);
@@ -57,8 +62,11 @@ export class CultivationService implements ICultivationService {
             throw new NotFoundException('Bed not found');
         }
 
+        const webUrl = this.configService.get<string>('app.webUrl');
+        const qrCode = await QRCode.toDataURL(`${webUrl}/vi/trace/${code}`);
+
         return {
-            data: detail,
+            data: { ...detail, qrCode },
         };
     }
 

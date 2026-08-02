@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  Linking,
+  Platform,
   Pressable,
   ScrollView,
   Share,
@@ -20,7 +20,7 @@ import { colors, spacing } from '../utils/theme';
 import { groupThousands, formatDateVN } from '../utils/format';
 import { fetchBedDetail } from '../api/cultivation';
 import { fetchCarePackages, fetchProtectionPackages } from '../api/packages';
-import { toStaticUrl } from '../api/config';
+import { toStaticUrl, WEB_ORIGIN } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import ImageCarousel from '../components/ImageCarousel';
 
@@ -93,10 +93,28 @@ export default function PlantDetailScreen({ navigation, route }) {
   const onBuy = () =>
     requireAuth(() => navigation.navigate('ComingSoon', { title: 'Mua cây' }));
 
-  const webUrl = `https://iwefarm.com.vn/cay/${code || ''}`;
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(webUrl)}`;
-  const onShare = () => Share.share({ message: webUrl }).catch(() => {});
-  const onDownloadQr = () => Linking.openURL(qrUrl).catch(() => {});
+  const traceUrl = `${WEB_ORIGIN}/vi/trace/${code || ''}`;
+  const qrImage = bed?.qrCode || null;
+  const onShare = () => Share.share({ message: traceUrl }).catch(() => {});
+
+  // Web: tải PNG bằng thẻ <a download>; native: mở share sheet để lưu ảnh QR.
+  const onDownloadQr = async () => {
+    if (!qrImage) return;
+    if (Platform.OS === 'web' && globalThis.document) {
+      const a = globalThis.document.createElement('a');
+      a.href = qrImage;
+      a.download = `ma-qr-cay-${code || 'sam'}.png`;
+      globalThis.document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
+    try {
+      await Share.share({ url: qrImage, message: traceUrl });
+    } catch {
+      // bỏ qua khi người dùng huỷ
+    }
+  };
 
   const images = (bed?.images || []).map(toStaticUrl).filter(Boolean);
   const description = bed?.description || '';
@@ -214,7 +232,13 @@ export default function PlantDetailScreen({ navigation, route }) {
                   <Ionicons name="qr-code-outline" size={18} color={colors.primary} />
                   <Text style={styles.sectionHeadText}>Mã QR sản phẩm</Text>
                 </View>
-                <Image source={{ uri: qrUrl }} style={styles.qr} resizeMode="contain" />
+                {qrImage ? (
+                  <Image source={{ uri: qrImage }} style={styles.qr} resizeMode="contain" />
+                ) : (
+                  <View style={[styles.qr, styles.qrEmpty]}>
+                    <Ionicons name="qr-code-outline" size={72} color={colors.textMuted} />
+                  </View>
+                )}
                 <Text style={styles.qrHint}>Quét mã để xem chi tiết sản phẩm trên Web</Text>
                 <View style={styles.qrActions}>
                   <Pressable
@@ -398,6 +422,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   qr: { width: 200, height: 200, marginTop: spacing.sm },
+  qrEmpty: { alignItems: 'center', justifyContent: 'center' },
   qrHint: { fontSize: 13, fontStyle: 'italic', color: colors.textMuted, textAlign: 'center' },
   qrActions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.sm },
   qrBtn: {

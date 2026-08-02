@@ -146,4 +146,11 @@ export class CultivationPublicBedDetailResponseDto {
     @Expose()
     @Type(() => CultivationPublicCareLogDto)
     careLogs: CultivationPublicCareLogDto[];
+
+    @ApiProperty({
+        required: true,
+        example: 'data:image/png;base64,iVBORw0KGgo...',
+    })
+    @Expose()
+    qrCode: string;
 }

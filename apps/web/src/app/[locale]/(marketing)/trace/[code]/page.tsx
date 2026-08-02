@@ -20,27 +20,33 @@ export default async function TracePage(props: TracePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations('trace');
 
-  let plantData = null;
+  let bedData = null;
   try {
-    const res = await fetchApi(`/public/catalog/plants/${code}`);
+    const res = await fetchApi(`/public/cultivation/beds/${code}`);
     if (res.ok) {
       const json = await res.json();
-      plantData = json.data;
+      bedData = json.data;
     }
   } catch (e) {
-    console.error('Error fetching plant data for trace page:', e);
+    console.error('Error fetching bed data for trace page:', e);
   }
 
-  const plantName = plantData?.name || `Sâm Ngọc Linh #${code}`;
-  const gardenName = plantData?.garden?.name || 'Vườn Sâm Ngọc Linh Đắk Tô';
-  const bedCode = plantData?.bed?.code || 'LUONG-01';
-  const age = plantData?.ageYear || 4;
-  const status = plantData?.status || 'HEALTHY';
-  const careLogs = plantData?.careLogs || [
-    { date: '2026-07-01', action: 'Bón phân hữu cơ sinh học & tưới sương' },
-    { date: '2026-06-15', action: 'Kiểm tra độ ẩm đất (82%) và dọn cỏ quanh gốc' },
-    { date: '2026-05-20', action: 'Đo hàm lượng Saponin định kỳ & theo dõi tán lá' },
-  ];
+  const age = bedData?.ageYear ?? 4;
+  const plantName = bedData ? `Cây Sâm Ngọc Linh ${age} năm tuổi` : `Sâm Ngọc Linh #${code}`;
+  const gardenName = bedData?.gardenName || 'Vườn Sâm Ngọc Linh Đắk Tô';
+  const bedCode = bedData?.name || 'Luống 01';
+  const status = bedData?.healthStatus === 'healthy' ? 'Cây khỏe' : bedData?.healthStatus || 'Cây khỏe';
+  const careLogs = bedData?.careLogs?.length
+    ? bedData.careLogs.map((log: any) => ({
+        id: log.code,
+        date: new Date(log.loggedAt).toLocaleDateString('vi-VN'),
+        action: log.description || log.title,
+      }))
+    : [
+        { date: '2026-07-01', action: 'Bón phân hữu cơ sinh học & tưới sương' },
+        { date: '2026-06-15', action: 'Kiểm tra độ ẩm đất (82%) và dọn cỏ quanh gốc' },
+        { date: '2026-05-20', action: 'Đo hàm lượng Saponin định kỳ & theo dõi tán lá' },
+      ];
 
   return (
     <div className="w-full bg-gray-50 min-h-screen py-12">

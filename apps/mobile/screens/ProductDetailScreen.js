@@ -1,14 +1,14 @@
-// Chi tiết sản phẩm: ảnh, giá, tồn kho, mô tả + hành động mua (khách -> Login).
-// Nhận { id, product } từ danh sách để vẽ ngay, rồi fetch bản đầy đủ (mô tả/ảnh) theo id.
+// Chi tiết sản phẩm (vào từ Cửa hàng): ảnh collage, giá, còn hàng, mô tả (Thành phần/Công dụng)
+// + mã sản phẩm/tồn kho, số lượng và Mua ngay (khách -> Login).
 import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,24 +18,18 @@ import { groupThousands } from '../utils/format';
 import { fetchShopItem } from '../api/catalog';
 import { toStaticUrl } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
-import ImageCarousel from '../components/ImageCarousel';
 
-const CATEGORY_LABELS = {
-  beverage: 'Đồ uống',
-  tea: 'Trà & Thảo mộc',
-  food: 'Thực phẩm',
-  supplement: 'Thực phẩm bổ sung',
-  personal_care: 'Chăm sóc cá nhân',
-};
+const CART_ORANGE = '#F5A623';
 
 export default function ProductDetailScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const requireAuth = useRequireAuth();
-  const { width } = useWindowDimensions();
 
   const { id, product: initial } = route.params || {};
   const [product, setProduct] = useState(initial || null);
   const [loading, setLoading] = useState(!initial);
+  const [expanded, setExpanded] = useState(false);
+  const [qty, setQty] = useState(1);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -60,6 +54,12 @@ export default function ProductDetailScreen({ navigation, route }) {
 
   const images = (product?.images || []).map(toStaticUrl).filter(Boolean);
   const inStock = (product?.stock ?? 0) > 0;
+  const descLines = (product?.description || '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const collapsed = !expanded && descLines.length > 2;
+  const shownLines = collapsed ? descLines.slice(0, 2) : descLines;
 
   return (
     <View style={styles.root}>
@@ -67,12 +67,13 @@ export default function ProductDetailScreen({ navigation, route }) {
         <Pressable hitSlop={8} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </Pressable>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          Chi tiết sản phẩm
-        </Text>
-        <Pressable hitSlop={8} onPress={onAddToCart}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
-        </Pressable>
+        <View style={{ flex: 1 }} />
+        <View style={styles.headerActions}>
+          <Pressable hitSlop={8} onPress={onAddToCart}>
+            <Ionicons name="cart-outline" size={24} color="#fff" />
+          </Pressable>
+          <Ionicons name="notifications-outline" size={24} color="#fff" />
+        </View>
       </View>
 
       {loading && !product ? (
@@ -83,44 +84,65 @@ export default function ProductDetailScreen({ navigation, route }) {
             contentContainerStyle={{ paddingBottom: spacing.xl }}
             showsVerticalScrollIndicator={false}
           >
-            <ImageCarousel images={images} width={width} />
+            <ProductGallery images={images} />
+
             <View style={styles.body}>
-              {product.category ? (
-                <Text style={styles.category}>
-                  {CATEGORY_LABELS[product.category] || product.category}
-                </Text>
-              ) : null}
               <Text style={styles.name}>{product.name}</Text>
-              <Text style={styles.price}>
-                {groupThousands(product.price)}đ
-                {product.unit ? <Text style={styles.unit}> / {product.unit}</Text> : null}
-              </Text>
-              <View style={styles.stockRow}>
+              <Text style={styles.price}>{groupThousands(product.price)} VND</Text>
+
+              <View style={[styles.stockPill, !inStock && styles.stockPillOut]}>
                 <Ionicons
                   name={inStock ? 'checkmark-circle' : 'close-circle'}
                   size={18}
-                  color={inStock ? colors.primary : colors.textMuted}
+                  color={inStock ? colors.primary : '#C0392B'}
                 />
-                <Text style={styles.stock}>
-                  {inStock ? `Còn ${product.stock} ${product.unit || ''}`.trim() : 'Hết hàng'}
+                <Text style={[styles.stockPillText, !inStock && styles.stockPillTextOut]}>
+                  {inStock ? `Còn hàng: ${product.stock} sản phẩm` : 'Hết hàng'}
                 </Text>
               </View>
-              {product.description ? (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Mô tả</Text>
-                  <Text style={styles.desc}>{product.description}</Text>
-                </View>
-              ) : null}
+
+              <Text style={styles.sectionTitle}>Mô tả sản phẩm</Text>
+              {descLines.length ? (
+                <>
+                  {shownLines.map((line) => (
+                    <DescLine key={line} line={line} />
+                  ))}
+                  {descLines.length > 2 ? (
+                    <Pressable onPress={() => setExpanded((v) => !v)} hitSlop={6}>
+                      <Text style={styles.link}>{expanded ? 'Thu gọn' : 'Xem thêm'}</Text>
+                    </Pressable>
+                  ) : null}
+                </>
+              ) : (
+                <Text style={styles.desc}>Đang cập nhật mô tả sản phẩm.</Text>
+              )}
+
+              <View style={styles.infoBox}>
+                {product.code ? <InfoRow label="Mã sản phẩm" value={product.code} /> : null}
+                <InfoRow label="Tình trạng kho" value={`${product.stock ?? 0} sản phẩm có sẵn`} />
+              </View>
             </View>
           </ScrollView>
 
           <View style={[styles.footer, { paddingBottom: insets.bottom + spacing.md }]}>
+            <View style={styles.stepper}>
+              <Pressable
+                onPress={() => setQty((q) => Math.max(1, q - 1))}
+                style={styles.stepBtn}
+                hitSlop={6}
+              >
+                <Ionicons name="remove" size={20} color={colors.text} />
+              </Pressable>
+              <Text style={styles.qtyText}>{qty}</Text>
+              <Pressable onPress={() => setQty((q) => q + 1)} style={styles.stepBtn} hitSlop={6}>
+                <Ionicons name="add" size={20} color={colors.text} />
+              </Pressable>
+            </View>
             <Pressable
               onPress={onAddToCart}
               style={({ pressed }) => [styles.cartBtn, pressed && styles.pressed]}
             >
-              <Ionicons name="cart-outline" size={22} color={colors.primary} />
-              <Text style={styles.cartText}>Thêm vào giỏ</Text>
+              <Ionicons name="cart" size={24} color="#fff" />
             </Pressable>
             <Pressable
               onPress={onBuyNow}
@@ -142,6 +164,63 @@ export default function ProductDetailScreen({ navigation, route }) {
   );
 }
 
+function DescLine({ line }) {
+  const idx = line.indexOf(':');
+  if (idx > 0 && idx < 24) {
+    return (
+      <Text style={styles.desc}>
+        <Text style={styles.descLabel}>{line.slice(0, idx + 1)}</Text>
+        {line.slice(idx + 1)}
+      </Text>
+    );
+  }
+  return <Text style={styles.desc}>{line}</Text>;
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <View style={styles.infoRow}>
+      <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+      <Text style={styles.infoLabel}>{label}:</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  );
+}
+
+function Img({ uri, style }) {
+  const [err, setErr] = useState(false);
+  if (!uri || err) {
+    return (
+      <View style={[style, styles.imgFallback]}>
+        <Ionicons name="leaf" size={40} color={colors.primary} />
+      </View>
+    );
+  }
+  return <Image source={{ uri }} style={style} resizeMode="cover" onError={() => setErr(true)} />;
+}
+
+function ProductGallery({ images }) {
+  if (!images.length) {
+    return (
+      <View style={[styles.galleryFull, styles.imgFallback]}>
+        <Ionicons name="leaf" size={64} color={colors.primary} />
+      </View>
+    );
+  }
+  if (images.length === 1) {
+    return <Img uri={images[0]} style={styles.galleryFull} />;
+  }
+  return (
+    <View style={styles.galleryRow}>
+      <Img uri={images[0]} style={styles.galleryLeft} />
+      <View style={styles.galleryRight}>
+        <Img uri={images[1]} style={styles.gallerySmall} />
+        {images[2] ? <Img uri={images[2]} style={styles.gallerySmall} /> : null}
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
 
@@ -153,32 +232,48 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     backgroundColor: colors.header,
   },
-  headerTitle: { flex: 1, color: '#fff', fontSize: 20, fontWeight: '700' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
 
   loader: { marginTop: spacing.xl },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 
-  body: { padding: spacing.lg, gap: spacing.sm },
-  category: {
-    alignSelf: 'flex-start',
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.primary,
-    backgroundColor: colors.greenSoft,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 999,
-    overflow: 'hidden',
-  },
-  name: { fontSize: 22, fontWeight: '800', color: colors.text },
-  price: { fontSize: 26, fontWeight: '800', color: colors.primary },
-  unit: { fontSize: 15, fontWeight: '600', color: colors.textMuted },
-  stockRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  stock: { fontSize: 14, color: colors.textMuted },
+  galleryFull: { width: '100%', height: 300, backgroundColor: colors.greenSoft },
+  galleryRow: { flexDirection: 'row', height: 300, gap: 3 },
+  galleryLeft: { flex: 1.3, height: '100%', backgroundColor: colors.greenSoft },
+  galleryRight: { flex: 1, gap: 3 },
+  gallerySmall: { flex: 1, width: '100%', backgroundColor: colors.greenSoft },
+  imgFallback: { alignItems: 'center', justifyContent: 'center' },
 
-  section: { marginTop: spacing.md, gap: spacing.sm },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text },
-  desc: { fontSize: 15, lineHeight: 22, color: colors.text },
+  body: { padding: spacing.lg, gap: spacing.sm },
+  name: { fontSize: 24, fontWeight: '800', color: colors.text, textTransform: 'uppercase' },
+  price: { fontSize: 24, fontWeight: '800', color: colors.primary, marginTop: spacing.xs },
+
+  stockPill: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.greenSoft,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.sm,
+  },
+  stockPillOut: { backgroundColor: '#FBEAE8', borderColor: '#C0392B' },
+  stockPillText: { fontSize: 15, fontWeight: '700', color: colors.primary },
+  stockPillTextOut: { color: '#C0392B' },
+
+  sectionTitle: { fontSize: 18, fontWeight: '800', color: colors.text, marginTop: spacing.lg },
+  desc: { fontSize: 15, lineHeight: 23, color: colors.text },
+  descLabel: { fontWeight: '800', color: colors.text },
+  link: { color: '#2F80ED', fontSize: 15, fontWeight: '600', marginTop: 2 },
+
+  infoBox: { marginTop: spacing.md, gap: spacing.md },
+  infoRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.sm },
+  infoLabel: { fontSize: 15, fontWeight: '700', color: colors.text, minWidth: 118 },
+  infoValue: { flex: 1, fontSize: 15, color: colors.textMuted },
 
   footer: {
     flexDirection: 'row',
@@ -190,18 +285,31 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
-  cartBtn: {
-    flexDirection: 'row',
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  stepBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.sm,
-    height: 52,
-    paddingHorizontal: spacing.lg,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.primary,
   },
-  cartText: { color: colors.primary, fontSize: 15, fontWeight: '700' },
+  qtyText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    minWidth: 28,
+    textAlign: 'center',
+  },
+  cartBtn: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    backgroundColor: CART_ORANGE,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   buyBtn: {
     flex: 1,
     height: 52,

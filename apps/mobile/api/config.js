@@ -34,3 +34,10 @@ export function toStaticUrl(url) {
 
 // Header x-api-key bắt buộc cho mọi endpoint (@ApiKeyProtected). Giá trị dạng `key:secret`.
 export const API_KEY = extra.apiKey || process.env.EXPO_PUBLIC_API_KEY || '';
+
+// Origin trang web (Next.js) — dùng cho link truy xuất nguồn gốc khi chia sẻ mã QR.
+export const WEB_ORIGIN = (
+  extra.webBaseUrl ||
+  process.env.EXPO_PUBLIC_WEB_BASE_URL ||
+  'http://localhost:3002'
+).replace(/\/+$/, '');

@@ -302,7 +302,8 @@ export const migrationBusinessData: Record<
                     '/images/products/wine_root.png',
                     '/images/kon_tum_ginseng.png',
                 ],
-                description: 'Sản phẩm ngâm rượu từ củ sâm thật.',
+                description:
+                    'Thành phần: Sâm Ngọc Linh nguyên cây, củ lâu năm và rượu lúa rẫy.\nCông dụng: Bồi bổ cơ thể, tăng cường sinh lực, hỗ trợ tuần hoàn máu, giảm mệt mỏi; phù hợp trưng bày và làm quà tặng cao cấp.\nQuy cách: Bình thủy tinh trong hộp gỗ, kèm tem chống hàng giả.',
             },
             {
                 code: 'product-tea-slice',
@@ -317,7 +318,8 @@ export const migrationBusinessData: Record<
                     '/images/products/tea_slice.png',
                     '/images/products/tea_box.png',
                 ],
-                description: 'Gói lát sâm sấy thăng hoa tiện dùng.',
+                description:
+                    'Thành phần: 100% lát sâm Ngọc Linh sấy thăng hoa, không chất bảo quản.\nCông dụng: Tăng đề kháng, giảm căng thẳng; tiện pha trà hoặc ngậm trực tiếp.\nQuy cách: Gói 10g hút chân không; bảo quản nơi khô ráo, thoáng mát.',
             },
             {
                 code: 'product-shampoo',
@@ -332,7 +334,8 @@ export const migrationBusinessData: Record<
                     '/images/products/shampoo.png',
                     '/assets/images/logo_ruou_sam.png',
                 ],
-                description: 'Sản phẩm chăm sóc cá nhân từ thảo dược.',
+                description:
+                    'Thành phần: Chiết xuất sâm Ngọc Linh, bồ kết và thảo dược thiên nhiên.\nCông dụng: Nuôi dưỡng tóc chắc khỏe, giảm gãy rụng, làm sạch dịu nhẹ da đầu.\nHướng dẫn: Massage nhẹ lên tóc ướt rồi xả sạch; dùng 3-4 lần mỗi tuần.',
             },
             {
                 code: 'product-honey',
@@ -348,7 +351,7 @@ export const migrationBusinessData: Record<
                     '/images/kon_tum_ginseng.png',
                 ],
                 description:
-                    'Mật ong rừng nguyên chất ngâm lát sâm Ngọc Linh, bồi bổ sức khỏe mỗi ngày.',
+                    'Thành phần: Mật ong rừng nguyên chất ngâm lát sâm Ngọc Linh.\nCông dụng: Bồi bổ sức khỏe, tăng đề kháng, tốt cho tiêu hóa; dùng mỗi ngày.\nQuy cách: Hũ 500ml; bảo quản nơi thoáng mát, tránh ánh nắng trực tiếp.',
             },
             {
                 code: 'product-tea-bag',
@@ -361,7 +364,7 @@ export const migrationBusinessData: Record<
                 featured: false,
                 images: ['/images/products/tea_box.png'],
                 description:
-                    'Trà túi lọc tiện lợi, hương sâm dịu nhẹ, dùng nóng hoặc lạnh đều ngon.',
+                    'Thành phần: Bột chiết xuất sâm Ngọc Linh và thảo mộc tự nhiên.\nCông dụng: Thư giãn tinh thần, hỗ trợ tuần hoàn; dùng nóng hoặc lạnh đều ngon.\nHướng dẫn: Hãm 1 gói với 150ml nước nóng trong 3-5 phút.',
             },
             {
                 code: 'product-wine-slice',
@@ -377,7 +380,7 @@ export const migrationBusinessData: Record<
                     '/assets/images/logo_ruou_sam.png',
                 ],
                 description:
-                    'Rượu ngâm lát sâm Ngọc Linh, vị êm, thích hợp làm quà biếu.',
+                    'Thành phần: Lát sâm Ngọc Linh và rượu nếp truyền thống.\nCông dụng: Bồi bổ cơ thể, tăng cường sinh lực; vị êm, thích hợp làm quà biếu.\nHướng dẫn: Dùng 20-30ml mỗi ngày trong bữa ăn; không lạm dụng.',
             },
             {
                 code: 'product-extract',
@@ -393,7 +396,7 @@ export const migrationBusinessData: Record<
                     '/images/kon_tum_ginseng.png',
                 ],
                 description:
-                    'Cao sâm cô đặc từ củ sâm Ngọc Linh, pha cùng nước ấm hoặc mật ong.',
+                    'Thành phần: Cao cô đặc 100% từ củ sâm Ngọc Linh.\nCông dụng: Bồi bổ, phục hồi sức khỏe; pha cùng nước ấm hoặc mật ong.\nHướng dẫn: Lấy 3-5g pha với 200ml nước ấm, dùng vào buổi sáng.',
             },
             {
                 code: 'product-capsule',
@@ -406,7 +409,7 @@ export const migrationBusinessData: Record<
                 featured: true,
                 images: ['/images/kon_tum_ginseng.png'],
                 description:
-                    'Viên nang chiết xuất sâm Ngọc Linh, tiện dùng cho người bận rộn.',
+                    'Thành phần: Bột chiết xuất sâm Ngọc Linh trong vỏ nang thực vật.\nCông dụng: Tăng đề kháng, giảm mệt mỏi; tiện dùng cho người bận rộn.\nHướng dẫn: Uống 1-2 viên mỗi ngày sau bữa ăn với nước ấm.',
             },
             {
                 code: 'product-tea-slice-large',
@@ -422,7 +425,7 @@ export const migrationBusinessData: Record<
                     '/images/products/tea_box.png',
                 ],
                 description:
-                    'Gói lát sâm sấy thăng hoa loại lớn, giữ trọn dưỡng chất và hương vị.',
+                    'Thành phần: 100% lát sâm Ngọc Linh sấy thăng hoa loại lớn.\nCông dụng: Giữ trọn dưỡng chất và hương vị; bồi bổ sức khỏe mỗi ngày.\nQuy cách: Gói 20g hút chân không; bảo quản nơi khô ráo, thoáng mát.',
             },
         ],
         promotionCampaigns: [
