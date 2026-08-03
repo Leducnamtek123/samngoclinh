@@ -13,6 +13,7 @@ export interface IConfigApp {
         email: string;
     };
     url: string;
+    webUrl: string;
     globalPrefix: string;
     http: {
         host: string;
@@ -40,6 +41,7 @@ export default registerAs(
             email: string;
         },
         url: repository.url,
+        webUrl: process.env.APP_WEB_URL || 'http://localhost:3002',
         globalPrefix: '/api',
 
         http: {
