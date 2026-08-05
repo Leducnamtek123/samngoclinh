@@ -8,7 +8,7 @@ import { routing } from './libs/I18nRouting';
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = (pathname: string) => {
-  return pathname.includes('/profile') || pathname.includes('/trading-floor') || pathname.includes('/cart');
+  return pathname.includes('/profile') || pathname.includes('/cart');
 };
 
 const isAuthPage = (pathname: string) => {
@@ -49,8 +49,7 @@ export default async function middleware(request: NextRequest) {
     const token = request.cookies.get('user_session')?.value;
     if (!token) {
       const locale = getLocale(pathname);
-      const reason = pathname.includes('/trading-floor') ? '?reason=trading-floor' : '';
-      const signInUrl = new URL(`/${locale}/sign-in${reason}`, request.url);
+      const signInUrl = new URL(`/${locale}/sign-in`, request.url);
       return NextResponse.redirect(signInUrl);
     }
   }

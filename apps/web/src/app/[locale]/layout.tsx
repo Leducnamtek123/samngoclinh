@@ -40,6 +40,7 @@ export function generateStaticParams() {
 }
 
 import { Toaster } from '@/components/ui/Toaster';
+import { ScrollAnimationProvider } from '@/components/animation/ScrollAnimationProvider';
 
 export default async function RootLayout(props: {
   children: React.ReactNode;
@@ -57,8 +58,10 @@ export default async function RootLayout(props: {
     <html lang={locale}>
       <body suppressHydrationWarning>
         <NextIntlClientProvider>
-          {props.children}
-          <Toaster />
+          <ScrollAnimationProvider>
+            {props.children}
+            <Toaster />
+          </ScrollAnimationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

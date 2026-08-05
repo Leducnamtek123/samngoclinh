@@ -28,7 +28,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   const [maxPrice, setMaxPrice] = useState(1000000);
 
   const [viewMode, setViewMode] = useState<'catalog' | 'beds'>('catalog');
-  const { data: publicBeds } = usePublicCultivationBeds(selectedAges[0]);
+  const { data: publicBeds } = usePublicCultivationBeds(selectedAges.length === 1 ? selectedAges[0] : undefined);
 
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<any | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
@@ -113,6 +113,24 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
     return price >= minPrice && price <= maxPrice;
   });
 
+  const displayBeds = Array.isArray(publicBeds) ? publicBeds : [];
+  let processedBeds = [...displayBeds];
+
+  if (searchTerm) {
+    processedBeds = processedBeds.filter((bed: any) =>
+      (bed.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (bed.code || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (bed.gardenName || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
+  if (selectedAges.length > 0) {
+    processedBeds = processedBeds.filter((bed: any) => {
+      const age = bed.ageYear || 1;
+      return selectedAges.some(selectedAge => (selectedAge === 3 ? age >= 3 : age === selectedAge));
+    });
+  }
+
   return (
     <div className="w-full bg-gray-50 min-h-screen pb-16">
       <PageBannerSlider banners={banners || []} />
@@ -173,13 +191,13 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
             {viewMode === 'beds' ? (
               <div className="space-y-4">
                 <h3 className="text-sm font-extrabold text-gray-900">Danh sách Luống Canh Tác Sâm Công Khai tại Nông Trại</h3>
-                {!publicBeds || !Array.isArray(publicBeds) || publicBeds.length === 0 ? (
+                {processedBeds.length === 0 ? (
                   <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center text-gray-500 text-xs">
-                    Chưa tìm thấy luống sâm phù hợp với tuổi lựa chọn.
+                    Chưa tìm thấy luống sâm phù hợp với lựa chọn.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {publicBeds.map((bed: any) => (
+                    {processedBeds.map((bed: any) => (
                       <div key={bed.code || bed.id} className="bg-white border border-gray-200 rounded-2xl p-5 space-y-3 shadow-xs hover:border-[#1C3F24] transition-colors">
                         <div className="flex justify-between items-center">
                           <span className="font-extrabold text-sm text-[#1C3F24]">Luống #{bed.code}</span>
@@ -187,7 +205,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                             {bed.ageYear} tuổi
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 font-medium">📍 {bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}</p>
+                        <p className="text-xs text-gray-500 font-medium">📍 {bed.gardenName || bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}</p>
                         <div className="text-xs text-gray-600 space-y-1">
                           <p>🌱 Số cây sâm: <span className="font-bold text-gray-800">{bed.treeCount || 50} cây</span></p>
                           <p>📅 Ngày trồng: <span className="font-bold text-gray-800">{bed.plantedAt ? new Date(bed.plantedAt).toLocaleDateString('vi-VN') : 'Mới trồng'}</span></p>

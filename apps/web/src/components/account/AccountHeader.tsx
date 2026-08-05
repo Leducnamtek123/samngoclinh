@@ -43,6 +43,10 @@ const TAB_TITLES: Record<string, { title: string; subtitle: string }> = {
     title: 'Cài đặt hệ thống',
     subtitle: 'Quản lý cấu hình thông báo, bảo mật 2FA, phiên làm việc và giao diện',
   },
+  'change-password': {
+    title: 'Đổi mật khẩu',
+    subtitle: 'Cập nhật mật khẩu để bảo vệ an toàn cho tài khoản',
+  },
 };
 
 export const AccountHeader: React.FC<AccountHeaderProps> = ({ activeTab }) => {

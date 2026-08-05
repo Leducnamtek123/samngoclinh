@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Shield, Moon, Check } from 'lucide-react';
+import { Bell, Shield, Moon, Sun, Monitor, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useNotificationSettings,
@@ -180,21 +180,21 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
 
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: 'light', label: 'Chế độ Sáng', icon: '☀️' },
-            { id: 'dark', label: 'Chế độ Tối', icon: '🌙' },
-            { id: 'system', label: 'Hệ thống', icon: '💻' },
+            { id: 'light', label: 'Chế độ Sáng', icon: <Sun className="w-5 h-5" /> },
+            { id: 'dark', label: 'Chế độ Tối', icon: <Moon className="w-5 h-5" /> },
+            { id: 'system', label: 'Hệ thống', icon: <Monitor className="w-5 h-5" /> },
           ].map((mode) => (
             <button
               key={mode.id}
               type="button"
               onClick={() => setThemeMode(mode.id)}
-              className={`p-3.5 rounded-xl border text-center font-bold text-xs transition-all flex flex-col items-center gap-1.5 cursor-pointer ${
+              className={`p-3.5 rounded-xl border text-center font-bold text-xs transition-all flex flex-col items-center gap-2 cursor-pointer ${
                 themeMode === mode.id
                   ? 'bg-emerald-800 text-white border-emerald-800 shadow-xs'
                   : 'bg-gray-50/70 border-gray-200 text-gray-700 hover:bg-gray-100'
               }`}
             >
-              <span className="text-lg">{mode.icon}</span>
+              <span>{mode.icon}</span>
               <span>{mode.label}</span>
             </button>
           ))}

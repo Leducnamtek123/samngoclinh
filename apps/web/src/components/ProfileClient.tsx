@@ -18,6 +18,7 @@ import { ProfileTreesTab } from './profile/ProfileTreesTab';
 import { ProfileKycTab } from './profile/ProfileKycTab';
 import { ProfileContractsTab } from './profile/ProfileContractsTab';
 import { ProfileSettingsTab } from './profile/ProfileSettingsTab';
+import { ProfileChangePasswordTab } from './profile/ProfileChangePasswordTab';
 import { VerifyEmailModal } from './profile/VerifyEmailModal';
 import { AccountLayout } from '@/components/account/AccountLayout';
 
@@ -59,14 +60,9 @@ export const ProfileClient = ({
   const submitKycMutation = useSubmitIdentityVerification();
   const { data: contractsData, isLoading: contractsLoading } = useEContracts();
 
-  // Edit Profile Modal State
-  // react-doctor-disable-next-line react-doctor/prefer-useReducer
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isVerifyEmailOpen, setIsVerifyEmailOpen] = useState(false);
   const [viewingOrderDetail, setViewingOrderDetail] = useState<OrderDetailData | null>(null);
-  const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
-  const [editSaving, setEditSaving] = useState(false);
 
   // Orders State
   const [userOrders, setUserOrders] = useState<any[]>([]);
@@ -110,13 +106,8 @@ export const ProfileClient = ({
   const [kycErrorMsg, setKycErrorMsg] = useState('');
 
   // Pre-fill profile edit fields
-  const [prevProfileName, setPrevProfileName] = useState(profile?.fullName);
   const [prevBusinessPhone, setPrevBusinessPhone] = useState(business?.phone);
 
-  if (profile?.fullName !== prevProfileName) {
-    setPrevProfileName(profile?.fullName);
-    if (profile?.fullName) setEditName(profile.fullName);
-  }
   if (business?.phone !== prevBusinessPhone) {
     setPrevBusinessPhone(business?.phone);
     if (business?.phone) setEditPhone(business.phone);
@@ -161,40 +152,63 @@ export const ProfileClient = ({
     setTimeout(() => setCopyToast(null), 2500);
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    setEditSaving(true);
-    fetchApiClient('/v1/shared/user/profile/update', {
-      method: 'PUT',
-      body: JSON.stringify({
-        name: editName,
-        gender: profile?.gender || 'male',
+  const handleSaveInlineProfile = async (updatedData: {
+    fullName: string;
+    gender: string;
+    birthDate: string;
+    phone: string;
+  }): Promise<boolean> => {
+    try {
+      const body: any = {
+        name: updatedData.fullName,
+        gender: updatedData.gender || 'male',
         countryId: profile?.countryId || profile?.country?.id,
-      }),
-    })
-      .then(() => {
-        toast.success('Cập nhật thông tin cá nhân thành công!');
-        setIsEditModalOpen(false);
-        refetchProfile();
-      })
-      .catch(() => {
-        fetchApiClient('/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ fullName: editName, phone: editPhone }),
-        })
-          .then(() => {
-            toast.success('Cập nhật thông tin cá nhân thành công!');
-            setIsEditModalOpen(false);
-            refetchProfile();
-          })
-          .catch(() => {
-            toast.success('Đã lưu thông tin tạm thời.');
-            setIsEditModalOpen(false);
-          });
-      })
-      .finally(() => {
-        setEditSaving(false);
+      };
+      if (updatedData.birthDate) {
+        body.birthDate = updatedData.birthDate;
+      }
+
+      await fetchApiClient('/v1/shared/user/profile/update', {
+        method: 'PUT',
+        body: JSON.stringify(body),
       });
+
+      const phoneDigits = updatedData.phone.replace(/\D/g, '');
+      const existingPhone = profile?.mobileNumbers?.[0] || null;
+      const countryId = profile?.countryId || profile?.country?.id;
+      const phoneCode = profile?.country?.phoneCode?.[0] || '84';
+
+      if (phoneDigits) {
+        if (!existingPhone) {
+          await fetchApiClient('/v1/shared/user/mobile-number/add', {
+            method: 'POST',
+            body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
+          }).catch(() => {});
+        } else if (phoneDigits !== existingPhone.number) {
+          await fetchApiClient(`/v1/shared/user/mobile-number/update/${existingPhone.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
+          }).catch(() => {});
+        }
+      }
+
+      toast.success('Cập nhật thông tin cá nhân thành công!');
+      refetchProfile();
+      return true;
+    } catch {
+      try {
+        await fetchApiClient('/user/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ fullName: updatedData.fullName, phone: updatedData.phone }),
+        });
+        toast.success('Cập nhật thông tin cá nhân thành công!');
+        refetchProfile();
+        return true;
+      } catch {
+        toast.error('Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại.');
+        return false;
+      }
+    }
   };
 
   const handleKycSubmit = async (e: React.FormEvent) => {
@@ -370,9 +384,9 @@ export const ProfileClient = ({
               profile={profile}
               business={business}
               editPhone={editPhone}
-              onEditClick={() => setIsEditModalOpen(true)}
               onCopyText={handleCopyText}
               onVerifyEmailClick={() => setIsVerifyEmailOpen(true)}
+              onSaveProfile={handleSaveInlineProfile}
             />
           )}
 
@@ -614,48 +628,10 @@ export const ProfileClient = ({
           )}
 
           {tabs === 'settings' && <ProfileSettingsTab locale={locale} />}
+          {tabs === 'change-password' && <ProfileChangePasswordTab locale={locale} />}
         </div>
       </AccountLayout>
 
-      {/* Edit Profile Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity duration-200 animate-in fade-in">
-          <form onSubmit={handleSaveProfile} className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl transition-[opacity,transform] duration-200 animate-in fade-in zoom-in max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3">Chỉnh sửa thông tin cá nhân</h3>
-            <div className="space-y-3 text-xs">
-              <div>
-                <label htmlFor="editFullNameInput" className="font-bold text-gray-700 block mb-1">Họ và tên *</label>
-                <input
-                  id="editFullNameInput"
-                  type="text"
-                  required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-              </div>
-              <div>
-                <label htmlFor="editPhoneInput" className="font-bold text-gray-700 block mb-1">Số điện thoại</label>
-                <input
-                  id="editPhoneInput"
-                  type="tel"
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 justify-end pt-3 border-t border-gray-100">
-              <button type="button" onClick={() => setIsEditModalOpen(false)} className="px-5 py-2.5 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs cursor-pointer">
-                Hủy
-              </button>
-              <button type="submit" disabled={editSaving} className="px-5 py-2.5 bg-primary text-white font-bold rounded-xl text-xs shadow-sm cursor-pointer">
-                {editSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Sepay Payment Modal for pending orders */}
       {selectedOrderForPayment && (

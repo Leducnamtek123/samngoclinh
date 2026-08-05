@@ -6,7 +6,9 @@ import { NotificationEmailTemplate } from '@modules/notification/constants/notif
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { readFileSync } from 'fs';
+// @ts-ignore
 import * as Handlebars from 'handlebars';
+// @ts-ignore
 import { Transporter, createTransport } from 'nodemailer';
 import { join } from 'path';
 
