@@ -17,11 +17,6 @@ function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void 
           title: 'Vui lòng đăng nhập',
           description: 'Bạn cần đăng nhập để truy cập tính năng Trồng sâm.',
         };
-      case 'trading-floor':
-        return {
-          title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để tham gia Sàn mua bán cây.',
-        };
       case 'cart':
         return {
           title: 'Vui lòng đăng nhập',

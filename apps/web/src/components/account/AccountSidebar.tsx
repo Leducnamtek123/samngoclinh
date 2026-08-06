@@ -11,6 +11,7 @@ import {
   FileText,
   Gift,
   Settings,
+  KeyRound,
 } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 import { UserCard } from './UserCard';
@@ -82,6 +83,11 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
           label: 'Hợp đồng điện tử',
           icon: <FileText className="w-4 h-4" />,
           badge: contractsCount,
+        },
+        {
+          id: 'change-password',
+          label: 'Đổi mật khẩu',
+          icon: <KeyRound className="w-4 h-4" />,
         },
         {
           id: 'settings',

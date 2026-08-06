@@ -44,10 +44,7 @@ export class CultivationService implements ICultivationService {
     async publicBedsByAge(
         ageYear: number | null
     ): Promise<IResponseReturn<CultivationPublicBedResponseDto[]>> {
-        const beds =
-            ageYear === null
-                ? []
-                : await this.cultivationRepository.listPublicBedsByAge(ageYear);
+        const beds = await this.cultivationRepository.listPublicBedsByAge(ageYear);
 
         return {
             data: beds,

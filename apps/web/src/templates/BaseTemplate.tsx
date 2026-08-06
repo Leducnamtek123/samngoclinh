@@ -138,7 +138,6 @@ export const BaseTemplate = (props: {
             <div className="space-y-3 sm:space-y-4">
               <h5 className="text-white font-bold text-sm">Sản phẩm</h5>
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/trading-floor">Marketplace</Link></li>
                 <li><Link className="hover:text-secondary transition-colors" href="/products">Vườn kỹ thuật số</Link></li>
                 <li><Link className="hover:text-secondary transition-colors" href="/ginseng">Gói chăm sóc</Link></li>
               </ul>

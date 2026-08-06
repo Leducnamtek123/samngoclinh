@@ -52,7 +52,7 @@ export const ProfileKycTab = ({
             Tài khoản đã được xác minh chính thức (eKYC Verified)
           </div>
           <p className="text-xs text-emerald-700 leading-relaxed font-medium">
-            Thông tin căn cước công dân (CCCD/CMND) của bạn đã được đối soát hợp lệ trên hệ thống. Bạn hiện có đầy đủ quyền lợi giao dịch và đăng bán trên Sàn Giao Dịch P2P.
+            Thông tin căn cước công dân (CCCD/CMND) của bạn đã được đối soát hợp lệ trên hệ thống. Bạn hiện có đầy đủ quyền lợi giao dịch trên hệ thống.
           </p>
         </div>
       ) : isPending ? (

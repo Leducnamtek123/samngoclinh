@@ -1,3 +1,5 @@
+import { PriceRangeSlider } from '@/components/common/PriceRangeSlider';
+
 type GinsengFilterSidebarProps = {
   selectedAges: number[];
   searchTerm: string;
@@ -73,41 +75,15 @@ export const GinsengFilterSidebar = ({
             Khoảng Giá (VND)
           </span>
           
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
-                <label htmlFor="min-price-slider">Giá tối thiểu:</label>
-                <span className="text-[#1C3F24]">{minPrice.toLocaleString('vi-VN')} đ</span>
-              </div>
-              <input
-                id="min-price-slider"
-                type="range"
-                min="50000"
-                max="500000"
-                step="10000"
-                value={minPrice}
-                onChange={(e) => onMinPriceChange(Number(e.target.value))}
-                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1C3F24]"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
-                <label htmlFor="max-price-slider">Giá tối đa:</label>
-                <span className="text-[#1C3F24]">{maxPrice.toLocaleString('vi-VN')} đ</span>
-              </div>
-              <input
-                id="max-price-slider"
-                type="range"
-                min="500000"
-                max="1000000"
-                step="50000"
-                value={maxPrice}
-                onChange={(e) => onMaxPriceChange(Number(e.target.value))}
-                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1C3F24]"
-              />
-            </div>
-          </div>
+          <PriceRangeSlider
+            min={0}
+            max={2000000}
+            step={20000}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onMinChange={onMinPriceChange}
+            onMaxChange={onMaxPriceChange}
+          />
         </div>
 
       </div>
