@@ -967,6 +967,34 @@ export class UserRepository {
         });
     }
 
+    async findSignature(
+        userId: string
+    ): Promise<{ signatureUrl: string } | null> {
+        return this.databaseService.userSignature.findUnique({
+            where: { userId },
+            select: { signatureUrl: true },
+        });
+    }
+
+    async saveSignature(
+        userId: string,
+        signatureUrl: string
+    ): Promise<{ signatureUrl: string }> {
+        return this.databaseService.userSignature.upsert({
+            where: { userId },
+            create: {
+                userId,
+                signatureUrl,
+                createdBy: userId,
+            },
+            update: {
+                signatureUrl,
+                updatedBy: userId,
+            },
+            select: { signatureUrl: true },
+        });
+    }
+
     async claimUsername(
         userId: string,
         { username }: UserClaimUsernameRequestDto,

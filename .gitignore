@@ -75,6 +75,8 @@ tmp/
 .parcel-cache/
 
 # AI Tools
+.agents/
+.agent/
 ## Claude Code
 .claude/agent-memory/
 .claude/*.local.md

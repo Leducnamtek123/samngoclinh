@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { fetchApiClient } from '@/libs/ApiClient';
+import { Input } from './ui/input';
+import { Checkbox } from './ui/checkbox';
 import { PlantPackageSelector } from './purchase/PlantPackageSelector';
 import { AddressSelector } from './purchase/AddressSelector';
 
@@ -299,7 +301,7 @@ export const QuickPurchaseModal = ({
                 >
                   -
                 </button>
-                <input
+                <Input
                   id="quick-purchase-quantity"
                   type="number"
                   aria-label="Số lượng đặt mua"
@@ -307,7 +309,7 @@ export const QuickPurchaseModal = ({
                   max={stockCount}
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, Math.min(stockCount, Number(e.target.value) || 1)))}
-                  className="w-14 text-center font-extrabold text-sm text-gray-900 focus:outline-none"
+                  className="w-16 text-center font-extrabold text-sm h-8"
                 />
                 <button
                   type="button"
@@ -352,18 +354,22 @@ export const QuickPurchaseModal = ({
           {/* Terms & Conditions (Plant Mode) */}
           {mode === 'plant' && (
             <div className="space-y-3 border-t border-gray-150 pt-5">
-              <label htmlFor="agreeTermsCheckbox" className="flex items-start gap-2.5 cursor-pointer">
-                <input
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setAgreedTerms(!agreedTerms)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setAgreedTerms(!agreedTerms)}
+                className="flex items-start gap-2.5 cursor-pointer"
+              >
+                <Checkbox
                   id="agreeTermsCheckbox"
-                  type="checkbox"
                   checked={agreedTerms}
-                  onChange={(e) => setAgreedTerms(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 text-[#1C3F24] rounded border-gray-300 focus:ring-[#1C3F24]"
+                  onCheckedChange={(checked) => setAgreedTerms(!!checked)}
                 />
                 <span className="text-xs text-gray-700 font-semibold leading-relaxed">
                   Tôi đồng ý ký kết <strong className="text-[#1C3F24]">Hợp đồng ủy quyền chăm sóc Sâm Ngọc Linh</strong> và chấp nhận quy định dịch vụ.
                 </span>
-              </label>
+              </div>
 
               {/* Accordions */}
               <div className="space-y-2 text-xs">

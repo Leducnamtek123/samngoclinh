@@ -47,7 +47,7 @@ export function ContactUsForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="John Doe" {...field} />
+                  <Input type="text" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -62,7 +62,6 @@ export function ContactUsForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
                     {...field}
                   />
                 </FormControl>

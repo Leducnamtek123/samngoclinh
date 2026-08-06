@@ -121,7 +121,6 @@ export function SignInForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
                     {...field}
                   />
                 </FormControl>

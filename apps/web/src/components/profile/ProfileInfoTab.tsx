@@ -1,6 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Edit2, Copy, CheckCircle2, User } from 'lucide-react';
+import {
+  Form,
+  FormPhoneInput,
+  FormRadioGroup,
+  FormDatePicker,
+  FormFloatingInput,
+} from '@/components/ui/form';
+import { Button, ButtonLoading } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DigitalSignatureCard } from './DigitalSignatureCard';
+import {
+  profileInfoSchema,
+  type ProfileInfoFormValues,
+} from '@/lib/validation/schemas';
 
 type ProfileInfoTabProps = {
   fullName: string;
@@ -66,32 +83,39 @@ export const ProfileInfoTab = ({
   const isEmailVerified = !!(profile?.isEmailVerified || profile?.emailVerified);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [nameInput, setNameInput] = useState(fullName || profile?.name || '');
-  const [genderInput, setGenderInput] = useState(profile?.gender || 'male');
-  const [birthDateInput, setBirthDateInput] = useState(formatInputDate(profile?.birthDate));
-  const [phoneInput, setPhoneInput] = useState(
-    profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone || ''
-  );
   const [isSaving, setIsSaving] = useState(false);
+
+  const currentPhone = profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone || '';
+  const initialGender = profile?.gender === 'female' || profile?.gender === 'Nữ' ? 'female' : 'male';
+
+  const form = useForm<ProfileInfoFormValues>({
+    resolver: zodResolver(profileInfoSchema),
+    defaultValues: {
+      fullName: fullName || profile?.name || '',
+      gender: initialGender,
+      birthDate: formatInputDate(profile?.birthDate),
+      phone: currentPhone,
+    },
+  });
 
   useEffect(() => {
     if (!isEditing) {
-      setNameInput(fullName || profile?.name || '');
-      setGenderInput(profile?.gender || 'male');
-      setBirthDateInput(formatInputDate(profile?.birthDate));
-      setPhoneInput(
-        profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone || ''
-      );
+      form.reset({
+        fullName: fullName || profile?.name || '',
+        gender: profile?.gender === 'female' || profile?.gender === 'Nữ' ? 'female' : 'male',
+        birthDate: formatInputDate(profile?.birthDate),
+        phone: currentPhone,
+      });
     }
-  }, [fullName, profile, business, editPhone, isEditing]);
+  }, [fullName, profile, business, editPhone, isEditing, currentPhone, form]);
 
   const handleStartEdit = () => {
-    setNameInput(fullName || profile?.name || '');
-    setGenderInput(profile?.gender || 'male');
-    setBirthDateInput(formatInputDate(profile?.birthDate));
-    setPhoneInput(
-      profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone || ''
-    );
+    form.reset({
+      fullName: fullName || profile?.name || '',
+      gender: profile?.gender === 'female' || profile?.gender === 'Nữ' ? 'female' : 'male',
+      birthDate: formatInputDate(profile?.birthDate),
+      phone: currentPhone,
+    });
     setIsEditing(true);
   };
 
@@ -99,14 +123,14 @@ export const ProfileInfoTab = ({
     setIsEditing(false);
   };
 
-  const handleSave = async () => {
+  const onValidSave = async (values: ProfileInfoFormValues) => {
     if (onSaveProfile) {
       setIsSaving(true);
       const ok = await onSaveProfile({
-        fullName: nameInput,
-        gender: genderInput,
-        birthDate: birthDateInput,
-        phone: phoneInput,
+        fullName: values.fullName,
+        gender: values.gender,
+        birthDate: values.birthDate,
+        phone: values.phone,
       });
       setIsSaving(false);
       if (ok) {
@@ -117,13 +141,11 @@ export const ProfileInfoTab = ({
     }
   };
 
-  const currentPhone = profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone;
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+      <div className="flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-4">
         <div>
-          <h3 className="text-xl font-extrabold text-gray-900 font-display-lg">Thông tin cá nhân</h3>
+          <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100">Thông tin cá nhân</h3>
           <p className="text-xs text-gray-400 font-medium">
             {isEditing ? 'Đang ở chế độ chỉnh sửa thông tin trực tiếp' : 'Quản lý hồ sơ và chi tiết tài khoản của bạn'}
           </p>
@@ -131,188 +153,166 @@ export const ProfileInfoTab = ({
         <div className="flex items-center gap-2">
           {isEditing ? (
             <>
-              <button
-                type="button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={handleCancelEdit}
                 disabled={isSaving}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer disabled:opacity-50"
               >
                 Hủy
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-5 py-2 rounded-lg text-xs shadow-sm transition-colors cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+              </Button>
+              <ButtonLoading
+                variant="default"
+                size="sm"
+                isLoading={isSaving}
+                onClick={form.handleSubmit(onValidSave)}
               >
-                {isSaving ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Đang lưu...</span>
-                  </>
-                ) : (
-                  <span>Lưu thay đổi</span>
-                )}
-              </button>
+                Lưu thay đổi
+              </ButtonLoading>
             </>
           ) : (
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleStartEdit}
-              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2 rounded-lg text-xs shadow-sm transition-colors cursor-pointer flex items-center gap-1.5"
+              className="flex items-center gap-1.5"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
+              <Edit2 className="w-3.5 h-3.5" />
               <span>Chỉnh sửa</span>
-            </button>
+            </Button>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-        {/* Họ và tên */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Họ và tên</span>
-          {isEditing ? (
-            <input
-              type="text"
+      {isEditing ? (
+        <Form form={form} onSubmit={form.handleSubmit(onValidSave)} className="space-y-4 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormFloatingInput
+              control={form.control}
+              name="fullName"
+              label="Họ và tên"
               required
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              placeholder="Nhập họ và tên"
-              className="w-full px-3 py-2 border border-emerald-600 rounded-lg text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/30 bg-emerald-50/20"
+              prefixIcon={<User className="w-4 h-4" />}
             />
-          ) : (
-            <p className="text-sm font-semibold text-gray-800">{fullName}</p>
-          )}
-        </div>
 
-        {/* Địa chỉ Email */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold text-gray-800">{email}</p>
-            {isEmailVerified ? (
-              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                ✓ Đã xác thực
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={onVerifyEmailClick}
-                className="bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors cursor-pointer"
-              >
-                Xác thực ngay
-              </button>
-            )}
-          </div>
-          {isEditing && (
-            <p className="text-[11px] text-gray-400 font-medium italic">Email không thể thay đổi</p>
-          )}
-        </div>
-
-        {/* Giới tính */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Giới tính</span>
-          {isEditing ? (
-            <div className="flex gap-4 items-center pt-1.5">
-              <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-gray-700">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="male"
-                  checked={genderInput === 'male'}
-                  onChange={() => setGenderInput('male')}
-                  className="w-4 h-4 text-emerald-800 focus:ring-emerald-800 cursor-pointer"
-                />
-                <span>Nam</span>
-              </label>
-              <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-gray-700">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="female"
-                  checked={genderInput === 'female'}
-                  onChange={() => setGenderInput('female')}
-                  className="w-4 h-4 text-emerald-800 focus:ring-emerald-800 cursor-pointer"
-                />
-                <span>Nữ</span>
-              </label>
+            <div className="space-y-1">
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Địa chỉ Email</span>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 pt-3">{email}</p>
+              <p className="text-[11px] text-gray-400 font-medium italic">Email không thể thay đổi</p>
             </div>
-          ) : (
-            <p className="text-sm font-semibold text-gray-800">{formatGenderLabel(profile?.gender)}</p>
-          )}
-        </div>
 
-        {/* Ngày sinh */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Ngày sinh</span>
-          {isEditing ? (
-            <input
-              type="date"
-              value={birthDateInput}
-              onChange={(e) => setBirthDateInput(e.target.value)}
-              className="w-full px-3 py-2 border border-emerald-600 rounded-lg text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/30 bg-emerald-50/20"
+            <FormRadioGroup
+              control={form.control}
+              name="gender"
+              label="Giới tính"
+              options={[
+                { value: 'male', label: 'Nam' },
+                { value: 'female', label: 'Nữ' },
+              ]}
+              required
             />
-          ) : (
-            <p className="text-sm font-semibold text-gray-800">{formatBirthDate(profile?.birthDate)}</p>
-          )}
-        </div>
 
-        {/* Số điện thoại liên kết */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Số điện thoại liên kết</span>
-          {isEditing ? (
-            <input
-              type="tel"
-              value={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value)}
-              placeholder="Nhập số điện thoại"
-              className="w-full px-3 py-2 border border-emerald-600 rounded-lg text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-800/30 bg-emerald-50/20"
+            <FormDatePicker
+              control={form.control}
+              name="birthDate"
+              label="Ngày sinh"
+              required
             />
-          ) : (
-            <p className="text-sm font-semibold text-gray-800">{currentPhone || 'Chưa liên kết'}</p>
-          )}
-        </div>
 
-        {/* Hạng tài khoản */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Hạng tài khoản</span>
-          <p className="text-sm font-semibold text-secondary">Hạng {rank}</p>
-        </div>
+            <FormPhoneInput
+              control={form.control}
+              name="phone"
+              label="Số điện thoại liên kết"
+              required
+            />
 
-        {/* Mã giới thiệu */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Mã giới thiệu</span>
-          <button
-            type="button"
-            onClick={() => onCopyText(referralCode, 'Mã giới thiệu')}
-            className="text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors inline-flex items-center gap-1.5 mt-0.5 cursor-pointer"
-          >
-            <span>{referralCode}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </button>
-        </div>
+            <div className="space-y-1">
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Hạng tài khoản</span>
+              <p className="text-sm font-semibold text-[#1C3F24] pt-3">Hạng {rank}</p>
+            </div>
+          </div>
+        </Form>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {/* Họ và tên */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Họ và tên</span>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{fullName}</p>
+          </div>
 
-        {/* Xác minh danh tính (KYC) */}
-        <div className="space-y-1">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>
-          <div className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span>{profile?.verified ? 'Đã xác minh' : 'Hoạt động'}</span>
+          {/* Địa chỉ Email */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Địa chỉ Email</span>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{email}</p>
+              {isEmailVerified ? (
+                <Badge variant="secondary">✓ Đã xác thực</Badge>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onVerifyEmailClick}
+                  className="h-6 text-[10px] bg-amber-100 text-amber-800 hover:bg-amber-200"
+                >
+                  Xác thực ngay
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Giới tính */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Giới tính</span>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{formatGenderLabel(profile?.gender)}</p>
+          </div>
+
+          {/* Ngày sinh */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Ngày sinh</span>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{formatBirthDate(profile?.birthDate)}</p>
+          </div>
+
+          {/* Số điện thoại liên kết */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Số điện thoại liên kết</span>
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{currentPhone || 'Chưa liên kết'}</p>
+          </div>
+
+          {/* Hạng tài khoản */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Hạng tài khoản</span>
+            <p className="text-sm font-semibold text-[#1C3F24]">Hạng {rank}</p>
+          </div>
+
+          {/* Mã giới thiệu */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Mã giới thiệu</span>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => onCopyText(referralCode, 'Mã giới thiệu')}
+              className="h-7 text-xs flex items-center gap-1.5 mt-0.5 rounded-full"
+            >
+              <span>{referralCode}</span>
+              <Copy className="w-3.5 h-3.5 text-gray-500" />
+            </Button>
+          </div>
+
+          {/* Xác minh danh tính (KYC) */}
+          <div className="space-y-1">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Xác minh danh tính (KYC)</span>
+            <div className="text-sm font-semibold text-emerald-600 flex items-center gap-1 mt-0.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>{profile?.verified ? 'Đã xác minh' : 'Hoạt động'}</span>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Electronic Signature Section */}
+      <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+        <DigitalSignatureCard />
       </div>
     </div>
   );
 };
-
-

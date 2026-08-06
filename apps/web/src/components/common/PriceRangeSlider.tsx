@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
 
 type PriceRangeSliderProps = {
   min: number;
@@ -21,6 +22,43 @@ export const PriceRangeSlider = ({
   onMinChange,
   onMaxChange,
 }: PriceRangeSliderProps) => {
+  const [minInputVal, setMinInputVal] = useState<string>(
+    minPrice.toLocaleString('vi-VN') + ' đ'
+  );
+  const [maxInputVal, setMaxInputVal] = useState<string>(
+    maxPrice.toLocaleString('vi-VN') + ' đ'
+  );
+
+  useEffect(() => {
+    setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
+  }, [minPrice]);
+
+  useEffect(() => {
+    setMaxInputVal(maxPrice.toLocaleString('vi-VN') + ' đ');
+  }, [maxPrice]);
+
+  const handleMinBlur = () => {
+    const rawNum = parseInt(minInputVal.replace(/\D/g, ''), 10);
+    if (isNaN(rawNum)) {
+      setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
+      return;
+    }
+    const clamped = Math.max(min, Math.min(rawNum, maxPrice - step));
+    onMinChange(clamped);
+    setMinInputVal(clamped.toLocaleString('vi-VN') + ' đ');
+  };
+
+  const handleMaxBlur = () => {
+    const rawNum = parseInt(maxInputVal.replace(/\D/g, ''), 10);
+    if (isNaN(rawNum)) {
+      setMaxInputVal(maxPrice.toLocaleString('vi-VN') + ' đ');
+      return;
+    }
+    const clamped = Math.min(max, Math.max(rawNum, minPrice + step));
+    onMaxChange(clamped);
+    setMaxInputVal(clamped.toLocaleString('vi-VN') + ' đ');
+  };
+
   const getPercent = useCallback(
     (value: number) => {
       const clamped = Math.max(min, Math.min(max, value));
@@ -34,25 +72,47 @@ export const PriceRangeSlider = ({
 
   return (
     <div className="space-y-3">
-      {/* Price Header Display */}
-      <div className="flex justify-between items-center text-xs font-bold text-gray-700">
-        <span className="bg-gray-50 text-[#1C3F24] px-2.5 py-1 rounded-lg border border-gray-200 font-mono">
-          {minPrice.toLocaleString('vi-VN')} đ
-        </span>
-        <span className="text-gray-400 font-normal">—</span>
-        <span className="bg-gray-50 text-[#1C3F24] px-2.5 py-1 rounded-lg border border-gray-200 font-mono">
-          {maxPrice.toLocaleString('vi-VN')} đ
-        </span>
+      {/* Interactive Price Inputs */}
+      <div className="flex justify-between items-center gap-2 text-xs font-bold text-gray-700">
+        <Input
+          type="text"
+          value={minInputVal}
+          onChange={(e) => setMinInputVal(e.target.value)}
+          onFocus={() => {
+            const raw = minInputVal.replace(/\D/g, '');
+            setMinInputVal(raw);
+          }}
+          onBlur={handleMinBlur}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleMinBlur();
+          }}
+          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-[#1C3F24] dark:text-emerald-400 font-bold focus:bg-white"
+        />
+        <span className="text-gray-400 font-normal shrink-0">—</span>
+        <Input
+          type="text"
+          value={maxInputVal}
+          onChange={(e) => setMaxInputVal(e.target.value)}
+          onFocus={() => {
+            const raw = maxInputVal.replace(/\D/g, '');
+            setMaxInputVal(raw);
+          }}
+          onBlur={handleMaxBlur}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleMaxBlur();
+          }}
+          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-[#1C3F24] dark:text-emerald-400 font-bold focus:bg-white"
+        />
       </div>
 
       {/* Single Dual-Thumb Slider Track Container */}
       <div className="relative w-full h-6 flex items-center">
         {/* Background Track */}
-        <div className="absolute w-full h-2 bg-gray-200 rounded-lg pointer-events-none" />
+        <div className="absolute w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg pointer-events-none" />
 
         {/* Active Range Highlight */}
         <div
-          className="absolute h-2 bg-[#1C3F24] rounded-lg pointer-events-none"
+          className="absolute h-2 bg-[#1C3F24] dark:bg-emerald-600 rounded-lg pointer-events-none"
           style={{
             left: `${minPercent}%`,
             width: `${Math.max(0, maxPercent - minPercent)}%`,

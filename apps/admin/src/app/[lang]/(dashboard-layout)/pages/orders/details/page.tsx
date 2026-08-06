@@ -50,6 +50,11 @@ interface OrderDetail {
   paidAt: string | null
   cancelledAt: string | null
   createdAt: string
+  customerName?: string | null
+  customerPhone?: string | null
+  customerEmail?: string | null
+  shippingAddress?: string | null
+  deliveryType?: string
   user?: {
     fullName: string
     email: string
@@ -207,7 +212,7 @@ function OrderDetailsContent() {
         <OrderProductsCard order={order} itemsList={itemsList} />
 
         <div className="space-y-6">
-          {order.user && <CustomerInfoCard user={order.user} />}
+          <CustomerInfoCard order={order} />
           <PaymentMethodCard order={order} />
           <OrderStatusUpdateCard
             order={order}
@@ -248,9 +253,9 @@ function OrderProductsCard({
           </TableHeader>
           <TableBody>
             {itemsList.map((item: any) => (
-              <TableRow key={item.code}>
-                <TableCell className="font-mono text-sm">{item.code}</TableCell>
-                <TableCell className="font-semibold">{item.name}</TableCell>
+              <TableRow key={item.code || item.id || item.name}>
+                <TableCell className="font-mono text-sm">{item.code || item.productId || "-"}</TableCell>
+                <TableCell className="font-semibold">{item.name || item.productName}</TableCell>
                 <TableCell className="text-right">
                   {formatVND(item.price)}
                 </TableCell>
@@ -289,35 +294,43 @@ function OrderProductsCard({
   )
 }
 
-function CustomerInfoCard({
-  user,
-}: {
-  user: NonNullable<OrderDetail["user"]>
-}) {
+function CustomerInfoCard({ order }: { order: OrderDetail }) {
+  const name = order.customerName || order.user?.fullName || "Chưa cung cấp"
+  const phone = order.customerPhone || order.user?.phone || "Chưa cung cấp"
+  const email = order.customerEmail || order.user?.email || "Chưa cung cấp"
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Thông tin khách hàng</CardTitle>
+        <CardTitle>Thông tin khách hàng & Giao hàng</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div className="flex flex-col gap-1 border-b pb-2">
-          <span className="text-xs text-muted-foreground">Tên khách hàng:</span>
+          <span className="text-xs text-muted-foreground">Tên người nhận:</span>
           <span className="font-semibold text-gray-900 dark:text-gray-100">
-            {user.fullName}
+            {name}
           </span>
         </div>
         <div className="flex flex-col gap-1 border-b pb-2">
           <span className="text-xs text-muted-foreground">Số điện thoại:</span>
           <span className="font-mono font-semibold text-gray-900 dark:text-gray-100">
-            {user.phone}
+            {phone}
           </span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 border-b pb-2">
           <span className="text-xs text-muted-foreground">Địa chỉ Email:</span>
           <span className="font-semibold text-gray-900 dark:text-gray-100 break-all">
-            {user.email}
+            {email}
           </span>
         </div>
+        {order.shippingAddress && (
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">Địa chỉ giao hàng:</span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {order.shippingAddress}
+            </span>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -377,6 +390,8 @@ function OrderStatusUpdateCard({
   updating: boolean
   handleUpdateStatus: (status: string) => void
 }) {
+  const currentStatus = (order.status || "").toLowerCase()
+
   return (
     <Card>
       <CardHeader>
@@ -384,7 +399,7 @@ function OrderStatusUpdateCard({
         <CardDescription>Xử lý quy trình đơn hàng</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
-        {order.status === "pending" && (
+        {currentStatus === "pending" && (
           <>
             <Button
               type="button"
@@ -406,7 +421,7 @@ function OrderStatusUpdateCard({
           </>
         )}
 
-        {order.status === "paid" && (
+        {currentStatus === "paid" && (
           <>
             <Button
               type="button"
@@ -428,7 +443,7 @@ function OrderStatusUpdateCard({
           </>
         )}
 
-        {order.status === "shipping" && (
+        {currentStatus === "shipping" && (
           <>
             <Button
               type="button"
@@ -450,9 +465,7 @@ function OrderStatusUpdateCard({
           </>
         )}
 
-        {["completed", "cancelled", "refunded"].includes(
-          order.status.toLowerCase()
-        ) && (
+        {["completed", "cancelled", "refunded"].includes(currentStatus) && (
           <div className="text-center p-3 bg-muted rounded-md text-xs text-muted-foreground font-medium">
             Đơn hàng đã hoàn thành hoặc đã hủy. Không thể thay đổi trạng thái
             thêm.

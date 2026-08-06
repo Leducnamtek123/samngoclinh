@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { Mail } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Button, ButtonLoading } from '../ui/button';
 import { useRequestEmailVerification, useConfirmEmailVerification } from '@/hooks/queries/useVerifyEmail';
 
 type VerifyEmailModalProps = {
@@ -46,28 +50,17 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full space-y-6 shadow-xl relative animate-in fade-in zoom-in duration-200">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-1"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div className="space-y-2 text-center">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader className="text-center">
+          <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2">
+            <Mail className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900">Xác thực Email</h3>
-          <p className="text-xs text-gray-500 font-medium">
+          <DialogTitle>Xác thực Email</DialogTitle>
+          <DialogDescription>
             {userEmail ? `Email tài khoản: ${userEmail}` : 'Xác thực địa chỉ email để bảo vệ tài khoản của bạn'}
-          </p>
-        </div>
+          </DialogDescription>
+        </DialogHeader>
 
         {errorMsg && (
           <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-medium">
@@ -77,51 +70,53 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
 
         {step === 'request' ? (
           <div className="space-y-4 pt-2">
-            <p className="text-xs text-gray-600 text-center leading-relaxed">
+            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-relaxed">
               Nhấn nút bên dưới để nhận mã OTP xác nhận gồm 6 chữ số gửi về hộp thư email của bạn.
             </p>
-            <button
+            <ButtonLoading
               onClick={handleSendOtp}
-              disabled={requestMutation.isPending}
-              className="w-full bg-[#1C3F24] hover:bg-emerald-900 text-white font-bold py-3 rounded-xl text-xs transition-colors shadow-md disabled:opacity-50 cursor-pointer"
+              isLoading={requestMutation.isPending}
+              variant="default"
+              className="w-full"
             >
-              {requestMutation.isPending ? 'Đang gửi mã OTP...' : 'Gửi mã xác thực OTP'}
-            </button>
+              Gửi mã xác thực OTP
+            </ButtonLoading>
           </div>
         ) : (
           <form onSubmit={handleConfirmOtp} className="space-y-4 pt-2">
             <div className="space-y-1.5 text-center">
               <label htmlFor="otpCodeInput" className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Nhập mã OTP</label>
-              <input
+              <Input
                 id="otpCodeInput"
                 type="text"
                 maxLength={6}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="------"
-                className="w-full text-center tracking-[0.5em] text-xl font-bold border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#1C3F24] focus:outline-none"
+                className="text-center tracking-[0.5em] text-xl font-bold h-12"
               />
             </div>
             <div className="flex gap-3 pt-2">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleSendOtp}
                 disabled={requestMutation.isPending}
-                className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold py-2.5 rounded-xl text-xs transition-colors"
+                className="flex-1"
               >
                 Gửi lại OTP
-              </button>
-              <button
+              </Button>
+              <ButtonLoading
                 type="submit"
-                disabled={confirmMutation.isPending}
-                className="flex-1 bg-[#1C3F24] hover:bg-emerald-900 text-white font-bold py-2.5 rounded-xl text-xs transition-colors shadow-md disabled:opacity-50 cursor-pointer"
+                variant="default"
+                isLoading={confirmMutation.isPending}
+                className="flex-1"
               >
-                {confirmMutation.isPending ? 'Đang xác nhận...' : 'Xác nhận OTP'}
-              </button>
+                Xác nhận OTP
+              </ButtonLoading>
             </div>
           </form>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
