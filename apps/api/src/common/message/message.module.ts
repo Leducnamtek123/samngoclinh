@@ -31,7 +31,7 @@ export class MessageModule {
                         ),
                         loaderOptions: {
                             path: path.join(__dirname, '../../languages'),
-                            watch: true,
+                            watch: false,
                         },
                     }),
                 }),

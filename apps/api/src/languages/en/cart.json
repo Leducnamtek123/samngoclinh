@@ -1,3 +1,13 @@
 {
-    "summary": "Cart summary loaded successfully."
+    "summary": "Cart summary loaded successfully.",
+    "addItem": "Item added to cart.",
+    "updateItem": "Cart updated.",
+    "removeItem": "Item removed from cart.",
+    "clear": "Cart cleared.",
+    "error": {
+        "empty": "Your cart is empty.",
+        "productNotFound": "Product not found.",
+        "productNotAvailable": "This product is no longer available.",
+        "insufficientStock": "Only {stock} item(s) left in stock."
+    }
 }

@@ -15,9 +15,13 @@ export interface IOrdersService {
         id: string,
         userId: string
     ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
+    cancel(
+        id: string,
+        userId: string
+    ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
     checkout(
         userId: string,
-        dto?: OrdersUserCheckoutRequestDto
+        dto: OrdersUserCheckoutRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>>;
     handlePaymentWebhook(
         payload: OrdersPaymentWebhookRequestDto

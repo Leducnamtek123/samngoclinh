@@ -19,12 +19,17 @@ import { groupThousands } from '../utils/format';
 import { fetchShopItems } from '../api/catalog';
 import { toStaticUrl } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+import { useCart } from '../context/CartContext';
+import { useAlert } from '../context/AlertContext';
+import CartButton from '../components/CartButton';
 
 const PER_PAGE = 12;
 
 export default function ProductsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const requireAuth = useRequireAuth();
+  const { add } = useCart();
+  const alert = useAlert();
   const [query, setQuery] = useState('');
   const [showSupport, setShowSupport] = useState(true);
 
@@ -67,9 +72,25 @@ export default function ProductsScreen({ navigation }) {
 
   const onOpen = (item) => navigation.navigate('ProductDetail', { id: item.id, product: item });
 
-  // Hành động mua hàng: khách -> Login; đã đăng nhập -> mở màn tương ứng (hiện là placeholder).
-  const onAddToCart = () => requireAuth(() => navigation.navigate('ComingSoon', { title: 'Giỏ hàng' }));
-  const onBuyNow = () => requireAuth(() => navigation.navigate('ComingSoon', { title: 'Thanh toán' }));
+  // Khách -> Login; đã đăng nhập -> thêm vào giỏ. "Mua ngay" thêm rồi mở giỏ.
+  const onAddToCart = (item) =>
+    requireAuth(async () => {
+      try {
+        await add(item.id, 1);
+        alert.success('Đã thêm vào giỏ', item.name);
+      } catch (e) {
+        alert.error('Không thêm được', e.message);
+      }
+    });
+  const onBuyNow = (item) =>
+    requireAuth(async () => {
+      try {
+        await add(item.id, 1);
+        navigation.navigate('Cart');
+      } catch (e) {
+        alert.error('Không thêm được', e.message);
+      }
+    });
 
   return (
     <View style={styles.root}>
@@ -79,9 +100,7 @@ export default function ProductsScreen({ navigation }) {
         </Pressable>
         <Text style={styles.headerTitle}>Tất cả sản phẩm</Text>
         <View style={styles.headerActions}>
-          <Pressable hitSlop={8} onPress={onAddToCart}>
-            <Ionicons name="cart-outline" size={24} color="#fff" />
-          </Pressable>
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>
@@ -175,13 +194,13 @@ function ProductCard({ item, onOpen, onAddToCart, onBuyNow }) {
       </Pressable>
       <View style={styles.cardActions}>
         <Pressable
-          onPress={onAddToCart}
+          onPress={() => onAddToCart(item)}
           style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
         >
           <Ionicons name="cart-outline" size={20} color={colors.textMuted} />
         </Pressable>
         <Pressable
-          onPress={onBuyNow}
+          onPress={() => onBuyNow(item)}
           style={({ pressed }) => [styles.buyBtn, pressed && styles.pressed]}
         >
           <Text style={styles.buyText}>Mua ngay</Text>

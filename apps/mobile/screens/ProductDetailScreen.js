@@ -18,12 +18,17 @@ import { groupThousands } from '../utils/format';
 import { fetchShopItem } from '../api/catalog';
 import { toStaticUrl } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+import { useCart } from '../context/CartContext';
+import { useAlert } from '../context/AlertContext';
+import CartButton from '../components/CartButton';
 
 const CART_ORANGE = '#F5A623';
 
 export default function ProductDetailScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const requireAuth = useRequireAuth();
+  const { add } = useCart();
+  const alert = useAlert();
 
   const { id, product: initial } = route.params || {};
   const [product, setProduct] = useState(initial || null);
@@ -48,9 +53,23 @@ export default function ProductDetailScreen({ navigation, route }) {
   }, [load]);
 
   const onAddToCart = () =>
-    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Giỏ hàng' }));
+    requireAuth(async () => {
+      try {
+        await add(product.id, qty);
+        alert.success('Đã thêm vào giỏ', `${product.name} (x${qty})`);
+      } catch (e) {
+        alert.error('Không thêm được', e.message);
+      }
+    });
   const onBuyNow = () =>
-    requireAuth(() => navigation.navigate('ComingSoon', { title: 'Thanh toán' }));
+    requireAuth(async () => {
+      try {
+        await add(product.id, qty);
+        navigation.navigate('Cart');
+      } catch (e) {
+        alert.error('Không thêm được', e.message);
+      }
+    });
 
   const images = (product?.images || []).map(toStaticUrl).filter(Boolean);
   const inStock = (product?.stock ?? 0) > 0;
@@ -69,9 +88,7 @@ export default function ProductDetailScreen({ navigation, route }) {
         </Pressable>
         <View style={{ flex: 1 }} />
         <View style={styles.headerActions}>
-          <Pressable hitSlop={8} onPress={onAddToCart}>
-            <Ionicons name="cart-outline" size={24} color="#fff" />
-          </Pressable>
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>

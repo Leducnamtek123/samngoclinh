@@ -23,6 +23,7 @@ import { fetchCarePackages, fetchProtectionPackages } from '../api/packages';
 import { toStaticUrl, WEB_ORIGIN } from '../api/config';
 import { useRequireAuth } from '../hooks/useRequireAuth';
 import ImageCarousel from '../components/ImageCarousel';
+import CartButton from '../components/CartButton';
 
 const HEALTH_LABELS = {
   healthy: 'Cây khỏe',
@@ -128,7 +129,7 @@ export default function PlantDetailScreen({ navigation, route }) {
         </Pressable>
         <View style={{ flex: 1 }} />
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>

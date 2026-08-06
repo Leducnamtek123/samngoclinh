@@ -18,6 +18,7 @@ import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
 import { fetchPlants } from '../api/catalog';
 import { toStaticUrl } from '../api/config';
+import CartButton from '../components/CartButton';
 
 export default function PlantingScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -59,7 +60,7 @@ export default function PlantingScreen({ navigation }) {
         </Pressable>
         <Text style={styles.headerTitle}>Tất cả cây trồng</Text>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>
