@@ -135,15 +135,13 @@ export function OrdersTable({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="pending">Chờ xử lý (Pending)</SelectItem>
-              <SelectItem value="processing">
-                Đang xử lý (Processing)
-              </SelectItem>
+              <SelectItem value="pending">Chờ thanh toán (Pending)</SelectItem>
+              <SelectItem value="paid">Đã thanh toán (Paid)</SelectItem>
+              <SelectItem value="shipping">Đang giao hàng (Shipping)</SelectItem>
               <SelectItem value="completed">
                 Đã hoàn thành (Completed)
               </SelectItem>
               <SelectItem value="cancelled">Đã hủy (Cancelled)</SelectItem>
-              <SelectItem value="failed">Thất bại (Failed)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -166,47 +164,48 @@ export function OrdersTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {initialOrders.map((order) => (
-                <TableRow key={order.id} className="hover:bg-muted/30">
-                  <TableCell className="font-mono font-medium">
-                    {order.code}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {order.createdAt
-                      ? new Date(order.createdAt).toLocaleDateString("vi-VN", {
-                          timeZone: "Asia/Ho_Chi_Minh",
-                        })
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        order.status.toLowerCase() === "completed" ||
-                        order.status.toLowerCase() === "success"
-                          ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold hover:bg-emerald-500/15"
-                          : order.status.toLowerCase() === "pending" ||
-                              order.status.toLowerCase() === "processing"
-                            ? "bg-amber-500/10 text-amber-600 border-transparent font-semibold hover:bg-amber-500/15"
-                            : "bg-red-500/10 text-red-650 border-transparent font-semibold hover:bg-red-500/15"
-                      }
-                    >
-                      {order.status.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold text-emerald-600 dark:text-emerald-400">
-                    {formatVND(order.total)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Link
-                      href={`/pages/orders/details?id=${order.id}`}
-                      className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
-                    >
-                      Chi tiết
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {initialOrders.map((order) => {
+                const statusLower = (order.status || "").toLowerCase()
+                const badgeClass =
+                  statusLower === "completed" || statusLower === "success"
+                    ? "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold hover:bg-emerald-500/15"
+                    : statusLower === "paid" || statusLower === "shipping"
+                      ? "bg-blue-500/10 text-blue-600 border-transparent font-semibold hover:bg-blue-500/15"
+                      : statusLower === "pending" || statusLower === "processing"
+                        ? "bg-amber-500/10 text-amber-600 border-transparent font-semibold hover:bg-amber-500/15"
+                        : "bg-red-500/10 text-red-600 border-transparent font-semibold hover:bg-red-500/15"
+
+                return (
+                  <TableRow key={order.id} className="hover:bg-muted/30">
+                    <TableCell className="font-mono font-medium">
+                      {order.code}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {order.createdAt
+                        ? new Date(order.createdAt).toLocaleDateString("vi-VN", {
+                            timeZone: "Asia/Ho_Chi_Minh",
+                          })
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={badgeClass}>
+                        {(order.status || "").toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right font-semibold text-emerald-600 dark:text-emerald-400">
+                      {formatVND(order.total)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Link
+                        href={`/pages/orders/details?id=${order.id}`}
+                        className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
+                      >
+                        Chi tiết
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
 

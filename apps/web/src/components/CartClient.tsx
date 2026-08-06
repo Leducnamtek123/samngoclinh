@@ -55,6 +55,29 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
     return () => window.removeEventListener('cart_updated', handleCartUpdate);
   }, []);
 
+  // Fetch backend cart when profile is loaded
+  useEffect(() => {
+    if (profile) {
+      fetchApiClient('/user/cart')
+        .then((res) => {
+          if (res.data?.items && Array.isArray(res.data.items)) {
+            const apiItems: CartItem[] = res.data.items.map((it: any) => ({
+              id: it.productId || it.id,
+              name: it.productName || it.name || 'Sản phẩm Sâm Ngọc Linh',
+              price: Number(it.price) || 0,
+              quantity: Number(it.quantity) || 1,
+              image: it.imageUrl || it.image,
+            }));
+            if (apiItems.length > 0) {
+              setItems(apiItems);
+              localStorage.setItem('cart_items:v1', JSON.stringify(apiItems));
+            }
+          }
+        })
+        .catch(() => {});
+    }
+  }, [profile]);
+
   const handleUpdateQuantity = (id: string, delta: number) => {
     const next = updateCartQuantity(id, delta);
     setItems(next);
@@ -84,29 +107,34 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
     }
 
     setLoading(true);
-    const orderCode = `DH${Math.floor(100000 + Math.random() * 900000)}`;
+    const fallbackCode = `DH${Math.floor(100000 + Math.random() * 900000)}`;
 
-    fetchApiClient('/user/orders', {
+    fetchApiClient('/user/orders/checkout', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        items: items.map((i) => ({ productId: i.id, quantity: i.quantity, price: i.price })),
-        totalAmount,
-        recipientName,
-        recipientPhone,
-        shippingAddress,
-        notes,
+        customerName: recipientName.trim(),
+        customerPhone: recipientPhone.trim(),
+        customerEmail: profile?.email || undefined,
+        deliveryType: 'shipping',
+        shippingAddress: shippingAddress.trim(),
+        paymentMethod: 'online',
+        note: notes.trim() || undefined,
       }),
     })
       .then((res) => {
-        const orderId = res.data?.id || `ORD-${Date.now()}`;
-        const finalCode = res.data?.code || orderCode;
+        const orderData = res.data || res;
+        const orderId = orderData?.id || `ORD-${Date.now()}`;
+        const finalCode = orderData?.code || fallbackCode;
+        const finalAmount = orderData?.total || totalAmount;
+        const qrUrl =
+          orderData?.paymentQr ||
+          `https://qr.sepay.vn/img?acc=104875953046&bank=VietinBank&amount=${finalAmount}&des=${finalCode}`;
 
         setOrderInfo({
           orderId,
           orderCode: finalCode,
-          amount: totalAmount,
-          qrUrl: `https://qr.sepay.vn/img?acc=104875953046&bank=VietinBank&amount=${totalAmount}&des=${finalCode}`,
+          amount: finalAmount,
+          qrUrl,
           accountNo: '104875953046',
           accountName: 'CONG TY CP SAM NGOC LINH',
           bankName: 'VietinBank (Ngân hàng TMCP Công Thương Việt Nam)',
@@ -115,13 +143,13 @@ export const CartClient = ({ locale: _locale }: { locale: string }) => {
         setCurrentStep(3);
       })
       .catch(() => {
-        // Fallback order info for guest or demo
+        // Fallback order info for guest or offline mode
         const orderId = `ORD-${Date.now()}`;
         setOrderInfo({
           orderId,
-          orderCode,
+          orderCode: fallbackCode,
           amount: totalAmount,
-          qrUrl: `https://qr.sepay.vn/img?acc=104875953046&bank=VietinBank&amount=${totalAmount}&des=${orderCode}`,
+          qrUrl: `https://qr.sepay.vn/img?acc=104875953046&bank=VietinBank&amount=${totalAmount}&des=${fallbackCode}`,
           accountNo: '104875953046',
           accountName: 'CONG TY CP SAM NGOC LINH',
           bankName: 'VietinBank (Ngân hàng TMCP Công Thương Việt Nam)',

@@ -303,6 +303,33 @@ export class UserSharedController {
         );
     }
 
+    @Response('user.getSignature')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/signature')
+    async getSignature(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<{ signatureUrl: string | null }>> {
+        return this.userService.getSignature(userId);
+    }
+
+    @Response('user.saveSignature')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @FileUploadSingle()
+    @Put('/signature')
+    async saveSignature(
+        @AuthJwtPayload('userId') userId: string,
+        @Body('signatureData') signatureData?: string,
+        @UploadedFile() file?: IFile
+    ): Promise<IResponseReturn<{ signatureUrl: string }>> {
+        return this.userService.saveSignature(userId, signatureData, file);
+    }
+
     @UserSharedRequestEmailVerificationDoc()
     @Response('user.requestEmailVerification')
     @TermPolicyAcceptanceProtected()

@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { useRouter } from '@/libs/I18nNavigation';
 import { CounterValidation } from '@/validations/CounterValidation';
+import { Form, FormInput } from '@/components/ui/form';
+import { ButtonLoading } from '@/components/ui/button';
 
 export const CounterForm = () => {
   const t = useTranslations('CounterForm');
@@ -32,33 +34,26 @@ export const CounterForm = () => {
   });
 
   return (
-    <form onSubmit={handleIncrement}>
-      <p>{t('presentation')}</p>
-      <div>
-        <label className="text-sm font-bold text-gray-700" htmlFor="increment">
-          {t('label_increment')}
-          <input
-            id="increment"
-            type="number"
-            className="ml-2 w-32 appearance-none rounded-sm border border-gray-200 px-2 py-1 text-sm/tight text-gray-700 focus:ring-3 focus:ring-blue-300/50 focus:outline-hidden"
-            {...form.register('increment', { valueAsNumber: true })}
-          />
-        </label>
-
-        {form.formState.errors.increment && (
-          <div className="my-2 text-xs text-red-500 italic">{t('error_increment_range')}</div>
-        )}
-      </div>
+    <Form form={form} onSubmit={handleIncrement} className="space-y-4">
+      <p className="text-sm font-medium">{t('presentation')}</p>
+      
+      <FormInput
+        control={form.control}
+        name="increment"
+        label={t('label_increment')}
+        type="number"
+        className="w-32"
+      />
 
       <div className="mt-2">
-        <button
-          className="rounded-sm bg-blue-500 px-5 py-1 font-bold text-white hover:bg-blue-600 focus:ring-3 focus:ring-blue-300/50 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+        <ButtonLoading
           type="submit"
-          disabled={form.formState.isSubmitting}
+          isLoading={form.formState.isSubmitting}
+          variant="default"
         >
           {t('button_increment')}
-        </button>
+        </ButtonLoading>
       </div>
-    </form>
+    </Form>
   );
 };

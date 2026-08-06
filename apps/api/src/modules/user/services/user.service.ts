@@ -685,6 +685,54 @@ export class UserService implements IUserService {
         }
     }
 
+    async getSignature(
+        userId: string
+    ): Promise<IResponseReturn<{ signatureUrl: string | null }>> {
+        const sig = await this.userRepository.findSignature(userId);
+        return {
+            data: {
+                signatureUrl: sig?.signatureUrl ?? null,
+            },
+        };
+    }
+
+    async saveSignature(
+        userId: string,
+        signatureData?: string,
+        file?: IFile | null
+    ): Promise<IResponseReturn<{ signatureUrl: string }>> {
+        let signatureUrl = '';
+
+        if (file) {
+            signatureUrl = this.fileService.saveFileToLocal(file, 'signatures');
+        } else if (signatureData) {
+            if (
+                signatureData.startsWith('http://') ||
+                signatureData.startsWith('https://') ||
+                signatureData.startsWith('/uploads/')
+            ) {
+                signatureUrl = signatureData;
+            } else {
+                signatureUrl = this.fileService.saveBase64ToLocal(
+                    signatureData,
+                    'signatures'
+                );
+            }
+        } else {
+            throw new RequestParamRequiredException('signatureData');
+        }
+
+        const saved = await this.userRepository.saveSignature(
+            userId,
+            signatureUrl
+        );
+        return {
+            data: {
+                signatureUrl: saved.signatureUrl,
+            },
+        };
+    }
+
     async deleteAddress(
         userId: string,
         addressId: string
