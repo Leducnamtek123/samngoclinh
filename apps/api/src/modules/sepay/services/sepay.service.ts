@@ -16,6 +16,7 @@ import {
     IPaymentQrInfo,
 } from '@modules/payment-gateway/interfaces/payment-gateway.interface';
 import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
+import { SePayPgClient } from 'sepay-pg-node';
 
 @Injectable()
 export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
@@ -126,5 +127,78 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             status: 'SUCCESS',
             gatewayRef: `SEPAY_${payload.gateway}_${refCode}`,
         });
+    }
+
+    /**
+     * Trang HTML tự submit form checkout sang cổng thanh toán SePay (pay.sepay.vn),
+     * chỉ dùng phương thức chuyển khoản QR (BANK_TRANSFER). Mở URL này trong trình duyệt.
+     */
+    async getCheckoutRedirectHtml(orderCode: string): Promise<string> {
+        const order = await this.databaseService.order.findUnique({
+            where: { code: orderCode },
+        });
+        if (!order) {
+            return this.renderMessage('Không tìm thấy đơn hàng.');
+        }
+        if (order.status !== 'pending') {
+            return this.renderMessage('Đơn hàng không ở trạng thái chờ thanh toán.');
+        }
+
+        const merchantId = this.configService.get<string>('sepay.pgMerchantId');
+        const secretKey = this.configService.get<string>('sepay.pgSecretKey');
+        if (!merchantId || !secretKey) {
+            return this.renderMessage(
+                'Cổng thanh toán chưa được cấu hình (thiếu SEPAY_PG_MERCHANT_ID / SEPAY_PG_SECRET_KEY).'
+            );
+        }
+        const env =
+            this.configService.get<'sandbox' | 'production'>('sepay.pgEnv') ??
+            'sandbox';
+        const webUrl = this.configService.get<string>('app.webUrl');
+
+        const client = new SePayPgClient({
+            env,
+            merchant_id: merchantId,
+            secret_key: secretKey,
+        });
+        const fields = client.checkout.initOneTimePaymentFields({
+            payment_method: 'BANK_TRANSFER',
+            order_invoice_number: order.code,
+            order_amount: order.total,
+            currency: 'VND',
+            order_description: `Thanh toan don hang ${order.code}`,
+            customer_id: order.userId,
+            success_url: `${webUrl}/thanh-toan/ket-qua?order=${order.code}&status=success`,
+            error_url: `${webUrl}/thanh-toan/ket-qua?order=${order.code}&status=error`,
+            cancel_url: `${webUrl}/thanh-toan/ket-qua?order=${order.code}&status=cancel`,
+        });
+
+        return this.renderAutoSubmitForm(client.checkout.initCheckoutUrl(), fields);
+    }
+
+    private escapeHtml(value: string): string {
+        return value
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    private renderAutoSubmitForm(
+        action: string,
+        fields: Record<string, unknown>
+    ): string {
+        const inputs = Object.entries(fields)
+            .filter(([, v]) => v !== undefined && v !== null)
+            .map(
+                ([k, v]) =>
+                    `<input type="hidden" name="${this.escapeHtml(k)}" value="${this.escapeHtml(String(v))}" />`
+            )
+            .join('');
+        return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chuyển tới SePay</title></head><body style="font-family:sans-serif;text-align:center;padding:48px 24px;color:#1C3F24"><p>Đang chuyển tới cổng thanh toán SePay...</p><form id="sepay-form" action="${this.escapeHtml(action)}" method="POST">${inputs}</form><script>document.getElementById('sepay-form').submit();</script></body></html>`;
+    }
+
+    private renderMessage(message: string): string {
+        return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Thanh toán</title></head><body style="font-family:sans-serif;text-align:center;padding:48px 24px;color:#1C3F24"><p>${this.escapeHtml(message)}</p></body></html>`;
     }
 }

@@ -74,14 +74,65 @@ export class OrdersService implements IOrdersService {
         return {
             data: {
                 ...order,
+                customerEmail:
+                    (order.metadata as { customerEmail?: string } | null)
+                        ?.customerEmail ?? null,
+                vat: (order.metadata as { vat?: number } | null)?.vat ?? 0,
                 paymentQr,
+            },
+        };
+    }
+
+    async cancel(
+        id: string,
+        userId: string
+    ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
+        const existing = await this.ordersRepository.getDetail(id, userId);
+        if (!existing) {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: 'order.error.notFound',
+            });
+        }
+        if (existing.status !== 'pending') {
+            throw new BadRequestException({
+                statusCode: 400,
+                message: 'order.error.cannotCancel',
+            });
+        }
+
+        const order = await this.databaseService.$transaction(async tx => {
+            const items =
+                (existing.items as unknown as {
+                    productId: string;
+                    quantity: number;
+                }[]) || [];
+            for (const item of items) {
+                await tx.catalogProduct.updateMany({
+                    where: { id: item.productId },
+                    data: { stock: { increment: item.quantity } },
+                });
+            }
+            return tx.order.update({
+                where: { id },
+                data: { status: 'cancelled', cancelledAt: new Date() },
+            });
+        });
+
+        return {
+            data: {
+                ...order,
+                customerEmail:
+                    (order.metadata as { customerEmail?: string } | null)
+                        ?.customerEmail ?? null,
+                vat: (order.metadata as { vat?: number } | null)?.vat ?? 0,
             },
         };
     }
 
     async checkout(
         userId: string,
-        dto?: OrdersUserCheckoutRequestDto
+        dto: OrdersUserCheckoutRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
         const cart = await this.databaseService.cart.findUnique({
             where: { userId },
@@ -109,10 +160,10 @@ export class OrdersService implements IOrdersService {
                     message: `Product ${cartItem.productId} not found`,
                 });
             }
-            if (product.status !== 'active') {
+            if (product.status !== 'available') {
                 throw new BadRequestException({
                     statusCode: 400,
-                    message: `Product ${product.name} is no longer active`,
+                    message: `Product ${product.name} is no longer available`,
                 });
             }
             if (product.stock < cartItem.quantity) {
@@ -153,15 +204,19 @@ export class OrdersService implements IOrdersService {
                     price: product.price,
                     quantity: cartItem.quantity,
                     totalPrice: itemTotalPrice,
+                    images: product.images,
                 };
             });
 
-            let shippingFee = 30000;
-            const shippingFeeSetting = await tx.systemSetting.findUnique({
-                where: { key: 'shipping_fee' },
-            });
-            if (shippingFeeSetting) {
-                shippingFee = parseInt(shippingFeeSetting.value, 10);
+            let shippingFee = 0;
+            if (dto.deliveryType === 'shipping') {
+                shippingFee = 30000;
+                const shippingFeeSetting = await tx.systemSetting.findUnique({
+                    where: { key: 'shipping_fee' },
+                });
+                if (shippingFeeSetting) {
+                    shippingFee = parseInt(shippingFeeSetting.value, 10);
+                }
             }
             let discount = 0;
             let pointsToRedeem = 0;
@@ -209,7 +264,10 @@ export class OrdersService implements IOrdersService {
                 }
             }
 
-            const total = subtotal + shippingFee - discount;
+            const vat = Math.round(subtotal * 0.08);
+            const total = subtotal + vat + shippingFee - discount;
+            const paymentMethod =
+                dto.paymentMethod === 'cod' ? 'cod' : 'bank_transfer';
             const code =
                 'ORD' + Date.now() + Math.floor(1000 + Math.random() * 9000);
 
@@ -224,10 +282,20 @@ export class OrdersService implements IOrdersService {
                     shippingFee,
                     discount,
                     total,
-                    paymentMethod: 'bank_transfer',
+                    paymentMethod,
+                    deliveryType: dto.deliveryType,
+                    shippingAddress:
+                        dto.deliveryType === 'shipping'
+                            ? (dto.shippingAddress ?? null)
+                            : null,
+                    customerName: dto.customerName,
+                    customerPhone: dto.customerPhone,
+                    customerNote: dto.note ?? null,
                     items: orderItems,
                     metadata: {
                         pointsRedeemed: pointsToRedeem,
+                        vat,
+                        customerEmail: dto.customerEmail ?? null,
                     },
                 },
             });
@@ -254,6 +322,14 @@ export class OrdersService implements IOrdersService {
                 discount: order.discount,
                 total: order.total,
                 paymentMethod: order.paymentMethod,
+                deliveryType: order.deliveryType,
+                shippingAddress: order.shippingAddress,
+                customerName: order.customerName,
+                customerPhone: order.customerPhone,
+                customerEmail:
+                    (order.metadata as { customerEmail?: string } | null)
+                        ?.customerEmail ?? null,
+                vat: (order.metadata as { vat?: number } | null)?.vat ?? 0,
                 items: order.items,
                 paidAt: order.paidAt,
                 cancelledAt: order.cancelledAt,

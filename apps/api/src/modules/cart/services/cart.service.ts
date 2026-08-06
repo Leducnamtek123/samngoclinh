@@ -46,6 +46,9 @@ export class CartService implements ICartService {
                     quantity: item.quantity,
                     totalPrice: 0,
                     imageUrl: undefined,
+                    stock: 0,
+                    category: undefined,
+                    images: [],
                 };
             }
 
@@ -56,6 +59,9 @@ export class CartService implements ICartService {
                 quantity: item.quantity,
                 totalPrice: product.price * item.quantity,
                 imageUrl: product.images[0] ?? undefined,
+                stock: product.stock,
+                category: product.category,
+                images: product.images,
             };
         });
 
@@ -92,17 +98,25 @@ export class CartService implements ICartService {
         });
 
         if (!product) {
-            throw new NotFoundException('Product not found');
+            throw new NotFoundException({
+                statusCode: 404,
+                message: 'cart.error.productNotFound',
+            });
         }
 
-        if (product.status !== 'active') {
-            throw new BadRequestException('Product is not active');
+        if (product.status !== 'available') {
+            throw new BadRequestException({
+                statusCode: 400,
+                message: 'cart.error.productNotAvailable',
+            });
         }
 
         if (product.stock < payload.quantity) {
-            throw new BadRequestException(
-                `Insufficient stock. Only ${product.stock} items left.`
-            );
+            throw new BadRequestException({
+                statusCode: 400,
+                message: 'cart.error.insufficientStock',
+                messageProperties: { stock: product.stock },
+            });
         }
 
         const cart = await this.cartRepository.addItemToCart(
@@ -126,13 +140,18 @@ export class CartService implements ICartService {
         });
 
         if (!product) {
-            throw new NotFoundException('Product not found');
+            throw new NotFoundException({
+                statusCode: 404,
+                message: 'cart.error.productNotFound',
+            });
         }
 
         if (product.stock < payload.quantity) {
-            throw new BadRequestException(
-                `Insufficient stock. Only ${product.stock} items left.`
-            );
+            throw new BadRequestException({
+                statusCode: 400,
+                message: 'cart.error.insufficientStock',
+                messageProperties: { stock: product.stock },
+            });
         }
 
         const cart = await this.cartRepository.updateItemQuantity(

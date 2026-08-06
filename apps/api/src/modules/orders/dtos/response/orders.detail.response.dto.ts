@@ -66,6 +66,48 @@ export class OrdersDetailResponseDto {
     paymentMethod: string | null;
 
     @ApiProperty({
+        required: false,
+        example: 1152000,
+    })
+    @Expose()
+    vat?: number;
+
+    @ApiProperty({
+        required: false,
+        example: 'shipping',
+    })
+    @Expose()
+    deliveryType?: string;
+
+    @ApiProperty({
+        required: false,
+        example: '68 Nguyễn Huệ, Quận 1, TP.HCM',
+    })
+    @Expose()
+    shippingAddress?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: 'Nguyễn Văn A',
+    })
+    @Expose()
+    customerName?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: '0900000000',
+    })
+    @Expose()
+    customerPhone?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: 'khach@gmail.com',
+    })
+    @Expose()
+    customerEmail?: string | null;
+
+    @ApiProperty({
         required: true,
         example: [
             {

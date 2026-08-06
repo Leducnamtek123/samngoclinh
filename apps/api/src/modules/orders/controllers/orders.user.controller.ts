@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Param,
+    Patch,
     Post,
     VERSION_NEUTRAL,
 } from '@nestjs/common';
@@ -41,7 +42,7 @@ export class OrdersUserController {
     @OrdersUserListDoc()
     @Response('orders.list')
     @RoleProtected(EnumRoleType.user)
-    @UserProtected()
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
@@ -54,7 +55,7 @@ export class OrdersUserController {
     @OrdersUserCheckoutDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.user)
-    @UserProtected()
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/checkout')
@@ -77,7 +78,7 @@ export class OrdersUserController {
     @OrdersUserDetailDoc()
     @Response('orders.detail')
     @RoleProtected(EnumRoleType.user)
-    @UserProtected()
+    @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/:id')
@@ -86,5 +87,18 @@ export class OrdersUserController {
         @AuthJwtPayload('userId') userId: string
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
         return this.ordersService.detail(id, userId);
+    }
+
+    @Response('orders.cancel')
+    @RoleProtected(EnumRoleType.user)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Patch('/:id/cancel')
+    async cancel(
+        @Param('id') id: string,
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
+        return this.ordersService.cancel(id, userId);
     }
 }

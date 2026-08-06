@@ -43,6 +43,28 @@ export class CartItemDetailResponseDto {
     })
     @Expose()
     imageUrl?: string;
+
+    @ApiProperty({
+        required: false,
+        example: 108,
+    })
+    @Expose()
+    stock?: number;
+
+    @ApiProperty({
+        required: false,
+        example: 'beverage',
+    })
+    @Expose()
+    category?: string;
+
+    @ApiProperty({
+        required: false,
+        type: [String],
+        example: ['/images/products/wine_root.png'],
+    })
+    @Expose()
+    images?: string[];
 }
 
 export class CartSummaryResponseDto {

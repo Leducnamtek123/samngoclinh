@@ -17,6 +17,7 @@ import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
 import { fetchBedsByAge } from '../api/cultivation';
 import { toStaticUrl } from '../api/config';
+import CartButton from '../components/CartButton';
 
 export default function TreeListScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
@@ -59,7 +60,7 @@ export default function TreeListScreen({ navigation, route }) {
           {title || `Cây trồng ${ageYear} tuổi`}
         </Text>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>

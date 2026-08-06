@@ -1,4 +1,5 @@
 {
     "list": "Orders loaded successfully.",
-    "detail": "Order detail loaded successfully."
+    "detail": "Order detail loaded successfully.",
+    "cancel": "Order cancelled."
 }

@@ -1,0 +1,6 @@
+{
+    "error": {
+        "notFound": "Không tìm thấy đơn hàng.",
+        "cannotCancel": "Chỉ có thể hủy đơn hàng đang chờ thanh toán."
+    }
+}

@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import { AlertProvider } from './context/AlertContext';
 import MainTabs from './navigation/MainTabs';
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -22,6 +23,9 @@ import ComingSoonScreen from './screens/ComingSoonScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import PlantDetailScreen from './screens/PlantDetailScreen';
 import TreeListScreen from './screens/TreeListScreen';
+import CartScreen from './screens/CartScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
+import OrderDetailScreen from './screens/OrderDetailScreen';
 import { colors } from './utils/theme';
 
 const Stack = createNativeStackNavigator();
@@ -99,6 +103,13 @@ function RootNavigator() {
         component={PlantDetailScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="OrderDetail"
+        component={OrderDetailScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="ComingSoon"
         component={ComingSoonScreen}
@@ -115,12 +126,14 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <NavigationContainer linking={linking}>
-          <AlertProvider>
-            <StatusBar style="light" />
-            <RootNavigator />
-          </AlertProvider>
-        </NavigationContainer>
+        <CartProvider>
+          <NavigationContainer linking={linking}>
+            <AlertProvider>
+              <StatusBar style="light" />
+              <RootNavigator />
+            </AlertProvider>
+          </NavigationContainer>
+        </CartProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

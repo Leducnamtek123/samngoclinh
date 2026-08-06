@@ -16,6 +16,12 @@ export interface IOrderDetail {
     discount: number;
     total: number;
     paymentMethod: string | null;
+    deliveryType?: string;
+    shippingAddress?: string | null;
+    customerName?: string | null;
+    customerPhone?: string | null;
+    customerNote?: string | null;
+    metadata?: unknown;
     items: unknown;
     paidAt: Date | null;
     cancelledAt: Date | null;

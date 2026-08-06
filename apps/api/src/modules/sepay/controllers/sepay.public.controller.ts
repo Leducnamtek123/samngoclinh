@@ -1,10 +1,14 @@
 import {
     Body,
     Controller,
+    Get,
     Headers,
+    Param,
     Post,
+    Res,
     VERSION_NEUTRAL,
 } from '@nestjs/common';
+import type { Response as ExpressResponse } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { SepayService } from '@modules/sepay/services/sepay.service';
@@ -27,5 +31,14 @@ export class SepayPublicController {
         @Headers('authorization') authHeader?: string
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
         return this.sepayService.handleWebhook(body, authHeader);
+    }
+
+    @Get('/pay/:orderCode')
+    async pay(
+        @Param('orderCode') orderCode: string,
+        @Res() res: ExpressResponse
+    ): Promise<void> {
+        const html = await this.sepayService.getCheckoutRedirectHtml(orderCode);
+        res.type('html').send(html);
     }
 }

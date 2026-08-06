@@ -1,0 +1,6 @@
+{
+    "error": {
+        "notFound": "Order not found.",
+        "cannotCancel": "Only pending orders can be cancelled."
+    }
+}
