@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "next-auth/react"
 import { useForm } from "react-hook-form"
+import { Eye, EyeOff } from "lucide-react"
 
 import type { LocaleType, SignInFormType } from "@/types"
 
@@ -29,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 export function SignInForm() {
+  const [showPassword, setShowPassword] = useState(false)
   const { t } = useTranslation()
   const params = useParams()
   const searchParams = useSearchParams()
@@ -121,7 +123,6 @@ export function SignInForm() {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="name@example.com"
                     {...field}
                   />
                 </FormControl>
@@ -152,7 +153,18 @@ export function SignInForm() {
                   </Link>
                 </div>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} className="pe-10" {...field} />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                      title={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

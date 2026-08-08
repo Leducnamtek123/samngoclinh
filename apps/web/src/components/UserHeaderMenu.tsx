@@ -6,6 +6,7 @@ import { usePathname, useRouter } from '@/libs/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
 import { NotificationPopover } from '@/components/NotificationPopover';
 import { OrderDetailModal, OrderDetailData } from '@/components/OrderDetailModal';
+import { useNotificationsList } from '@/hooks/queries/useNotifications';
 
 type UserHeaderMenuProps = {
   profile: {
@@ -46,8 +47,13 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const pathname = usePathname();
 
   const fullName = profile?.fullName || 'Khách hàng';
-  const email = profile?.email || 'user@mail.com';
+  const email = profile?.email || '';
   const initial = fullName.charAt(0).toUpperCase();
+
+  const { data: notificationsData } = useNotificationsList(true);
+  const unreadNotifCount = Array.isArray(notificationsData)
+    ? notificationsData.filter((n: any) => !n.read && !n.isRead).length
+    : 0;
 
   // Sync cart count from localStorage
   useEffect(() => {
@@ -125,7 +131,9 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
           <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+          {unreadNotifCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 min-w-[0.625rem] h-2.5 bg-red-500 rounded-full border border-white" />
+          )}
         </button>
 
         <NotificationPopover
@@ -150,88 +158,46 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
         {/* Dropdown Menu Card */}
         {isOpen && (
-          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 transition-[opacity,transform] duration-150 animate-in fade-in zoom-in-95">
+          <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100/80 py-3 z-50 transition-[opacity,transform] duration-150 animate-in fade-in zoom-in-95">
             {/* User Info Header */}
-            <div className="px-5 py-2.5 border-b border-gray-100">
-              <p className="font-extrabold text-gray-900 text-sm">{fullName}</p>
-              <p className="text-xs text-gray-400 font-medium mt-0.5 truncate">{email}</p>
-              <span className="inline-block bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2.5 py-0.5 rounded-full mt-2 uppercase tracking-wider">
-                Khách hàng
-              </span>
+            <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#1C3F24] text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
+                {initial}
+              </div>
+              <div className="overflow-hidden">
+                <p className="font-bold text-gray-900 text-sm truncate">{fullName}</p>
+                <p className="text-xs text-gray-500 font-medium truncate">{email}</p>
+                <span className="inline-block bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1 uppercase tracking-wider">
+                  Khách hàng
+                </span>
+              </div>
             </div>
 
-            {/* Main Navigation Items */}
-            <ul className="text-xs font-semibold text-gray-700 pt-1.5">
+            {/* Quick Actions Navigation Items */}
+            <ul className="text-xs font-semibold text-gray-700 pt-1.5 space-y-0.5">
               <li>
                 <button
                   type="button"
                   onClick={() => navigateToTab('info')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors cursor-pointer"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span>Hồ sơ</span>
+                  <span>Hồ sơ của tôi</span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => navigateToTab('orders')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                  onClick={() => navigateToTab('settings')}
+                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors cursor-pointer"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span>Đơn hàng</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateToTab('assets')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                  <span>Tài sản</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateToTab('kyc')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0l1.8-1.8A2 2 0 0113 4h4a2 2 0 012 2v1M9 13h6m-6 3h3" />
-                  </svg>
-                  <span>Căn cước công dân</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateToTab('contracts')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <span>Hợp đồng điện tử</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigateToTab('referral')}
-                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span>Giới thiệu bạn bè</span>
+                  <span>Cài đặt</span>
                 </button>
               </li>
             </ul>
@@ -244,7 +210,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               <button
                 type="button"
                 onClick={() => setShowLangMenu(!showLangMenu)}
-                className="w-full px-5 py-2 flex items-center justify-between text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full px-5 py-2 flex items-center justify-between text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -271,7 +237,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <button
                     type="button"
                     onClick={() => switchLocale('vi')}
-                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
+                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors cursor-pointer ${
                       locale === 'vi' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
@@ -286,7 +252,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <button
                     type="button"
                     onClick={() => switchLocale('en')}
-                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors ${
+                    className={`w-full px-8 py-1.5 flex items-center gap-2.5 text-[11px] font-semibold text-left transition-colors cursor-pointer ${
                       locale === 'en' ? 'text-emerald-700 font-bold bg-emerald-50/50' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
@@ -309,7 +275,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
             <button
               type="button"
               onClick={handleSignOut}
-              className="w-full px-5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-left transition-colors font-bold text-xs"
+              className="w-full px-5 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-left transition-colors font-bold text-xs cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

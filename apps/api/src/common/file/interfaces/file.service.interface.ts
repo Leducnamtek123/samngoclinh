@@ -17,6 +17,7 @@ export interface IFileService {
     extractMimeFromFilename(filename: string): string | null;
     extractFilenameFromPath(filePath: string): string;
     saveFileToLocal(file: IFile, subdir: string): string;
+    saveBase64ToLocal(base64Data: string, subdir: string): string;
     buildLocalStorage(key: string, size: number): ILocalStorage;
     saveBufferToKey(buffer: Buffer, key: string): ILocalStorage;
     readLocalByKey(key: string): Buffer;

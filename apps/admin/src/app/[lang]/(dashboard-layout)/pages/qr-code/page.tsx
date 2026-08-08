@@ -14,6 +14,7 @@ import {
 
 import { useApiQuery } from "@/hooks/use-api-query"
 import { useTranslation } from "@/providers/i18n-provider"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -51,21 +52,24 @@ export default function QrCodeTraceabilityPage() {
   const { t } = useTranslation()
   const [searchCode, setSearchCode] = useState("")
   const [selectedTree, setSelectedTree] = useState<TreeItem | null>(null)
+  const [page, setPage] = useState(1)
+  const perPage = 10
 
   const {
     data: response,
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<TreeItem[] | { items: TreeItem[] }>(
-    ["trees-traceability"],
-    "/admin/cultivation/trees?page=1&perPage=100"
+  } = useApiQuery<any>(
+    ["trees-traceability", page],
+    `/admin/cultivation/trees?page=${page}&perPage=${perPage}`
   )
 
   const rawData = response?.data
   const treesList: TreeItem[] = Array.isArray(rawData)
     ? rawData
     : (rawData as any)?.items || (rawData as any)?.data || []
+  const metadata = response?.metadata || null
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -338,6 +342,7 @@ export default function QrCodeTraceabilityPage() {
                   ))}
                 </TableBody>
               </Table>
+              <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
             </CardContent>
           </Card>
         )}

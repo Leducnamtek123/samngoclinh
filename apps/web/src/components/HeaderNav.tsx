@@ -165,20 +165,6 @@ export const HeaderNav = () => {
         </div>
       </li>
 
-      {/* Mua bán cây */}
-      <li className="flex items-center">
-        <Link
-          href="/trading-floor"
-          className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
-            isActive('/trading-floor')
-              ? 'text-emerald-800 font-bold'
-              : 'text-gray-600 hover:text-emerald-800'
-          }`}
-        >
-          {tNav('consignment')}
-        </Link>
-      </li>
-
       {/* Giới thiệu */}
       <li className="flex items-center">
         <Link

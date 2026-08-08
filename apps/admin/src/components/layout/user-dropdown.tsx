@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { signOut, useSession } from "next-auth/react"
-import { LogOut, User, UserCog } from "lucide-react"
+import { LogOut, UserCog } from "lucide-react"
 
 import type { DictionaryType } from "@/lib/get-dictionary"
 import type { LocaleType } from "@/types"
@@ -70,14 +70,6 @@ export function UserDropdown({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup className="max-w-48">
-          <DropdownMenuItem asChild>
-            <Link
-              href={ensureLocalizedPathname("/pages/account/profile", locale)}
-            >
-              <User className="me-2 size-4" />
-              {dictionary.navigation.userNav.profile}
-            </Link>
-          </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
               href={ensureLocalizedPathname("/pages/account/settings", locale)}

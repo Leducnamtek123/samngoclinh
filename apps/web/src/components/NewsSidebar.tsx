@@ -3,7 +3,11 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import { Search } from 'lucide-react';
 import { Link } from '@/libs/I18nNavigation';
+import { Input } from './ui/input';
+import { Checkbox } from './ui/checkbox';
+import { Card, CardContent } from './ui/card';
 
 const categoryLabels: Record<string, string> = {
   'news': 'Tin tức',
@@ -67,7 +71,6 @@ export const NewsSidebar = ({
     updateQueryParams({ category: category === '' ? null : category });
   };
 
-  // We map static illustration images based on index or slug
   const newsImages = [
     '/images/news/news1.png',
     '/images/news/news2.png',
@@ -78,123 +81,108 @@ export const NewsSidebar = ({
   return (
     <div className="space-y-6">
       {/* Search Input Box */}
-      <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm">
-        <h3 className="text-gray-900 font-extrabold text-sm mb-4">
-          Tìm kiếm bài viết
-        </h3>
-        <form onSubmit={handleSearchSubmit} className="relative">
-          <input
-            type="text"
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-            placeholder="Tìm kiếm bài viết..."
-            aria-label="Tìm kiếm bài viết"
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs outline-none transition-colors placeholder-gray-400 focus:border-primary focus:bg-white text-gray-800"
-          />
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.602Z" />
-            </svg>
-          </span>
-        </form>
-      </div>
+      <Card className="rounded-[24px] p-6">
+        <CardContent className="p-0 space-y-4">
+          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+            Tìm kiếm bài viết
+          </h3>
+          <form onSubmit={handleSearchSubmit} className="relative">
+            <Input
+              type="text"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              aria-label="Tìm kiếm bài viết"
+              className="pl-10 text-xs"
+            />
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Categories Box */}
-      <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm">
-        <h3 className="text-gray-900 font-extrabold text-sm mb-4">
-          Danh mục
-        </h3>
-        <div className="space-y-3.5">
-          {/* Tất cả */}
-          <button
-            type="button"
-            onClick={() => handleCategorySelect('')}
-            className="flex items-center gap-3 w-full text-left group cursor-pointer"
-          >
-            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-              !selectedCategory 
-                ? 'bg-primary border-primary text-white' 
-                : 'border-gray-300 group-hover:border-primary bg-white'
-            }`}>
-              {!selectedCategory && (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-2.5 h-2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
-              )}
+      <Card className="rounded-[24px] p-6">
+        <CardContent className="p-0 space-y-4">
+          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+            Danh mục
+          </h3>
+          <div className="space-y-3.5">
+            {/* Tất cả */}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => handleCategorySelect('')}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCategorySelect('')}
+              className="flex items-center gap-3 w-full text-left group cursor-pointer"
+            >
+              <Checkbox checked={!selectedCategory} />
+              <span className={`text-xs font-semibold ${
+                !selectedCategory ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary'
+              }`}>
+                Tất cả
+              </span>
             </div>
-            <span className={`text-xs font-semibold ${
-              !selectedCategory ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'
-            }`}>
-              Tất cả
-            </span>
-          </button>
 
-          {/* Dynamic Categories */}
-          {categories.map((cat) => {
-            const isChecked = selectedCategory === cat;
-            return (
-              <button
-                type="button"
-                key={cat}
-                onClick={() => handleCategorySelect(cat)}
-                className="flex items-center gap-3 w-full text-left group cursor-pointer"
-              >
-                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                  isChecked 
-                    ? 'bg-primary border-primary text-white' 
-                    : 'border-gray-300 group-hover:border-primary bg-white'
-                }`}>
-                  {isChecked && (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-2.5 h-2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                    </svg>
-                  )}
+            {/* Dynamic Categories */}
+            {categories.map((cat) => {
+              const isChecked = selectedCategory === cat;
+              return (
+                <div
+                  key={cat}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCategorySelect(cat)}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCategorySelect(cat)}
+                  className="flex items-center gap-3 w-full text-left group cursor-pointer"
+                >
+                  <Checkbox checked={isChecked} />
+                  <span className={`text-xs font-semibold ${
+                    isChecked ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary'
+                  }`}>
+                    {getCategoryLabel(cat)}
+                  </span>
                 </div>
-                <span className={`text-xs font-semibold ${
-                  isChecked ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'
-                }`}>
-                  {getCategoryLabel(cat)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Articles Box */}
-      <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm">
-        <h3 className="text-gray-900 font-extrabold text-sm mb-4">
-          Bài viết gần đây
-        </h3>
-        <div className="space-y-4">
-          {recentArticles.map((article: any, idx: number) => (
-            <Link
-              key={article.id}
-              href={`/news/${article.slug}`}
-              className="flex items-center gap-3 group"
-            >
-              <div className="relative w-14 h-14 rounded-xl bg-gray-50 flex-shrink-0 overflow-hidden">
-                <Image
-                  src={article.image || newsImages[idx % newsImages.length]}
-                  alt={article.title}
-                  fill
-                  sizes="56px"
-                  unoptimized
-                  className="object-cover"
-                />
-              </div>
-              <div className="space-y-0.5">
-                <div className="text-[10px] text-gray-400 font-semibold">
-                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : ''}
+      <Card className="rounded-[24px] p-6">
+        <CardContent className="p-0 space-y-4">
+          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+            Bài viết gần đây
+          </h3>
+          <div className="space-y-4">
+            {recentArticles.map((article: any, idx: number) => (
+              <Link
+                key={article.id}
+                href={`/news/${article.slug}`}
+                className="flex items-center gap-3 group"
+              >
+                <div className="relative w-14 h-14 rounded-xl bg-gray-50 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                  <Image
+                    src={article.image || newsImages[idx % newsImages.length]}
+                    alt={article.title}
+                    fill
+                    sizes="56px"
+                    unoptimized
+                    className="object-cover"
+                  />
                 </div>
-                <h4 className="text-xs font-bold text-gray-800 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                  {article.title}
-                </h4>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+                <div className="space-y-0.5">
+                  <div className="text-[10px] text-gray-400 font-semibold">
+                    {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : ''}
+                  </div>
+                  <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                    {article.title}
+                  </h4>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

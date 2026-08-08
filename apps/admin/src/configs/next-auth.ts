@@ -69,11 +69,14 @@ async function refreshAccessToken(token: any) {
       throw refreshedTokens
     }
 
+    const expiresInSeconds = Number(tokenData.expiresIn) || 3600
+
     return {
       ...token,
       accessToken: tokenData.accessToken,
       refreshToken: tokenData.refreshToken ?? token.refreshToken,
-      accessTokenExpires: Date.now() + (tokenData.expiresIn || 3600) * 1000,
+      accessTokenExpires: Date.now() + (expiresInSeconds - 60) * 1000,
+      error: undefined,
     }
   } catch (error) {
     console.error("Error refreshing access token", error)
@@ -142,7 +145,7 @@ export const authOptions: NextAuthOptions = {
               role: userRole,
               accessToken: credentials.accessToken,
               refreshToken: credentials.refreshToken,
-              expiresIn: Number(credentials.expiresIn) || 30 * 24 * 60 * 60,
+              expiresIn: Number(credentials.expiresIn) || 3600,
             }
           } catch (e) {
             console.error("Token verification failed:", e)
@@ -181,10 +184,7 @@ export const authOptions: NextAuthOptions = {
 
           const accessToken = payload.data.tokens.accessToken
           const refreshToken = payload.data.tokens.refreshToken || ""
-          const isRemember = credentials.rememberMe !== "false"
-          const expiresIn = isRemember
-            ? 30 * 24 * 60 * 60
-            : payload.data.tokens.expiresIn || 86400
+          const tokenExpiresIn = Number(payload.data.tokens.expiresIn) || 3600
 
           const profileRes = await fetch(
             `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`,
@@ -222,7 +222,7 @@ export const authOptions: NextAuthOptions = {
             role: userRole,
             accessToken,
             refreshToken,
-            expiresIn,
+            expiresIn: tokenExpiresIn,
           }
         } catch (e: unknown) {
           throw new Error(
@@ -252,7 +252,8 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
-        token.accessTokenExpires = Date.now() + (user.expiresIn || 3600) * 1000
+        const expiresInSeconds = Number(user.expiresIn) || 3600
+        token.accessTokenExpires = Date.now() + (expiresInSeconds - 60) * 1000
       }
 
       if (Date.now() < (token.accessTokenExpires as number)) {

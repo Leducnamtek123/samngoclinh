@@ -3,6 +3,7 @@
 @import 'tailwindcss';
 
 @theme {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-primary: #1C3F24;
   --color-primary-hover: #122B18;
   --color-secondary: #22C55E;
@@ -10,3 +11,25 @@
   --color-brand-bg: #FCF9F8;
   --color-brand-surface: #FFFFFF;
 }
+
+/* Lenis Smooth Scroll styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+

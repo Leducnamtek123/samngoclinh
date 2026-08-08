@@ -109,7 +109,7 @@ import {
 import { IUserService } from '@modules/user/interfaces/user.service.interface';
 import { UserRepository } from '@modules/user/repositories/user.repository';
 import { UserUtil } from '@modules/user/utils/user.util';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
     EnumUserLoginFrom,
     EnumUserLoginWith,
@@ -662,6 +662,11 @@ export class UserService implements IUserService {
             throw new RequestParamRequiredException('back');
         }
 
+        const user = await this.userRepository.findOneById(userId);
+        if (user?.isVerified) {
+            throw new BadRequestException('Tài khoản của bạn đã được xác minh chính thức, không cần gửi lại eKYC.');
+        }
+
         try {
             const saved = await this.userRepository.saveIdentityDocument(
                 userId,
@@ -681,8 +686,72 @@ export class UserService implements IUserService {
                 data: this.userUtil.mapIdentityDocument(saved),
             };
         } catch (err: unknown) {
+            if (err instanceof BadRequestException) throw err;
             throw new AppUnknownException(err);
         }
+    }
+
+    async getIdentityDocumentsListAdmin() {
+        const items = await this.userRepository.findIdentityDocumentsList();
+        return { data: items };
+    }
+
+    async approveIdentityVerificationAdmin(id: string) {
+        await this.userRepository.approveIdentityVerification(id);
+        return { data: { success: true } };
+    }
+
+    async rejectIdentityVerificationAdmin(id: string) {
+        await this.userRepository.rejectIdentityVerification(id);
+        return { data: { success: true } };
+    }
+
+    async getSignature(
+        userId: string
+    ): Promise<IResponseReturn<{ signatureUrl: string | null }>> {
+        const sig = await this.userRepository.findSignature(userId);
+        return {
+            data: {
+                signatureUrl: sig?.signatureUrl ?? null,
+            },
+        };
+    }
+
+    async saveSignature(
+        userId: string,
+        signatureData?: string,
+        file?: IFile | null
+    ): Promise<IResponseReturn<{ signatureUrl: string }>> {
+        let signatureUrl = '';
+
+        if (file) {
+            signatureUrl = this.fileService.saveFileToLocal(file, 'signatures');
+        } else if (signatureData) {
+            if (
+                signatureData.startsWith('http://') ||
+                signatureData.startsWith('https://') ||
+                signatureData.startsWith('/uploads/')
+            ) {
+                signatureUrl = signatureData;
+            } else {
+                signatureUrl = this.fileService.saveBase64ToLocal(
+                    signatureData,
+                    'signatures'
+                );
+            }
+        } else {
+            throw new RequestParamRequiredException('signatureData');
+        }
+
+        const saved = await this.userRepository.saveSignature(
+            userId,
+            signatureUrl
+        );
+        return {
+            data: {
+                signatureUrl: saved.signatureUrl,
+            },
+        };
     }
 
     async deleteAddress(

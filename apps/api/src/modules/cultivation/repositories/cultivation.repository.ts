@@ -628,9 +628,12 @@ export class CultivationRepository {
         });
     }
 
-    async listPublicBedsByAge(ageYear: number): Promise<ICultivationPublicBedItem[]> {
+    async listPublicBedsByAge(ageYear?: number | null): Promise<ICultivationPublicBedItem[]> {
         const beds = await this.databaseService.cultivationBed.findMany({
-            where: { ageYear, status: 'active' },
+            where: { 
+                ...(ageYear != null ? { ageYear } : {}), 
+                status: 'active' 
+            },
             orderBy: { name: 'asc' },
         });
         if (beds.length === 0) {
@@ -644,10 +647,12 @@ export class CultivationRepository {
         });
         const gardenMap = new Map(gardens.map(g => [g.code, g]));
 
-        const catalog = await this.databaseService.catalogPlant.findFirst({
-            where: { ageYear },
-            select: { price: true, images: true },
-        });
+        const catalog = ageYear != null 
+            ? await this.databaseService.catalogPlant.findFirst({
+                where: { ageYear },
+                select: { price: true, images: true },
+              })
+            : null;
 
         return beds.map(b => {
             const garden = gardenMap.get(b.gardenCode);

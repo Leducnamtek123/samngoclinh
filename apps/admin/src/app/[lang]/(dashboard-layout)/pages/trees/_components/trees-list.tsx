@@ -1,8 +1,9 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 import { useTranslation } from "@/providers/i18n-provider"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -236,39 +237,7 @@ export function TreesList({
       </div>
 
       {/* Pagination Controls */}
-      {metadata && (
-        <div className="mt-4 flex items-center justify-between">
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {t("common.table.pageOf", {
-              page: metadata.page,
-              total: metadata.totalPage,
-            })}{" "}
-            ({metadata.count} total)
-          </span>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasPrevious}
-              onClick={() => handlePageChange(metadata.page - 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              <span>{t("common.actions.back")}</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasNext}
-              onClick={() => handlePageChange(metadata.page + 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <span>{t("common.actions.confirm")}</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <Pagination metadata={metadata} onPageChange={handlePageChange} />
     </>
   )
 }

@@ -1,3 +1,5 @@
+import { fetchApiClient } from '@/libs/ApiClient';
+
 export interface CartItem {
   id: string;
   name: string;
@@ -47,14 +49,25 @@ export const addToCart = (
 
   localStorage.setItem(CART_KEY, JSON.stringify(items));
   window.dispatchEvent(new Event('cart_updated'));
+
+  // Sync with API if user is authenticated
+  try {
+    fetchApiClient('/user/cart/items', {
+      method: 'POST',
+      body: JSON.stringify({ productId: product.id, quantity }),
+    }).catch(() => {});
+  } catch {}
 };
 
 export const updateCartQuantity = (id: string, delta: number): CartItem[] => {
   if (typeof window === 'undefined') return [];
   const items = getCartItems();
+  let targetQuantity = 0;
+
   const next = items.flatMap((item) => {
     if (item.id === id) {
       const q = item.quantity + delta;
+      targetQuantity = q;
       return q > 0 ? [{ ...item, quantity: q }] : [];
     }
     return [item];
@@ -62,6 +75,21 @@ export const updateCartQuantity = (id: string, delta: number): CartItem[] => {
 
   localStorage.setItem(CART_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event('cart_updated'));
+
+  // Sync API
+  try {
+    if (targetQuantity > 0) {
+      fetchApiClient(`/user/cart/items/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ quantity: targetQuantity }),
+      }).catch(() => {});
+    } else {
+      fetchApiClient(`/user/cart/items/${id}`, {
+        method: 'DELETE',
+      }).catch(() => {});
+    }
+  } catch {}
+
   return next;
 };
 
@@ -71,6 +99,14 @@ export const removeFromCart = (id: string): CartItem[] => {
   const next = items.filter((item) => item.id !== id);
   localStorage.setItem(CART_KEY, JSON.stringify(next));
   window.dispatchEvent(new Event('cart_updated'));
+
+  // Sync API
+  try {
+    fetchApiClient(`/user/cart/items/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
+  } catch {}
+
   return next;
 };
 
@@ -79,4 +115,12 @@ export const clearCart = () => {
   localStorage.removeItem(CART_KEY);
   localStorage.removeItem('cart_items');
   window.dispatchEvent(new Event('cart_updated'));
+
+  // Sync API
+  try {
+    fetchApiClient('/user/cart', {
+      method: 'DELETE',
+    }).catch(() => {});
+  } catch {}
 };
+

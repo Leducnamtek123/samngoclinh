@@ -93,6 +93,31 @@ export class FileService implements IFileService {
         return `/uploads/${subdir}/${filename}`;
     }
 
+    /**
+     * Lưu chuỗi ảnh Base64 (data:image/png;base64,...) vào thư mục local `uploads/<subdir>`
+     * và trả về URL tương đối (`/uploads/<subdir>/<filename>`).
+     */
+    saveBase64ToLocal(base64Data: string, subdir: string): string {
+        const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        let buffer: Buffer;
+        let extension = 'png';
+
+        if (matches && matches.length === 3) {
+            extension = Mime.getExtension(matches[1]) ?? 'png';
+            buffer = Buffer.from(matches[2], 'base64');
+        } else {
+            buffer = Buffer.from(base64Data, 'base64');
+        }
+
+        const filename = `${this.helperService.randomString(16)}.${extension}`;
+        const absoluteDir = join(process.cwd(), 'uploads', subdir);
+
+        mkdirSync(absoluteDir, { recursive: true });
+        writeFileSync(join(absoluteDir, filename), buffer);
+
+        return `/uploads/${subdir}/${filename}`;
+    }
+
     buildLocalStorage(key: string, size: number): ILocalStorage {
         return {
             key,

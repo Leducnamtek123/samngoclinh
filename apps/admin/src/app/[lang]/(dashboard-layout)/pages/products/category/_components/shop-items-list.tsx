@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 import { useTranslation } from "@/providers/i18n-provider"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -181,39 +182,7 @@ export function ShopItemsList({
       )}
 
       {/* Pagination Controls */}
-      {metadata && (
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/30 dark:bg-slate-900/30 flex items-center justify-between mt-4 rounded-b-md">
-          <span className="text-xs text-slate-500 dark:text-slate-400">
-            {t("common.table.pageOf", {
-              page: metadata.page,
-              total: metadata.totalPage,
-            })}{" "}
-            ({metadata.count} total)
-          </span>
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasPrevious}
-              onClick={() => handlePageChange(metadata.page - 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              <span>{t("common.actions.back")}</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!metadata.hasNext}
-              onClick={() => handlePageChange(metadata.page + 1)}
-              className="h-8 text-xs flex items-center gap-1 text-slate-600 dark:text-slate-400"
-            >
-              <span>{t("common.actions.confirm")}</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <Pagination metadata={metadata} onPageChange={handlePageChange} />
     </>
   )
 }

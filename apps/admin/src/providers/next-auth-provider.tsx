@@ -22,7 +22,7 @@ export const NextAuthProvider = ({
   ...props
 }: SessionProviderProps) => {
   return (
-    <SessionProvider refetchOnWindowFocus={false} {...props}>
+    <SessionProvider refetchOnWindowFocus={true} refetchInterval={4 * 60} {...props}>
       <SessionErrorListener />
       {children}
     </SessionProvider>

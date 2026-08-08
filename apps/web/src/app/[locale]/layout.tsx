@@ -1,9 +1,18 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/libs/I18nRouting';
+import { Toaster } from '@/components/ui/Toaster';
+import { ScrollAnimationProvider } from '@/components/animation/ScrollAnimationProvider';
 import '@/styles/global.css';
+
+const inter = Inter({
+  subsets: ['latin', 'vietnamese'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   icons: [
@@ -39,8 +48,6 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-import { Toaster } from '@/components/ui/Toaster';
-
 export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -54,11 +61,13 @@ export default async function RootLayout(props: {
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
-      <body suppressHydrationWarning>
+    <html lang={locale} className={inter.variable}>
+      <body className={`${inter.className} font-sans antialiased`} suppressHydrationWarning>
         <NextIntlClientProvider>
-          {props.children}
-          <Toaster />
+          <ScrollAnimationProvider>
+            {props.children}
+            <Toaster />
+          </ScrollAnimationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

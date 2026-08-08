@@ -1,3 +1,5 @@
+import { PriceRangeSlider } from '@/components/common/PriceRangeSlider';
+
 type ProductsFilterSidebarProps = {
   categories: string[];
   selectedCategory: string | null;
@@ -84,41 +86,15 @@ export const ProductsFilterSidebar = ({
             Khoảng Giá (VND)
           </span>
           
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
-                <label htmlFor="products-min-price">Giá tối thiểu:</label>
-                <span className="text-[#1C3F24]">{minPrice.toLocaleString('vi-VN')} đ</span>
-              </div>
-              <input
-                id="products-min-price"
-                type="range"
-                min="50000"
-                max="1000000"
-                step="50000"
-                value={minPrice}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
-                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1C3F24]"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-[11px] font-bold text-gray-500 mb-1">
-                <label htmlFor="products-max-price">Giá tối đa:</label>
-                <span className="text-[#1C3F24]">{maxPrice.toLocaleString('vi-VN')} đ</span>
-              </div>
-              <input
-                id="products-max-price"
-                type="range"
-                min="1000000"
-                max="5000000"
-                step="100000"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#1C3F24]"
-              />
-            </div>
-          </div>
+          <PriceRangeSlider
+            min={0}
+            max={10000000}
+            step={50000}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onMinChange={setMinPrice}
+            onMaxChange={setMaxPrice}
+          />
         </div>
       </div>
     </div>

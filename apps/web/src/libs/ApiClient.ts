@@ -2,12 +2,17 @@ export async function fetchApiClient(endpoint: string, options: RequestInit = {}
   const baseUrl = '/api/proxy';
   const url = `${baseUrl}${endpoint}`;
 
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
+  const customHeaders = (options.headers as Record<string, string>) || {};
+  const headers: Record<string, string> = { ...customHeaders };
+
+  if (!isFormData && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const res = await fetch(url, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    headers,
   });
 
   if (!res.ok) {
@@ -18,3 +23,4 @@ export async function fetchApiClient(endpoint: string, options: RequestInit = {}
   const data = await res.json().catch(() => ({}));
   return data;
 }
+

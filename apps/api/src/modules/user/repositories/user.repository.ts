@@ -967,6 +967,88 @@ export class UserRepository {
         });
     }
 
+    async findIdentityDocumentsList() {
+        const docs = await this.databaseService.userIdentityDocument.findMany({
+            orderBy: { createdAt: 'desc' },
+        });
+        const userIds = Array.from(new Set(docs.map((d) => d.userId)));
+        const users = await this.databaseService.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, email: true, name: true, isVerified: true },
+        });
+        const userMap = new Map(users.map((u) => [u.id, u]));
+
+        return docs.map((d) => {
+            const u = userMap.get(d.userId);
+            return {
+                id: d.id,
+                userId: d.userId,
+                fullName: u?.name || u?.email,
+                idFrontUrl: d.frontImageUrl,
+                idBackUrl: d.backImageUrl,
+                status: u?.isVerified ? 'APPROVED' : 'PENDING',
+                createdAt: d.createdAt,
+                submittedAt: d.createdAt,
+                user: u ? { id: u.id, email: u.email, name: u.name ?? undefined } : undefined,
+            };
+        });
+    }
+
+    async approveIdentityVerification(idOrUserId: string) {
+        const doc = await this.databaseService.userIdentityDocument.findFirst({
+            where: { OR: [{ id: idOrUserId }, { userId: idOrUserId }] },
+        });
+        const userId = doc ? doc.userId : idOrUserId;
+        return this.databaseService.user.update({
+            where: { id: userId },
+            data: { isVerified: true, verifiedAt: new Date() },
+        });
+    }
+
+    async rejectIdentityVerification(idOrUserId: string) {
+        const doc = await this.databaseService.userIdentityDocument.findFirst({
+            where: { OR: [{ id: idOrUserId }, { userId: idOrUserId }] },
+        });
+        if (doc) {
+            await this.databaseService.userIdentityDocument.delete({
+                where: { id: doc.id },
+            });
+        }
+        const userId = doc ? doc.userId : idOrUserId;
+        return this.databaseService.user.update({
+            where: { id: userId },
+            data: { isVerified: false, verifiedAt: null },
+        });
+    }
+
+    async findSignature(
+        userId: string
+    ): Promise<{ signatureUrl: string } | null> {
+        return this.databaseService.userSignature.findUnique({
+            where: { userId },
+            select: { signatureUrl: true },
+        });
+    }
+
+    async saveSignature(
+        userId: string,
+        signatureUrl: string
+    ): Promise<{ signatureUrl: string }> {
+        return this.databaseService.userSignature.upsert({
+            where: { userId },
+            create: {
+                userId,
+                signatureUrl,
+                createdBy: userId,
+            },
+            update: {
+                signatureUrl,
+                updatedBy: userId,
+            },
+            select: { signatureUrl: true },
+        });
+    }
+
     async claimUsername(
         userId: string,
         { username }: UserClaimUsernameRequestDto,

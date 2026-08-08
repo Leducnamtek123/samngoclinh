@@ -1,4 +1,6 @@
 import { PenTool, AlertCircle } from 'lucide-react';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
 
 type EContractSignaturePadProps = {
   signatureType: 'draw' | 'type';
@@ -28,31 +30,31 @@ export const EContractSignaturePad = ({
   clearCanvas,
 }: EContractSignaturePadProps) => {
   return (
-    <div className="border border-slate-200 rounded-2xl p-5 space-y-4 bg-slate-50/30">
+    <div className="border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 bg-slate-50/30 dark:bg-gray-900">
       <div className="flex items-center justify-between">
-        <h5 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-          <PenTool className="w-4 h-4 text-[#1C3F24]" />
+        <h5 className="font-bold text-slate-900 dark:text-gray-100 text-sm flex items-center gap-2">
+          <PenTool className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
           Ký số xác nhận hợp đồng
         </h5>
-        <div className="flex items-center gap-2 bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
-          <button
+        <div className="flex items-center gap-2 bg-slate-200/80 dark:bg-gray-800 p-1 rounded-xl text-xs font-semibold">
+          <Button
             type="button"
+            variant={signatureType === 'draw' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setSignatureType('draw')}
-            className={`px-3 py-1 rounded-lg transition-colors ${
-              signatureType === 'draw' ? 'bg-white text-[#1C3F24] shadow-xs font-bold' : 'text-slate-600'
-            }`}
+            className="h-7 text-xs"
           >
             Vẽ chữ ký
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant={signatureType === 'type' ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setSignatureType('type')}
-            className={`px-3 py-1 rounded-lg transition-colors ${
-              signatureType === 'type' ? 'bg-white text-[#1C3F24] shadow-xs font-bold' : 'text-slate-600'
-            }`}
+            className="h-7 text-xs"
           >
             Nhập tên ký
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -65,7 +67,7 @@ export const EContractSignaturePad = ({
 
       {signatureType === 'draw' ? (
         <div className="space-y-2">
-          <div className="relative border-2 border-dashed border-slate-300 rounded-2xl bg-white overflow-hidden">
+          <div className="relative border-2 border-dashed border-slate-300 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-950 overflow-hidden">
             <canvas
               ref={canvasRef}
               width={600}
@@ -85,29 +87,30 @@ export const EContractSignaturePad = ({
             )}
           </div>
           <div className="flex justify-end">
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={clearCanvas}
-              className="text-xs text-slate-500 hover:text-red-600 underline font-semibold"
+              className="text-xs text-slate-500 hover:text-red-600 font-semibold"
             >
               Xóa chữ ký
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
         <div className="space-y-2">
-          <label htmlFor="typedSignatureName" className="sr-only">Họ và tên chữ ký</label>
-          <input
+          <label htmlFor="typedSignatureName" className="text-xs font-medium text-gray-700 dark:text-gray-300 block">Họ và tên chữ ký</label>
+          <Input
             id="typedSignatureName"
             type="text"
             value={typedName}
             onChange={(e) => setTypedName(e.target.value)}
-            placeholder="Nhập họ và tên đầy đủ của bạn..."
-            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#1C3F24] bg-white font-semibold"
+            className="h-11 font-semibold text-sm"
           />
           {typedName.trim() && (
-            <div className="p-4 bg-white border border-slate-200 rounded-xl text-center">
-              <span className="font-serif italic text-2xl text-[#1C3F24] font-bold">
+            <div className="p-4 bg-white dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl text-center">
+              <span className="font-serif italic text-2xl text-emerald-900 dark:text-emerald-300 font-bold">
                 {typedName.trim()}
               </span>
             </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
@@ -21,7 +22,6 @@ type ProductsClientProps = {
 };
 
 export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
-  const t = useTranslations('products');
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
   const { data: banners } = useBanner('products');
   const [searchTerm, setSearchTerm] = useState('');
@@ -139,18 +139,14 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
             
             {/* Search Input Bar */}
             <div className="relative w-full">
-              <input
+              <Input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={t('searchPlaceholder') || 'Tìm kiếm sản phẩm...'}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 pl-10 text-sm focus:outline-none focus:border-[#1C3F24] bg-white shadow-xs"
+                placeholder=""
+                className="pl-10 h-10 text-sm"
               />
-              <div className="absolute left-3.5 top-3 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+              <Search className="w-4 h-4 absolute left-3.5 top-3 text-gray-400 pointer-events-none" />
             </div>
 
             {/* Products Grid */}
