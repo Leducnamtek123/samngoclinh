@@ -120,7 +120,12 @@ export const ProfileClient = ({
     fetchApiClient('/user/orders')
       .then((res) => {
         if (isSubscribed && res?.data) {
-          setUserOrders(res.data);
+          const itemsList = Array.isArray(res.data)
+            ? res.data
+            : Array.isArray(res.data?.items)
+              ? res.data.items
+              : [];
+          setUserOrders(itemsList);
           setOrdersLoading(false);
         }
       })
@@ -286,13 +291,16 @@ export const ProfileClient = ({
 
   const handleSavePin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pinCode.length !== 6 || confirmPin.length !== 6) {
+    if (!/^\d{6}$/.test(pinCode) || !/^\d{6}$/.test(confirmPin)) {
       toast.error('Mã PIN phải bao gồm đúng 6 chữ số!');
       return;
     }
     if (pinCode !== confirmPin) {
       toast.error('Mã PIN xác nhận không trùng khớp!');
       return;
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_txn_pin:v1', pinCode);
     }
     setPinSaved(true);
     toast.success('Đã thiết lập mã PIN bảo mật thành công!');
@@ -609,11 +617,11 @@ export const ProfileClient = ({
 
                   <div className="border-t border-gray-200 pt-3 flex flex-col sm:flex-row gap-3 items-center justify-between">
                     <span className="text-xs text-gray-600 truncate max-w-sm font-medium">
-                      http://localhost:3002/{locale}/sign-up?ref={referralCode}
+                      {typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3002'}/{locale}/sign-up?ref={referralCode}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopyText(`http://localhost:3002/${locale}/sign-up?ref=${referralCode}`, 'Đường dẫn chia sẻ')}
+                      onClick={() => handleCopyText(`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3002'}/${locale}/sign-up?ref=${referralCode}`, 'Đường dẫn chia sẻ')}
                       className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold px-5 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>Sao chép link</span>

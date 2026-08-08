@@ -302,7 +302,13 @@ export const DigitalSignatureCard: React.FC = () => {
           </div>
           <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl inline-block">
             <img
-              src={savedSignatureUrl}
+              src={
+                savedSignatureUrl.startsWith('data:') ||
+                savedSignatureUrl.startsWith('http://') ||
+                savedSignatureUrl.startsWith('https://')
+                  ? savedSignatureUrl
+                  : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl}`
+              }
               alt="Chữ ký điện tử hiện tại"
               className="max-h-24 object-contain bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
             />

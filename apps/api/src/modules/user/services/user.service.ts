@@ -109,7 +109,7 @@ import {
 import { IUserService } from '@modules/user/interfaces/user.service.interface';
 import { UserRepository } from '@modules/user/repositories/user.repository';
 import { UserUtil } from '@modules/user/utils/user.util';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
     EnumUserLoginFrom,
     EnumUserLoginWith,
@@ -662,6 +662,11 @@ export class UserService implements IUserService {
             throw new RequestParamRequiredException('back');
         }
 
+        const user = await this.userRepository.findOneById(userId);
+        if (user?.isVerified) {
+            throw new BadRequestException('Tài khoản của bạn đã được xác minh chính thức, không cần gửi lại eKYC.');
+        }
+
         try {
             const saved = await this.userRepository.saveIdentityDocument(
                 userId,
@@ -681,8 +686,24 @@ export class UserService implements IUserService {
                 data: this.userUtil.mapIdentityDocument(saved),
             };
         } catch (err: unknown) {
+            if (err instanceof BadRequestException) throw err;
             throw new AppUnknownException(err);
         }
+    }
+
+    async getIdentityDocumentsListAdmin() {
+        const items = await this.userRepository.findIdentityDocumentsList();
+        return { data: items };
+    }
+
+    async approveIdentityVerificationAdmin(id: string) {
+        await this.userRepository.approveIdentityVerification(id);
+        return { data: { success: true } };
+    }
+
+    async rejectIdentityVerificationAdmin(id: string) {
+        await this.userRepository.rejectIdentityVerification(id);
+        return { data: { success: true } };
     }
 
     async getSignature(

@@ -9,6 +9,7 @@ import {
     Post,
     Put,
     UploadedFile,
+    VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -83,7 +84,7 @@ import { UserImportRequestDto } from '@modules/user/dtos/request/user.import.req
 
 @ApiTags('modules.admin.user')
 @Controller({
-    version: '1',
+    version: VERSION_NEUTRAL,
     path: '/user',
 })
 export class UserAdminController {
@@ -286,5 +287,35 @@ export class UserAdminController {
         country?: Record<string, IPaginationEqual>
     ): Promise<IResponseFileReturn> {
         return this.userService.exportByAdmin(status, role, country);
+    }
+
+    @Response('user.kycList')
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/kyc-list')
+    async kycList() {
+        return this.userService.getIdentityDocumentsListAdmin();
+    }
+
+    @Response('user.approveKyc')
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/kyc/:id/approve')
+    async approveKyc(@Param('id') id: string) {
+        return this.userService.approveIdentityVerificationAdmin(id);
+    }
+
+    @Response('user.rejectKyc')
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/kyc/:id/reject')
+    async rejectKyc(@Param('id') id: string) {
+        return this.userService.rejectIdentityVerificationAdmin(id);
     }
 }
