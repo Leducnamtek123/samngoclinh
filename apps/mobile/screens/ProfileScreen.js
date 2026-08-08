@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import SupportButton from '../components/SupportButton';
+import CartButton from '../components/CartButton';
 import { useAuth } from '../context/AuthContext';
 import { confirm } from '../utils/confirm';
 import { colors, spacing } from '../utils/theme';
@@ -75,7 +76,7 @@ export default function ProfileScreen({ navigation }) {
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Text style={styles.headerTitle}>Hồ sơ</Text>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <View>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
             {NOTIFICATION_COUNT > 0 ? (

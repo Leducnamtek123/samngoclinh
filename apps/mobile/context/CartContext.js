@@ -19,7 +19,7 @@ function normalize(data) {
 }
 
 export function CartProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [cart, setCart] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +38,12 @@ export function CartProvider({ children }) {
     }
   }, [isAuthenticated]);
 
+  // Chờ bootstrap auth xong (token đã validate/refresh) rồi mới tải giỏ -> tránh đua khi reload.
   useEffect(() => {
+    if (authLoading) return;
     if (isAuthenticated) refresh();
     else setCart(EMPTY);
-  }, [isAuthenticated, refresh]);
+  }, [isAuthenticated, authLoading, refresh]);
 
   const add = useCallback(async (productId, quantity = 1) => {
     setCart(normalize(await cartApi.addToCart(productId, quantity)));

@@ -1,8 +1,9 @@
 // Chi tiết đơn hàng (sau khi đặt): trạng thái, thông tin khách, sản phẩm, tổng tiền (VAT 8%),
 // hủy đơn hoặc thanh toán (mã QR cho đơn trực tuyến đang chờ).
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AppState,
   Image,
   Linking,
   Pressable,
@@ -16,9 +17,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { colors, spacing } from '../utils/theme';
 import { groupThousands } from '../utils/format';
-import { toStaticUrl, API_BASE_NEUTRAL } from '../api/config';
+import { toStaticUrl, API_BASE_NEUTRAL, ORDER_STATUS_POLL_MS } from '../api/config';
 import { useAlert } from '../context/AlertContext';
-import { cancelOrder } from '../api/orders';
+import { cancelOrder, fetchOrder } from '../api/orders';
 
 const STATUS = {
   pending: { label: 'Chờ thanh toán', color: '#E08A1E', bg: '#FDF2E2' },
@@ -40,6 +41,41 @@ export default function OrderDetailScreen({ navigation, route }) {
   const alert = useAlert();
   const [order, setOrder] = useState(route.params?.order || null);
   const [busy, setBusy] = useState(false);
+  const pollsRef = useRef(0);
+
+  // Tải lại đơn từ server (dùng để cập nhật trạng thái sau khi thanh toán trên cổng SePay).
+  const refresh = useCallback(async () => {
+    if (!order?.id) return;
+    const data = await fetchOrder(order.id).catch(() => null);
+    if (!data) return;
+    setOrder((prev) => ({ ...prev, ...data }));
+    if (order.status === 'pending' && data.status === 'paid') {
+      alert.success('Thanh toán thành công', `Đơn #${data.code} đã được thanh toán.`);
+    }
+  }, [order?.id, order?.status, alert]);
+
+  // Khách thanh toán trên trình duyệt SePay (không có callback về app) -> poll khi đơn còn chờ.
+  useEffect(() => {
+    if (order?.status !== 'pending') return undefined;
+    pollsRef.current = 0;
+    const timer = setInterval(() => {
+      pollsRef.current += 1;
+      if (pollsRef.current > 180) {
+        clearInterval(timer);
+        return;
+      }
+      refresh();
+    }, ORDER_STATUS_POLL_MS);
+    return () => clearInterval(timer);
+  }, [order?.status, refresh]);
+
+  // Kiểm tra lại ngay khi người dùng quay về app (từ trình duyệt/tab SePay).
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refresh();
+    });
+    return () => sub.remove();
+  }, [refresh]);
 
   const goHome = () => navigation.reset({ index: 0, routes: [{ name: 'Home' }] });
 
