@@ -4,7 +4,7 @@ import { fetchApiClient } from '@/libs/ApiClient';
 export function useRequestEmailVerification() {
   return useMutation({
     mutationFn: () =>
-      fetchApiClient('/shared/user/verify-email/request', {
+      fetchApiClient('/v1/shared/user/verify-email/request', {
         method: 'POST',
       }),
   });
@@ -15,7 +15,7 @@ export function useConfirmEmailVerification() {
 
   return useMutation({
     mutationFn: (otp: string) =>
-      fetchApiClient('/shared/user/verify-email/confirm', {
+      fetchApiClient('/v1/shared/user/verify-email/confirm', {
         method: 'POST',
         body: JSON.stringify({ otp }),
       }),

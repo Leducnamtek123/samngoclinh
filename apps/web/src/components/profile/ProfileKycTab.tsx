@@ -34,10 +34,11 @@ export const ProfileKycTab = ({
   submitKycMutation,
   onSubmit,
 }: ProfileKycTabProps) => {
-  const existingFront = kycStatusData?.front || frontImagePreview;
-  const existingBack = kycStatusData?.back || backImagePreview;
-  const isVerified = profile?.verified || kycStatusData?.status === 'VERIFIED';
-  const isPending = kycStatusData?.status === 'PENDING';
+  const actualKycData = kycStatusData?.data || kycStatusData;
+  const existingFront = actualKycData?.frontImageUrl || actualKycData?.front || frontImagePreview;
+  const existingBack = actualKycData?.backImageUrl || actualKycData?.back || backImagePreview;
+  const isVerified = !!(profile?.isVerified || profile?.verified || actualKycData?.status === 'VERIFIED' || actualKycData?.status === 'APPROVED');
+  const isPending = !isVerified && !!(actualKycData?.status === 'PENDING' || actualKycData?.frontImageUrl || actualKycData?.front || actualKycData?.id);
 
   return (
     <div className="space-y-8">
@@ -60,14 +61,26 @@ export const ProfileKycTab = ({
         </Card>
       ) : isPending ? (
         <Card className="bg-amber-50/70 border-amber-200 text-amber-900 p-6">
-          <CardContent className="p-0 space-y-3">
+          <CardContent className="p-0 space-y-4">
             <div className="flex items-center gap-2.5 font-bold text-base">
               <Clock className="w-6 h-6 text-amber-600 animate-pulse" />
-              Hồ sơ đã được lưu thành công
+              Hồ sơ đã được lưu thành công – Đang chờ duyệt eKYC
             </div>
             <p className="text-xs text-amber-800 leading-relaxed font-medium">
-              Hồ sơ eKYC của bạn đã được tải lên thành công. Kết quả sẽ được đối soát tự động trên hệ thống.
+              Hồ sơ eKYC của bạn đã được tải lên hệ thống và đang chờ quản trị viên đối soát phê duyệt.
             </p>
+            {existingFront && existingBack && (
+              <div className="grid grid-cols-2 gap-4 pt-2 border-t border-amber-200/60">
+                <div>
+                  <span className="text-[11px] font-bold text-amber-800 block mb-1">Mặt trước CCCD</span>
+                  <Image src={existingFront} alt="Mặt trước" width={200} height={144} unoptimized className="max-h-28 object-contain rounded-lg border border-amber-200 bg-white" />
+                </div>
+                <div>
+                  <span className="text-[11px] font-bold text-amber-800 block mb-1">Mặt sau CCCD</span>
+                  <Image src={existingBack} alt="Mặt sau" width={200} height={144} unoptimized className="max-h-28 object-contain rounded-lg border border-amber-200 bg-white" />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -89,7 +102,7 @@ export const ProfileKycTab = ({
             </div>
           </div>
 
-          {kycErrorMsg && (
+          {kycErrorMsg && kycErrorMsg !== 'Not Found' && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3.5 rounded-xl font-bold">
               {kycErrorMsg}
             </div>

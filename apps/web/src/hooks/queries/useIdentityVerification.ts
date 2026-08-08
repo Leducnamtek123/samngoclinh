@@ -20,7 +20,7 @@ export function useIdentityVerificationStatus(initialData?: any) {
   return useQuery({
     queryKey: ['identity-document'],
     queryFn: () =>
-      fetchApiClient('/shared/user/identity-document')
+      fetchApiClient('/v1/shared/user/identity-document')
         .then((res) => res.data)
         .catch(() => null),
     initialData,
@@ -36,7 +36,7 @@ export function useSubmitIdentityVerification() {
       if (payload.front) formData.append('front', payload.front);
       if (payload.back) formData.append('back', payload.back);
 
-      return fetchApiClient('/shared/user/identity-document', {
+      return fetchApiClient('/v1/shared/user/identity-document', {
         method: 'PUT',
         body: formData,
       });

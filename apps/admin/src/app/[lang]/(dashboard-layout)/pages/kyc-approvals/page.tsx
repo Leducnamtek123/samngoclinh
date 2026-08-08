@@ -49,6 +49,13 @@ interface KYCRequest {
   submittedAt?: string
 }
 
+const getFullImageUrl = (url?: string) => {
+  if (!url) return ""
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url
+  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api").replace(/\/api\/?$/, "")
+  return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`
+}
+
 export default function KycApprovalsPage() {
   const [selectedKyc, setSelectedKyc] = useState<KYCRequest | null>(null)
   const [rejectReason, setRejectReason] = useState("")
@@ -62,8 +69,8 @@ export default function KycApprovalsPage() {
     refetch,
     isError,
   } = useApiQuery<any>(
-    ["kyc-approvals", page],
-    `/admin/user/list?page=${page}&perPage=${perPage}`
+    ["kyc-approvals"],
+    `/admin/user/kyc-list`
   )
 
   const mutation = useApiMutation()
@@ -77,7 +84,7 @@ export default function KycApprovalsPage() {
   const handleApprove = async (id: string) => {
     try {
       await mutation.mutateAsync({
-        endpoint: `/admin/identity-verification/${id}/approve`,
+        endpoint: `/admin/user/kyc/${id}/approve`,
         method: "POST",
       })
       toast.success("Phê duyệt eKYC thành công")
@@ -95,7 +102,7 @@ export default function KycApprovalsPage() {
     }
     try {
       await mutation.mutateAsync({
-        endpoint: `/admin/identity-verification/${id}/reject`,
+        endpoint: `/admin/user/kyc/${id}/reject`,
         data: { note: rejectReason },
         method: "POST",
       })
@@ -187,26 +194,22 @@ export default function KycApprovalsPage() {
                             variant={
                               kyc.status === "APPROVED"
                                 ? "default"
-                                : kyc.status === "PENDING"
-                                  ? "outline"
-                                  : "destructive"
+                                : "outline"
                             }
                             className={
                               kyc.status === "APPROVED"
-                                ? "bg-emerald-600 text-white"
-                                : kyc.status === "PENDING"
-                                  ? "bg-amber-100 text-amber-800 border-amber-300"
-                                  : ""
+                                ? "bg-emerald-600 text-white font-bold"
+                                : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
                             }
                           >
-                            {kyc.status}
+                            {kyc.status === "APPROVED" ? "Đã Phê Duyệt" : "Chờ Duyệt"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
+                            className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 font-bold"
                             onClick={() => {
                               setSelectedKyc(kyc)
                               setShowRejectForm(false)
@@ -255,48 +258,34 @@ export default function KycApprovalsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">
+                    <span className="text-xs font-medium text-muted-foreground block">
                       Mặt trước CCCD
                     </span>
-                    <img
-                      src={
-                        selectedKyc.idFrontUrl ||
-                        selectedKyc.frontImage ||
-                        "/images/placeholder.png"
-                      }
-                      alt="Mặt trước CCCD"
-                      className="w-full h-32 object-cover rounded border bg-muted"
-                    />
+                    {getFullImageUrl(selectedKyc.idFrontUrl || selectedKyc.frontImage) ? (
+                      <img
+                        src={getFullImageUrl(selectedKyc.idFrontUrl || selectedKyc.frontImage)}
+                        alt="Mặt trước CCCD"
+                        className="w-full h-40 object-contain rounded border bg-muted p-1"
+                      />
+                    ) : (
+                      <div className="w-full h-40 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                    )}
                   </div>
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">
+                    <span className="text-xs font-medium text-muted-foreground block">
                       Mặt sau CCCD
                     </span>
-                    <img
-                      src={
-                        selectedKyc.idBackUrl ||
-                        selectedKyc.backImage ||
-                        "/images/placeholder.png"
-                      }
-                      alt="Mặt sau CCCD"
-                      className="w-full h-32 object-cover rounded border bg-muted"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      Ảnh chân dung
-                    </span>
-                    <img
-                      src={
-                        selectedKyc.selfieUrl ||
-                        selectedKyc.portraitImage ||
-                        "/images/placeholder.png"
-                      }
-                      alt="Chân dung"
-                      className="w-full h-32 object-cover rounded border bg-muted"
-                    />
+                    {getFullImageUrl(selectedKyc.idBackUrl || selectedKyc.backImage) ? (
+                      <img
+                        src={getFullImageUrl(selectedKyc.idBackUrl || selectedKyc.backImage)}
+                        alt="Mặt sau CCCD"
+                        className="w-full h-40 object-contain rounded border bg-muted p-1"
+                      />
+                    ) : (
+                      <div className="w-full h-40 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                    )}
                   </div>
                 </div>
 
@@ -318,7 +307,7 @@ export default function KycApprovalsPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleReject(selectedKyc.id)}
+                        onClick={() => handleReject(selectedKyc.id || selectedKyc.userId)}
                       >
                         Xác nhận Từ chối
                       </Button>
@@ -335,7 +324,7 @@ export default function KycApprovalsPage() {
                     </Button>
                     <Button
                       className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1"
-                      onClick={() => handleApprove(selectedKyc.id)}
+                      onClick={() => handleApprove(selectedKyc.id || selectedKyc.userId)}
                     >
                       <CheckCircle2 className="w-4 h-4" /> Phê duyệt eKYC
                     </Button>
