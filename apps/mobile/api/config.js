@@ -41,3 +41,7 @@ export const WEB_ORIGIN = (
   process.env.EXPO_PUBLIC_WEB_BASE_URL ||
   'http://localhost:3002'
 ).replace(/\/+$/, '');
+
+// Nhịp (ms) tự gọi lại API kiểm tra trạng thái đơn khi đơn đang chờ thanh toán (mặc định 5s).
+export const ORDER_STATUS_POLL_MS =
+  Number(extra.orderPollMs || process.env.EXPO_PUBLIC_ORDER_POLL_MS) || 5000;

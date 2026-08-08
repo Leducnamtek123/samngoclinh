@@ -23,6 +23,7 @@ import { fetchSetting } from '../api/setting';
 import { toStaticUrl } from '../api/config';
 import { colors, spacing } from '../utils/theme';
 import { quickActions } from '../data/mock';
+import CartButton from '../components/CartButton';
 
 // Banner tĩnh dùng khi API lỗi/không kết nối được (giữ trang chủ không trống).
 const FALLBACK_BANNERS = [
@@ -93,7 +94,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.brandText}>iWE FARM</Text>
         </View>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>

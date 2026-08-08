@@ -42,7 +42,7 @@ export default function CheckoutScreen({ navigation }) {
   const defaultAddr = addresses.find((a) => a.isDefault) || addresses[0];
 
   const [name, setName] = useState(user?.name || '');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(user?.mobileNumbers?.[0]?.number || '');
   const [email, setEmail] = useState(user?.email || '');
   const [addressChoice, setAddressChoice] = useState(defaultAddr?.id ?? 'new');
   const [newAddress, setNewAddress] = useState('');

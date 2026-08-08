@@ -21,7 +21,9 @@
     "plugins": ["expo-secure-store"],
     "extra": {
       "apiBaseUrl": "http://localhost:3000",
-      "apiKey": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP"
+      "apiKey": "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP",
+      "webBaseUrl": "http://localhost:3002",
+      "orderPollMs": 5000
     }
   }
 }

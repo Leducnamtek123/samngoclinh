@@ -18,6 +18,7 @@ import { groupThousands } from '../utils/format';
 import { fetchFreeTreeCampaign } from '../api/promotion';
 import { useAuth } from '../context/AuthContext';
 import { useRequireAuth } from '../hooks/useRequireAuth';
+import CartButton from '../components/CartButton';
 
 export default function PromoScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -63,7 +64,7 @@ export default function PromoScreen({ navigation }) {
         </Pressable>
         <Text style={styles.headerTitle}>Nhận cây sâm 1 năm</Text>
         <View style={styles.headerActions}>
-          <Ionicons name="cart-outline" size={24} color="#fff" />
+          <CartButton />
           <Ionicons name="notifications-outline" size={24} color="#fff" />
         </View>
       </View>

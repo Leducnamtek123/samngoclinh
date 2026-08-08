@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     Logger,
+    NotFoundException,
     OnModuleInit,
     UnauthorizedException,
 } from '@nestjs/common';
@@ -9,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { OrdersService } from '@modules/orders/services/orders.service';
 import { DatabaseService } from '@common/database/services/database.service';
 import { SepayWebhookDto } from '@modules/sepay/dtos/sepay-webhook.dto';
+import { SepayPgIpnDto } from '@modules/sepay/dtos/sepay-pg-ipn.dto';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import {
@@ -127,6 +129,116 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             status: 'SUCCESS',
             gatewayRef: `SEPAY_${payload.gateway}_${refCode}`,
         });
+    }
+
+    /**
+     * IPN cổng thanh toán SePay: xác thực header X-Secret-Key, ORDER_PAID -> đánh dấu đơn đã thanh toán.
+     * Trả { success: true } + HTTP 200 để SePay xác nhận đã nhận.
+     */
+    async handlePgIpn(
+        payload: SepayPgIpnDto,
+        secretKeyHeader?: string
+    ): Promise<{ success: boolean }> {
+        this.logger.log(`Received SePay PG IPN: ${JSON.stringify(payload)}`);
+
+        const secret = this.configService.get<string>('sepay.pgSecretKey');
+        if (secret && secretKeyHeader !== secret) {
+            throw new UnauthorizedException({
+                statusCode: 401,
+                message: 'Invalid SePay IPN secret key',
+            });
+        }
+
+        if (payload.notification_type === 'ORDER_PAID') {
+            const orderCode = payload.order?.order_invoice_number;
+            const amount = Math.round(Number(payload.order?.order_amount ?? 0)) || 0;
+            if (orderCode) {
+                await this.ordersService.handlePaymentWebhook({
+                    orderCode,
+                    amount,
+                    status: 'SUCCESS',
+                    gatewayRef:
+                        payload.transaction?.transaction_id ||
+                        payload.transaction?.id ||
+                        `SEPAY_PG_${Date.now()}`,
+                });
+            }
+        }
+
+        return { success: true };
+    }
+
+    /**
+     * Xác thực trạng thái với SePay khi khách quay về từ cổng thanh toán: truy vấn SePay,
+     * nếu đã thanh toán thì cập nhật đơn -> paid. Trả về trạng thái đơn hiện tại.
+     */
+    async verifyOrder(
+        orderCode: string
+    ): Promise<{ code: string; status: string; total: number }> {
+        const order = await this.databaseService.order.findUnique({
+            where: { code: orderCode },
+        });
+        if (!order) {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: 'order.error.notFound',
+            });
+        }
+
+        if (order.status === 'pending') {
+            const merchantId =
+                this.configService.get<string>('sepay.pgMerchantId');
+            const secretKey =
+                this.configService.get<string>('sepay.pgSecretKey');
+            if (merchantId && secretKey) {
+                try {
+                    const env =
+                        this.configService.get<'sandbox' | 'production'>(
+                            'sepay.pgEnv'
+                        ) ?? 'sandbox';
+                    const client = new SePayPgClient({
+                        env,
+                        merchant_id: merchantId,
+                        secret_key: secretKey,
+                    });
+                    const res = await client.order.retrieve(orderCode);
+                    const body = (res?.data ?? {}) as Record<string, unknown>;
+                    const detail = (body.data ?? body) as Record<string, unknown>;
+                    const sepayStatus = String(
+                        detail.order_status ?? detail.status ?? ''
+                    ).toUpperCase();
+                    if (
+                        [
+                            'CAPTURED',
+                            'PAID',
+                            'COMPLETED',
+                            'SUCCESS',
+                            'APPROVED',
+                        ].includes(sepayStatus)
+                    ) {
+                        await this.ordersService.handlePaymentWebhook({
+                            orderCode,
+                            amount: order.total,
+                            status: 'SUCCESS',
+                            gatewayRef: `SEPAY_PG_VERIFY_${orderCode}`,
+                        });
+                    }
+                } catch (error) {
+                    this.logger.warn(
+                        `SePay verify failed for ${orderCode}: ${String(error)}`
+                    );
+                }
+            }
+        }
+
+        const fresh = await this.databaseService.order.findUnique({
+            where: { code: orderCode },
+        });
+        return {
+            code: fresh?.code ?? orderCode,
+            status: fresh?.status ?? order.status,
+            total: fresh?.total ?? order.total,
+        };
     }
 
     /**
