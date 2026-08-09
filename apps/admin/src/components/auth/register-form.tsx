@@ -13,6 +13,7 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 import { ensureRedirectPathname } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
+import { apiAdminRegister } from "@/services/auth-admin.service"
 import { ButtonLoading } from "@/components/ui/button"
 import {
   Form,
@@ -44,18 +45,12 @@ export function RegisterForm() {
     const { firstName, lastName, username, email, password } = data
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          username,
-          email,
-          password,
-        }),
+      await apiAdminRegister({
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
       })
 
       if (res && res.status >= 400) {

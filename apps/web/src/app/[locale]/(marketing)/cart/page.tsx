@@ -9,7 +9,7 @@ type CartPageProps = {
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Giỏ Hàng & Thanh Toán | Rượu Sâm Ngọc Linh',
-    description: 'Quản lý giỏ hàng, nhập thông tin giao hàng và thanh toán VietQR qua SePay.',
+    description: 'Quản lý giỏ hàng, nhập thông tin giao hàng và thanh toán trực tuyến.',
   };
 }
 

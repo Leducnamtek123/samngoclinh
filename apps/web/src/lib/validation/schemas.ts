@@ -4,29 +4,29 @@ export const phoneRegex = /^(0|\+84)[3|5|7|8|9][0-9]{8}$/;
 
 export const phoneSchema = z
   .string()
-  .min(1, 'Vui lòng nhập số điện thoại')
-  .regex(phoneRegex, 'Số điện thoại không hợp lệ (ví dụ: 0912345678)');
+  .min(1, 'validation.phone.required')
+  .regex(phoneRegex, 'validation.phone.invalid');
 
 export const emailSchema = z
   .string()
-  .min(1, 'Vui lòng nhập địa chỉ email')
-  .email('Địa chỉ email không hợp lệ');
+  .min(1, 'validation.email.required')
+  .email('validation.email.invalid');
 
 export const passwordSchema = z
   .string()
-  .min(6, 'Mật khẩu phải có ít nhất 6 ký tự');
+  .min(6, 'validation.password.min');
 
 // Checkout / Shipping Address Schema
 export const shippingAddressSchema = z.object({
   recipientName: z
     .string()
-    .min(2, 'Họ tên phải có ít nhất 2 ký tự')
-    .max(100, 'Họ tên không vượt quá 100 ký tự'),
+    .min(2, 'validation.shippingAddress.recipientMin')
+    .max(100, 'validation.shippingAddress.recipientMax'),
   recipientPhone: phoneSchema,
   shippingAddress: z
     .string()
-    .min(5, 'Địa chỉ giao hàng phải có ít nhất 5 ký tự')
-    .max(255, 'Địa chỉ không vượt quá 255 ký tự'),
+    .min(5, 'validation.shippingAddress.addressMin')
+    .max(255, 'validation.shippingAddress.addressMax'),
   notes: z.string().optional(),
 });
 
@@ -44,7 +44,7 @@ export type SignInEmailFormValues = z.infer<typeof signInEmailSchema>;
 // Sign In Phone Schema
 export const signInPhoneSchema = z.object({
   phone: phoneSchema,
-  otp: z.string().length(6, 'Mã OTP phải có đúng 6 chữ số'),
+  otp: z.string().length(6, 'validation.otp.length'),
   remember: z.boolean().optional(),
 });
 
@@ -54,17 +54,17 @@ export type SignInPhoneFormValues = z.infer<typeof signInPhoneSchema>;
 export const signUpSchema = z.object({
   fullName: z
     .string()
-    .min(2, 'Họ tên phải có ít nhất 2 ký tự')
-    .max(100, 'Họ tên không vượt quá 100 ký tự'),
+    .min(2, 'validation.signUp.fullNameMin')
+    .max(100, 'validation.signUp.fullNameMax'),
   email: emailSchema,
   phone: phoneSchema,
   password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
+  confirmPassword: z.string().min(1, 'validation.password.confirmRequired'),
   agreeTerms: z.boolean().refine((val) => val === true, {
-    message: 'Bạn phải đồng ý với điều khoản sử dụng',
+    message: 'validation.signUp.agreeTerms',
   }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Mật khẩu xác nhận không trùng khớp',
+  message: 'validation.password.mismatch',
   path: ['confirmPassword'],
 });
 
@@ -74,26 +74,26 @@ export type SignUpFormValues = z.infer<typeof signUpSchema>;
 export const profileInfoSchema = z.object({
   fullName: z
     .string()
-    .min(2, 'Họ và tên phải có ít nhất 2 ký tự')
-    .max(100, 'Họ tên không vượt quá 100 ký tự'),
+    .min(2, 'validation.profileInfo.fullNameMin')
+    .max(100, 'validation.profileInfo.fullNameMax'),
   gender: z.enum(['male', 'female'], {
-    message: 'Vui lòng chọn giới tính',
+    message: 'validation.profileInfo.genderRequired',
   }),
-  birthDate: z.string().min(1, 'Vui lòng chọn ngày sinh'),
+  birthDate: z.string().min(1, 'validation.profileInfo.birthDateRequired'),
   phone: phoneSchema,
 });
-
 
 export type ProfileInfoFormValues = z.infer<typeof profileInfoSchema>;
 
 // Change Password Schema
 export const changePasswordSchema = z.object({
-  oldPassword: z.string().min(1, 'Vui lòng nhập mật khẩu hiện tại'),
+  oldPassword: z.string().min(1, 'validation.password.oldRequired'),
   newPassword: passwordSchema,
-  confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu mới'),
+  confirmPassword: z.string().min(1, 'validation.password.confirmNewRequired'),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Mật khẩu mới xác nhận không trùng khớp',
+  message: 'validation.password.mismatch',
   path: ['confirmPassword'],
 });
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
+

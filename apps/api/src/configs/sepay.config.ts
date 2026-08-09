@@ -13,7 +13,7 @@ export interface IConfigSepay {
 export default registerAs(
     'sepay',
     (): IConfigSepay => ({
-        bankBrand: process.env.SEPAY_BANK_BRAND || 'MBBank',
+        bankBrand: process.env.SEPAY_BANK_BRAND ?? '',
         bankAccount: process.env.SEPAY_BANK_ACCOUNT ?? null,
         accountName: process.env.SEPAY_ACCOUNT_NAME ?? null,
         webhookApiKey: process.env.SEPAY_WEBHOOK_API_KEY ?? null,

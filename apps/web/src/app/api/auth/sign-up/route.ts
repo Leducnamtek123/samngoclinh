@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Env } from '@/libs/Env';
+import { API_KEY } from '@/lib/apiKey';
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     let countryId = '';
     try {
       const countryRes = await fetch(`${apiBaseUrl}/v1/public/country/list?perPage=10`, {
-        headers: { 'x-api-key': Env.API_KEY },
+        headers: { 'x-api-key': API_KEY },
       });
       if (countryRes.ok) {
         const countryData = await countryRes.json();
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': Env.API_KEY,
+        'x-api-key': API_KEY,
       },
       body: JSON.stringify({
         email: email.toLowerCase().trim(),

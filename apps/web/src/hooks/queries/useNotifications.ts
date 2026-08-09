@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 
 export function useNotificationsList(enabled = true) {
   return useQuery({
@@ -66,7 +66,7 @@ export function useUpdateNotificationSettings() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: any) => {
-      return fetchApiClient('/v1/shared/notification/update/user-setting', {
+      return fetchApiClient('/v1/shared/notification/update/setting', {
         method: 'PUT',
         body: JSON.stringify(payload),
       });

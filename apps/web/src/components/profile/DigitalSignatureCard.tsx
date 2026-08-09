@@ -3,15 +3,17 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
+import { useUpdateUserSignature } from '@/hooks/queries/useEContract';
 import { toast } from 'sonner';
 
 export const DigitalSignatureCard: React.FC = () => {
   const [mode, setMode] = useState<'draw' | 'upload'>('draw');
   const [savedSignatureUrl, setSavedSignatureUrl] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
   const [hasDrawn, setHasDrawn] = useState(false);
+
+  const updateSignatureMutation = useUpdateUserSignature();
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
@@ -111,15 +113,15 @@ export const DigitalSignatureCard: React.FC = () => {
     isDrawingRef.current = false;
   };
 
-  const clearCanvas = () => {
+  const handleClear = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     setHasDrawn(false);
+    setUploadedImageBase64(null);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,21 +160,14 @@ export const DigitalSignatureCard: React.FC = () => {
       signatureData = uploadedImageBase64;
     }
 
-    setIsSaving(true);
     try {
-      const res: any = await fetchApiClient('/v1/shared/user/signature', {
-        method: 'PUT',
-        body: JSON.stringify({ signatureData }),
-      });
-
-      if (res?.data?.signatureUrl) {
-        setSavedSignatureUrl(res.data.signatureUrl);
+      const res: any = await updateSignatureMutation.mutateAsync(signatureData);
+      if (res?.signatureUrl || res?.data?.signatureUrl) {
+        setSavedSignatureUrl(res?.signatureUrl || res?.data?.signatureUrl);
         toast.success('Lưu chữ ký điện tử thành công!');
       }
     } catch (err: any) {
       toast.error(err?.message || 'Lưu chữ ký thất bại. Vui lòng thử lại.');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -196,7 +191,7 @@ export const DigitalSignatureCard: React.FC = () => {
           onClick={() => setMode('draw')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             mode === 'draw'
-              ? 'bg-[#1C3F24] text-white shadow-xs'
+              ? 'bg-primary text-white shadow-xs'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
           }`}
         >
@@ -209,7 +204,7 @@ export const DigitalSignatureCard: React.FC = () => {
           onClick={() => setMode('upload')}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             mode === 'upload'
-              ? 'bg-[#1C3F24] text-white shadow-xs'
+              ? 'bg-primary text-white shadow-xs'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
           }`}
         >
@@ -240,7 +235,7 @@ export const DigitalSignatureCard: React.FC = () => {
           <div className="flex items-center justify-between">
             <button
               type="button"
-              onClick={clearCanvas}
+              onClick={handleClear}
               className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 font-semibold transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -282,9 +277,9 @@ export const DigitalSignatureCard: React.FC = () => {
       <div className="pt-2">
         <ButtonLoading
           onClick={handleSaveSignature}
-          isLoading={isSaving}
-          disabled={isSaving}
-          className="bg-[#1C3F24] hover:bg-[#122B18] text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm"
+          isLoading={updateSignatureMutation.isPending}
+          disabled={updateSignatureMutation.isPending}
+          className="bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm"
         >
           <Save className="w-4 h-4" />
           <span>Lưu chữ ký</span>

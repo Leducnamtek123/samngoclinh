@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Check, AlertCircle } from 'lucide-react';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 import { toast } from 'sonner';
 import { Form, FormPassword } from '@/components/ui/form';
 import { ButtonLoading } from '@/components/ui/button';

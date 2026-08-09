@@ -11,6 +11,7 @@ import {
   UseFormReturn,
 } from 'react-hook-form';
 import { AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export interface FormProps<TFieldValues extends FieldValues = FieldValues>
   extends React.FormHTMLAttributes<HTMLFormElement> {
@@ -184,8 +185,18 @@ const FormMessage = React.forwardRef<
   FormMessageProps
 >(({ className, children, error: propError, ...props }, ref) => {
   const { error: contextError, formMessageId } = useFormField();
+  const tVal = useTranslations('validation');
+
   const error = propError || contextError;
-  const body = error ? String((error as any)?.message || error) : children;
+  let body = error ? String((error as any)?.message || error) : children;
+
+  if (typeof body === 'string' && body.startsWith('validation.')) {
+    try {
+      body = tVal(body.replace(/^validation\./, ''));
+    } catch {
+      // fallback if key missing
+    }
+  }
 
   if (!body) {
     return null;

@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { Truck, Store } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -323,6 +324,22 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
             {email}
           </span>
         </div>
+        <div className="flex flex-col gap-1 border-b pb-2">
+          <span className="text-xs text-muted-foreground">Phương thức nhận hàng:</span>
+          <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+            {order.deliveryType === 'pickup' ? (
+              <>
+                <Store className="w-4 h-4" />
+                <span>Nhận tại cửa hàng / Vườn sâm</span>
+              </>
+            ) : (
+              <>
+                <Truck className="w-4 h-4" />
+                <span>Giao hàng tận nơi</span>
+              </>
+            )}
+          </span>
+        </div>
         {order.shippingAddress && (
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground">Địa chỉ giao hàng:</span>
@@ -337,10 +354,19 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
 }
 
 function PaymentMethodCard({ order }: { order: OrderDetail }) {
+  const isSepay = (order.paymentMethod || "").toLowerCase().includes("sepay")
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Phương thức thanh toán</CardTitle>
+        <CardTitle className="flex items-center justify-between text-base">
+          <span>Phương thức thanh toán</span>
+          {isSepay && (
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 font-bold text-xs">
+              Thanh toán trực tuyến
+            </Badge>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div className="flex justify-between">
@@ -374,6 +400,16 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
                 timeZone: "Asia/Ho_Chi_Minh",
               })}
             </span>
+          </div>
+        )}
+        {isSepay && !order.paidAt && (
+          <div className="p-3 bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-md text-xs space-y-1">
+            <p className="font-semibold text-emerald-800 dark:text-emerald-300">
+              Thanh toán trực tuyến tự động:
+            </p>
+            <p className="text-muted-foreground">
+              Khách hàng có thể chuyển khoản với cú pháp chứa mã đơn <span className="font-mono font-bold text-emerald-700">{order.code}</span> để hệ thống tự động xác nhận.
+            </p>
           </div>
         )}
       </CardContent>

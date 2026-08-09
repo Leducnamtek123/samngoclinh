@@ -2,7 +2,6 @@ import {
     Controller,
     Get,
     Param,
-    VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
@@ -13,7 +12,7 @@ import { SystemSetting } from '@generated/prisma-client';
 
 @ApiTags('modules.public.setting')
 @Controller({
-    version: VERSION_NEUTRAL,
+    version: '1',
     path: '/settings',
 })
 export class SettingPublicController {

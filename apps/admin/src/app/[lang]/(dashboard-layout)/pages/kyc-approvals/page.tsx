@@ -2,7 +2,7 @@
 
 import React, { useState } from "react"
 import { toast } from "sonner"
-import { CheckCircle2, Eye, RefreshCw, UserCheck, XCircle } from "lucide-react"
+import { CheckCircle2, Eye, PenTool, RefreshCw, UserCheck, XCircle } from "lucide-react"
 
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -44,6 +44,9 @@ interface KYCRequest {
   frontImage?: string
   backImage?: string
   portraitImage?: string
+  signatureUrl?: string
+  digitalSignatureUrl?: string
+  digitalSignature?: string
   status: string
   createdAt?: string
   submittedAt?: string
@@ -270,7 +273,7 @@ export default function KycApprovalsPage() {
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
-                      <div className="w-full h-40 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
                     )}
                   </div>
                   <div className="space-y-1">
@@ -284,9 +287,30 @@ export default function KycApprovalsPage() {
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
-                      <div className="w-full h-40 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
                     )}
                   </div>
+                </div>
+
+                {/* Digital Signature section */}
+                <div className="space-y-1 pt-2 border-t">
+                  <span className="text-xs font-medium text-muted-foreground block flex items-center gap-1.5">
+                    <PenTool className="w-3.5 h-3.5 text-emerald-600" />
+                    Chữ ký số cá nhân (Digital Signature)
+                  </span>
+                  {getFullImageUrl(selectedKyc.signatureUrl || selectedKyc.digitalSignatureUrl || selectedKyc.digitalSignature) ? (
+                    <div className="p-2 border rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 flex items-center justify-center">
+                      <img
+                        src={getFullImageUrl(selectedKyc.signatureUrl || selectedKyc.digitalSignatureUrl || selectedKyc.digitalSignature)}
+                        alt="Chữ ký số cá nhân"
+                        className="max-h-28 object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-20 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
+                      Chưa đăng ký chữ ký số
+                    </div>
+                  )}
                 </div>
 
                 {showRejectForm ? (

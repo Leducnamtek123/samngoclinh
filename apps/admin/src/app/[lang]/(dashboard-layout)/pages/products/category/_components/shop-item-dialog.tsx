@@ -123,7 +123,7 @@ export function ShopItemDialog({
               <InlineAlert
                 type="error"
                 title="Lỗi"
-                message={error}
+                description={error}
                 className="my-2"
               />
             )}

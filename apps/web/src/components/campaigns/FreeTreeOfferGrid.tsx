@@ -2,22 +2,33 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 import { Sprout, CheckCircle2, Gift, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ClaimPlantModal } from './ClaimPlantModal';
 
+export interface FreeTreeSlot {
+  id: string;
+  plantCatalog?: {
+    name?: string;
+    description?: string;
+    ageYear?: number;
+  };
+  [key: string]: unknown;
+}
+
 type FreeTreeOfferGridProps = {
-  slots: any[];
+  slots: FreeTreeSlot[];
   token?: string;
 };
 
 export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FreeTreeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8";
 
-  const handleClaimClick = (slot: any) => {
+  const handleClaimClick = (slot: FreeTreeSlot) => {
     setSelectedItem(slot);
     setIsModalOpen(true);
   };
@@ -44,7 +55,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               {/* Top Overlay Gradients */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-              <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-[#1C3F24]/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-primary/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
                 <Sprout className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{slot.plantCatalog?.ageYear || 1} Năm Tuổi</span>
               </div>
@@ -94,18 +105,18 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               {/* Action CTA Button */}
               <div className="pt-1">
                 {token ? (
-                  <button
+                  <Button
                     type="button"
                     onClick={() => handleClaimClick(slot)}
-                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
+                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
                   >
                     <span>Nhận cây ngay</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
+                  </Button>
                 ) : (
                   <Link
                     href="/sign-in?reason=campaign"
-                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
+                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
                   >
                     <span>Đăng nhập để nhận</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

@@ -134,11 +134,11 @@
     "free": "Miễn Phí",
     "quantity": "Số Lượng",
     "product": "Sản Phẩm",
-    "payWithSePay": "Thanh toán VietQR (SePay)",
+    "payWithSePay": "Thanh toán trực tuyến",
     "confirmOrder": "Xác Nhận Đặt Hàng",
     "step1": "1. Giỏ hàng",
     "step2": "2. Xác nhận",
-    "step3": "3. Thanh toán VietQR",
+    "step3": "3. Thanh toán",
     "step4": "4. Hoàn tất",
     "recipientName": "Tên người nhận",
     "phoneNumber": "Số điện thoại",
@@ -189,5 +189,170 @@
     "date": "Ngày",
     "action": "Hoạt động",
     "verified": "Đã Kiểm Định Chuẩn Sâm Ngọc Linh"
+  },
+  "addressSelector": {
+    "title": "ĐỊA CHỈ NHẬN HÀNG (BẮT BUỘC CHO SẢN PHẨM VẬT LÝ)",
+    "addNewAddress": "+ Thêm địa chỉ mới",
+    "addAddress": "+ Thêm địa chỉ mới",
+    "defaultBadge": "Mặc định",
+    "emptyState": {
+      "description": "Bạn chưa có địa chỉ giao hàng nào. Vui lòng bấm \"+ Thêm địa chỉ mới\".",
+      "addAddress": "Thêm địa chỉ"
+    }
+  },
+  "plantPackageSelector": {
+    "careTitle": "1. GÓI CHĂM SÓC CÂY SÂM *",
+    "protectionTitle": "2. GÓI BẢO VỆ & BẢO HIỂM CÂY *",
+    "perTree": "/cây/năm",
+    "perYear": "/năm",
+    "defaultCareDesc": "Chăm sóc tiêu chuẩn nông trại hữu cơ",
+    "defaultProtectionDesc": "Bảo vệ & bảo hiểm toàn diện 100% rủi ro"
+  },
+  "addAddressModal": {
+    "title": "Thêm địa chỉ giao hàng",
+    "subtitle": "Định vị GPS hoặc chọn trên bản đồ OpenStreetMap",
+    "recipientNameLabel": "Họ và tên người nhận",
+    "recipientNamePlaceholder": "Nhập tên người nhận hàng...",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại...",
+    "addressLabel": "Địa chỉ chi tiết (Số nhà, Tên đường...)",
+    "addressPlaceholder": "Nhập hoặc định vị địa chỉ...",
+    "cancel": "Hủy",
+    "saveAndUse": "Lưu & Sử dụng địa chỉ này",
+    "savedSuccess": "Đã lưu địa chỉ mới vào Sổ địa chỉ!"
+  },
+  "changeAddressModal": {
+    "title": "Sổ địa chỉ nhận hàng",
+    "subtitle": "Chọn địa chỉ bạn muốn sử dụng cho đơn hàng này",
+    "defaultRecipient": "Người nhận",
+    "defaultBadge": "Mặc định",
+    "addNewAddress": "Thêm địa chỉ mới",
+    "close": "Đóng"
+  },
+  "cartStepShipping": {
+    "deliveryMethodTitle": "PHƯƠNG THỨC NHẬN HÀNG",
+    "deliveryShipping": "Giao hàng tận nơi",
+    "deliveryShippingDesc": "Vận chuyển tận nhà qua dịch vụ giao hàng nhanh",
+    "deliveryPickup": "Nhận tại cửa hàng / Vườn",
+    "deliveryPickupDesc": "Đến trực tiếp cửa hàng / vườn sâm Ngọc Linh để nhận hàng",
+    "free": "Miễn phí",
+    "changeAddress": "Thay đổi địa chỉ",
+    "addNewAddress": "Thêm địa chỉ mới",
+    "defaultBadge": "Mặc định",
+    "addressDetailLabel": "Địa chỉ giao hàng (Số nhà, Tên đường...)",
+    "pickupAddressTitle": "Địa chỉ cửa hàng / Vườn sâm Ngọc Linh:",
+    "pickupLocation": "Trạm tiếp nhận & Vườn sâm Ngọc Linh Nam Trà My, Quảng Nam",
+    "pickupHotline": "Hotline hỗ trợ nhận hàng: 090 123 4567",
+    "orderNotesLabel": "GHI CHÚ ĐƠN HÀNG",
+    "orderNotesPlaceholder": "Nhập ghi chú cho đơn hàng (không bắt buộc)...",
+    "orderSummaryTitle": "XÁC NHẬN ĐƠN HÀNG",
+    "subtotal": "Tạm tính",
+    "shippingFee": "Phí vận chuyển",
+    "totalPayment": "Tổng thanh toán",
+    "continueToPayment": "Tiếp Tục Thanh Toán",
+    "backToCart": "Quay lại Giỏ hàng"
+  },
+  "quickPurchase": {
+    "badgePlant": "Trồng Sâm Ngọc Linh",
+    "badgeProduct": "Sản Phẩm Thương Mại",
+    "headerBadgePlant": "Trồng Sâm Ngọc Linh",
+    "headerBadgeProduct": "Sản Phẩm Thương Mại",
+    "headerTitle": "Đặt Mua & Đăng Ký Chăm Sóc",
+    "modalTitle": "Đặt Mua & Đăng Ký Chăm Sóc",
+    "closeAriaLabel": "Đóng modal mua nhanh",
+    "perTree": "/cây",
+    "availableStock": "Còn: {count} cây",
+    "stockAvailable": "Còn: {count} cây",
+    "quantityLabel": "Số Lượng Đặt Mua *",
+    "decreaseAriaLabel": "Giảm số lượng",
+    "increaseAriaLabel": "Tăng số lượng",
+    "quantityAriaLabel": "Số lượng đặt mua",
+    "maxLimitNote": "Tối đa mua {count} cây trong 1 lần",
+    "agreeTermsText": "Tôi đồng ý ký Kết hợp đồng ủy quyền chăm sóc Sâm Ngọc Linh và chấp nhận quy định dịch vụ.",
+    "careTermsTitle": "Xem Quy định & Quyền lợi chăm sóc vĩnh viễn",
+    "careTermsItem1": "• Cây sâm giống được trồng & chăm sóc theo đúng chuẩn kỹ thuật hữu cơ sinh thái tại Vườn sâm Trà Linh.",
+    "careTermsItem2": "• Ban kỹ thuật cập nhật nhật ký tăng trưởng, chiều cao, tán lá & ảnh chụp thật theo chu kỳ định kỳ 15 ngày/lần.",
+    "careTermsItem3": "• Chủ sở hữu được quyền thu hoạch sâm củ thật hoặc quy đổi thành rượu sâm thành phẩm khi đến tuổi trưởng thành.",
+    "contractSampleTitle": "Mẫu hợp đồng hợp tác đầu tư eContract (Xem trước)",
+    "contractSampleLine1": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM - Độc lập - Tự do - Hạnh phúc",
+    "contractSampleLine2": "HỢP ĐỒNG ỦY QUYỀN CHĂM SÓC SÂM NGỌC LINH KỸ THUẬT SỐ",
+    "contractSampleLine3": "Bên A (Bên Ủy Quyền): Khách hàng đăng ký trên nền tảng Rượu Sâm Ngọc Linh.",
+    "contractSampleLine4": "Bên B (Bên Nhận Ủy Quyền): Công ty Cổ phần Nông nghiệp Số Ngọc Linh.",
+    "contractSampleLine5": "Nội dung: Bên B chịu trách nhiệm trồng, bảo vệ và báo cáo nhật ký canh tác cho Bên A.",
+    "breakdownTitle": "CHI TIẾT THANH TOÁN ĐƠN HÀNG",
+    "plantPriceLabel": "Tiền sâm ({quantity} cây x {price} đ):",
+    "vatTreeLabel": "Thuế VAT Sâm (5%):",
+    "careFeeLabel": "Phí chăm sóc ({name}):",
+    "vatCareLabel": "Thuế VAT Phí Chăm Sóc (10%):",
+    "protectionFeeLabel": "Phí bảo hiểm ({name}):",
+    "vatProtectionLabel": "Thuế VAT Bảo Hiểm (10%):",
+    "subtotalLabel": "Tạm tính ({quantity} sản phẩm):",
+    "vatProduct8Label": "Thuế VAT (8%):",
+    "grandTotalLabel": "TỔNG CỘNG THANH TOÁN:",
+    "defaultPackage": "Gói chuẩn",
+    "cancel": "Hủy",
+    "submitInitializing": "Đang khởi tạo...",
+    "submitConfirm": "Xác Nhận & Thanh Toán",
+    "toastAddressAdded": "Đã thêm địa chỉ giao hàng mới!",
+    "toastLoginRequired": "Vui lòng đăng nhập để tiến hành đặt mua!",
+    "toastAgreeTermsRequired": "Vui lòng tích đồng ý với quy định & hợp đồng dịch vụ!",
+    "toastAddressRequired": "Vui lòng chọn hoặc thêm địa chỉ nhận hàng!",
+    "toastOrderCreated": "Tạo đơn hàng thành công!",
+    "toastPaymentOpening": "Đang mở trang thanh toán..."
+  },
+  "validation": {
+    "phone": {
+      "required": "Vui lòng nhập số điện thoại",
+      "invalid": "Số điện thoại không hợp lệ (ví dụ: 0912345678)"
+    },
+    "email": {
+      "required": "Vui lòng nhập địa chỉ email",
+      "invalid": "Địa chỉ email không hợp lệ"
+    },
+    "password": {
+      "min": "Mật khẩu phải có ít nhất 6 ký tự",
+      "oldRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "confirmRequired": "Vui lòng xác nhận mật khẩu",
+      "confirmNewRequired": "Vui lòng xác nhận mật khẩu mới",
+      "mismatch": "Mật khẩu xác nhận không trùng khớp"
+    },
+    "shippingAddress": {
+      "recipientMin": "Họ tên phải có ít nhất 2 ký tự",
+      "recipientMax": "Họ tên không vượt quá 100 ký tự",
+      "addressMin": "Địa chỉ giao hàng phải có ít nhất 5 ký tự",
+      "addressMax": "Địa chỉ không vượt quá 255 ký tự"
+    },
+    "signUp": {
+      "fullNameMin": "Họ và tên phải có ít nhất 2 ký tự",
+      "fullNameMax": "Họ tên không vượt quá 100 ký tự",
+      "agreeTerms": "Bạn phải đồng ý với điều khoản sử dụng"
+    },
+    "otp": {
+      "length": "Mã OTP phải có đúng 6 chữ số"
+    },
+    "profileInfo": {
+      "fullNameMin": "Họ và tên phải có ít nhất 2 ký tự",
+      "fullNameMax": "Họ tên không vượt quá 100 ký tự",
+      "genderRequired": "Vui lòng chọn giới tính",
+      "birthDateRequired": "Vui lòng chọn ngày sinh"
+    }
+  },
+  "confirmModal": {
+    "confirm": "Xác nhận",
+    "cancel": "Hủy"
+  },
+  "mapLocationPicker": {
+    "title": "Chọn địa chỉ trên Bản đồ",
+    "badge": "OpenStreetMap Miễn phí",
+    "subtitle": "Nhấp vào bản đồ hoặc kéo thả ghim để chọn chính xác địa chỉ nhận hàng",
+    "searchPlaceholder": "Nhập số nhà, tên đường, phường/xã, quận/huyện...",
+    "searchButton": "Tìm địa chỉ",
+    "gpsButton": "Định vị GPS",
+    "loadingMap": "Đang tải bản đồ OpenStreetMap...",
+    "pinnedTitle": "Vị trí được ghim trên bản đồ:",
+    "updatingAddress": "Đang cập nhật địa chỉ...",
+    "selectPlaceholder": "Vui lòng chọn vị trí trên bản đồ...",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận địa chỉ này"
   }
 }

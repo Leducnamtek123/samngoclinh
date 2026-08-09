@@ -26,16 +26,22 @@ async function bootstrap(): Promise<void> {
         { prefix: '/uploads' }
     );
 
-    // @note ảnh danh mục/seed dùng chung với web app (apps/web/public), phục vụ cho mobile
-    const webPublic: string = join(process.cwd(), '..', 'web', 'public');
-    (app as unknown as NestExpressApplication).useStaticAssets(
-        join(webPublic, 'images'),
-        { prefix: '/images' }
-    );
-    (app as unknown as NestExpressApplication).useStaticAssets(
-        join(webPublic, 'assets'),
-        { prefix: '/assets' }
-    );
+    // @note Safe static asset mounting with fallback check for standalone deployments
+    const webPublicPath = process.env.WEB_PUBLIC_PATH 
+        ? process.env.WEB_PUBLIC_PATH 
+        : join(process.cwd(), '..', 'web', 'public');
+
+    const fs = await import('fs');
+    if (fs.existsSync(webPublicPath)) {
+        (app as unknown as NestExpressApplication).useStaticAssets(
+            join(webPublicPath, 'images'),
+            { prefix: '/images' }
+        );
+        (app as unknown as NestExpressApplication).useStaticAssets(
+            join(webPublicPath, 'assets'),
+            { prefix: '/assets' }
+        );
+    }
 
     const configService = app.get(ConfigService);
     const env: string = configService.get<string>('app.env')!;

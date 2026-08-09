@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Mail } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Button, ButtonLoading } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Input, Button } from '@/components/ui';
 import { useRequestEmailVerification, useConfirmEmailVerification } from '@/hooks/queries/useVerifyEmail';
 
 type VerifyEmailModalProps = {
@@ -73,14 +71,14 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-relaxed">
               Nhấn nút bên dưới để nhận mã OTP xác nhận gồm 6 chữ số gửi về hộp thư email của bạn.
             </p>
-            <ButtonLoading
+            <Button
               onClick={handleSendOtp}
               isLoading={requestMutation.isPending}
               variant="default"
               className="w-full"
             >
               Gửi mã xác thực OTP
-            </ButtonLoading>
+            </Button>
           </div>
         ) : (
           <form onSubmit={handleConfirmOtp} className="space-y-4 pt-2">
@@ -105,14 +103,14 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
               >
                 Gửi lại OTP
               </Button>
-              <ButtonLoading
+              <Button
                 type="submit"
                 variant="default"
                 isLoading={confirmMutation.isPending}
                 className="flex-1"
               >
                 Xác nhận OTP
-              </ButtonLoading>
+              </Button>
             </div>
           </form>
         )}
