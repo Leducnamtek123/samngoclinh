@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchApiClient } from '@/lib/ApiClient';
 import { useProfileMe } from '@/hooks/queries/useProfile';
+import { useShippingFee, useCreateOrderMutation } from '@/hooks/queries/useCheckout';
 import { getCartItems, clearCart, type CartItem } from '@/utils/cart';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -16,10 +16,11 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
   const router = useRouter();
 
   const [items, setItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   const { data: profile } = useProfileMe();
+  const { data: fetchedShippingFee = 30000 } = useShippingFee();
+  const createOrderMutation = useCreateOrderMutation();
 
   const [recipientName, setRecipientName] = useState('');
   const [recipientPhone, setRecipientPhone] = useState('');
@@ -27,7 +28,6 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
   const [notes, setNotes] = useState('');
 
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
-  const [shippingFee, setShippingFee] = useState<number>(30000);
 
   useEffect(() => {
     setIsClient(true);
@@ -37,16 +37,6 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
     } else {
       setItems(cart);
     }
-
-    fetchApiClient('/settings/shipping_fee')
-      .then((res: any) => {
-        const val = res?.data?.value || res?.value;
-        if (val) {
-          const parsed = parseInt(val, 10);
-          if (!isNaN(parsed)) setShippingFee(parsed);
-        }
-      })
-      .catch(() => {});
   }, [locale, router]);
 
   useEffect(() => {
@@ -97,33 +87,25 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const res: any = await fetchApiClient('/user/orders/checkout', {
-        method: 'POST',
-        body: JSON.stringify({
-          customerName,
-          customerPhone,
-          customerEmail: profile?.email || undefined,
-          deliveryType: finalDeliveryType,
-          shippingAddress: finalDeliveryType === 'shipping' ? address : undefined,
-          paymentMethod: 'online',
-          note: noteVal || undefined,
-          items: items.map((it) => ({ productId: it.id, quantity: it.quantity })),
-        }),
+      const orderData: any = await createOrderMutation.mutateAsync({
+        customerName,
+        customerPhone,
+        customerEmail: profile?.email || undefined,
+        deliveryType: finalDeliveryType,
+        shippingAddress: finalDeliveryType === 'shipping' ? address : undefined,
+        paymentMethod: 'online',
+        note: noteVal || undefined,
+        items: items.map((it) => ({ productId: it.id, quantity: it.quantity })),
       });
 
-      const orderData = res?.data || res;
       const orderId = orderData?.code || orderData?.id;
 
       clearCart();
       toast.success('Đã tạo đơn hàng thành công! Đang chuyển hướng sang trang thanh toán...');
-      window.location.href = `/api/proxy/public/payment/sepay/pay/${orderId}`;
+      router.push(`/api/proxy/public/payment/sepay/pay/${orderId}`);
     } catch (err: any) {
       toast.error(err?.message || 'Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin!');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -154,8 +136,8 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
           setNotes={setNotes}
           deliveryType={deliveryType}
           setDeliveryType={setDeliveryType}
-          shippingFee={shippingFee}
-          loading={loading}
+          shippingFee={fetchedShippingFee}
+          loading={createOrderMutation.isPending}
           t={t}
           onSubmit={handleCreateOrder}
           onPrevStep={() => router.push(`/${locale}/cart`)}

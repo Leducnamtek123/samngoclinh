@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { fetchApi } from '@/lib/Api';
 import { Link } from '@/lib/I18nNavigation';
-import { HomepageBannerSlider } from './HomepageBannerSlider';
+import { PageBannerSlider } from '@/components/PageBannerSlider';
 
 export const dynamic = 'force-dynamic';
 
@@ -465,7 +465,7 @@ export default async function Index(props: IndexPageProps) {
     <div className="w-full bg-brand-bg text-gray-800">
       <section className="w-full bg-brand-bg py-6 sm:py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <HomepageBannerSlider images={bannerImages} />
+          <PageBannerSlider images={bannerImages} />
         </div>
       </section>
       <AboutSection t={t} />

@@ -177,7 +177,7 @@ export function ToastCard({
 }: ToastCardProps) {
   const { t } = useTranslation()
   const currentStyle = TOAST_CARD_STYLES[type]
-  const displayTime = timeString || t("common.status.justNow", "Just now")
+  const displayTime = timeString || t("common.status.justNow") || "Just now"
 
   return (
     <div
@@ -299,7 +299,7 @@ export function NotificationCenter({
                   onClick={onMarkAllAsRead}
                   className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline"
                 >
-                  {t("common.actions.readAll", "Read all")}
+                  {t("common.actions.readAll") || "Read all"}
                 </button>
               )}
               {onClearAll && notifications.length > 0 && (
@@ -510,7 +510,7 @@ export function ImagePlaceholder({
       <ImageIcon className="h-6 w-6 stroke-[1.5] flex-shrink-0" />
       {showText && (
         <span className="text-[10px] uppercase font-bold tracking-widest leading-none text-center">
-          {t("common.status.noImage", "No image")}
+          {t("common.status.noImage") || "No image"}
         </span>
       )}
     </div>

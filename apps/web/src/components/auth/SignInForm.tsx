@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import { Link } from '@/lib/I18nNavigation';
 import {
   Form,
   FormCheckbox,
@@ -13,11 +14,12 @@ import {
 } from '@/components/ui/form';
 import { Button, ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Env } from '@/lib/Env';
 import {
   signInEmailSchema,
   type SignInEmailFormValues,
 } from '@/lib/validation/schemas';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { apiSignIn } from '@/services/auth.service';
 
 function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void }) {
   const getReasonMessage = (resVal: string | null) => {
@@ -55,18 +57,22 @@ function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void 
         <h4 className="font-bold text-sm tracking-wide text-left">{message.title}</h4>
         <p className="text-xs text-white/90 font-medium leading-relaxed text-left">{message.description}</p>
       </div>
-      <button 
+      <Button 
         type="button" 
+        variant="ghost"
+        size="icon"
         onClick={onClose} 
-        className="text-white/70 hover:text-white transition-colors shrink-0 align-top self-start cursor-pointer"
+        className="text-white/70 hover:text-white hover:bg-white/10 shrink-0 h-6 w-6 p-0 cursor-pointer"
       >
         <X className="w-4 h-4" />
-      </button>
+      </Button>
     </div>
   );
 }
 
 export default function SignInForm() {
+  const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams?.get('reason');
 
@@ -84,37 +90,24 @@ export default function SignInForm() {
     },
   });
 
-  const onEmailSubmit = (values: SignInEmailFormValues) => {
+  const onEmailSubmit = async (values: SignInEmailFormValues) => {
     setLoading(true);
     setError('');
     setInfoMessage('');
 
-    fetch('/api/auth/sign-in', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: values.email, password: values.password, type: 'email' }),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.');
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.email && (data.email === 'admin@mail.com' || data.email.includes('admin'))) {
-          const adminBaseUrl = Env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3003';
-          window.location.href = `${adminBaseUrl}/en`;
-        } else {
-          window.location.href = '/';
-        }
-      })
-      .catch((err: any) => {
-        setError(err.message || 'Đã xảy ra lỗi kết nối');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    try {
+      const data = await apiSignIn({ email: values.email, password: values.password, type: 'email' });
+      if (data.redirectUrl) {
+        router.push(data.redirectUrl);
+      } else {
+        router.push(`/${locale}`);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Đã xảy ra lỗi kết nối';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -189,7 +182,7 @@ export default function SignInForm() {
             variant="emerald"
             className="w-full"
           >
-            <a href="/sign-up">Tạo tài khoản mới</a>
+            <Link href="/sign-up">Tạo tài khoản mới</Link>
           </Button>
         </div>
       </Card>

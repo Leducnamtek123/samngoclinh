@@ -16,7 +16,7 @@ export function useProfileMe(initialData?: UserProfile) {
 
 export function useProfileBusiness(initialData?: UserBusiness) {
   return useQuery<UserBusiness | null>({
-    queryKey: ['profile', 'business'],
+    queryKey: ['profile', 'me'],
     queryFn: () =>
       fetchApiClient('/v1/shared/user/profile')
         .then((res) => res.data)

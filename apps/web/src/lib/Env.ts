@@ -44,5 +44,5 @@ export const Env = createEnv({
     NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
   },
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION || process.env.NODE_ENV === 'production',
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

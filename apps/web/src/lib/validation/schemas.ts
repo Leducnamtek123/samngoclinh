@@ -54,8 +54,8 @@ export type SignInPhoneFormValues = z.infer<typeof signInPhoneSchema>;
 export const signUpSchema = z.object({
   fullName: z
     .string()
-    .min(2, 'validation.shippingAddress.recipientMin')
-    .max(100, 'validation.shippingAddress.recipientMax'),
+    .min(2, 'validation.signUp.fullNameMin')
+    .max(100, 'validation.signUp.fullNameMax'),
   email: emailSchema,
   phone: phoneSchema,
   password: passwordSchema,

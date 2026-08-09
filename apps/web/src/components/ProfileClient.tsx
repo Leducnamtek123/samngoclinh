@@ -22,19 +22,23 @@ import { ProfileAddressTab } from './profile/ProfileAddressTab';
 import { VerifyEmailModal } from './profile/VerifyEmailModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { ErrorState } from '@/components/common/ErrorState';
-import { AccountLayout } from '@/components/account/AccountLayout';
+import { AccountLayout } from './profile/AccountLayout';
 
 import { useAddressBook } from '@/hooks/useAddressBook';
 import { useProfileUpdate } from '@/hooks/useProfileUpdate';
 import { useProfileOrders } from '@/hooks/useProfileOrders';
+import { useRouter } from 'next/navigation';
+import { apiSignOut } from '@/services/auth.service';
+
+import type { UserProfile, UserBusiness, WalletSummary, GinsengTreeItem } from '@/types';
 
 type ProfileClientProps = {
   locale: string;
   initialTab?: string;
-  initialProfile?: any;
-  initialBusiness?: any;
-  initialWallet?: any;
-  initialTrees?: any[];
+  initialProfile?: UserProfile;
+  initialBusiness?: UserBusiness;
+  initialWallet?: WalletSummary;
+  initialTrees?: GinsengTreeItem[];
 };
 
 export const ProfileClient = ({
@@ -45,6 +49,7 @@ export const ProfileClient = ({
   initialWallet,
   initialTrees,
 }: ProfileClientProps) => {
+  const router = useRouter();
   const [tabs, setTabs] = useState(initialTab);
 
   // Queries
@@ -84,42 +89,17 @@ export const ProfileClient = ({
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [copyToast, setCopyToast] = useState<string | null>(null);
 
-  // eKYC state
-  const [kycFullName, setKycFullName] = useState('');
-  const [kycIdentityNumber, setKycIdentityNumber] = useState('');
-  const [frontImagePreview, setFrontImagePreview] = useState('');
-  const [backImagePreview, setBackImagePreview] = useState('');
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [backFile, setBackFile] = useState<File | null>(null);
-  const [kycErrorMsg, setKycErrorMsg] = useState('');
-
   const handleCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     setCopyToast(`Đã sao chép ${label}!`);
     setTimeout(() => setCopyToast(null), 2500);
   };
 
-  const handleKycSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setKycErrorMsg('');
-    if (!frontFile || !backFile) {
-      setKycErrorMsg('Vui lòng tải lên cả mặt trước và mặt sau của CMND/CCCD.');
-      return;
-    }
-    try {
-      await submitKycMutation.mutateAsync({ front: frontFile, back: backFile });
-      toast.success('Gửi hồ sơ eKYC thành công!');
-      refetchKycStatus();
-    } catch (err: any) {
-      setKycErrorMsg(err.message || 'Có lỗi xảy ra khi gửi xác minh. Vui lòng thử lại.');
-    }
-  };
-
   const handleRelogin = async () => {
     try {
-      await fetch('/api/auth/sign-out', { method: 'POST' });
+      await apiSignOut();
     } catch {}
-    window.location.href = `/${locale}/sign-in?reason=session_expired`;
+    router.push(`/${locale}/sign-in?reason=session_expired`);
   };
 
   if (isError) {
@@ -188,7 +168,7 @@ export const ProfileClient = ({
             <ProfileOrdersTab
               ordersLoading={ordersLoading}
               safeOrders={safeOrders}
-              onViewDetail={setViewingOrderDetail}
+              onViewDetail={(ord) => setViewingOrderDetail(ord as any)}
               onPayOrder={(ord) => {
                 window.location.href = `/api/proxy/public/payment/sepay/pay/${ord.code || ord.id}`;
               }}
@@ -214,18 +194,7 @@ export const ProfileClient = ({
             <ProfileKycTab
               profile={profile}
               kycStatusData={kycStatusData}
-              kycFullName={kycFullName}
-              setKycFullName={setKycFullName}
-              kycIdentityNumber={kycIdentityNumber}
-              setKycIdentityNumber={setKycIdentityNumber}
-              frontImagePreview={frontImagePreview}
-              setFrontImagePreview={setFrontImagePreview}
-              backImagePreview={backImagePreview}
-              setBackImagePreview={setBackImagePreview}
-              setFrontFile={setFrontFile}
-              setBackFile={setBackFile}
-              kycErrorMsg={kycErrorMsg}
-              onSubmit={handleKycSubmit}
+              refetchKycStatus={refetchKycStatus}
               submitKycMutation={submitKycMutation}
             />
           )}

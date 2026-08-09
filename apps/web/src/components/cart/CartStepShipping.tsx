@@ -8,15 +8,14 @@ import {
   Form,
   FormInput,
   FormPhoneInput,
-  FormAddressPicker,
   FormTextarea,
 } from '@/components/ui/form';
+import { FormAddressPicker } from '@/components/address/FormAddressPicker';
 import { Button, ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useProfileMe } from '@/hooks/queries/useProfile';
-import { AddAddressModal } from '@/components/account/AddAddressModal';
-import { ChangeAddressModal } from '@/components/cart/ChangeAddressModal';
+import { AddressModal } from '@/components/address/AddressModal';
 import {
   shippingAddressSchema,
   type ShippingAddressFormValues,
@@ -394,8 +393,9 @@ export const CartStepShipping = ({
       </Form>
 
       {/* Change Address Modal */}
-      <ChangeAddressModal
+      <AddressModal
         isOpen={isChangeModalOpen}
+        mode="select"
         onClose={() => setIsChangeModalOpen(false)}
         savedAddresses={savedAddresses}
         selectedAddressId={selectedAddressId}
@@ -404,8 +404,9 @@ export const CartStepShipping = ({
       />
 
       {/* Add Address Modal */}
-      <AddAddressModal
+      <AddressModal
         isOpen={isAddModalOpen}
+        mode="add"
         onClose={() => setIsAddModalOpen(false)}
         onSubmitSuccess={handleModalAddSuccess}
       />

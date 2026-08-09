@@ -16,7 +16,11 @@ import { ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { signUpSchema, type SignUpFormValues } from '@/lib/validation/schemas';
 
+import { useRouter } from 'next/navigation';
+import { apiSignUp } from '@/services/auth.service';
+
 export default function SignUpForm() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -38,37 +42,24 @@ export default function SignUpForm() {
     setSuccess('');
     setLoading(true);
 
-    fetch('/api/auth/sign-up', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      await apiSignUp({
         name: values.fullName,
         email: values.email,
         phone: values.phone,
         password: values.password,
-      }),
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.message || 'Đăng ký không thành công.');
-        }
-        return res.json().catch(() => null);
-      })
-      .then(() => {
-        setSuccess('Đăng ký tài khoản thành công! Đang chuyển đến trang đăng nhập...');
-        setTimeout(() => {
-          window.location.href = '/sign-in';
-        }, 1500);
-      })
-      .catch((err: any) => {
-        setError(err.message || 'Đã xảy ra lỗi kết nối');
-      })
-      .finally(() => {
-        setLoading(false);
       });
+
+      setSuccess('Đăng ký tài khoản thành công! Đang chuyển đến trang đăng nhập...');
+      setTimeout(() => {
+        router.push('/sign-in');
+      }, 1500);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Đã xảy ra lỗi kết nối';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

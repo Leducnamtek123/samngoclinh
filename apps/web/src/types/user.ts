@@ -3,12 +3,17 @@ import type { AddressItem } from './address';
 export interface UserProfile {
   id: string;
   fullName: string;
+  name?: string;
   email: string;
   rank?: string;
   referralCode?: string;
   mobileNumber?: string;
   gender?: string;
   birthDate?: string;
+  verified?: boolean;
+  isVerified?: boolean;
+  emailVerified?: boolean;
+  isEmailVerified?: boolean;
   countryId?: string;
   country?: {
     id: string;

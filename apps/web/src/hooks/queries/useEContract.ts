@@ -44,3 +44,21 @@ export function useSignEContract() {
     },
   });
 }
+
+export function useUpdateUserSignature() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (signatureData: string) => {
+      const res = await fetchApiClient('/v1/shared/user/signature', {
+        method: 'PUT',
+        body: JSON.stringify({ signatureData }),
+      });
+      return res.data || res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+  });
+}
+

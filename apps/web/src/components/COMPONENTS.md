@@ -81,7 +81,7 @@ Nhu cầu UI Mới
 
 #### Form Wrappers (`@/components/ui/form`)
 - **Location**: `@/components/ui/form/...`
-- **Components**: `Form`, `FormInput`, `FormFloatingInput`, `FormSelect`, `FormCheckbox`, `FormRadioGroup`, `FormSwitch`, `FormTextarea`, `FormAddressPicker`, `FormDatePicker`, `FormPhoneInput`, `FormPassword`.
+- **Components**: `Form`, `FormInput`, `FormFloatingInput`, `FormSelect`, `FormCheckbox`, `FormRadioGroup`, `FormSwitch`, `FormTextarea`, `FormDatePicker`, `FormPhoneInput`, `FormPassword`.
 - **Purpose**: Tất cả form inputs tích hợp sẵn React Hook Form + Zod validation.
 
 ---
@@ -124,11 +124,26 @@ Nhu cầu UI Mới
 
 ### Layer C: Domain Components (`@/components/[domain]`)
 
-- `AddressSelector` (`@/components/purchase/AddressSelector.tsx`): Chọn địa chỉ nhận hàng.
+- `AddressSelector` (`@/components/address/AddressSelector.tsx`): Chọn địa chỉ nhận hàng.
+- `FormAddressPicker` (`@/components/address/FormAddressPicker.tsx`): Field chọn địa chỉ nhận hàng tích hợp map picker modal.
 - `PlantPackageSelector` (`@/components/purchase/PlantPackageSelector.tsx`): Chọn gói cây trồng.
 - `GinsengProductCard` (`@/components/ginseng/GinsengProductCard.tsx`): Thẻ sản phẩm sâm Ngọc Linh.
-- `UserCard` (`@/components/account/UserCard.tsx`): Thẻ thông tin tài khoản người dùng.
+- `UserCard` (`@/components/profile/UserCard.tsx`): Thẻ thông tin tài khoản người dùng.
 - `DigitalSignatureCard` (`@/components/profile/DigitalSignatureCard.tsx`): Thẻ quản lý chữ ký số.
+
+---
+
+### Layer D: Custom Hooks & Logic Extraction Registry
+
+Để tuân thủ Quy tắc 9 trong `AGENTS.md` (mỗi file UI < 200 dòng), toàn bộ business logic phức tạp được tách thành các custom hook độc lập:
+
+| Custom Hook | Đường dẫn | Component sử dụng | Chức năng tách ra |
+|---|---|---|---|
+| `useQuickPurchaseForm` | `@/components/purchase/useQuickPurchaseForm.ts` | `QuickPurchaseModal` | Quản lý state form mua hàng, tính toán VAT, gói dịch vụ, địa chỉ và order mutation. |
+| `useMapLocationPicker` | `@/components/address/useMapLocationPicker.ts` | `LeafletMapLocationModal` | Khởi tạo bản đồ Leaflet, reverse geocoding OSM API, GPS geolocation & search address. |
+| `useUserHeaderMenu` | `@/components/useUserHeaderMenu.ts` | `UserHeaderMenu` | Lắng nghe event giỏ hàng, menu điều hướng tab, chuyển đổi i18n locale & click-outside listener. |
+| `useEContractModal` | `@/components/contract/useEContractModal.ts` | `EContractModal` | Xử lý vẽ chữ ký canvas, tạo ảnh chữ ký gõ tay, validation & sign contract mutation. |
+| `useNotificationPopover` | `@/components/useNotificationPopover.ts` | `NotificationPopover` | Fetch danh sách thông báo, format i18n string, đếm số chưa đọc và đánh dấu đã đọc. |
 
 ---
 
@@ -144,3 +159,4 @@ import { Button, Input, Dialog, EmptyState, LoadingState, FormInput } from '@/co
 import Button from '../../components/ui/button';
 import { EmptyState } from '../common/EmptyState';
 ```
+

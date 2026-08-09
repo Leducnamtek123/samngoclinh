@@ -318,6 +318,8 @@
       "addressMax": "Địa chỉ không vượt quá 255 ký tự"
     },
     "signUp": {
+      "fullNameMin": "Họ và tên phải có ít nhất 2 ký tự",
+      "fullNameMax": "Họ tên không vượt quá 100 ký tự",
       "agreeTerms": "Bạn phải đồng ý với điều khoản sử dụng"
     },
     "otp": {
@@ -329,5 +331,31 @@
       "genderRequired": "Vui lòng chọn giới tính",
       "birthDateRequired": "Vui lòng chọn ngày sinh"
     }
+  },
+  "confirmModal": {
+    "confirm": "Xác nhận",
+    "cancel": "Hủy"
+  },
+  "addressSelector": {
+    "title": "Địa chỉ nhận hàng (Bắt buộc cho sản phẩm vật lý)",
+    "addAddress": "+ Thêm địa chỉ mới"
+  },
+  "plantPackageSelector": {
+    "careTitle": "1. Gói chăm sóc cây sâm",
+    "protectionTitle": "2. Gói bảo vệ & bảo hiểm cây"
+  },
+  "mapLocationPicker": {
+    "title": "Chọn địa chỉ trên Bản đồ",
+    "badge": "OpenStreetMap Miễn phí",
+    "subtitle": "Nhấp vào bản đồ hoặc kéo thả ghim để chọn chính xác địa chỉ nhận hàng",
+    "searchPlaceholder": "Nhập số nhà, tên đường, phường/xã, quận/huyện...",
+    "searchButton": "Tìm địa chỉ",
+    "gpsButton": "Định vị GPS",
+    "loadingMap": "Đang tải bản đồ OpenStreetMap...",
+    "pinnedTitle": "Vị trí được ghim trên bản đồ:",
+    "updatingAddress": "Đang cập nhật địa chỉ...",
+    "selectPlaceholder": "Vui lòng chọn vị trí trên bản đồ...",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận địa chỉ này"
   }
 }

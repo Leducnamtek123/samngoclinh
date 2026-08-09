@@ -47,7 +47,7 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn }: GinsengDetailCli
         <p className="text-gray-500 text-sm">Cây giống này có thể đã hết suất hoặc đường dẫn không chính xác.</p>
         <Link
           href={`/${locale}/ginseng`}
-          className="inline-block bg-[#1C3F24] text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-900 transition-colors shadow-md"
+          className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-emerald-900 transition-colors shadow-md"
         >
           Quay lại danh sách cây sâm
         </Link>
@@ -132,7 +132,7 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn }: GinsengDetailCli
                     key={imgUrl}
                     onClick={() => setActiveImageIdx(idx)}
                     className={`w-16 h-16 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-all cursor-pointer relative ${
-                      activeImageIdx === idx ? 'border-[#1C3F24] ring-2 ring-emerald-100' : 'border-gray-200 opacity-70 hover:opacity-100'
+                      activeImageIdx === idx ? 'border-primary ring-2 ring-emerald-100' : 'border-gray-200 opacity-70 hover:opacity-100'
                     }`}
                   >
                     <Image src={imgUrl} alt={`Góc ${idx + 1}`} fill sizes="64px" unoptimized className="object-cover" />

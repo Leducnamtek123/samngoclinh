@@ -72,8 +72,6 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       success: true,
       email: userEmail,
-      token,
-      refreshToken,
       expiresIn,
       message: 'Đăng nhập thành công',
     });

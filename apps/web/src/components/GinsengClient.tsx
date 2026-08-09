@@ -11,7 +11,7 @@ import { QuickPurchaseModal } from '@/components/purchase/QuickPurchaseModal';
 import { SepayPaymentModal } from '@/components/payment/SepayPaymentModal';
 import { ProductFilterSidebar } from '@/components/products/ProductFilterSidebar';
 import { GinsengProductCard } from './ginseng/GinsengProductCard';
-import { GinsengDetailModal } from './ginseng/GinsengDetailModal';
+import { ProductDetailModal } from './products/ProductDetailModal';
 import { GinsengBedsGrid } from './ginseng/GinsengBedsGrid';
 import { SearchInput } from '@/components/common/SearchInput';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -229,7 +229,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
         </div>
       </div>
 
-      <GinsengDetailModal
+      <ProductDetailModal
         selectedDetailProduct={selectedDetailProduct}
         activeImageIdx={activeImageIdx}
         setActiveImageIdx={setActiveImageIdx}

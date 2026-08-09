@@ -20,3 +20,7 @@ export interface GinsengPlantItem extends ProductItem {
   treeCount?: number;
   plantedAt?: string;
 }
+
+/** @deprecated Use GinsengPlantItem instead */
+export type GinsengTreeItem = GinsengPlantItem;
+

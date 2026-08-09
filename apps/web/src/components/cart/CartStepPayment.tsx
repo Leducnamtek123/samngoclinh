@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { QrCode, RefreshCw, Check, Copy, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type OrderInfo = {
   orderId: string;
@@ -62,14 +63,16 @@ export const CartStepPayment = ({
               <span className="text-[10px] text-gray-400 font-bold uppercase block">Chủ tài khoản</span>
               <span className="font-extrabold text-gray-900 text-xs truncate block">{orderInfo.accountName}</span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onCopy(orderInfo.accountName, 'accountName')}
               className="p-1.5 text-emerald-700 hover:bg-emerald-100/50 rounded-lg transition-colors flex items-center gap-1 font-bold cursor-pointer shrink-0"
             >
               {copiedField === 'accountName' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span className="text-[11px]">{copiedField === 'accountName' ? 'Đã chép' : 'Sao chép'}</span>
-            </button>
+            </Button>
           </div>
 
           <div className="bg-gray-50 rounded-xl p-3 flex justify-between items-center">
@@ -77,14 +80,16 @@ export const CartStepPayment = ({
               <span className="text-[10px] text-gray-400 font-bold uppercase block">Số tài khoản</span>
               <span className="font-extrabold text-gray-900 text-xs sm:text-sm">{orderInfo.accountNo}</span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onCopy(orderInfo.accountNo, 'stk')}
               className="p-1.5 text-emerald-700 hover:bg-emerald-100/50 rounded-lg transition-colors flex items-center gap-1 font-bold cursor-pointer shrink-0"
             >
               {copiedField === 'stk' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span className="text-[11px]">{copiedField === 'stk' ? 'Đã chép' : 'Sao chép'}</span>
-            </button>
+            </Button>
           </div>
 
           <div className="bg-gray-50 rounded-xl p-3 flex justify-between items-center">
@@ -92,14 +97,16 @@ export const CartStepPayment = ({
               <span className="text-[10px] text-gray-400 font-bold uppercase block">Nội dung chuyển khoản</span>
               <span className="font-extrabold text-emerald-800 text-xs sm:text-sm">{orderInfo.orderCode}</span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onCopy(orderInfo.orderCode, 'code')}
               className="p-1.5 text-emerald-700 hover:bg-emerald-100/50 rounded-lg transition-colors flex items-center gap-1 font-bold cursor-pointer shrink-0"
             >
               {copiedField === 'code' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span className="text-[11px]">{copiedField === 'code' ? 'Đã chép' : 'Sao chép'}</span>
-            </button>
+            </Button>
           </div>
 
           <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3 flex justify-between items-center">
@@ -107,41 +114,41 @@ export const CartStepPayment = ({
               <span className="text-[10px] text-emerald-700 font-bold uppercase block">Số tiền cần chuyển</span>
               <span className="font-black text-emerald-900 text-sm sm:text-base">{orderInfo.amount.toLocaleString('vi-VN')} đ</span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onCopy(orderInfo.amount.toString(), 'amount')}
               className="p-1.5 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1 font-bold cursor-pointer shrink-0"
             >
               {copiedField === 'amount' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span className="text-[11px]">{copiedField === 'amount' ? 'Đã chép' : 'Sao chép'}</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
-        <button
+        <Button
           type="button"
           disabled={isVerifying}
+          isLoading={isVerifying}
           onClick={onCompletePayment}
           className="flex-1 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-75 text-white font-bold py-3.5 rounded-xl text-xs transition-colors shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 cursor-pointer"
         >
-          {isVerifying ? (
-            <RefreshCw className="w-4 h-4 animate-spin text-white" />
-          ) : (
-            <CheckCircle2 className="w-4 h-4" />
-          )}
+          <CheckCircle2 className="w-4 h-4" />
           <span>{isVerifying ? 'Đang kiểm tra với ngân hàng...' : 'Tôi đã chuyển khoản thành công'}</span>
-        </button>
+        </Button>
 
         {onOpenSepayGateway && (
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={onOpenSepayGateway}
             className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer border border-gray-200"
           >
             <span>Mở Cổng Thanh Toán Trực Tuyến</span>
-          </button>
+          </Button>
         )}
       </div>
     </div>

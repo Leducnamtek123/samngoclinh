@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertTriangle, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button, ButtonLoading } from '@/components/ui/button';
@@ -23,22 +24,26 @@ export function ConfirmModal({
   isOpen,
   title,
   description,
-  confirmText = 'Xác nhận',
-  cancelText = 'Hủy',
+  confirmText,
+  cancelText,
   isDestructive = false,
   isLoading = false,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const t = useTranslations('confirmModal');
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
-  if (!isOpen || !mounted) return null;
+  if (!mounted) return null;
+
+  const finalConfirmText = confirmText || t('confirm');
+  const finalCancelText = cancelText || t('cancel');
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-w-md">
         <div className="flex items-start gap-4 pt-2">
-          <div className={`p-3 rounded-full shrink-0 ${isDestructive ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'}`}>
+          <div className={`p-3 rounded-full shrink-0 ${isDestructive ? 'bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400' : 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400'}`}>
             {isDestructive ? <AlertTriangle className="w-6 h-6" /> : <Info className="w-6 h-6" />}
           </div>
           <div className="flex-1 space-y-1">
@@ -53,14 +58,14 @@ export function ConfirmModal({
             disabled={isLoading}
             onClick={onCancel}
           >
-            {cancelText}
+            {finalCancelText}
           </Button>
           <ButtonLoading
             variant={isDestructive ? 'destructive' : 'emerald'}
             isLoading={isLoading}
             onClick={onConfirm}
           >
-            {confirmText}
+            {finalConfirmText}
           </ButtonLoading>
         </div>
       </DialogContent>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { EmptyState } from '@/components/common/EmptyState';
+import { EmptyState } from '@/components/common';
+import { Badge } from '@/components/ui';
 import { Sprout } from 'lucide-react';
 
 export interface GinsengBedsGridProps {
@@ -30,9 +31,9 @@ export const GinsengBedsGrid: React.FC<GinsengBedsGridProps> = ({ beds }) => {
           >
             <div className="flex justify-between items-center">
               <span className="font-extrabold text-sm text-primary">Luống #{bed.code}</span>
-              <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-none">
                 {bed.ageYear} tuổi
-              </span>
+              </Badge>
             </div>
             <p className="text-xs text-gray-500 font-medium">
               📍 {bed.gardenName || bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}

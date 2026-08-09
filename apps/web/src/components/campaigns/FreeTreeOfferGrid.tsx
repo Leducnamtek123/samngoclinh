@@ -4,20 +4,31 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/lib/I18nNavigation';
 import { Sprout, CheckCircle2, Gift, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ClaimPlantModal } from './ClaimPlantModal';
 
+export interface FreeTreeSlot {
+  id: string;
+  plantCatalog?: {
+    name?: string;
+    description?: string;
+    ageYear?: number;
+  };
+  [key: string]: unknown;
+}
+
 type FreeTreeOfferGridProps = {
-  slots: any[];
+  slots: FreeTreeSlot[];
   token?: string;
 };
 
 export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FreeTreeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8";
 
-  const handleClaimClick = (slot: any) => {
+  const handleClaimClick = (slot: FreeTreeSlot) => {
     setSelectedItem(slot);
     setIsModalOpen(true);
   };
@@ -94,14 +105,14 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               {/* Action CTA Button */}
               <div className="pt-1">
                 {token ? (
-                  <button
+                  <Button
                     type="button"
                     onClick={() => handleClaimClick(slot)}
                     className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
                   >
                     <span>Nhận cây ngay</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
+                  </Button>
                 ) : (
                   <Link
                     href="/sign-in?reason=campaign"

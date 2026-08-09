@@ -18,14 +18,16 @@ import {
   profileInfoSchema,
   type ProfileInfoFormValues,
 } from '@/lib/validation/schemas';
+import type { UserProfile, UserBusiness } from '@/types';
+import { formatBirthDate, formatInputDate, formatGenderLabel } from '@/utils/formatters';
 
 type ProfileInfoTabProps = {
   fullName: string;
   email: string;
   rank: string;
   referralCode: string;
-  profile: any;
-  business: any;
+  profile?: UserProfile | null;
+  business?: UserBusiness | null;
   editPhone: string;
   onEditClick?: () => void;
   onCopyText: (text: string, label: string) => void;
@@ -37,36 +39,6 @@ type ProfileInfoTabProps = {
     phone: string;
   }) => Promise<boolean>;
 };
-
-function formatBirthDate(dateStr?: string) {
-  if (!dateStr) return 'Chưa cập nhật';
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr;
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-}
-
-function formatInputDate(dateStr?: string) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    return '';
-  }
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function formatGenderLabel(gender?: string) {
-  if (!gender) return 'Chưa cập nhật';
-  if (gender === 'male' || gender === 'Nam') return 'Nam';
-  if (gender === 'female' || gender === 'Nữ') return 'Nữ';
-  return gender;
-}
 
 export const ProfileInfoTab = ({
   fullName,

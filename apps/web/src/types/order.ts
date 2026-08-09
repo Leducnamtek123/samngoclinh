@@ -19,6 +19,7 @@ export interface OrderData {
   id: string;
   code?: string;
   totalAmount: number;
+  total?: number;
   status: 'PENDING' | 'PAID' | 'SHIPPED' | 'COMPLETED' | 'CANCELLED';
   createdAt: string;
   items?: OrderItem[];
@@ -26,3 +27,7 @@ export interface OrderData {
   recipientName?: string;
   recipientPhone?: string;
 }
+
+/** @deprecated Use OrderData instead */
+export type Order = OrderData;
+

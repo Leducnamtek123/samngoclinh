@@ -12,17 +12,27 @@ interface Banner {
 }
 
 type PageBannerSliderProps = {
-  banners: Banner[];
+  banners?: Banner[];
+  images?: string[];
   badgeText?: string;
   badgeIcon?: React.ReactNode;
 };
 
-export function PageBannerSlider({ banners = [] }: PageBannerSliderProps) {
+export function PageBannerSlider({ banners = [], images = [] }: PageBannerSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const safeBanners = Array.isArray(banners) ? banners : [];
+  const safeBanners: Banner[] = banners.length > 0
+    ? banners
+    : images.map((img, idx) => ({
+        id: `img-${idx}`,
+        pageKey: 'home',
+        title: '',
+        subtitle: '',
+        image: img,
+        order: idx,
+      }));
 
   useEffect(() => {
     if (safeBanners.length <= 1) return;

@@ -6,7 +6,7 @@ import Image from 'next/image';
 // @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { QrCode, XCircle } from 'lucide-react';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { useCancelOrder } from '@/hooks/queries/useOrderDetail';
 import { toast } from 'sonner';
 import { Button, ConfirmModal } from '@/components';
 import { getOrderStatusInfo } from '@/components/profile/ProfileOrdersTab';
@@ -52,8 +52,8 @@ type OrderDetailModalProps = {
 export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetailModalProps) => {
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
-  const [cancelling, setCancelling] = useState(false);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
+  const cancelOrderMutation = useCancelOrder();
 
   useEffect(() => {
     if (!order) return;
@@ -104,30 +104,15 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
   const finalTotal = order.totalAmount > 0 ? order.totalAmount : computedTotal;
 
   const handleConfirmCancelOrder = async () => {
-    setCancelling(true);
     const orderIdToCancel = order.id || rawCode;
     try {
-      await fetchApiClient(`/v1/shared/user/orders/${orderIdToCancel}/cancel`, {
-        method: 'PATCH',
-      });
+      await cancelOrderMutation.mutateAsync(orderIdToCancel);
       toast.success(`Đã hủy đơn hàng ${orderCode} thành công!`);
       setIsCancelConfirmOpen(false);
       if (onRefreshOrders) onRefreshOrders();
       onClose();
     } catch {
-      try {
-        await fetchApiClient(`/user/orders/${orderIdToCancel}/cancel`, {
-          method: 'PATCH',
-        });
-        toast.success(`Đã hủy đơn hàng ${orderCode} thành công!`);
-        setIsCancelConfirmOpen(false);
-        if (onRefreshOrders) onRefreshOrders();
-        onClose();
-      } catch {
-        toast.error('Không thể hủy đơn hàng này. Vui lòng thử lại.');
-      }
-    } finally {
-      setCancelling(false);
+      toast.error('Không thể hủy đơn hàng này. Vui lòng thử lại.');
     }
   };
 
@@ -173,11 +158,11 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                 <Button
                   size="sm"
                   variant="outline"
-                  isLoading={cancelling}
+                  isLoading={cancelOrderMutation.isPending}
                   onClick={() => setIsCancelConfirmOpen(true)}
-                  className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200 font-extrabold text-xs h-8 px-3 gap-1.5"
+                  className="border-red-200 bg-red-50/40 hover:bg-red-100/60 text-red-700 dark:text-red-400 dark:border-red-800 dark:bg-red-950/40 text-xs font-bold shrink-0 cursor-pointer"
                 >
-                  {!cancelling && <XCircle className="w-3.5 h-3.5" />}
+                  {!cancelOrderMutation.isPending && <XCircle className="w-3.5 h-3.5" />}
                   <span>Hủy Đơn</span>
                 </Button>
               </div>
@@ -334,7 +319,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
         cancelText="Không, giữ đơn"
         confirmText="Hủy đơn hàng"
         isDestructive={true}
-        isLoading={cancelling}
+        isLoading={cancelOrderMutation.isPending}
         onConfirm={handleConfirmCancelOrder}
         onCancel={() => setIsCancelConfirmOpen(false)}
       />

@@ -1,44 +1,53 @@
+'use client';
+
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { CheckCircle2, Clock, AlertTriangle, Camera } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from 'sonner';
+import type { UserProfile, IdentityVerificationStatus } from '@/types';
 
 type ProfileKycTabProps = {
-  profile: any;
-  kycStatusData: any;
-  kycErrorMsg: string;
-  kycFullName?: string;
-  setKycFullName?: (val: string) => void;
-  kycIdentityNumber?: string;
-  setKycIdentityNumber?: (val: string) => void;
-  frontImagePreview: string;
-  setFrontImagePreview: (val: string) => void;
-  backImagePreview: string;
-  setBackImagePreview: (val: string) => void;
-  setFrontFile: (file: File | null) => void;
-  setBackFile: (file: File | null) => void;
+  profile?: UserProfile | null;
+  kycStatusData?: IdentityVerificationStatus | null;
+  refetchKycStatus?: () => void;
   submitKycMutation: any;
-  onSubmit: (e: React.FormEvent) => void;
 };
 
 export const ProfileKycTab = ({
   profile,
   kycStatusData,
-  kycErrorMsg,
-  frontImagePreview,
-  setFrontImagePreview,
-  backImagePreview,
-  setBackImagePreview,
-  setFrontFile,
-  setBackFile,
+  refetchKycStatus,
   submitKycMutation,
-  onSubmit,
 }: ProfileKycTabProps) => {
-  const actualKycData = kycStatusData?.data || kycStatusData;
+  const [frontImagePreview, setFrontImagePreview] = useState('');
+  const [backImagePreview, setBackImagePreview] = useState('');
+  const [frontFile, setFrontFile] = useState<File | null>(null);
+  const [backFile, setBackFile] = useState<File | null>(null);
+  const [kycErrorMsg, setKycErrorMsg] = useState('');
+
+  const actualKycData = (kycStatusData as any)?.data || kycStatusData;
   const existingFront = actualKycData?.frontImageUrl || actualKycData?.front || frontImagePreview;
   const existingBack = actualKycData?.backImageUrl || actualKycData?.back || backImagePreview;
-  const isVerified = !!(profile?.isVerified || profile?.verified || actualKycData?.status === 'VERIFIED' || actualKycData?.status === 'APPROVED');
+  const isVerified = !!(profile?.isVerified || (profile as any)?.verified || actualKycData?.status === 'VERIFIED' || actualKycData?.status === 'APPROVED');
   const isPending = !isVerified && !!(actualKycData?.status === 'PENDING' || actualKycData?.frontImageUrl || actualKycData?.front || actualKycData?.id);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setKycErrorMsg('');
+    if (!frontFile || !backFile) {
+      setKycErrorMsg('Vui lòng tải lên cả mặt trước và mặt sau của CMND/CCCD.');
+      return;
+    }
+    try {
+      await submitKycMutation.mutateAsync({ front: frontFile, back: backFile });
+      toast.success('Gửi hồ sơ eKYC thành công!');
+      refetchKycStatus?.();
+    } catch (err: any) {
+      setKycErrorMsg(err.message || 'Có lỗi xảy ra khi gửi xác minh. Vui lòng thử lại.');
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -84,11 +93,11 @@ export const ProfileKycTab = ({
           </CardContent>
         </Card>
       ) : (
-        <form onSubmit={onSubmit} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
-          {kycStatusData?.status === 'REJECTED' && (
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+          {actualKycData?.status === 'REJECTED' && (
             <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl text-xs font-bold space-y-1">
               <p className="font-extrabold text-sm">Hồ sơ xác minh bị từ chối</p>
-              <p className="font-normal text-red-700">{kycStatusData?.rejectReason || 'Thông tin ảnh chụp chưa đủ rõ nét hoặc thông tin không khớp. Vui lòng nộp lại.'}</p>
+              <p className="font-normal text-red-700">{actualKycData?.rejectReason || 'Thông tin ảnh chụp chưa đủ rõ nét hoặc thông tin không khớp. Vui lòng nộp lại.'}</p>
             </div>
           )}
 

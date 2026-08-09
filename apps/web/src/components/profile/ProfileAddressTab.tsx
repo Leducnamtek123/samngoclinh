@@ -1,5 +1,6 @@
 import React from 'react';
-import { AddAddressModal } from '@/components/account/AddAddressModal';
+import { Button } from '@/components/ui/button';
+import { AddressModal } from '@/components/address/AddressModal';
 import { EmptyState } from '@/components/common/EmptyState';
 import { MapPin } from 'lucide-react';
 import type { AddressItem } from '@/types';
@@ -37,8 +38,9 @@ export const ProfileAddressTab: React.FC<ProfileAddressTabProps> = ({
         </button>
       </div>
 
-      <AddAddressModal
+      <AddressModal
         isOpen={isAddAddressOpen}
+        mode="add"
         onClose={() => setIsAddAddressOpen(false)}
         onSubmitSuccess={onAddAddress}
       />
@@ -70,13 +72,13 @@ export const ProfileAddressTab: React.FC<ProfileAddressTabProps> = ({
 
               <div className="flex gap-2 text-xs font-bold">
                 {!addr.isDefault && (
-                  <button type="button" onClick={() => onSetDefaultAddress(addr.id)} className="text-primary hover:underline cursor-pointer">
+                  <Button type="button" variant="link" size="sm" onClick={() => onSetDefaultAddress(addr.id)} className="text-primary h-auto p-0 text-xs font-bold">
                     Đặt mặc định
-                  </button>
+                  </Button>
                 )}
-                <button type="button" onClick={() => onDeleteAddress(addr.id)} className="text-red-500 hover:underline cursor-pointer">
+                <Button type="button" variant="link" size="sm" onClick={() => onDeleteAddress(addr.id)} className="text-destructive h-auto p-0 text-xs font-bold">
                   Xóa
-                </button>
+                </Button>
               </div>
             </div>
           ))}

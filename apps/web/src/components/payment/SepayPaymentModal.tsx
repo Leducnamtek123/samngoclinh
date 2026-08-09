@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { fetchApiClient } from '@/lib/ApiClient';
+import { useSepayPaymentStatus } from '@/hooks/queries/useSepayPayment';
 import { Button } from '@/components';
 import { X, Check } from 'lucide-react';
 
@@ -34,8 +35,19 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
 }) => {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isPaid, setIsPaid] = useState<boolean>(false);
-  const [isPolling, setIsPolling] = useState<boolean>(true);
   const [dynamicInfo, setDynamicInfo] = useState<SepayPaymentInfo>(paymentInfo);
+
+  const { data: statusData } = useSepayPaymentStatus(
+    checkStatusApiUrl || (paymentInfo?.orderCode ? `/public/payment/sepay/status/${paymentInfo.orderCode}` : null),
+    Boolean(isOpen && !isPaid)
+  );
+
+  useEffect(() => {
+    if (statusData?.status === 'paid' || statusData?.isPaid) {
+      setIsPaid(true);
+      if (onPaymentSuccess) onPaymentSuccess();
+    }
+  }, [statusData, onPaymentSuccess]);
 
   useEffect(() => {
     if (!isOpen || !paymentInfo?.orderCode) return;
@@ -66,38 +78,6 @@ export const SepayPaymentModal: React.FC<SepayPaymentModalProps> = ({
   const formatCurrency = (val: number) => {
     return currencyFormatter.format(val);
   };
-
-  const onPaymentSuccessRef = useRef(onPaymentSuccess);
-  useEffect(() => {
-    onPaymentSuccessRef.current = onPaymentSuccess;
-  });
-
-  // Poll order status
-  useEffect(() => {
-    if (!isOpen || !checkStatusApiUrl || isPaid || !isPolling) return;
-
-    let isMounted = true;
-    const interval = setInterval(() => {
-      fetchApiClient(checkStatusApiUrl)
-        .then((res) => {
-          if (!isMounted) return;
-          const status = res?.data?.status;
-          if (status === 'paid') {
-            setIsPaid(true);
-            setIsPolling(false);
-            onPaymentSuccessRef.current?.();
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to poll payment status', err);
-        });
-    }, 3000);
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [isOpen, checkStatusApiUrl, isPaid, isPolling]);
 
   useEffect(() => {
     if (!isOpen) return;

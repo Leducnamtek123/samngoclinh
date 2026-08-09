@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -66,15 +67,18 @@ export function SearchInput({
         className={cn('pl-9 pr-9', className)}
         {...props}
       />
+
       {value && (
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={handleClear}
-          className="absolute right-3 p-0.5 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="absolute right-2 h-6 w-6 p-0 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           aria-label="Clear search"
         >
           <X className="h-3.5 w-3.5" />
-        </button>
+        </Button>
       )}
     </div>
   );

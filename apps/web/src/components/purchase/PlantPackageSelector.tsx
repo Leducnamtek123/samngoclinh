@@ -39,17 +39,17 @@ export const PlantPackageSelector = ({
                 onClick={() => setSelectedCareId(pkgId)}
                 className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border-[#1C3F24] bg-emerald-50/50 ring-2 ring-[#1C3F24]/20 shadow-xs'
+                    ? 'border-primary bg-emerald-50/50 ring-2 ring-primary/20 shadow-xs'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#1C3F24] bg-[#1C3F24]' : 'border-gray-300'}`}>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-primary bg-primary' : 'border-gray-300'}`}>
                     {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
                   </div>
                 </div>
-                <p className="text-[11px] font-black text-[#1C3F24] mt-1">
+                <p className="text-[11px] font-black text-primary mt-1">
                   +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perTree')}</span>
                 </p>
                 <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
@@ -77,17 +77,17 @@ export const PlantPackageSelector = ({
                 onClick={() => setSelectedProtectionId(pkgId)}
                 className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? 'border-[#1C3F24] bg-emerald-50/50 ring-2 ring-[#1C3F24]/20 shadow-xs'
+                    ? 'border-primary bg-emerald-50/50 ring-2 ring-primary/20 shadow-xs'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#1C3F24] bg-[#1C3F24]' : 'border-gray-300'}`}>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-primary bg-primary' : 'border-gray-300'}`}>
                     {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
                   </div>
                 </div>
-                <p className="text-[11px] font-black text-[#1C3F24] mt-1">
+                <p className="text-[11px] font-black text-primary mt-1">
                   +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perYear')}</span>
                 </p>
                 <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>

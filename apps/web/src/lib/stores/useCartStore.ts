@@ -48,11 +48,12 @@ export const cartStore = {
     quantity = 1
   ) {
     if (typeof window === 'undefined') return;
-    const items = this.getSnapshot();
+    const previousItems = this.getSnapshot();
+    const items = [...previousItems];
     const existingIndex = items.findIndex((i) => i.id === product.id);
 
     if (existingIndex > -1 && items[existingIndex]) {
-      items[existingIndex].quantity += quantity;
+      items[existingIndex] = { ...items[existingIndex], quantity: items[existingIndex].quantity + quantity };
     } else {
       items.push({
         id: product.id,
@@ -69,15 +70,19 @@ export const cartStore = {
     fetchApiClient('/user/cart/items', {
       method: 'POST',
       body: JSON.stringify({ productId: product.id, quantity }),
-    }).catch(() => {});
+    }).catch((error) => {
+      localStorage.setItem(CART_KEY, JSON.stringify(previousItems));
+      emitChange();
+      console.error('Failed to add item to cart, rolled back', error);
+    });
   },
 
   updateQuantity(id: string, delta: number): CartItem[] {
     if (typeof window === 'undefined') return [];
-    const items = this.getSnapshot();
+    const previousItems = this.getSnapshot();
     let targetQuantity = 0;
 
-    const next = items.flatMap((item) => {
+    const next = previousItems.flatMap((item) => {
       if (item.id === id) {
         const q = item.quantity + delta;
         targetQuantity = q;
@@ -93,11 +98,19 @@ export const cartStore = {
       fetchApiClient(`/user/cart/items/${id}`, {
         method: 'PUT',
         body: JSON.stringify({ quantity: targetQuantity }),
-      }).catch(() => {});
+      }).catch((error) => {
+        localStorage.setItem(CART_KEY, JSON.stringify(previousItems));
+        emitChange();
+        console.error('Failed to update cart quantity, rolled back', error);
+      });
     } else {
       fetchApiClient(`/user/cart/items/${id}`, {
         method: 'DELETE',
-      }).catch(() => {});
+      }).catch((error) => {
+        localStorage.setItem(CART_KEY, JSON.stringify(previousItems));
+        emitChange();
+        console.error('Failed to delete item from cart, rolled back', error);
+      });
     }
 
     return next;
@@ -105,27 +118,36 @@ export const cartStore = {
 
   removeItem(id: string): CartItem[] {
     if (typeof window === 'undefined') return [];
-    const items = this.getSnapshot();
-    const next = items.filter((item) => item.id !== id);
+    const previousItems = this.getSnapshot();
+    const next = previousItems.filter((item) => item.id !== id);
     localStorage.setItem(CART_KEY, JSON.stringify(next));
     emitChange();
 
     fetchApiClient(`/user/cart/items/${id}`, {
       method: 'DELETE',
-    }).catch(() => {});
+    }).catch((error) => {
+      localStorage.setItem(CART_KEY, JSON.stringify(previousItems));
+      emitChange();
+      console.error('Failed to remove item from cart, rolled back', error);
+    });
 
     return next;
   },
 
   clear() {
     if (typeof window === 'undefined') return;
+    const previousItems = this.getSnapshot();
     localStorage.removeItem(CART_KEY);
     localStorage.removeItem('cart_items');
     emitChange();
 
     fetchApiClient('/user/cart', {
       method: 'DELETE',
-    }).catch(() => {});
+    }).catch((error) => {
+      localStorage.setItem(CART_KEY, JSON.stringify(previousItems));
+      emitChange();
+      console.error('Failed to clear cart, rolled back', error);
+    });
   },
 };
 

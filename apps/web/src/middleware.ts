@@ -8,11 +8,11 @@ import { routing } from './lib/I18nRouting';
 const handleI18nRouting = createMiddleware(routing);
 
 const isProtectedRoute = (pathname: string) => {
-  return pathname.includes('/profile') || pathname.includes('/cart');
+  return /^\/(vi|en)\/(profile|cart|checkout|contracts)(\/|$)/.test(pathname);
 };
 
 const isAuthPage = (pathname: string) => {
-  return pathname.includes('/sign-in') || pathname.includes('/sign-up');
+  return /^\/(vi|en)\/(sign-in|sign-up)(\/|$)/.test(pathname);
 };
 
 // Improve security with Arcjet

@@ -318,6 +318,8 @@
       "addressMax": "Address cannot exceed 255 characters"
     },
     "signUp": {
+      "fullNameMin": "Full name must be at least 2 characters",
+      "fullNameMax": "Full name cannot exceed 100 characters",
       "agreeTerms": "You must agree to the terms of use"
     },
     "otp": {
@@ -329,5 +331,31 @@
       "genderRequired": "Please select gender",
       "birthDateRequired": "Please select birth date"
     }
+  },
+  "confirmModal": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "addressSelector": {
+    "title": "Delivery Address (Required for physical products)",
+    "addAddress": "+ Add New Address"
+  },
+  "plantPackageSelector": {
+    "careTitle": "1. Ginseng Care Package",
+    "protectionTitle": "2. Protection & Insurance Package"
+  },
+  "mapLocationPicker": {
+    "title": "Select Address on Map",
+    "badge": "OpenStreetMap Free",
+    "subtitle": "Click on the map or drag the pin to select delivery location",
+    "searchPlaceholder": "Enter street name, ward, district, city...",
+    "searchButton": "Search Address",
+    "gpsButton": "GPS Locate",
+    "loadingMap": "Loading OpenStreetMap...",
+    "pinnedTitle": "Pinned location on map:",
+    "updatingAddress": "Updating address...",
+    "selectPlaceholder": "Please select a location on the map...",
+    "cancel": "Cancel",
+    "confirm": "Confirm Address"
   }
 }

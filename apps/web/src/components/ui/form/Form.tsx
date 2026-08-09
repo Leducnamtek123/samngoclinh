@@ -185,18 +185,12 @@ const FormMessage = React.forwardRef<
   FormMessageProps
 >(({ className, children, error: propError, ...props }, ref) => {
   const { error: contextError, formMessageId } = useFormField();
-  let tVal: any;
-  try {
-    // oxlint-disable-next-line react-hooks/rules-of-hooks
-    tVal = useTranslations('validation');
-  } catch {
-    // Outside next-intl provider fallback
-  }
+  const tVal = useTranslations('validation');
 
   const error = propError || contextError;
   let body = error ? String((error as any)?.message || error) : children;
 
-  if (typeof body === 'string' && body.startsWith('validation.') && tVal) {
+  if (typeof body === 'string' && body.startsWith('validation.')) {
     try {
       body = tVal(body.replace(/^validation\./, ''));
     } catch {

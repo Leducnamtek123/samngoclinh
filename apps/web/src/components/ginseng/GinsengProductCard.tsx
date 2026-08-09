@@ -1,4 +1,7 @@
 import { ProductImageCollage } from '@/components/products/ProductImageCollage';
+import { Button } from '@/components/ui';
+import { formatVNDPrice } from '@/utils/formatters';
+import { ShoppingCart } from 'lucide-react';
 
 type GinsengProductCardProps = {
   item: any;
@@ -67,28 +70,28 @@ export const GinsengProductCard = ({
         </div>
 
         <div className="text-secondary font-extrabold text-base pt-1">
-          {item.price.toLocaleString('vi-VN')} đ
+          {formatVNDPrice(item.price)}
         </div>
 
         {/* Actions */}
         <div className="pt-2 flex items-center gap-2">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={(e) => onAddToCart(e, item)}
-            className="p-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs"
             title="Thêm vào giỏ hàng"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </button>
-          <button
+            <ShoppingCart className="w-4 h-4 text-gray-600" />
+          </Button>
+          <Button
             type="button"
+            variant="default"
             onClick={() => onQuickPurchase(item)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg font-extrabold transition-colors duration-200 text-xs active:scale-98 shadow-xs cursor-pointer"
+            className="flex-1"
           >
             Mua ngay
-          </button>
+          </Button>
         </div>
       </div>
     </div>

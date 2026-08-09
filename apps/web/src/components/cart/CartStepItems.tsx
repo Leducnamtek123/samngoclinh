@@ -6,6 +6,7 @@ import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import type { CartItem } from '@/utils/cart';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 type CartStepItemsProps = {
@@ -86,8 +87,10 @@ export const CartStepItems = ({
 
                 {/* Quantity controls */}
                 <div className="flex items-center gap-2 border border-gray-200 rounded-xl p-1 bg-gray-50">
-                  <button 
+                  <Button 
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => {
                       if (item.quantity <= 1) {
                         setRemovingItemId(item.id);
@@ -95,28 +98,32 @@ export const CartStepItems = ({
                         onUpdateQuantity(item.id, -1);
                       }
                     }} 
-                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 flex items-center justify-center transition-colors text-xs cursor-pointer"
+                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 p-0 text-xs cursor-pointer"
                   >
                     -
-                  </button>
+                  </Button>
                   <span className="text-xs font-bold px-2 text-gray-900">{item.quantity}</span>
-                  <button 
+                  <Button 
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onUpdateQuantity(item.id, 1)} 
-                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 flex items-center justify-center transition-colors text-xs cursor-pointer"
+                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 text-gray-700 font-bold hover:bg-gray-100 p-0 text-xs cursor-pointer"
                   >
                     +
-                  </button>
+                  </Button>
                 </div>
 
-                <button 
+                <Button 
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   aria-label={`Xóa ${item.name} khỏi giỏ hàng`}
                   onClick={() => setRemovingItemId(item.id)} 
                   className="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             ))}
           </div>
@@ -140,14 +147,14 @@ export const CartStepItems = ({
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
             onClick={onNextStep}
             className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-xs transition-colors shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>{t('step2')}</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
 

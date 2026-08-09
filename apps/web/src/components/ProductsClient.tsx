@@ -10,7 +10,7 @@ import { QuickPurchaseModal } from '@/components/purchase/QuickPurchaseModal';
 import { SepayPaymentModal } from '@/components/payment/SepayPaymentModal';
 import { getProductImage } from '@/utils/productUtils';
 import { ProductFilterSidebar } from './products/ProductFilterSidebar';
-import { ProductsDetailModal } from './products/ProductsDetailModal';
+import { ProductDetailModal } from './products/ProductDetailModal';
 import { ProductsGrid } from './products/ProductsGrid';
 import { SearchInput } from '@/components/common/SearchInput';
 
@@ -160,7 +160,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
       </div>
 
       {/* Product Detail & Multi-Image Gallery Modal */}
-      <ProductsDetailModal
+      <ProductDetailModal
         selectedDetailProduct={selectedDetailProduct}
         activeImageIdx={activeImageIdx}
         setActiveImageIdx={setActiveImageIdx}
