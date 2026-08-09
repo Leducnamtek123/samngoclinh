@@ -123,10 +123,10 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
 
   const modalContent = (
     <>
-      <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-in fade-in">
-        <div data-lenis-prevent className="bg-gray-50 rounded-[20px] w-full max-w-4xl shadow-2xl overflow-hidden border border-gray-200 transition-[opacity,transform] duration-150 animate-in zoom-in-95 max-h-[min(88vh,820px)] flex flex-col my-auto">
+      <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-in fade-in overflow-y-auto">
+        <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden border border-border transition-all duration-150 animate-in zoom-in-95 max-h-[88vh] flex flex-col shrink-0">
           {/* Top Header Navigation Bar */}
-          <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0 z-10 rounded-t-[20px] shadow-2xs">
+          <div className="bg-white dark:bg-slate-900 bg-card px-6 py-4 border-b border-border flex items-center justify-between flex-shrink-0 z-10">
             <div className="flex items-center gap-3">
               <button
                 type="button"

@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 import { Link } from '@/lib/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 import { UserHeaderMenu } from '@/components/UserHeaderMenu';

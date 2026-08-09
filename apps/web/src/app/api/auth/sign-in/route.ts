@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Env } from '@/lib/Env';
+import { API_KEY } from '@/lib/apiKey';
 
 export async function POST(request: Request) {
   try {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': Env.API_KEY,
+        'x-api-key': API_KEY,
       },
       body: JSON.stringify(bodyPayload),
     });

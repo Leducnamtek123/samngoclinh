@@ -41,29 +41,32 @@ export function ConfirmModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent className="max-w-md">
-        <div className="flex items-start gap-4 pt-2">
-          <div className={`p-3 rounded-full shrink-0 ${isDestructive ? 'bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400' : 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400'}`}>
+      <DialogContent className="max-w-md p-6 sm:p-6">
+        <div className="flex items-start gap-4 pt-1">
+          <div className={`p-3 rounded-2xl shrink-0 ${isDestructive ? 'bg-destructive/10 text-destructive' : 'bg-amber-500/10 text-amber-600'}`}>
             {isDestructive ? <AlertTriangle className="w-6 h-6" /> : <Info className="w-6 h-6" />}
           </div>
-          <div className="flex-1 space-y-1">
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
+          <div className="flex-1 space-y-1.5 pr-8">
+            <DialogTitle className="text-lg font-bold tracking-tight text-foreground">{title}</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground leading-relaxed">{description}</DialogDescription>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex items-center justify-end gap-3 pt-2">
           <Button
-            variant="secondary"
+            type="button"
+            variant="outline"
             disabled={isLoading}
             onClick={onCancel}
+            className="px-5 py-2 text-xs font-semibold rounded-xl"
           >
             {finalCancelText}
           </Button>
           <ButtonLoading
-            variant={isDestructive ? 'destructive' : 'emerald'}
+            variant={isDestructive ? 'destructive' : 'default'}
             isLoading={isLoading}
             onClick={onConfirm}
+            className="px-5 py-2 text-xs font-semibold rounded-xl"
           >
             {finalConfirmText}
           </ButtonLoading>

@@ -50,18 +50,8 @@ export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
       if (refetchProfile) refetchProfile();
       return true;
     } catch {
-      try {
-        await fetchApiClient('/user/profile', {
-          method: 'PUT',
-          body: JSON.stringify({ fullName: updatedData.fullName, phone: updatedData.phone }),
-        });
-        toast.success('Cập nhật thông tin cá nhân thành công!');
-        if (refetchProfile) refetchProfile();
-        return true;
-      } catch {
-        toast.error('Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại.');
-        return false;
-      }
+      toast.error('Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại.');
+      return false;
     }
   };
 

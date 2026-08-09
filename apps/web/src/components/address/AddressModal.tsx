@@ -98,10 +98,10 @@ export function AddressModal({
   if (!isOpen) return null;
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div data-lenis-prevent className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg rounded-[20px] shadow-2xl overflow-hidden flex flex-col max-h-[min(88vh,820px)] my-auto">
+    <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
+      <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[88vh] shrink-0">
         {/* Sticky Header */}
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-slate-900 z-10 rounded-t-[20px] shadow-2xs shrink-0">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-primary dark:text-emerald-400 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60">
               <MapPin className="w-5 h-5" />
@@ -127,7 +127,7 @@ export function AddressModal({
         {/* Modal Body */}
         {mode === 'select' ? (
           <>
-            <div data-lenis-prevent className="p-6 space-y-3 modal-content flex-1">
+            <div data-lenis-prevent className="p-6 space-y-3 flex-1 overflow-y-auto overscroll-contain min-h-0">
               {savedAddresses.map((addr) => (
                 <AddressCardItem
                   key={addr.id}
@@ -174,9 +174,9 @@ export function AddressModal({
           <Form
             form={form}
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="flex-1 flex flex-col min-h-0"
+            className="flex-1 flex flex-col min-h-0 overflow-hidden"
           >
-            <div data-lenis-prevent className="p-6 space-y-4 modal-content flex-1">
+            <div data-lenis-prevent className="p-6 space-y-4 flex-1 overflow-y-auto overscroll-contain min-h-0">
               <FormInput
                 control={form.control}
                 name="recipientName"

@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { Env } from '@/lib/Env';
+import { API_KEY } from '@/lib/apiKey';
 
 export async function getUserSessionToken() {
   const cookieStore = await cookies();
@@ -9,7 +10,7 @@ export async function getUserSessionToken() {
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = await getUserSessionToken();
   const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-  const apiKey = Env.API_KEY || Env.NEXT_PUBLIC_API_KEY || '';
+  const apiKey = API_KEY;
 
   const customHeaders = (options.headers as Record<string, string>) || {};
   const headers: Record<string, string> = {

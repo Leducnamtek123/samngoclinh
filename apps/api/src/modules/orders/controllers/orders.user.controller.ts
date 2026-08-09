@@ -54,7 +54,7 @@ export class OrdersUserController {
 
     @OrdersUserCheckoutDoc()
     @Response('orders.detail')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(EnumRoleType.user, EnumRoleType.admin, EnumRoleType.superAdmin)
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { fetchApi } from '@/lib/Api';
 import { Env } from '@/lib/Env';
+import { API_KEY } from '@/lib/apiKey';
 
 async function refreshTokens(refreshToken: string) {
   const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-  const apiKey = Env.API_KEY || Env.NEXT_PUBLIC_API_KEY || '';
+  const apiKey = API_KEY;
 
   const res = await fetch(`${baseUrl}/v1/shared/user/refresh`, {
     method: 'POST',
@@ -46,6 +47,8 @@ async function handleProxy(
       },
     });
 
+
+
     const cookieStore = await cookies();
     let newTokens = null;
     let refreshFailed = false;
@@ -59,7 +62,7 @@ async function handleProxy(
 
         if (newTokens?.accessToken) {
           // Retry original request with newly issued Access Token
-          const apiKey = Env.API_KEY || Env.NEXT_PUBLIC_API_KEY || '';
+          const apiKey = API_KEY;
           const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
           res = await fetch(`${baseUrl}${endpoint}`, {
@@ -86,6 +89,8 @@ async function handleProxy(
         status: res.status,
         headers: { 'Content-Type': 'text/html; charset=utf-8' },
       });
+      response.headers.delete('x-frame-options');
+      response.headers.delete('content-security-policy');
     } else {
       let data: any = {};
       data = await res.json().catch(() => ({}));

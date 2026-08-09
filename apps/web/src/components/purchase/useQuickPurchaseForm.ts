@@ -197,19 +197,9 @@ export function useQuickPurchaseForm({
       if (onSuccessPayment) {
         onSuccessPayment(orderData);
       }
-    } catch {
-      const fallbackOrder: Order = {
-        id: `ORD-${Date.now()}`,
-        code: `DH${Math.floor(100000 + Math.random() * 900000)}`,
-        totalAmount: grandTotal,
-        status: 'PENDING',
-        createdAt: new Date().toISOString(),
-      };
-      toast.success(t('toastPaymentOpening'));
-      onClose();
-      if (onSuccessPayment) {
-        onSuccessPayment(fallbackOrder);
-      }
+    } catch (err: any) {
+      const serverMsg = err?.response?.data?.message || err?.message || 'Không thể tạo đơn hàng. Vui lòng đăng nhập hoặc thử lại sau!';
+      toast.error(typeof serverMsg === 'string' ? serverMsg : 'Không thể tạo đơn hàng. Vui lòng thử lại sau!');
     } finally {
       setSubmitting(false);
     }

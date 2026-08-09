@@ -7,13 +7,11 @@ import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { addToCart } from '@/utils/cart';
 import { QuickPurchaseModal } from '@/components/purchase/QuickPurchaseModal';
-import { SepayPaymentModal } from '@/components/payment/SepayPaymentModal';
 import { getProductImage } from '@/utils/productUtils';
 import { ProductFilterSidebar } from './products/ProductFilterSidebar';
 import { ProductDetailModal } from './products/ProductDetailModal';
 import { ProductsGrid } from './products/ProductsGrid';
 import { SearchInput } from '@/components/common/SearchInput';
-
 type ProductsClientProps = {
   locale: string;
   initialItems?: any[];
@@ -29,7 +27,6 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<any | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
   const [quickPurchaseProduct, setQuickPurchaseProduct] = useState<any | null>(null);
-  const [paymentOrder, setPaymentOrder] = useState<any | null>(null);
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -54,25 +51,15 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
     toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
   };
 
-  const handleBuyItem = (e: React.MouseEvent, item: any, redirect = true) => {
+  const handleBuyItem = (e: React.MouseEvent, item: any) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!isLoggedIn) {
-      e.preventDefault();
       window.location.href = `/${locale}/sign-in?reason=products`;
       return;
     }
-    e.preventDefault();
-    if (!item?.id) return;
-    addToCart({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      image: getProductImage(item, 0) || '/assets/images/logo_ruou_sam.png',
-      category: item.category || 'Sản phẩm',
-    });
-
-    if (redirect) {
-      window.location.href = `/${locale}/cart`;
-    }
+    if (!item) return;
+    setSelectedDetailProduct(null);
+    setQuickPurchaseProduct(item);
   };
 
   const openProductDetail = (item: any) => {
@@ -176,29 +163,12 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
           locale={locale}
           isLoggedIn={isLoggedIn}
           onClose={() => setQuickPurchaseProduct(null)}
-          onSuccessPayment={(orderData) => {
+          onSuccessPayment={(orderData: any) => {
             setQuickPurchaseProduct(null);
-            setPaymentOrder(orderData);
-          }}
-        />
-      )}
-
-      {/* Sepay VietQR Payment Modal for Instant QR Scanning */}
-      {paymentOrder && (
-        <SepayPaymentModal
-          isOpen={!!paymentOrder}
-          onClose={() => setPaymentOrder(null)}
-          paymentInfo={{
-            qrUrl: '',
-            accountNumber: '',
-            accountName: '',
-            bankBrand: '',
-            amount: paymentOrder.totalAmount,
-            orderCode: paymentOrder.code,
-          }}
-          onPaymentSuccess={() => {
-            toast.success('Thanh toán đơn hàng thành công!');
-            setPaymentOrder(null);
+            const orderCode = orderData?.code || orderData?.id;
+            if (orderCode) {
+              window.location.href = `/api/proxy/public/payment/sepay/pay/${orderCode}`;
+            }
           }}
         />
       )}

@@ -238,6 +238,7 @@ services:
             - PORT=3002
             - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/vismarttech
             - INTERNAL_API_URL=http://apis:3000/api
+            - API_KEY=local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP
         depends_on:
             postgres:
                 condition: service_healthy

@@ -60,39 +60,43 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
 
   const modalContent = (
     <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-hidden animate-in fade-in duration-200"
+      data-lenis-prevent
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-[24px] max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-emerald-950/10 transition-all transform animate-in zoom-in-95 duration-200"
+        data-lenis-prevent
+        className="relative bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-xl overflow-hidden border border-border shrink-0 transition-all transform animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-5 sm:px-7 py-4 sm:py-5 border-b border-gray-100 bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-900 text-white flex items-center justify-between z-10 shadow-sm">
+        <div className="flex-shrink-0 px-6 py-5 border-b border-border bg-white dark:bg-slate-900 bg-card flex items-center justify-between z-10">
           <div>
             <div className="flex items-center gap-2">
-              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border border-emerald-400/30 tracking-wider">
+              <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border border-primary/20 tracking-wider">
                 {mode === 'plant' ? t('headerBadgePlant') : t('headerBadgeProduct')}
               </span>
             </div>
-            <h3 className="text-base sm:text-xl font-black mt-1 text-white tracking-tight">
+            <h3 className="text-lg sm:text-xl font-bold mt-1 text-foreground tracking-tight">
               {t('headerTitle')}
             </h3>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             ✕
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={form.handleCheckoutSubmit} className="flex-1 overflow-y-auto min-h-0 flex flex-col modal-content">
-          <div className="p-5 sm:p-7 space-y-6 flex-1">
+        <form data-lenis-prevent onSubmit={form.handleCheckoutSubmit} className="flex-1 overflow-y-auto overscroll-contain min-h-0 flex flex-col">
+          <div className="p-6 space-y-6">
             {/* Product Overview Card */}
-            <div className="flex gap-4 p-3.5 bg-brand-bg rounded-2xl border border-emerald-900/10">
+            <div className="flex gap-4 p-4 bg-muted/50 rounded-xl border border-border">
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-white border border-gray-100 shadow-sm">
                 <Image
                   src={form.itemImage}
@@ -115,24 +119,28 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                   <span className="text-emerald-800 font-black text-sm sm:text-base">
                     {form.unitPrice.toLocaleString('vi-VN')} VNĐ
                   </span>
-                  <div className="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-gray-200 shadow-xs">
-                    <button
+                  <div className="flex items-center gap-1.5 bg-background px-2.5 py-1 rounded-lg border border-border shadow-xs">
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => form.setQuantity(Math.max(1, form.quantity - 1))}
-                      className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-gray-900 font-bold text-xs cursor-pointer"
+                      className="w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground font-bold text-xs cursor-pointer p-0 h-auto"
                     >
                       -
-                    </button>
-                    <span className="w-6 text-center font-extrabold text-xs text-gray-800">
+                    </Button>
+                    <span className="w-6 text-center font-extrabold text-xs text-foreground">
                       {form.quantity}
                     </span>
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => form.setQuantity(form.quantity + 1)}
-                      className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-gray-900 font-bold text-xs cursor-pointer"
+                      className="w-5 h-5 flex items-center justify-center text-muted-foreground hover:text-foreground font-bold text-xs cursor-pointer p-0 h-auto"
                     >
                       +
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -190,12 +198,12 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
           </div>
 
           {/* Sticky Footer Submit Actions */}
-          <div className="flex-shrink-0 px-5 sm:px-7 py-4 border-t border-gray-100 bg-white flex gap-3 z-10 rounded-b-[20px] shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+          <div className="flex-shrink-0 px-6 py-4 border-t border-border bg-white dark:bg-slate-900 bg-card flex items-center justify-end gap-3 z-10">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="px-5 py-3 font-bold rounded-xl text-xs h-auto"
+              className="px-5 py-2.5 font-bold rounded-xl text-xs"
             >
               {t('cancel')}
             </Button>
@@ -203,7 +211,7 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
             <Button
               type="submit"
               disabled={form.submitting}
-              className="flex-1 bg-primary hover:bg-emerald-900 active:bg-emerald-950 text-white font-extrabold py-3.5 rounded-xl text-xs h-auto transition-colors shadow-md shadow-emerald-900/20"
+              className="px-6 py-2.5 font-bold rounded-xl text-xs transition-colors"
             >
               {form.submitting ? (
                 <span>{t('submitInitializing')}</span>

@@ -103,20 +103,19 @@ export const ProductFilterSidebar = ({
               </span>
               <div className="space-y-2.5">
                 {ageOptions.map((age) => (
-                  <div
+                  <label
                     key={age.value}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => onAgeToggle(age.value)}
-                    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onAgeToggle(age.value)}
-                    className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-gray-700 dark:text-gray-300 hover:text-emerald-800"
+                    htmlFor={age.id}
+                    className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-foreground hover:text-primary transition-colors py-0.5"
                   >
                     <Checkbox
                       id={age.id}
                       checked={selectedAges?.includes(age.value)}
+                      onCheckedChange={() => onAgeToggle(age.value)}
+                      className="shrink-0"
                     />
                     <span>{age.label}</span>
-                  </div>
+                  </label>
                 ))}
               </div>
             </div>

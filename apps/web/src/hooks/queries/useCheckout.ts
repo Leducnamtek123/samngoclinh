@@ -17,7 +17,7 @@ export function useShippingFee() {
     queryKey: ['shippingFee'],
     queryFn: async () => {
       try {
-        const res = await fetchApiClient('/settings/shipping_fee');
+        const res = await fetchApiClient('/v1/public/settings/shipping_fee');
         const val = res?.data?.value || res?.value;
         if (val) {
           const parsed = parseInt(val, 10);

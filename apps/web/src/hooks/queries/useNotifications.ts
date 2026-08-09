@@ -66,7 +66,7 @@ export function useUpdateNotificationSettings() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: any) => {
-      return fetchApiClient('/v1/shared/notification/update/user-setting', {
+      return fetchApiClient('/v1/shared/notification/update/setting', {
         method: 'PUT',
         body: JSON.stringify(payload),
       });

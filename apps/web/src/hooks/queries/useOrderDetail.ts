@@ -7,13 +7,8 @@ export function useOrderDetail(orderId: string | null) {
     queryKey: ['order', orderId],
     queryFn: async () => {
       if (!orderId) return null;
-      try {
-        const res = await fetchApiClient(`/v1/shared/user/orders/${orderId}`);
-        return (res.data || res) as OrderItem;
-      } catch {
-        const res = await fetchApiClient(`/v1/user/orders/${orderId}`);
-        return (res.data || res) as OrderItem;
-      }
+      const res = await fetchApiClient(`/user/orders/${orderId}`);
+      return (res.data || res) as OrderItem;
     },
     enabled: Boolean(orderId),
   });
@@ -24,17 +19,10 @@ export function useCancelOrder() {
 
   return useMutation({
     mutationFn: async (orderId: string) => {
-      try {
-        const res = await fetchApiClient(`/v1/shared/user/orders/${orderId}/cancel`, {
-          method: 'PATCH',
-        });
-        return res.data || res;
-      } catch {
-        const res = await fetchApiClient(`/v1/user/orders/${orderId}/cancel`, {
-          method: 'PATCH',
-        });
-        return res.data || res;
-      }
+      const res = await fetchApiClient(`/user/orders/${orderId}/cancel`, {
+        method: 'PATCH',
+      });
+      return res.data || res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

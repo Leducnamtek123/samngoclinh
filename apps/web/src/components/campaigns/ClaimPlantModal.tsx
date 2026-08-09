@@ -82,18 +82,17 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
 
         {isSuccess ? (
           <div className="py-8 text-center space-y-5 animate-in fade-in">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto shadow-xs">
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-extrabold text-slate-900">Đăng Ký Nhận Cây Thành Công!</h3>
-              <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
+              <h3 className="text-2xl font-extrabold text-foreground">Đăng Ký Nhận Cây Thành Công!</h3>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
                 Đơn nhận cây sâm 1 năm đã được khởi tạo thành công trên hệ thống. Cây sâm đã được ghi nhận trực tiếp vào tài khoản của bạn tại vườn Kon Tum.
               </p>
             </div>
             <div className="pt-4">
               <Button
-                variant="emerald"
                 onClick={onClose}
                 className="px-8"
               >
@@ -104,8 +103,8 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
         ) : (
           <div className="py-4 space-y-5">
             {/* Product Summary Card */}
-            <Card className="p-4 flex items-center gap-4 bg-slate-50/80">
-              <div className="w-20 h-20 relative rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
+            <Card className="p-4 flex items-center gap-4 bg-muted/40 border-border">
+              <div className="w-20 h-20 relative rounded-xl overflow-hidden bg-muted shrink-0 border border-border">
                 <Image
                   src={imageUrl}
                   alt={plantName}
@@ -115,16 +114,16 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                 />
               </div>
               <div className="space-y-1.5 flex-1">
-                <h4 className="font-extrabold text-slate-900 text-base leading-snug">{plantName}</h4>
-                <p className="text-xs text-slate-500 font-medium">Tồn kho: {item?.remainingSlots || 168}</p>
+                <h4 className="font-extrabold text-foreground text-base leading-snug">{plantName}</h4>
+                <p className="text-xs text-muted-foreground font-medium">Tồn kho: {item?.remainingSlots || 168}</p>
                 <Badge variant="secondary">Giá cây được tặng</Badge>
               </div>
             </Card>
 
             {/* Quantity Selector */}
-            <div className="flex items-center justify-between py-2 border-b border-slate-100">
-              <span className="text-sm font-bold text-slate-800">Số lượng</span>
-              <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+            <div className="flex items-center justify-between py-2 border-b border-border">
+              <span className="text-sm font-bold text-foreground">Số lượng</span>
+              <div className="flex items-center border border-border rounded-xl overflow-hidden bg-muted/50">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -134,7 +133,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
-                <span className="px-4 py-1 text-sm font-extrabold text-slate-900 border-x border-slate-200">
+                <span className="px-4 py-1 text-sm font-extrabold text-foreground border-x border-border">
                   {quantity}
                 </span>
                 <Button
@@ -151,15 +150,15 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
             {/* Package Options */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <Gift className="w-3.5 h-3.5 text-emerald-600" />
+                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Gift className="w-3.5 h-3.5 text-primary" />
                   <span>Gói chăm sóc</span>
                 </label>
                 <Select
                   value={String(careYears)}
                   onValueChange={(val) => setCareYears(Number(val))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="border-border bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -171,15 +170,15 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                   <span>Gói đảm bảo</span>
                 </label>
                 <Select
                   value={String(protectionYears)}
                   onValueChange={(val) => setProtectionYears(Number(val))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="border-border bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -192,50 +191,49 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
             </div>
 
             {/* Detailed Price Breakdown Table */}
-            <Card className="p-4 space-y-2 text-xs text-slate-600 bg-slate-50/60 border-slate-100">
+            <Card className="p-4 space-y-2 text-xs text-muted-foreground bg-muted/30 border-border">
               <div className="flex justify-between">
                 <span>VAT cây (5%):</span>
-                <span className="font-semibold text-slate-800">0 đ</span>
+                <span className="font-semibold text-foreground">0 đ</span>
               </div>
               <div className="flex justify-between">
                 <span>Phí chăm sóc:</span>
-                <span className="font-semibold text-slate-800">{formatVND(totalCareFee)}</span>
+                <span className="font-semibold text-foreground">{formatVND(totalCareFee)}</span>
               </div>
               <div className="flex justify-between">
                 <span>VAT chăm sóc (10%):</span>
-                <span className="font-semibold text-slate-800">{formatVND(vatCare)}</span>
+                <span className="font-semibold text-foreground">{formatVND(vatCare)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Phí bảo vệ cây:</span>
-                <span className="font-semibold text-slate-800">{formatVND(totalProtectionFee)}</span>
+                <span className="font-semibold text-foreground">{formatVND(totalProtectionFee)}</span>
               </div>
               <div className="flex justify-between">
                 <span>VAT bảo vệ (10%):</span>
-                <span className="font-semibold text-slate-800">{formatVND(vatProtection)}</span>
+                <span className="font-semibold text-foreground">{formatVND(vatProtection)}</span>
               </div>
 
-              <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-sm sm:text-base font-extrabold text-slate-900">
+              <div className="pt-3 border-t border-border flex items-center justify-between text-sm sm:text-base font-extrabold text-foreground">
                 <span>Tổng cộng:</span>
-                <span className="text-emerald-700 text-lg sm:text-xl font-black">{formatVND(grandTotal)}</span>
+                <span className="text-primary text-lg sm:text-xl font-black">{formatVND(grandTotal)}</span>
               </div>
             </Card>
 
             {/* Terms & Legal Contract Accordion Box */}
-            <div className="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 sm:p-5 space-y-3">
-              <div className="flex items-start gap-3">
+            <div className="bg-muted/40 border border-border rounded-2xl p-4 sm:p-5 space-y-3">
+              <label htmlFor="claim-agreed-checkbox" className="flex items-center gap-3 cursor-pointer select-none group py-1">
                 <Checkbox
+                  id="claim-agreed-checkbox"
                   checked={agreed}
-                  onCheckedChange={(checked) => setAgreed(checked)}
+                  onCheckedChange={(checked: boolean | 'indeterminate') => setAgreed(!!checked)}
+                  className="shrink-0"
                 />
-                <span
-                  onClick={() => setAgreed(!agreed)}
-                  className="text-xs font-semibold text-slate-700 leading-snug cursor-pointer select-none"
-                >
+                <span className="text-xs font-semibold text-foreground leading-normal group-hover:text-primary transition-colors">
                   Tôi đã đọc và đồng ý với điều khoản sử dụng và hợp đồng mua bán, ký gửi, chăm sóc cây Sâm Ngọc Linh.
                 </span>
-              </div>
+              </label>
 
-              <Accordion type="single" collapsible className="pt-2 border-t border-slate-200/60">
+              <Accordion type="single" collapsible className="pt-2 border-t border-border">
                 <AccordionItem value="terms">
                   <AccordionTrigger>Điều khoản sử dụng</AccordionTrigger>
                   <AccordionContent>
@@ -254,7 +252,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                         href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-emerald-700 hover:text-emerald-800 font-bold underline transition-colors"
+                        className="inline-flex items-center gap-1.5 text-primary hover:underline font-bold transition-colors"
                       >
                         <span>Mở hợp đồng mua bán, ký gửi và chăm sóc cây Sâm Ngọc Linh</span>
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -266,16 +264,16 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
             </div>
 
             {/* Modal Footer Actions */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={onClose}
                 disabled={isSubmitting}
               >
                 Hủy
               </Button>
               <ButtonLoading
-                variant="emerald"
+                variant="default"
                 isLoading={isSubmitting}
                 disabled={!agreed}
                 onClick={handleClaimSubmit}

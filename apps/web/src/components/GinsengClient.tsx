@@ -8,7 +8,6 @@ import { useBanner } from '@/hooks/queries/useBanner';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { addToCart } from '@/utils/cart';
 import { QuickPurchaseModal } from '@/components/purchase/QuickPurchaseModal';
-import { SepayPaymentModal } from '@/components/payment/SepayPaymentModal';
 import { ProductFilterSidebar } from '@/components/products/ProductFilterSidebar';
 import { GinsengProductCard } from './ginseng/GinsengProductCard';
 import { ProductDetailModal } from './products/ProductDetailModal';
@@ -17,7 +16,6 @@ import { SearchInput } from '@/components/common/SearchInput';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
-
 type GinsengClientProps = {
   locale: string;
   initialItems?: any[];
@@ -38,7 +36,6 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   const [selectedDetailProduct, setSelectedDetailProduct] = useState<any | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
   const [quickPurchasePlant, setQuickPurchasePlant] = useState<any | null>(null);
-  const [paymentOrder, setPaymentOrder] = useState<any | null>(null);
 
   const handleAddToCartOnly = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
@@ -57,24 +54,14 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
     toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
   };
 
-  const handleBuyItem = (e: React.MouseEvent, item: any, redirect = true) => {
+  const handleBuyItem = (e: React.MouseEvent, item: any) => {
+    if (e && e.preventDefault) e.preventDefault();
     if (!isLoggedIn) {
-      e.preventDefault();
       window.location.href = `/${locale}/sign-in?reason=ginseng`;
       return;
     }
-    e.preventDefault();
-    addToCart({
-      id: item.id || `GINSENG-${item.name}`,
-      name: item.name,
-      price: item.price,
-      image: item.image || item.images?.[0] || item.imageUrl || '/assets/images/logo_ruou_sam.png',
-      category: 'Ginseng',
-    });
-
-    if (redirect) {
-      window.location.href = `/${locale}/cart`;
-    }
+    setSelectedDetailProduct(null);
+    setQuickPurchasePlant(item);
   };
 
   const openProductDetail = (item: any) => {
@@ -244,28 +231,12 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
           locale={locale}
           isLoggedIn={isLoggedIn}
           onClose={() => setQuickPurchasePlant(null)}
-          onSuccessPayment={(orderData) => {
+          onSuccessPayment={(orderData: any) => {
             setQuickPurchasePlant(null);
-            setPaymentOrder(orderData);
-          }}
-        />
-      )}
-
-      {paymentOrder && (
-        <SepayPaymentModal
-          isOpen={!!paymentOrder}
-          onClose={() => setPaymentOrder(null)}
-          paymentInfo={{
-            qrUrl: '',
-            accountNumber: '',
-            accountName: '',
-            bankBrand: '',
-            amount: paymentOrder.totalAmount,
-            orderCode: paymentOrder.code,
-          }}
-          onPaymentSuccess={() => {
-            toast.success('Thanh toán đơn hàng thành công!');
-            setPaymentOrder(null);
+            const orderCode = orderData?.code || orderData?.id;
+            if (orderCode) {
+              window.location.href = `/api/proxy/public/payment/sepay/pay/${orderCode}`;
+            }
           }}
         />
       )}

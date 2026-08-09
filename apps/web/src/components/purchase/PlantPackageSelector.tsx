@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 
 type PlantPackageSelectorProps = {
   carePackagesList: any[];
@@ -20,10 +21,10 @@ export const PlantPackageSelector = ({
   const t = useTranslations('plantPackageSelector');
 
   return (
-    <div className="space-y-5 border-t border-gray-150 pt-5">
+    <div className="space-y-5 border-t border-border pt-5">
       {/* Care Package Selection */}
       <div className="space-y-2">
-        <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
+        <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
           {t('careTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -33,27 +34,28 @@ export const PlantPackageSelector = ({
             const pkgPrice = Number(pkg.price || 0);
 
             return (
-              <button
+              <Button
                 type="button"
                 key={pkgId}
+                variant="ghost"
                 onClick={() => setSelectedCareId(pkgId)}
-                className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
+                className={`p-3 h-auto rounded-xl border text-left flex-col items-start justify-between transition-colors cursor-pointer whitespace-normal ${
                   isSelected
-                    ? 'border-primary bg-emerald-50/50 ring-2 ring-primary/20 shadow-xs'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 shadow-xs'
+                    : 'border-border hover:border-muted-foreground/30 bg-card'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-primary bg-primary' : 'border-gray-300'}`}>
-                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-xs text-foreground line-clamp-1">{pkg.name}</span>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-background"></div>}
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-primary mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perTree')}</span>
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perTree')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
-              </button>
+                <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
+              </Button>
             );
           })}
         </div>
@@ -61,7 +63,7 @@ export const PlantPackageSelector = ({
 
       {/* Protection Package Selection */}
       <div className="space-y-2">
-        <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
+        <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
           {t('protectionTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -71,27 +73,28 @@ export const PlantPackageSelector = ({
             const pkgPrice = Number(pkg.price || 0);
 
             return (
-              <button
+              <Button
                 type="button"
                 key={pkgId}
+                variant="ghost"
                 onClick={() => setSelectedProtectionId(pkgId)}
-                className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
+                className={`p-3 h-auto rounded-xl border text-left flex-col items-start justify-between transition-colors cursor-pointer whitespace-normal ${
                   isSelected
-                    ? 'border-primary bg-emerald-50/50 ring-2 ring-primary/20 shadow-xs'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 shadow-xs'
+                    : 'border-border hover:border-muted-foreground/30 bg-card'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-primary bg-primary' : 'border-gray-300'}`}>
-                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-xs text-foreground line-clamp-1">{pkg.name}</span>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-background"></div>}
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-primary mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perYear')}</span>
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perYear')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>
-              </button>
+                <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>
+              </Button>
             );
           })}
         </div>
@@ -99,4 +102,3 @@ export const PlantPackageSelector = ({
     </div>
   );
 };
-

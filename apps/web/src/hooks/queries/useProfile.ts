@@ -6,7 +6,7 @@ export function useProfileMe(initialData?: UserProfile) {
   return useQuery<UserProfile | null>({
     queryKey: ['profile', 'me'],
     queryFn: () =>
-      fetchApiClient('/v1/shared/user/profile')
+      fetchApiClient('/user/profile/me')
         .then((res) => res.data)
         .catch(() => null),
     initialData,
@@ -16,9 +16,9 @@ export function useProfileMe(initialData?: UserProfile) {
 
 export function useProfileBusiness(initialData?: UserBusiness) {
   return useQuery<UserBusiness | null>({
-    queryKey: ['profile', 'me'],
+    queryKey: ['profile', 'business'],
     queryFn: () =>
-      fetchApiClient('/v1/shared/user/profile')
+      fetchApiClient('/user/profile/business')
         .then((res) => res.data)
         .catch(() => null),
     initialData,

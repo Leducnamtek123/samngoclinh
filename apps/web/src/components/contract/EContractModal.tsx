@@ -19,8 +19,8 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
   if (!contractId) return null;
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-fade-in">
-      <div data-lenis-prevent className="bg-white rounded-[20px] max-w-3xl w-full max-h-[min(88vh,820px)] flex flex-col overflow-hidden shadow-2xl border border-gray-100 my-auto">
+    <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-fade-in overflow-y-auto">
+      <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden shadow-xl border border-border shrink-0">
         
         {/* Sticky Header */}
         <div className="bg-slate-900 text-white px-6 py-5 flex items-center justify-between border-b border-slate-800 shrink-0 z-10 rounded-t-[20px] shadow-2xs">
@@ -49,7 +49,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
         </div>
 
         {/* Content Body Inner Scroll Area */}
-        <div data-lenis-prevent className="flex-1 modal-content p-6 space-y-6">
+        <div data-lenis-prevent className="flex-1 p-6 space-y-6 overflow-y-auto overscroll-contain min-h-0">
           {modal.isLoading ? (
             <div className="py-20">
               <LoadingState message="Đang tải nội dung hợp đồng..." />

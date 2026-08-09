@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
+
+export const dynamic = 'force-dynamic';
 import { fetchApi } from '@/lib/Api';
 import { Link } from '@/lib/I18nNavigation';
 import { sanitizeHtml } from '@/utils/sanitize';

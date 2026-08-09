@@ -1,30 +1,28 @@
 import { ProductImageCollage } from '@/components/products/ProductImageCollage';
 import { Button } from '@/components/ui';
 import { formatVNDPrice } from '@/utils/formatters';
-import { ShoppingCart } from 'lucide-react';
 
 type GinsengProductCardProps = {
   item: any;
   onOpenDetail: (item: any) => void;
-  onAddToCart: (e: React.MouseEvent, item: any) => void;
+  onAddToCart?: (e: React.MouseEvent, item: any) => void;
   onQuickPurchase: (item: any) => void;
 };
 
 export const GinsengProductCard = ({
   item,
   onOpenDetail,
-  onAddToCart,
   onQuickPurchase,
 }: GinsengProductCardProps) => {
   const hasMultiImages = item?.images && Array.isArray(item.images) && item.images.length > 1;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between group">
+    <div className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between group">
       {/* Product Image Panel */}
       <button 
         type="button"
         onClick={() => onOpenDetail(item)}
-        className="relative w-full h-64 bg-gray-50 flex items-center justify-center p-4 cursor-pointer text-left border-0"
+        className="relative w-full h-64 bg-muted flex items-center justify-center p-4 cursor-pointer text-left border-0"
       >
         <span className="absolute top-3 left-3 bg-primary/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-full z-10">
           Trồng tại Kon Tum
@@ -49,19 +47,19 @@ export const GinsengProductCard = ({
           <button 
             type="button"
             onClick={() => onOpenDetail(item)}
-            className="font-extrabold text-gray-900 text-sm leading-snug line-clamp-2 min-h-[40px] uppercase group-hover:text-primary transition-colors cursor-pointer text-left block w-full border-0"
+            className="font-extrabold text-foreground text-sm leading-snug line-clamp-2 min-h-[40px] uppercase group-hover:text-primary transition-colors cursor-pointer text-left block w-full border-0"
           >
             {item.name}
           </button>
-          <div className="flex justify-between items-center text-[10px] text-gray-500 font-bold bg-gray-50 px-2 py-1.5 rounded-lg border border-gray-100">
+          <div className="flex justify-between items-center text-[10px] text-muted-foreground font-bold bg-muted/60 px-2 py-1.5 rounded-lg border border-border">
             <span className="flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Tuổi: {item.ageYear || 1} năm
             </span>
             <span className="flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               Còn: {item.stock || 0} cây
@@ -69,26 +67,17 @@ export const GinsengProductCard = ({
           </div>
         </div>
 
-        <div className="text-secondary font-extrabold text-base pt-1">
+        <div className="text-primary font-black text-base pt-1">
           {formatVNDPrice(item.price)}
         </div>
 
-        {/* Actions */}
-        <div className="pt-2 flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={(e) => onAddToCart(e, item)}
-            title="Thêm vào giỏ hàng"
-          >
-            <ShoppingCart className="w-4 h-4 text-gray-600" />
-          </Button>
+        {/* Actions - Ginseng Planting only has Buy Now */}
+        <div className="pt-2">
           <Button
             type="button"
             variant="default"
             onClick={() => onQuickPurchase(item)}
-            className="flex-1"
+            className="w-full font-bold"
           >
             Mua ngay
           </Button>

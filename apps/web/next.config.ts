@@ -5,6 +5,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 // Define the base Next.js configuration
 const baseConfig: any = {
+  serverExternalPackages: ['isomorphic-dompurify', 'jsdom'],
   devIndicators: {
     position: 'bottom-right',
   },
