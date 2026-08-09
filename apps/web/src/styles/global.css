@@ -23,6 +23,8 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-smooth [data-lenis-prevent] {
   overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .lenis.lenis-stopped {
@@ -31,5 +33,36 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* Custom Modal Scrollbar System */
+.modal-content,
+[data-lenis-prevent] {
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding-right: 8px;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 70, 45, 0.28) transparent;
+}
+
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(20, 70, 45, 0.22);
+  border-radius: 999px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 70, 45, 0.38);
 }
 

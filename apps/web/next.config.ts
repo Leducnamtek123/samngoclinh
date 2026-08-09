@@ -1,4 +1,4 @@
-import './src/libs/Env';
+import './src/lib/Env';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
 import createNextIntlPlugin from 'next-intl/plugin';
@@ -38,7 +38,7 @@ const baseConfig: any = {
 };
 
 // Initialize the Next-Intl plugin
-let configWithPlugins: any = createNextIntlPlugin('./src/libs/I18n.ts')(baseConfig);
+let configWithPlugins: any = createNextIntlPlugin('./src/lib/I18n.ts')(baseConfig);
 
 // Conditionally enable bundle analysis
 if (process.env.ANALYZE === 'true') {

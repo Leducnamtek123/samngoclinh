@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { Env } from '@/libs/Env';
-import { logger } from '@/libs/Logger';
+import { Env } from '@/lib/Env';
+import { logger } from '@/lib/Logger';
 import * as schema from '@/models/Schema';
 
 // Need a database for production? Check out https://get.neon.com/BMFYNtx

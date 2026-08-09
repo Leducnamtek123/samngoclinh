@@ -2,9 +2,9 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 import { useEffect, useState } from 'react';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 import { Gift } from 'lucide-react';
 
 export const HeaderNav = () => {

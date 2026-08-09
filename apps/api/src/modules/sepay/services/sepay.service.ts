@@ -52,17 +52,21 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             this.configService.get<string>('sepay.bankAccount') ||
             '';
         const bankBrand =
-            dbBank?.value || this.configService.get<string>('sepay.bankBrand')!;
+            dbBank?.value ||
+            this.configService.get<string>('sepay.bankBrand') ||
+            '';
         const accountName =
             dbName?.value ||
             this.configService.get<string>('sepay.accountName') ||
             '';
 
-        const qrUrl = `https://qr.sepay.vn/img?acc=${encodeURIComponent(
-            accountNumber
-        )}&bank=${encodeURIComponent(bankBrand)}&amount=${amount}&des=${encodeURIComponent(
-            orderCode
-        )}&template=compact`;
+        const qrUrl = accountNumber && bankBrand
+            ? `https://qr.sepay.vn/img?acc=${encodeURIComponent(
+                accountNumber
+            )}&bank=${encodeURIComponent(bankBrand)}&amount=${amount}&des=${encodeURIComponent(
+                orderCode
+            )}&template=compact`
+            : '';
 
         return {
             qrUrl,
@@ -172,11 +176,23 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
      * Xác thực trạng thái với SePay khi khách quay về từ cổng thanh toán: truy vấn SePay,
      * nếu đã thanh toán thì cập nhật đơn -> paid. Trả về trạng thái đơn hiện tại.
      */
+    /**
+     * Xác thực trạng thái với SePay khi khách quay về từ cổng thanh toán: truy vấn SePay,
+     * nếu đã thanh toán thì cập nhật đơn -> paid. Trả về trạng thái đơn hiện tại.
+     */
     async verifyOrder(
         orderCode: string
-    ): Promise<{ code: string; status: string; total: number }> {
-        const order = await this.databaseService.order.findUnique({
-            where: { code: orderCode },
+    ): Promise<{
+        code: string;
+        status: string;
+        total: number;
+        qrUrl?: string;
+        accountNumber?: string;
+        bankBrand?: string;
+        accountName?: string;
+    }> {
+        const order = await this.databaseService.order.findFirst({
+            where: { OR: [{ code: orderCode }, { id: orderCode }] },
         });
         if (!order) {
             throw new NotFoundException({
@@ -201,7 +217,7 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
                         merchant_id: merchantId,
                         secret_key: secretKey,
                     });
-                    const res = await client.order.retrieve(orderCode);
+                    const res = await client.order.retrieve(order.code);
                     const body = (res?.data ?? {}) as Record<string, unknown>;
                     const detail = (body.data ?? body) as Record<string, unknown>;
                     const sepayStatus = String(
@@ -217,27 +233,36 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
                         ].includes(sepayStatus)
                     ) {
                         await this.ordersService.handlePaymentWebhook({
-                            orderCode,
+                            orderCode: order.code,
                             amount: order.total,
                             status: 'SUCCESS',
-                            gatewayRef: `SEPAY_PG_VERIFY_${orderCode}`,
+                            gatewayRef: `SEPAY_PG_VERIFY_${order.code}`,
                         });
                     }
                 } catch (error) {
                     this.logger.warn(
-                        `SePay verify failed for ${orderCode}: ${String(error)}`
+                        `SePay verify failed for ${order.code}: ${String(error)}`
                     );
                 }
             }
         }
 
         const fresh = await this.databaseService.order.findUnique({
-            where: { code: orderCode },
+            where: { id: order.id },
         });
+        const paymentInfo = await this.getPaymentInfo(
+            fresh?.code ?? order.code,
+            fresh?.total ?? order.total
+        );
+
         return {
-            code: fresh?.code ?? orderCode,
+            code: fresh?.code ?? order.code,
             status: fresh?.status ?? order.status,
             total: fresh?.total ?? order.total,
+            accountNumber: paymentInfo.accountNumber,
+            bankBrand: paymentInfo.bankBrand,
+            accountName: paymentInfo.accountName,
+            qrUrl: paymentInfo.qrUrl,
         };
     }
 
@@ -246,8 +271,8 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
      * chỉ dùng phương thức chuyển khoản QR (BANK_TRANSFER). Mở URL này trong trình duyệt.
      */
     async getCheckoutRedirectHtml(orderCode: string): Promise<string> {
-        const order = await this.databaseService.order.findUnique({
-            where: { code: orderCode },
+        const order = await this.databaseService.order.findFirst({
+            where: { OR: [{ code: orderCode }, { id: orderCode }] },
         });
         if (!order) {
             return this.renderMessage('Không tìm thấy đơn hàng.');

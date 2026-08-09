@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/libs/I18nNavigation';
+import { usePathname, useRouter } from '@/lib/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
 import { NotificationPopover } from '@/components/NotificationPopover';
-import { OrderDetailModal, OrderDetailData } from '@/components/OrderDetailModal';
+import { OrderDetailModal, OrderDetailData } from '@/components/orders/OrderDetailModal';
 import { useNotificationsList } from '@/hooks/queries/useNotifications';
 
 type UserHeaderMenuProps = {
@@ -151,7 +151,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
             setIsOpen(!isOpen);
             setShowLangMenu(false);
           }}
-          className="w-9 h-9 rounded-full bg-[#1C3F24] hover:bg-emerald-900 text-white flex items-center justify-center font-bold text-sm shadow-sm transition-colors border border-emerald-800 focus:outline-none cursor-pointer"
+          className="w-9 h-9 rounded-full bg-primary hover:bg-primary-hover text-white flex items-center justify-center font-bold text-sm shadow-sm transition-colors border border-emerald-800 focus:outline-none cursor-pointer"
         >
           {initial}
         </button>
@@ -161,7 +161,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
           <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100/80 py-3 z-50 transition-[opacity,transform] duration-150 animate-in fade-in zoom-in-95">
             {/* User Info Header */}
             <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#1C3F24] text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-base shadow-xs flex-shrink-0">
                 {initial}
               </div>
               <div className="overflow-hidden">

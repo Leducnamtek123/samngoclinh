@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 import { UserHeaderMenu } from '@/components/UserHeaderMenu';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
 import { HeaderNav } from '@/components/HeaderNav';
 import QueryProvider from '@/providers/QueryProvider';
 

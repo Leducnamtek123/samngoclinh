@@ -41,11 +41,13 @@ const NEUTRAL_PATHS = [
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = await getSessionToken()
 
-  let isNeutral = false
-  for (const path of NEUTRAL_PATHS) {
-    if (endpoint.includes(path)) {
-      isNeutral = true
-      break
+  let isNeutral = endpoint.startsWith("/admin")
+  if (!isNeutral) {
+    for (const path of NEUTRAL_PATHS) {
+      if (endpoint.includes(path)) {
+        isNeutral = true
+        break
+      }
     }
   }
 

@@ -60,7 +60,7 @@ const DialogPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in overflow-y-auto">
+    <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in overflow-y-auto">
       {children}
     </div>,
     document.body
@@ -95,6 +95,7 @@ const DialogContent = React.forwardRef<
         ref={ref}
         role="dialog"
         aria-modal="true"
+        data-lenis-prevent
         className={cn(
           'relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-gray-800 transform transition-all duration-200 animate-in zoom-in-95 my-auto max-h-[90vh] overflow-y-auto',
           className

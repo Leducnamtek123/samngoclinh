@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl';
+
 type PlantPackageSelectorProps = {
   carePackagesList: any[];
   protectionPackagesList: any[];
@@ -15,12 +17,14 @@ export const PlantPackageSelector = ({
   selectedProtectionId,
   setSelectedProtectionId,
 }: PlantPackageSelectorProps) => {
+  const t = useTranslations('plantPackageSelector');
+
   return (
     <div className="space-y-5 border-t border-gray-150 pt-5">
       {/* Care Package Selection */}
       <div className="space-y-2">
         <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
-          Gói Dịch Vụ Chăm Sóc Sâm (Theo Năm) *
+          {t('careTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {carePackagesList.map((pkg) => {
@@ -46,9 +50,9 @@ export const PlantPackageSelector = ({
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-[#1C3F24] mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">/cây</span>
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perTree')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || 'Chăm sóc hữu cơ'}</span>
+                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
               </button>
             );
           })}
@@ -58,7 +62,7 @@ export const PlantPackageSelector = ({
       {/* Protection Package Selection */}
       <div className="space-y-2">
         <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
-          Gói Bảo Hiểm & Bảo Vệ Vườn Sâm *
+          {t('protectionTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {protectionPackagesList.map((pkg) => {
@@ -84,9 +88,9 @@ export const PlantPackageSelector = ({
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-[#1C3F24] mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">/năm</span>
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">{t('perYear')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || 'Bảo hiểm 100% rủi ro thiêu hủy/dịch bệnh'}</span>
+                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>
               </button>
             );
           })}
@@ -95,3 +99,4 @@ export const PlantPackageSelector = ({
     </div>
   );
 };
+

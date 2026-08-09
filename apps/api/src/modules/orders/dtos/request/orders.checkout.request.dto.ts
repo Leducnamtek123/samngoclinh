@@ -1,11 +1,25 @@
+import { Type } from 'class-transformer';
 import {
+    IsArray,
     IsBoolean,
     IsIn,
     IsNotEmpty,
+    IsNumber,
     IsOptional,
     IsString,
     ValidateIf,
+    ValidateNested,
 } from 'class-validator';
+
+export class CartCheckoutItemDto {
+    @IsNotEmpty()
+    @IsString()
+    productId: string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    quantity: number;
+}
 
 export class OrdersUserCheckoutRequestDto {
     @IsOptional()
@@ -38,4 +52,10 @@ export class OrdersUserCheckoutRequestDto {
     @IsOptional()
     @IsString()
     note?: string;
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CartCheckoutItemDto)
+    items?: CartCheckoutItemDto[];
 }

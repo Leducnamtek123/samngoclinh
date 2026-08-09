@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-[#1C3F24] text-white hover:bg-[#15301B] shadow-md hover:shadow-lg',
+          'bg-primary text-white hover:bg-primary-hover shadow-md hover:shadow-lg',
         emerald:
           'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md hover:shadow-lg',
         destructive:
@@ -42,41 +42,30 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, isLoading = false, disabled, children, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={isLoading || disabled}
         {...props}
-      />
+      >
+        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />}
+        {children}
+      </Comp>
     );
   }
 );
 Button.displayName = 'Button';
 
-export interface ButtonLoadingProps extends ButtonProps {
-  isLoading?: boolean;
-}
+export interface ButtonLoadingProps extends ButtonProps {}
 
-const ButtonLoading = React.forwardRef<HTMLButtonElement, ButtonLoadingProps>(
-  ({ isLoading, disabled, children, className, ...props }, ref) => {
-    return (
-      <Button
-        ref={ref}
-        disabled={isLoading || disabled}
-        className={className}
-        {...props}
-      >
-        {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />}
-        {children}
-      </Button>
-    );
-  }
-);
+const ButtonLoading = Button;
 ButtonLoading.displayName = 'ButtonLoading';
 
 export { Button, ButtonLoading, buttonVariants };

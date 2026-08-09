@@ -1,5 +1,5 @@
 import { ProductDetailClient } from '@/components/products/ProductDetailClient';
-import { getUserSessionToken } from '@/libs/Api';
+import { getUserSessionToken } from '@/lib/Api';
 
 type PageProps = {
   params: Promise<{

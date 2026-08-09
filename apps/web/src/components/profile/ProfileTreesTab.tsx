@@ -1,4 +1,4 @@
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 
 type ProfileTreesTabProps = {
   wallet: any;

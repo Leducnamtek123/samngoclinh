@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 
 type PortfolioPageProps = {
   params: Promise<{ locale: string }>;

@@ -134,11 +134,11 @@
     "free": "Free",
     "quantity": "Quantity",
     "product": "Product",
-    "payWithSePay": "VietQR Payment (SePay)",
+    "payWithSePay": "Online Payment",
     "confirmOrder": "Confirm Order",
     "step1": "1. Cart",
     "step2": "2. Confirm",
-    "step3": "3. VietQR Pay",
+    "step3": "3. Payment",
     "step4": "4. Complete",
     "recipientName": "Recipient Name",
     "phoneNumber": "Phone Number",
@@ -189,5 +189,145 @@
     "date": "Date",
     "action": "Action",
     "verified": "Certified Genuine Ngoc Linh Ginseng"
+  },
+  "addressSelector": {
+    "title": "Product Delivery Address *",
+    "addNewAddress": "+ Add New Address",
+    "defaultBadge": "Default",
+    "emptyState": {
+      "description": "You don't have any delivery address yet. Please click \"+ Add New Address\".",
+      "addAddress": "Add Address"
+    }
+  },
+  "plantPackageSelector": {
+    "careTitle": "Ginseng Care Service Package (Annual) *",
+    "protectionTitle": "Ginseng Garden Insurance & Protection Package *",
+    "perTree": "/tree",
+    "perYear": "/year",
+    "defaultCareDesc": "Organic care",
+    "defaultProtectionDesc": "100% destruction/disease risk coverage"
+  },
+  "addAddressModal": {
+    "title": "Add Shipping Address",
+    "subtitle": "GPS location or select on OpenStreetMap",
+    "recipientNameLabel": "Recipient Name",
+    "recipientNamePlaceholder": "Enter recipient name...",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter phone number...",
+    "addressLabel": "Detailed Address (House number, Street...)",
+    "addressPlaceholder": "Enter or locate address...",
+    "cancel": "Cancel",
+    "saveAndUse": "Save & Use This Address",
+    "savedSuccess": "Saved new address to Address Book!"
+  },
+  "changeAddressModal": {
+    "title": "Shipping Address Book",
+    "subtitle": "Select the address you want to use for this order",
+    "defaultRecipient": "Recipient",
+    "defaultBadge": "Default",
+    "addNewAddress": "Add New Address",
+    "close": "Close"
+  },
+  "cartStepShipping": {
+    "deliveryMethodTitle": "DELIVERY METHOD",
+    "deliveryShipping": "Doorstep Delivery",
+    "deliveryShippingDesc": "Home delivery via express shipping service",
+    "deliveryPickup": "Pickup at Store / Garden",
+    "deliveryPickupDesc": "Pick up directly at store / Ngoc Linh ginseng garden",
+    "free": "Free",
+    "changeAddress": "Change Address",
+    "addNewAddress": "Add New Address",
+    "defaultBadge": "Default",
+    "addressDetailLabel": "Shipping Address (House number, Street...)",
+    "pickupAddressTitle": "Store / Ngoc Linh Ginseng Garden Address:",
+    "pickupLocation": "Receiving Station & Nam Tra My Ngoc Linh Ginseng Garden, Quang Nam",
+    "pickupHotline": "Pickup Support Hotline: 090 123 4567",
+    "orderNotesLabel": "ORDER NOTES",
+    "orderNotesPlaceholder": "Enter notes for your order (optional)...",
+    "orderSummaryTitle": "ORDER CONFIRMATION",
+    "subtotal": "Subtotal",
+    "shippingFee": "Shipping Fee",
+    "totalPayment": "Total Payment",
+    "continueToPayment": "Continue to Payment",
+    "backToCart": "Back to Cart"
+  },
+  "quickPurchase": {
+    "badgePlant": "Plant & Organic Care",
+    "badgeProduct": "Buy Now",
+    "modalTitle": "Select Quantity & Buy Now",
+    "closeAriaLabel": "Close quick purchase modal",
+    "perTree": "/tree",
+    "availableStock": "Available stock: {count} items",
+    "quantityLabel": "Purchase Quantity *",
+    "decreaseAriaLabel": "Decrease quantity",
+    "increaseAriaLabel": "Increase quantity",
+    "quantityAriaLabel": "Purchase quantity",
+    "maxLimitNote": "Maximum {count} plants per order",
+    "agreeTermsText": "I agree to sign the Ngoc Linh Ginseng Care Authorization Contract and accept service regulations.",
+    "careTermsTitle": "View Regulations & Lifetime Care Benefits",
+    "careTermsItem1": "• Ginseng seedlings are planted & cared for according to organic ecological standards at Tra Linh Ginseng Garden.",
+    "careTermsItem2": "• Technical team updates growth logs, height, foliage & real photos every 15 days.",
+    "careTermsItem3": "• Owner has the right to harvest real ginseng roots or convert into finished ginseng liquor at maturity.",
+    "contractSampleTitle": "Sample eContract Investment Agreement (Preview)",
+    "contractSampleLine1": "SOCIALIST REPUBLIC OF VIETNAM - Independence - Freedom - Happiness",
+    "contractSampleLine2": "DIGITAL NGOC LINH GINSENG CARE AUTHORIZATION CONTRACT",
+    "contractSampleLine3": "Party A: Entrusting Party (Plant Purchasing Investor)",
+    "contractSampleLine4": "Party B: Nam Tra My Ngoc Linh Ginseng Liquor Joint Stock Company",
+    "contractSampleLine5": "Content: Party B is responsible for preserving, caring, harvesting and delivering products to Party A according to the agreed cycle.",
+    "breakdownTitle": "Order Payment Details",
+    "plantPriceLabel": "Ginseng cost ({quantity} plants x {price} VND):",
+    "vatTreeLabel": "Ginseng VAT (5%):",
+    "careFeeLabel": "Care fee ({name}):",
+    "vatCareLabel": "Care Fee VAT (10%):",
+    "protectionFeeLabel": "Insurance fee ({name}):",
+    "vatProtectionLabel": "Insurance VAT (10%):",
+    "defaultPackage": "By package",
+    "subtotalLabel": "Subtotal ({quantity} items):",
+    "vatProduct8Label": "Product VAT (8%):",
+    "grandTotalLabel": "TOTAL PAYMENT:",
+    "cancel": "Cancel",
+    "submitInitializing": "Initializing order...",
+    "submitConfirm": "Confirm & Pay",
+    "toastLoginRequired": "Please sign in to complete purchase!",
+    "toastAgreeTermsRequired": "Please accept contract terms before payment!",
+    "toastAddressRequired": "Please select or add a delivery address!",
+    "toastOrderCreated": "Order created successfully! Redirecting to payment...",
+    "toastPaymentOpening": "Opening payment gateway...",
+    "toastAddressAdded": "Shipping address added successfully!"
+  },
+  "validation": {
+    "phone": {
+      "required": "Please enter phone number",
+      "invalid": "Invalid phone number (e.g. 0912345678)"
+    },
+    "email": {
+      "required": "Please enter email address",
+      "invalid": "Invalid email address"
+    },
+    "password": {
+      "min": "Password must be at least 6 characters",
+      "oldRequired": "Please enter current password",
+      "confirmRequired": "Please confirm password",
+      "confirmNewRequired": "Please confirm new password",
+      "mismatch": "Passwords do not match"
+    },
+    "shippingAddress": {
+      "recipientMin": "Full name must be at least 2 characters",
+      "recipientMax": "Full name cannot exceed 100 characters",
+      "addressMin": "Shipping address must be at least 5 characters",
+      "addressMax": "Address cannot exceed 255 characters"
+    },
+    "signUp": {
+      "agreeTerms": "You must agree to the terms of use"
+    },
+    "otp": {
+      "length": "OTP code must be exactly 6 digits"
+    },
+    "profileInfo": {
+      "fullNameMin": "Full name must be at least 2 characters",
+      "fullNameMax": "Full name cannot exceed 100 characters",
+      "genderRequired": "Please select gender",
+      "birthDateRequired": "Please select birth date"
+    }
   }
 }

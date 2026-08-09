@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import SignUpForm from '@/components/SignUpForm';
+import SignUpForm from '@/components/auth/SignUpForm';
 
 type SignUpPageProps = {
   params: Promise<{ locale: string }>;

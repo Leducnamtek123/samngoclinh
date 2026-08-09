@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { routing } from '@/libs/I18nRouting';
+import { routing } from '@/lib/I18nRouting';
 import { Toaster } from '@/components/ui/Toaster';
 import { ScrollAnimationProvider } from '@/components/animation/ScrollAnimationProvider';
 import '@/styles/global.css';

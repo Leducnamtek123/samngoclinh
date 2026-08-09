@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 
 export const dynamic = 'force-dynamic';

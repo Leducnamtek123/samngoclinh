@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/lib/I18nNavigation';
 import { toast } from 'sonner';
 import { useCatalogPlant } from '@/hooks/queries/useCatalog';
 import { addToCart } from '@/utils/cart';
@@ -114,7 +114,7 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn }: GinsengDetailCli
           <div className="space-y-4">
             <div className="h-80 sm:h-96 bg-emerald-50/40 rounded-2xl border border-emerald-100 relative overflow-hidden flex items-center justify-center p-4">
               <Image
-                src={currentImage}
+                src={currentImage || '/assets/images/logo_ruou_sam.png'}
                 alt={plant.name}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -227,14 +227,14 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn }: GinsengDetailCli
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex-1 border-2 border-[#1C3F24] text-[#1C3F24] hover:bg-emerald-50 font-bold py-3.5 px-6 rounded-xl text-xs transition-colors cursor-pointer text-center"
+                className="flex-1 border-2 border-primary text-primary hover:bg-emerald-50 font-bold py-3.5 px-6 rounded-xl text-xs transition-colors cursor-pointer text-center"
               >
                 Thêm Vào Giỏ Hàng
               </button>
               <button
                 type="button"
                 onClick={handleBuyNow}
-                className="flex-1 bg-[#1C3F24] hover:bg-emerald-900 text-white font-bold py-3.5 px-6 rounded-xl text-xs transition-colors shadow-lg cursor-pointer text-center"
+                className="flex-1 bg-primary hover:bg-primary-hover text-white font-bold py-3.5 px-6 rounded-xl text-xs transition-colors shadow-lg cursor-pointer text-center"
               >
                 Đăng Ký Trồng Ngay
               </button>

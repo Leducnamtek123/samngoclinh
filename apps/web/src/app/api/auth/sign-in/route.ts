@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Env } from '@/libs/Env';
+import { Env } from '@/lib/Env';
 
 export async function POST(request: Request) {
   try {

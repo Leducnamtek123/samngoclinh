@@ -228,7 +228,7 @@ export const ProfileInfoTab = ({
 
             <div className="space-y-1">
               <span className="text-xs text-gray-400 font-bold uppercase tracking-wider block">Hạng tài khoản</span>
-              <p className="text-sm font-semibold text-[#1C3F24] pt-3">Hạng {rank}</p>
+              <p className="text-sm font-semibold text-primary pt-3">Hạng {rank}</p>
             </div>
           </div>
         </Form>
@@ -281,7 +281,7 @@ export const ProfileInfoTab = ({
           {/* Hạng tài khoản */}
           <div className="space-y-1">
             <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Hạng tài khoản</span>
-            <p className="text-sm font-semibold text-[#1C3F24]">Hạng {rank}</p>
+            <p className="text-sm font-semibold text-primary">Hạng {rank}</p>
           </div>
 
           {/* Mã giới thiệu */}

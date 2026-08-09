@@ -1,6 +1,6 @@
 import { useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { OrderDetailData } from '@/components/OrderDetailModal';
+import { OrderDetailData } from '@/components/orders/OrderDetailModal';
 import {
   useNotificationsList,
   useMarkNotificationRead,

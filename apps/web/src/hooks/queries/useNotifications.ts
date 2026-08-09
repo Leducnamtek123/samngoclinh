@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 
 export function useNotificationsList(enabled = true) {
   return useQuery({

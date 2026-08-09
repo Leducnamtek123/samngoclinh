@@ -1,4 +1,4 @@
-import { ProductImageCollage } from './ProductImageCollage';
+import { ProductImageCollage } from '@/components/products/ProductImageCollage';
 
 type GinsengProductCardProps = {
   item: any;
@@ -23,7 +23,7 @@ export const GinsengProductCard = ({
         onClick={() => onOpenDetail(item)}
         className="relative w-full h-64 bg-gray-50 flex items-center justify-center p-4 cursor-pointer text-left border-0"
       >
-        <span className="absolute top-3 left-3 bg-[#1C3F24]/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-full z-10">
+        <span className="absolute top-3 left-3 bg-primary/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-full z-10">
           Trồng tại Kon Tum
         </span>
 
@@ -46,7 +46,7 @@ export const GinsengProductCard = ({
           <button 
             type="button"
             onClick={() => onOpenDetail(item)}
-            className="font-extrabold text-gray-900 text-sm leading-snug line-clamp-2 min-h-[40px] uppercase group-hover:text-[#1C3F24] transition-colors cursor-pointer text-left block w-full border-0"
+            className="font-extrabold text-gray-900 text-sm leading-snug line-clamp-2 min-h-[40px] uppercase group-hover:text-primary transition-colors cursor-pointer text-left block w-full border-0"
           >
             {item.name}
           </button>
@@ -85,7 +85,7 @@ export const GinsengProductCard = ({
           <button
             type="button"
             onClick={() => onQuickPurchase(item)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#1C3F24] hover:bg-[#1C3F24]/90 text-white py-2.5 rounded-lg font-extrabold transition-colors duration-200 text-xs active:scale-98 shadow-xs cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg font-extrabold transition-colors duration-200 text-xs active:scale-98 shadow-xs cursor-pointer"
           >
             Mua ngay
           </button>

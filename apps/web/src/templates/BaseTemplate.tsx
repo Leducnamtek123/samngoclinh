@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;

@@ -1,4 +1,4 @@
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 
 type ProfileContractsTabProps = {
   contractsLoading: boolean;
@@ -34,7 +34,7 @@ export const ProfileContractsTab = ({
           <p className="text-xs text-gray-500 max-w-sm mx-auto">
             Các hợp đồng đầu tư & ủy quyền chăm sóc sẽ tự động khởi tạo khi bạn hoàn tất đơn mua cây sâm hoặc gói chăm sóc.
           </p>
-          <Link href="/products" className="inline-block bg-[#1C3F24] text-white hover:bg-emerald-900 px-5 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-sm mt-2">
+          <Link href="/products" className="inline-block bg-primary text-white hover:bg-primary-hover px-5 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-sm mt-2">
             Khám phá cây sâm giống
           </Link>
         </div>
@@ -61,7 +61,7 @@ export const ProfileContractsTab = ({
                     )}
                   </div>
                   <p className="text-xs text-slate-500 font-medium">
-                    Giá trị: <strong className="text-[#1C3F24] font-bold">{(contract.totalAmount || contract.value || 0).toLocaleString('vi-VN')} VNĐ</strong>
+                    Giá trị: <strong className="text-primary font-bold">{(contract.totalAmount || contract.value || 0).toLocaleString('vi-VN')} VNĐ</strong>
                   </p>
                 </div>
 
@@ -71,7 +71,7 @@ export const ProfileContractsTab = ({
                   className={`px-5 py-2.5 rounded-xl font-bold text-xs transition-colors cursor-pointer ${
                     isSigned
                       ? 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      : 'bg-[#1C3F24] text-white hover:bg-[#15301B] shadow-sm'
+                      : 'bg-primary text-white hover:bg-primary-hover shadow-sm'
                   }`}
                 >
                   {isSigned ? 'Xem chi tiết' : 'Ký điện tử ngay'}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 import { Sprout, CheckCircle2, Gift, ArrowRight } from 'lucide-react';
 import { ClaimPlantModal } from './ClaimPlantModal';
 
@@ -44,7 +44,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               {/* Top Overlay Gradients */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-              <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-[#1C3F24]/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
+              <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-primary/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md">
                 <Sprout className="w-3.5 h-3.5 text-emerald-400" />
                 <span>{slot.plantCatalog?.ageYear || 1} Năm Tuổi</span>
               </div>
@@ -97,7 +97,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
                   <button
                     type="button"
                     onClick={() => handleClaimClick(slot)}
-                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
+                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
                   >
                     <span>Nhận cây ngay</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -105,7 +105,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
                 ) : (
                   <Link
                     href="/sign-in?reason=campaign"
-                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-[#1C3F24] hover:bg-[#15301B] active:bg-[#0f2414] text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
+                    className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
                   >
                     <span>Đăng nhập để nhận</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

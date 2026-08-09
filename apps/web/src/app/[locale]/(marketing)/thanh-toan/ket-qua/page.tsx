@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
 
 type PaymentResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -126,12 +126,12 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
           Về trang chủ
         </Link>
 
-        <a
-          className="block text-sm font-medium text-emerald-700 hover:underline"
-          href="samngoclinh://"
+        <Link
+          className="block text-sm font-bold text-emerald-700 hover:underline"
+          href={`/${locale}/profile?tab=orders`}
         >
-          Trở về ứng dụng iWE FARM để xem kết quả đơn hàng
-        </a>
+          Xem lịch sử đơn hàng trong Tài khoản
+        </Link>
       </div>
     </div>
   );

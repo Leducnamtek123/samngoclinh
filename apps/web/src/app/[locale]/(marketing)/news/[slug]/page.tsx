@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchApi } from '@/libs/Api';
-import { Link } from '@/libs/I18nNavigation';
+import { fetchApi } from '@/lib/Api';
+import { Link } from '@/lib/I18nNavigation';
 import { sanitizeHtml } from '@/utils/sanitize';
 
 type ArticleDetailPageProps = {

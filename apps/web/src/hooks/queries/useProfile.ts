@@ -1,22 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
+import type { UserProfile, UserBusiness } from '@/types';
 
-export function useProfileMe(initialData?: any) {
-  return useQuery({
+export function useProfileMe(initialData?: UserProfile) {
+  return useQuery<UserProfile | null>({
     queryKey: ['profile', 'me'],
     queryFn: () =>
       fetchApiClient('/v1/shared/user/profile')
         .then((res) => res.data)
-        .catch(() => fetchApiClient('/user/profile/me').then((res) => res.data).catch(() => null)),
+        .catch(() => null),
     initialData,
     retry: false,
   });
 }
 
-export function useProfileBusiness(initialData?: any) {
-  return useQuery({
+export function useProfileBusiness(initialData?: UserBusiness) {
+  return useQuery<UserBusiness | null>({
     queryKey: ['profile', 'business'],
-    queryFn: () => fetchApiClient('/user/profile/business').then((res) => res.data).catch(() => null),
+    queryFn: () =>
+      fetchApiClient('/v1/shared/user/profile')
+        .then((res) => res.data)
+        .catch(() => null),
     initialData,
     retry: false,
   });
@@ -25,7 +29,7 @@ export function useProfileBusiness(initialData?: any) {
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: any) =>
+    mutationFn: (payload: Partial<UserProfile>) =>
       fetchApiClient('/v1/shared/user/profile/update', {
         method: 'PUT',
         body: JSON.stringify(payload),

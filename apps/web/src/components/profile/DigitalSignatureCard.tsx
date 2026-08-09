@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 import { toast } from 'sonner';
 
 export const DigitalSignatureCard: React.FC = () => {

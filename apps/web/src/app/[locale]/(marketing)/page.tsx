@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { fetchApi } from '@/libs/Api';
-import { Link } from '@/libs/I18nNavigation';
+import { fetchApi } from '@/lib/Api';
+import { Link } from '@/lib/I18nNavigation';
 import { HomepageBannerSlider } from './HomepageBannerSlider';
 
 export const dynamic = 'force-dynamic';

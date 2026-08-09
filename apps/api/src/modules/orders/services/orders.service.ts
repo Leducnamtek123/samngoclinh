@@ -134,10 +134,53 @@ export class OrdersService implements IOrdersService {
         userId: string,
         dto: OrdersUserCheckoutRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
-        const cart = await this.databaseService.cart.findUnique({
+        let cart = await this.databaseService.cart.findUnique({
             where: { userId },
         });
-        const cartItems = (cart?.items as unknown as CartItem[]) || [];
+        let cartItems = (cart?.items as unknown as CartItem[]) || [];
+
+        // If backend cart is empty but dto.items is provided, populate backend cart first
+        if (cartItems.length === 0 && dto.items && dto.items.length > 0) {
+            const newItems: { productId: string; quantity: number }[] = [];
+            for (const item of dto.items) {
+                let prod: any = await this.databaseService.catalogProduct.findUnique({
+                    where: { id: item.productId },
+                });
+                if (!prod) {
+                    prod = await this.databaseService.catalogPlant.findUnique({
+                        where: { id: item.productId },
+                    });
+                }
+                if (!prod) {
+                    prod = await this.databaseService.catalogProduct.findFirst({
+                        where: { code: item.productId },
+                    });
+                }
+                if (!prod) {
+                    prod = await this.databaseService.catalogPlant.findFirst({
+                        where: { code: item.productId },
+                    });
+                }
+
+                if (prod) {
+                    newItems.push({ productId: prod.id, quantity: item.quantity });
+                }
+            }
+
+            if (newItems.length > 0) {
+                cart = await this.databaseService.cart.upsert({
+                    where: { userId },
+                    create: {
+                        userId,
+                        items: newItems,
+                    },
+                    update: {
+                        items: newItems,
+                    },
+                });
+                cartItems = (cart?.items as unknown as CartItem[]) || [];
+            }
+        }
 
         if (!cart || cartItems.length === 0) {
             throw new BadRequestException({
@@ -150,17 +193,25 @@ export class OrdersService implements IOrdersService {
         const products = await this.databaseService.catalogProduct.findMany({
             where: { id: { in: productIds } },
         });
+        const plants = await this.databaseService.catalogPlant.findMany({
+            where: { id: { in: productIds } },
+        });
 
         // 1. Validate stock and existence before transaction
         for (const cartItem of cartItems) {
-            const product = products.find(p => p.id === cartItem.productId);
+            const product: any =
+                products.find(p => p.id === cartItem.productId) ||
+                plants.find(p => p.id === cartItem.productId);
+
             if (!product) {
                 throw new NotFoundException({
                     statusCode: 404,
                     message: `Product ${cartItem.productId} not found`,
                 });
             }
-            if (product.status !== 'available') {
+            const isAvailable =
+                product.status === 'available' || product.status === 'active';
+            if (!isAvailable) {
                 throw new BadRequestException({
                     statusCode: 400,
                     message: `Product ${product.name} is no longer available`,
@@ -178,22 +229,34 @@ export class OrdersService implements IOrdersService {
         const order = await this.databaseService.$transaction(async tx => {
             // Decrement stock for all items
             for (const cartItem of cartItems) {
-                await tx.catalogProduct.update({
-                    where: { id: cartItem.productId },
-                    data: {
-                        stock: {
-                            decrement: cartItem.quantity,
+                const isProduct = products.some(p => p.id === cartItem.productId);
+                if (isProduct) {
+                    await tx.catalogProduct.update({
+                        where: { id: cartItem.productId },
+                        data: {
+                            stock: {
+                                decrement: cartItem.quantity,
+                            },
                         },
-                    },
-                });
+                    });
+                } else {
+                    await tx.catalogPlant.update({
+                        where: { id: cartItem.productId },
+                        data: {
+                            stock: {
+                                decrement: cartItem.quantity,
+                            },
+                        },
+                    });
+                }
             }
 
             // Calculate costs
             let subtotal = 0;
             const orderItems = cartItems.map(cartItem => {
-                const product = products.find(
+                const product: any = (products.find(
                     p => p.id === cartItem.productId
-                )!;
+                ) || plants.find(p => p.id === cartItem.productId))!;
                 const itemTotalPrice = product.price * cartItem.quantity;
                 subtotal += itemTotalPrice;
 

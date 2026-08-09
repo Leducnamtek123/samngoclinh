@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 
 export function useRequestEmailVerification() {
   return useMutation({
