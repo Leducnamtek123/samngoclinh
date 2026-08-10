@@ -27,7 +27,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
     if (initialProfileAddresses && Array.isArray(initialProfileAddresses) && initialProfileAddresses.length > 0) {
       const apiAddresses: AddressItem[] = initialProfileAddresses.map((a: AddressItem) => ({
         id: a.id,
-        name: a.recipient || a.name || a.label || 'Nhà đầu tư',
+        name: a.recipient || a.name || a.label || 'Địa chỉ nhận hàng',
         phone: a.phone || '',
         address: a.detail || a.address || '',
         detail: a.detail || a.address || '',

@@ -166,6 +166,10 @@
     "banners": "Banners",
     "manageNews": "Manage News",
     "contactRequests": "Contact Requests",
+    "systemSettings": "System Settings",
+    "shippingFee": "Shipping Fee",
+    "pointsConversion": "Points Conversion",
+    "generalSettings": "General Settings",
     "cultivation": "Cultivation & Farming",
     "business": "Business & Sales",
     "system": "System & Users",
@@ -218,30 +222,43 @@
       "approve": "Approve",
       "reject": "Reject",
       "scan": "Scan QR Code",
-      "generate": "Generate"
+      "generate": "Generate",
+      "filterAll": "Filter: All"
     },
     "status": {
+      "all": "All statuses",
       "active": "Active",
       "inactive": "Inactive",
+      "blocked": "Blocked",
       "pending": "Pending",
+      "paid": "Paid",
+      "shipping": "Shipping",
       "completed": "Completed",
       "cancelled": "Cancelled",
+      "failed": "Failed",
       "success": "Success",
+      "processing": "Processing",
+      "expired": "Expired",
+      "draft": "Draft",
+      "approved": "Approved",
+      "rejected": "Rejected",
       "error": "Error",
       "warning": "Warning",
       "info": "Info",
       "healthy": "Healthy",
       "diseased": "Diseased",
       "harvested": "Harvested",
-      "approved": "Approved",
-      "rejected": "Rejected"
+      "justNow": "Just now",
+      "verified": "Verified",
+      "unverified": "Unverified"
     },
     "table": {
       "rowsPerPage": "Rows per page",
       "pageOf": "Page {page} of {total}",
       "noResults": "No results found.",
       "selected": "{count} selected",
-      "showing": "Showing {start} to {end} of {total} entries"
+      "showing": "Showing {start} to {end} of {total} entries",
+      "total": "total"
     },
     "confirmations": {
       "deleteTitle": "Are you sure?",
@@ -256,9 +273,15 @@
     "addUser": "Add User",
     "editUser": "Edit User",
     "userDetails": "User Details",
+    "accountList": {
+      "title": "Account List",
+      "subtitle": "Display user name, email, status, and registration date."
+    },
     "fields": {
       "fullName": "Full Name",
+      "username": "Username",
       "email": "Email",
+      "verified": "Verified",
       "phone": "Phone Number",
       "role": "Role",
       "status": "Status",
@@ -266,6 +289,13 @@
       "lastLogin": "Last Login",
       "address": "Address",
       "avatar": "Avatar"
+    },
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked",
+      "pending": "Pending",
+      "verified": "Verified",
+      "unverified": "Unverified"
     },
     "roles": {
       "admin": "Administrator",
@@ -289,6 +319,10 @@
       "plantedDate": "Planted Date",
       "age": "Age (Years)",
       "healthStatus": "Health Status",
+      "quantity": "Quantity",
+      "owner": "Owner",
+      "carePackage": "Care Package",
+      "protectionPackage": "Protection Package",
       "notes": "Notes",
       "qrCode": "QR Code"
     },
@@ -315,7 +349,27 @@
       "stock": "Stock Quantity",
       "status": "Status",
       "description": "Description",
-      "image": "Product Image"
+      "image": "Product Image",
+      "approval": "Approval",
+      "importPrice": "Import Price",
+      "plantedDate": "Planted Date",
+      "age": "Age",
+      "unit": "Unit"
+    }
+  },
+  "packages": {
+    "title": "Service Packages",
+    "addPackage": "Add Service Package",
+    "editPackage": "Edit Service Package",
+    "createSubtitle": "Enter details for the package and click Save to complete.",
+    "fields": {
+      "code": "Package Code",
+      "name": "Package Name",
+      "price": "Unit Price (VND)",
+      "duration": "Duration (Months)",
+      "description": "Description",
+      "status": "Status",
+      "coverage": "Coverage / Insurance Scope"
     }
   },
   "content": {

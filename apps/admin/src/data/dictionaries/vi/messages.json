@@ -1,0 +1,8 @@
+{
+  "saveSuccess": "Lưu thành công!",
+  "deleteSuccess": "Xóa thành công!",
+  "createSuccess": "Tạo mới thành công!",
+  "updateSuccess": "Cập nhật thành công!",
+  "errorOccurred": "Có lỗi xảy ra. Vui lòng thử lại.",
+  "networkError": "Lỗi kết nối mạng. Vui lòng kiểm tra lại."
+}

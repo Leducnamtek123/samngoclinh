@@ -3,104 +3,63 @@ import { BounceRate } from "./bounce-rate"
 import { ConversionRate } from "./conversion-rate"
 import { UniqueVisitors } from "./unique-visitors"
 
-export function Overview({ stats }: { stats: any }) {
+import type { AnalyticsDashboardStats } from "../../types"
+
+export function Overview({ stats }: { stats?: AnalyticsDashboardStats }) {
+  const rev = Number(stats?.totalRevenue) || 0
+  const trees = Number(stats?.totalTrees) || 0
+  const contracts = Number(stats?.totalContracts) || 0
+  const users = Number(stats?.totalUsers) || 0
+
   const uniqueVisitorsData = {
-    averageValue: stats.totalRevenue || 452000000,
+    averageValue: rev,
     percentageChange: 0.125,
     perMonth: [
-      {
-        month: "January",
-        value: Math.round((stats.totalRevenue || 452000000) * 0.7),
-      },
-      {
-        month: "February",
-        value: Math.round((stats.totalRevenue || 452000000) * 0.8),
-      },
-      {
-        month: "March",
-        value: Math.round((stats.totalRevenue || 452000000) * 0.85),
-      },
-      {
-        month: "April",
-        value: Math.round((stats.totalRevenue || 452000000) * 0.9),
-      },
-      {
-        month: "May",
-        value: Math.round((stats.totalRevenue || 452000000) * 0.95),
-      },
-      { month: "June", value: stats.totalRevenue || 452000000 },
+      { month: "January", value: Math.round(rev * 0.7) },
+      { month: "February", value: Math.round(rev * 0.8) },
+      { month: "March", value: Math.round(rev * 0.85) },
+      { month: "April", value: Math.round(rev * 0.9) },
+      { month: "May", value: Math.round(rev * 0.95) },
+      { month: "June", value: rev },
     ],
   }
 
   const sessionDurationData = {
-    averageValue: stats.totalTrees || 1540,
+    averageValue: trees,
     percentageChange: 0.082,
     perMonth: [
-      {
-        month: "January",
-        value: Math.round((stats.totalTrees || 1540) * 0.8),
-        fill: "hsl(var(--chart-1))",
-      },
-      {
-        month: "February",
-        value: Math.round((stats.totalTrees || 1540) * 0.82),
-        fill: "hsl(var(--chart-2))",
-      },
-      {
-        month: "March",
-        value: Math.round((stats.totalTrees || 1540) * 0.85),
-        fill: "hsl(var(--chart-1))",
-      },
-      {
-        month: "April",
-        value: Math.round((stats.totalTrees || 1540) * 0.9),
-        fill: "hsl(var(--chart-2))",
-      },
-      {
-        month: "May",
-        value: Math.round((stats.totalTrees || 1540) * 0.95),
-        fill: "hsl(var(--chart-1))",
-      },
-      {
-        month: "June",
-        value: stats.totalTrees || 1540,
-        fill: "hsl(var(--chart-1))",
-      },
+      { month: "January", value: Math.round(trees * 0.8), fill: "hsl(var(--chart-1))" },
+      { month: "February", value: Math.round(trees * 0.82), fill: "hsl(var(--chart-2))" },
+      { month: "March", value: Math.round(trees * 0.85), fill: "hsl(var(--chart-1))" },
+      { month: "April", value: Math.round(trees * 0.9), fill: "hsl(var(--chart-2))" },
+      { month: "May", value: Math.round(trees * 0.95), fill: "hsl(var(--chart-1))" },
+      { month: "June", value: trees, fill: "hsl(var(--chart-1))" },
     ],
   }
 
   const bounceRateData = {
-    averageValue: stats.totalContracts || 42,
+    averageValue: contracts,
     percentageChange: 0.05,
     perMonth: [
-      {
-        month: "January",
-        value: Math.round((stats.totalContracts || 42) * 0.6),
-      },
-      {
-        month: "February",
-        value: Math.round((stats.totalContracts || 42) * 0.7),
-      },
-      { month: "March", value: Math.round((stats.totalContracts || 42) * 0.8) },
-      {
-        month: "April",
-        value: Math.round((stats.totalContracts || 42) * 0.85),
-      },
-      { month: "May", value: Math.round((stats.totalContracts || 42) * 0.9) },
-      { month: "June", value: stats.totalContracts || 42 },
+      { month: "January", value: Math.round(contracts * 0.6) },
+      { month: "February", value: Math.round(contracts * 0.7) },
+      { month: "March", value: Math.round(contracts * 0.8) },
+      { month: "April", value: Math.round(contracts * 0.85) },
+      { month: "May", value: Math.round(contracts * 0.9) },
+      { month: "June", value: contracts },
     ],
   }
 
   const conversionRateData = {
-    averageValue: stats.totalUsers || 286,
+    averageValue: users,
     percentageChange: 0.038,
     perMonth: [
-      { month: "January", value: Math.round((stats.totalUsers || 286) * 0.5) },
-      { month: "February", value: Math.round((stats.totalUsers || 286) * 0.6) },
-      { month: "March", value: Math.round((stats.totalUsers || 286) * 0.7) },
-      { month: "April", value: Math.round((stats.totalUsers || 286) * 0.8) },
-      { month: "May", value: Math.round((stats.totalUsers || 286) * 0.9) },
-      { month: "June", value: stats.totalUsers || 286 },
+      { month: "January", value: Math.round(users * 0.5) },
+      { month: "February", value: Math.round(users * 0.6) },
+      { month: "March", value: Math.round(users * 0.7) },
+      { month: "April", value: Math.round(users * 0.8) },
+      { month: "May", value: Math.round(users * 0.9) },
+      { month: "June", value: users },
     ],
   }
 

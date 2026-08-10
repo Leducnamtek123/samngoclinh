@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 interface PhotoUploadSectionProps {
   photoPreview: string | undefined
   form: UseFormReturn<ProfileInfoFormType>
-  user: UserType
+  user?: UserType
   handleUploadPhoto: (e: ChangeEvent<HTMLInputElement>) => void
   handleRemovePhoto: () => void
 }
@@ -37,7 +37,7 @@ export function PhotoUploadSection({
     <div className="flex items-center gap-x-4">
       <Avatar className="size-22">
         <AvatarImage src={photoPreview} alt="Profile Avatar" />
-        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+        <AvatarFallback>{getInitials(user?.name || "")}</AvatarFallback>
       </Avatar>
       <div className="grid gap-2">
         <FormField

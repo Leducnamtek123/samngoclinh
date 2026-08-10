@@ -21,19 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-}
-
-interface Tree {
-  id: string
-  code: string
-  name: string
-}
+import type { Tree, User } from "./use-contracts-manager"
 
 interface ContractFormData {
   userId: string

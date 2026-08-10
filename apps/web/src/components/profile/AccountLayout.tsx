@@ -9,7 +9,6 @@ type AccountLayoutProps = {
   activeTab: string;
   onSelectTab: (tabKey: string) => void;
   profile?: any;
-  ordersCount?: number;
   treesCount?: number;
   contractsCount?: number;
   children: React.ReactNode;
@@ -19,7 +18,6 @@ export const AccountLayout: React.FC<AccountLayoutProps> = ({
   activeTab,
   onSelectTab,
   profile,
-  ordersCount,
   treesCount,
   contractsCount,
   children,
@@ -33,7 +31,6 @@ export const AccountLayout: React.FC<AccountLayoutProps> = ({
             activeTab={activeTab}
             onSelectTab={onSelectTab}
             profile={profile}
-            ordersCount={ordersCount}
             treesCount={treesCount}
             contractsCount={contractsCount}
           />

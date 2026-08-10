@@ -67,6 +67,25 @@ export function getNestedValue(obj: any, path: string): any {
   return current
 }
 
+const FALLBACK_TRANSLATIONS: Record<string, string> = {
+  "common.status.justNow": "Vừa xong",
+  "common.status.noImage": "Không có hình ảnh",
+  "common.status.success": "Thành công",
+  "common.status.error": "Lỗi",
+  "common.status.pending": "Chờ thanh toán",
+  "common.status.active": "Đang hoạt động",
+  "common.status.completed": "Hoàn thành",
+  "common.status.cancelled": "Đã hủy",
+  "common.status.all": "Tất cả trạng thái",
+  "common.actions.close": "Đóng",
+  "common.actions.refresh": "Làm mới",
+  "common.actions.confirm": "Xác nhận",
+  "common.actions.cancel": "Hủy",
+  "common.table.noResults": "Không tìm thấy dữ liệu.",
+  "messages.errorOccurred": "Lỗi xảy ra",
+  "messages.networkError": "Lỗi máy chủ nội bộ",
+}
+
 export function translate(
   dictionary: any,
   key: string,
@@ -74,7 +93,10 @@ export function translate(
 ): string {
   let val = getNestedValue(dictionary, key)
   if (typeof val !== "string") {
-    val = dictionary?.[key] || key
+    val = dictionary?.[key]
+  }
+  if (typeof val !== "string") {
+    val = FALLBACK_TRANSLATIONS[key] || key
   }
   if (typeof val !== "string") return String(key)
   if (params) {

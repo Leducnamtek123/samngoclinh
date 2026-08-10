@@ -84,12 +84,12 @@ export function TreesList({
               <TableHead>{t("trees.fields.name")}</TableHead>
               <TableHead>{t("trees.fields.bed")}</TableHead>
               <TableHead>{t("trees.fields.age")}</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Owner</TableHead>
+              <TableHead>{t("trees.fields.quantity")}</TableHead>
+              <TableHead>{t("trees.fields.owner")}</TableHead>
               <TableHead>{t("trees.fields.healthStatus")}</TableHead>
-              <TableHead>Care Package</TableHead>
-              <TableHead>Protection Package</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{t("trees.fields.carePackage")}</TableHead>
+              <TableHead>{t("trees.fields.protectionPackage")}</TableHead>
+              <TableHead>{t("trees.fields.status")}</TableHead>
               <TableHead className="text-right">
                 {t("common.actions.actions")}
               </TableHead>

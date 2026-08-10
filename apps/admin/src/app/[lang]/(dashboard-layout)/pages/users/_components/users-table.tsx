@@ -140,16 +140,16 @@ export function UsersTable({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
-                {t("common.actions.filter")}: All
+                {t("common.actions.filterAll")}
               </SelectItem>
               <SelectItem value="active">
-                {t("common.status.active")}
+                {t("users.status.active")}
               </SelectItem>
               <SelectItem value="inactive">
                 {t("common.status.inactive")}
               </SelectItem>
               <SelectItem value="blocked">
-                {t("common.status.cancelled")}
+                {t("users.status.blocked")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -166,9 +166,9 @@ export function UsersTable({
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead>{t("users.fields.fullName")}</TableHead>
-                <TableHead>Username</TableHead>
+                <TableHead>{t("users.fields.username")}</TableHead>
                 <TableHead>{t("users.fields.email")}</TableHead>
-                <TableHead>Verified</TableHead>
+                <TableHead>{t("users.fields.verified")}</TableHead>
                 <TableHead>{t("users.fields.status")}</TableHead>
                 <TableHead className="text-right">
                   {t("users.fields.createdAt")}
@@ -198,8 +198,8 @@ export function UsersTable({
                       }
                     >
                       {user.isVerified
-                        ? t("common.status.success")
-                        : t("common.status.pending")}
+                        ? t("users.status.verified")
+                        : t("users.status.unverified")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -213,7 +213,7 @@ export function UsersTable({
                             : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
                       }
                     >
-                      {user.status.toUpperCase()}
+                      {t(`users.status.${user.status.toLowerCase()}`)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right text-slate-500">

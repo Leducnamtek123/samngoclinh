@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -20,13 +21,18 @@ export interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = 'Đã xảy ra lỗi',
+  title,
   message,
-  description = message || 'Không thể tải dữ liệu. Vui lòng thử lại sau.',
+  description,
   onRetry,
-  retryLabel = 'Thử lại',
+  retryLabel,
   className,
 }: ErrorStateProps) {
+  const t = useTranslations('errorState');
+  const displayTitle = title || t('title');
+  const displayDescription = description || message || t('description');
+  const displayRetryLabel = retryLabel || t('retry');
+
   return (
     <div
       className={cn(
@@ -37,16 +43,16 @@ export function ErrorState({
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-3">
         <AlertTriangle className="h-6 w-6" />
       </div>
-      <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
-      {description && (
+      <h3 className="text-base font-semibold text-foreground mb-1">{displayTitle}</h3>
+      {displayDescription && (
         <p className="text-sm text-muted-foreground max-w-sm mb-4 leading-relaxed">
-          {description}
+          {displayDescription}
         </p>
       )}
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry} className="gap-2 mt-1">
           <RefreshCw className="h-3.5 w-3.5" />
-          {retryLabel}
+          {displayRetryLabel}
         </Button>
       )}
     </div>

@@ -79,7 +79,12 @@ export const CartClient = ({ locale }: { locale: string }) => {
           t={t}
           onUpdateQuantity={handleUpdateQuantity}
           onRemoveItem={handleRemoveItem}
-          onNextStep={() => router.push(`/${locale}/checkout`)}
+          onNextStep={(selectedItems?: CartItem[]) => {
+            if (selectedItems && selectedItems.length > 0) {
+              localStorage.setItem('checkout_selected_items:v1', JSON.stringify(selectedItems));
+            }
+            router.push(`/${locale}/checkout`);
+          }}
         />
       </div>
     </div>

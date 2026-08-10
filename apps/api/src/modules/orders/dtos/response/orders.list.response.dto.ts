@@ -31,6 +31,34 @@ export class OrdersListResponseDto {
     total: number;
 
     @ApiProperty({
+        required: false,
+        example: 'bank_transfer',
+    })
+    @Expose()
+    paymentMethod?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: 'Nguyễn Văn A',
+    })
+    @Expose()
+    customerName?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: '0901234567',
+    })
+    @Expose()
+    customerPhone?: string | null;
+
+    @ApiProperty({
+        required: false,
+        example: 'Giao giờ hành chính',
+    })
+    @Expose()
+    customerNote?: string | null;
+
+    @ApiProperty({
         required: true,
         example: new Date(),
     })

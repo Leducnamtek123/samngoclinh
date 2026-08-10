@@ -38,14 +38,8 @@ export function useTranslation() {
     // Fallback if not used inside provider
     return {
       dictionary: {} as DictionaryType,
-      t: (key: string, params?: Record<string, string | number>) => {
-        if (!params) return key
-        let str = key
-        Object.entries(params).forEach(([k, v]) => {
-          str = str.replace(new RegExp(`\\{${k}\\}`, "g"), String(v))
-        })
-        return str
-      },
+      t: (key: string, params?: Record<string, string | number>) =>
+        translate({}, key, params),
     }
   }
   return context

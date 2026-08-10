@@ -7,13 +7,14 @@ import { Layout } from "@/components/layout"
 
 export default async function DashboardLayout(props: {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
+  params: Promise<{ lang: string }>
 }) {
   const params = await props.params
+  const lang = params.lang as LocaleType
 
   const { children } = props
 
-  const dictionary = await getDictionary(params.lang)
+  const dictionary = await getDictionary(lang)
 
   return <Layout dictionary={dictionary}>{children}</Layout>
 }

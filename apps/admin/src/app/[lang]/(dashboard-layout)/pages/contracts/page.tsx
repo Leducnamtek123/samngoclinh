@@ -27,17 +27,7 @@ interface Contract {
   createdAt: string
 }
 
-interface User {
-  id: string
-  name?: string
-  email: string
-}
-
-interface Tree {
-  id: string
-  code: string
-  name: string
-}
+import type { Tree, User } from "./_components/use-contracts-manager"
 
 interface ContractsPageProps {
   params: Promise<{

@@ -113,6 +113,8 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
                         ) ?? {};
                     const finalMetadata: ResponsePagingMetadataDto = {
                         ...metadata,
+                        ...((responseData as any).statusCounts ? { statusCounts: (responseData as any).statusCounts } : {}),
+                        ...((responseData.metadata as any)?.statusCounts ? { statusCounts: (responseData.metadata as any).statusCounts } : {}),
                         type,
                         count,
                         hasNext,

@@ -1,0 +1,38 @@
+{
+  "title": "Quản lý Người dùng",
+  "subtitle": "Quản lý tài khoản người dùng, vai trò và phân quyền hệ thống",
+  "addUser": "Thêm người dùng",
+  "editUser": "Sửa người dùng",
+  "userDetails": "Chi tiết người dùng",
+  "accountList": {
+    "title": "Danh sách tài khoản",
+    "subtitle": "Hiển thị tên người dùng, email, trạng thái và ngày đăng ký."
+  },
+  "fields": {
+    "fullName": "Họ và tên",
+    "username": "Tên người dùng",
+    "email": "Email",
+    "verified": "Đã xác minh",
+    "phone": "Số điện thoại",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "createdAt": "Ngày tạo",
+    "lastLogin": "Đăng nhập gần nhất",
+    "address": "Địa chỉ",
+    "avatar": "Ảnh đại diện"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "blocked": "Đã khóa",
+    "pending": "Chờ xử lý",
+    "verified": "Đã xác minh",
+    "unverified": "Chưa xác minh"
+  },
+  "roles": {
+    "admin": "Quản trị viên",
+    "manager": "Quản lý",
+    "investor": "Nhà đầu tư",
+    "farmer": "Nông dân",
+    "user": "Người dùng"
+  }
+}

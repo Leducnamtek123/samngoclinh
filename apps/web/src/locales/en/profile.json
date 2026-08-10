@@ -1,0 +1,53 @@
+{
+  "profile": {
+    "title": "Account & Personal Profile",
+    "subtitle": "Manage personal info, shipping address, and order history",
+    "personalInfo": "Personal Information",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "birthDate": "Birth Date",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "saveChanges": "Save Changes",
+    "savedSuccess": "Updated account information successfully!",
+    "addressTitle": "Shipping Address",
+    "addAddress": "Add New Address",
+    "defaultAddress": "Default Address",
+    "noAddress": "No shipping address saved yet.",
+    "ordersTitle": "Order History",
+    "orderCode": "Order Code",
+    "orderDate": "Date Placed",
+    "orderTotal": "Total Amount",
+    "orderStatus": "Status",
+    "viewOrderDetails": "View Details"
+  },
+  "addressSelector": {
+    "selectDeliveryAddress": "SELECT SHIPPING ADDRESS",
+    "change": "Change",
+    "addAddress": "Add Address",
+    "noAddressSaved": "No shipping address saved yet.",
+    "pleaseAddAddress": "Please add a new address to continue."
+  },
+  "addAddressModal": {
+    "title": "Add New Delivery Address",
+    "recipientLabel": "Recipient Name *",
+    "recipientPlaceholder": "Enter recipient full name",
+    "phoneLabel": "Phone Number *",
+    "phonePlaceholder": "Enter phone number (e.g. 0912345678)",
+    "addressLabel": "Detailed Address (House number, Street, Ward, District, Province) *",
+    "addressPlaceholder": "Enter house number, street name...",
+    "defaultCheckbox": "Set as default shipping address",
+    "cancel": "Cancel",
+    "save": "Save Address"
+  },
+  "changeAddressModal": {
+    "title": "Select Shipping Address",
+    "closeAriaLabel": "Close address selection modal",
+    "defaultBadge": "Default",
+    "addAddressBtn": "Add New Address",
+    "confirmSelect": "Confirm Selection"
+  }
+}

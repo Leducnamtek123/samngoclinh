@@ -1,0 +1,38 @@
+{
+  "title": "User Management",
+  "subtitle": "Manage system users, roles, and permissions",
+  "addUser": "Add User",
+  "editUser": "Edit User",
+  "userDetails": "User Details",
+  "accountList": {
+    "title": "Account List",
+    "subtitle": "Display user name, email, status, and registration date."
+  },
+  "fields": {
+    "fullName": "Full Name",
+    "username": "Username",
+    "email": "Email",
+    "verified": "Verified",
+    "phone": "Phone Number",
+    "role": "Role",
+    "status": "Status",
+    "createdAt": "Created At",
+    "lastLogin": "Last Login",
+    "address": "Address",
+    "avatar": "Avatar"
+  },
+  "status": {
+    "active": "Active",
+    "blocked": "Blocked",
+    "pending": "Pending",
+    "verified": "Verified",
+    "unverified": "Unverified"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "manager": "Manager",
+    "investor": "Investor",
+    "farmer": "Farmer",
+    "user": "User"
+  }
+}

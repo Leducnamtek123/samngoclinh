@@ -1,0 +1,27 @@
+{
+  "title": "Quản lý Nội dung",
+  "subtitle": "Quản lý banner, bài viết tin tức và yêu cầu liên hệ",
+  "banners": {
+    "title": "Cài đặt Banner",
+    "addBanner": "Thêm Banner",
+    "bannerTitle": "Tiêu đề Banner",
+    "imageUrl": "Đường dẫn ảnh",
+    "linkUrl": "Đường dẫn liên kết"
+  },
+  "articles": {
+    "title": "Bài viết & Tin tức",
+    "addArticle": "Thêm bài viết",
+    "articleTitle": "Tiêu đề bài viết",
+    "author": "Tác giả",
+    "publishedDate": "Ngày đăng",
+    "category": "Chuyên mục"
+  },
+  "contacts": {
+    "title": "Yêu cầu liên hệ",
+    "name": "Họ tên người gửi",
+    "email": "Email",
+    "subject": "Tiêu đề",
+    "message": "Nội dung",
+    "receivedAt": "Thời gian nhận"
+  }
+}

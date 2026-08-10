@@ -44,6 +44,7 @@ export class OrdersRepository {
         return {
             id: order.id,
             code: order.code,
+            userId: order.userId,
             status: order.status,
             currency: order.currency,
             subtotal: order.subtotal,
@@ -83,6 +84,7 @@ export class OrdersRepository {
         return {
             id: order.id,
             code: order.code,
+            userId: order.userId,
             status: order.status,
             currency: order.currency,
             subtotal: order.subtotal,

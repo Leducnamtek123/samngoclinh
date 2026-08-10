@@ -53,6 +53,7 @@ export function useQuickPurchaseForm({
     }
   });
 
+  const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -94,13 +95,13 @@ export function useQuickPurchaseForm({
     }
   }, [profile]);
 
-  const stockCount = item?.stock || 139;
+  const stockCount = item?.stock ?? 0;
   const unitPrice = item?.price || 0;
   const itemImage =
     item?.image ||
     item?.imageUrl ||
     (Array.isArray(item?.images) && item?.images[0]) ||
-    '/assets/images/kon_tum_ginseng.png';
+    '/images/kon_tum_ginseng.png';
 
   const selectedCareObj =
     carePackages.find((c: any) => c.code === selectedCareId || c.id === selectedCareId) ||
@@ -126,7 +127,8 @@ export function useQuickPurchaseForm({
 
   const productSubtotal = unitPrice * quantity;
   const vatProduct8 = Math.round(productSubtotal * 0.08);
-  const productGrandTotal = productSubtotal + vatProduct8;
+  const shippingFee = deliveryType === 'shipping' ? 30000 : 0;
+  const productGrandTotal = productSubtotal + vatProduct8 + shippingFee;
 
   const grandTotal = mode === 'plant' ? plantGrandTotal : productGrandTotal;
 
@@ -182,7 +184,8 @@ export function useQuickPurchaseForm({
         protectionPackageId: mode === 'plant' ? selectedProtectionId : undefined,
         recipientName: selectedAddrObj?.name || profile?.fullName || 'Khách hàng',
         recipientPhone: selectedAddrObj?.phone || profile?.mobileNumber || '',
-        shippingAddress: selectedAddrObj ? selectedAddrObj.address : 'Nhận tại vườn',
+        shippingAddress: deliveryType === 'shipping' ? (selectedAddrObj ? selectedAddrObj.address : 'Giao hàng tận nơi') : 'Nhận tại vườn',
+        deliveryType,
       });
 
       const orderData = res?.data || res || {
@@ -219,6 +222,9 @@ export function useQuickPurchaseForm({
     addresses,
     selectedAddressId,
     setSelectedAddressId,
+    deliveryType,
+    setDeliveryType,
+    shippingFee,
     isAddAddressModalOpen,
     setIsAddAddressModalOpen,
     submitting,

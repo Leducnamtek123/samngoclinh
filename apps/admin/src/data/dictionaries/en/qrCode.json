@@ -1,0 +1,7 @@
+{
+  "title": "QR Code Traceability",
+  "subtitle": "Scan and generate product and tree origin traceability QR codes",
+  "scanPrompt": "Scan QR Code to verify origin",
+  "generateQr": "Generate QR Code",
+  "qrDetails": "Traceability Information"
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Gói Dịch Vụ",
+  "addPackage": "Thêm Gói Dịch Vụ Mới",
+  "editPackage": "Chỉnh Sửa Gói Dịch Vụ",
+  "createSubtitle": "Nhập các thông tin chi tiết cho gói dịch vụ. Nhấn Lưu để hoàn tất.",
+  "fields": {
+    "code": "Mã gói dịch vụ",
+    "name": "Tên gói dịch vụ",
+    "price": "Đơn giá (VND)",
+    "duration": "Thời hạn gói (tháng)",
+    "description": "Mô tả dịch vụ",
+    "status": "Trạng thái hoạt động",
+    "coverage": "Phạm vi bảo vệ / bồi thường"
+  }
+}

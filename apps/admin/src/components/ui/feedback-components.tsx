@@ -177,7 +177,10 @@ export function ToastCard({
 }: ToastCardProps) {
   const { t } = useTranslation()
   const currentStyle = TOAST_CARD_STYLES[type]
-  const displayTime = timeString || t("common.status.justNow") || "Just now"
+  const rawJustNow = t("common.status.justNow")
+  const displayTime =
+    timeString ||
+    (!rawJustNow || rawJustNow.includes(".") ? "Vừa xong" : rawJustNow)
 
   return (
     <div

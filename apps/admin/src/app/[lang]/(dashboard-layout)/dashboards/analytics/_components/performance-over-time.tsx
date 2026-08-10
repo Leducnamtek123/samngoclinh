@@ -39,15 +39,17 @@ function PerformanceOverTimeActionButton() {
   )
 }
 
-export function PerformanceOverTime({ stats }: { stats: any }) {
+import type { AnalyticsDashboardStats } from "../types"
+
+export function PerformanceOverTime({ stats }: { stats?: AnalyticsDashboardStats }) {
   const summary = stats?.monthlyRevenue
     ? {
         totalVisitors: stats.monthlyRevenue.reduce(
-          (sum: number, r: any) => sum + r.visitors,
+          (sum: number, r) => sum + r.visitors,
           0
         ),
         totalConversions: stats.monthlyRevenue.reduce(
-          (sum: number, r: any) => sum + r.conversions,
+          (sum: number, r) => sum + r.conversions,
           0
         ),
       }

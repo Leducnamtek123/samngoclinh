@@ -1,0 +1,47 @@
+{
+  "RootLayout": {
+    "home_link": "Home",
+    "about_link": "About",
+    "counter_link": "Counter",
+    "portfolio_link": "Portfolio",
+    "sign_in_link": "Sign In",
+    "sign_up_link": "Sign Up"
+  },
+  "BaseTemplate": {
+    "description": "Ngoc Linh Ginseng Liquor",
+    "footer_text": "© {year} {name}.",
+    "main_navigation_label": "Main Navigation"
+  },
+  "nav": {
+    "home": "Home",
+    "promotions": "Promotions",
+    "planting": "Planting",
+    "shop": "Shop",
+    "info": "Information",
+    "all": "All",
+    "about": "About Us",
+    "cart": "Cart",
+    "profile": "Profile",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "categories": {
+    "news": "News",
+    "event": "Events",
+    "guide": "User Guide",
+    "faq": "Knowledge Base"
+  },
+  "LocaleSwitcher": {
+    "change_language": "Change Language"
+  },
+  "confirmModal": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "errorState": {
+    "title": "An error occurred",
+    "description": "Unable to load data. Please try again later.",
+    "retry": "Try again"
+  }
+}

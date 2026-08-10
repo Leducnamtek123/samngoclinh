@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { DeleteAccountForm } from "./delete-account-form"
 
-export function DangerousZone({ user }: { user: UserType }) {
+export function DangerousZone({ user }: { user?: UserType }) {
   return (
     <Card>
       <CardHeader>

@@ -34,7 +34,11 @@ function CustomLineDot({
   cx,
   cy,
   payload,
-}: DotProps & { payload: SalesByCountryType["countries"][number] }) {
+}: {
+  cx?: number
+  cy?: number
+  payload: SalesByCountryType["countries"][number]
+}) {
   const flagUrl = `https://purecatamphetamine.github.io/country-flag-icons/3x2/${payload.countryCode}.svg`
   const size = 24
 
@@ -84,7 +88,7 @@ export function SalesByCountryChart({
           tickLine={false}
           axisLine={false}
           tickMargin={20}
-          tickFormatter={(value) => formatCurrency(value)}
+          tickFormatter={(value: any) => formatCurrency(value)}
         />
         <XAxis reversed={isRtl} dataKey="countryName" hide />
         <ChartTooltip

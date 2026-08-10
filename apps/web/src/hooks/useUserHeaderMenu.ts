@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/lib/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
+import { cartStore } from '@/lib/stores/useCartStore';
 import { useNotificationsList } from '@/hooks/queries/useNotifications';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
 
@@ -32,7 +33,17 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
     };
 
     window.addEventListener('cart_updated', handleUpdate);
-    return () => window.removeEventListener('cart_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    const unsubscribe = cartStore.subscribe(handleUpdate);
+
+    // Initial update in case store updated during mount
+    handleUpdate();
+
+    return () => {
+      window.removeEventListener('cart_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

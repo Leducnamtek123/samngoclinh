@@ -9,7 +9,7 @@ export function ChatBoxContent({
   user,
   chat,
 }: {
-  user: UserType
+  user?: UserType
   chat: ChatType
 }) {
   return (

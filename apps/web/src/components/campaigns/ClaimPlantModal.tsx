@@ -67,7 +67,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
     }
   };
 
-  const plantName = item?.plantCatalog?.name || 'Cây Sâm Ngọc Linh 2026';
+  const plantName = item?.plantCatalog?.name ?? '—';
   const imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8";
 
   return (
@@ -115,7 +115,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               </div>
               <div className="space-y-1.5 flex-1">
                 <h4 className="font-extrabold text-foreground text-base leading-snug">{plantName}</h4>
-                <p className="text-xs text-muted-foreground font-medium">Tồn kho: {item?.remainingSlots || 168}</p>
+                <p className="text-xs text-muted-foreground font-medium">Tồn kho: {item?.remainingSlots ?? 0}</p>
                 <Badge variant="secondary">Giá cây được tặng</Badge>
               </div>
             </Card>

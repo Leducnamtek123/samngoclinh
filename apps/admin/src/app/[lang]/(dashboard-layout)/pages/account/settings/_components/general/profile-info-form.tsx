@@ -14,7 +14,7 @@ import { Form } from "@/components/ui/form"
 import { PhotoUploadSection } from "./photo-upload-section"
 import { ProfileFieldsSection } from "./profile-fields-section"
 
-export function ProfileInfoForm({ user }: { user: UserType }) {
+export function ProfileInfoForm({ user }: { user?: UserType }) {
   const [photoPreview, setPhotoPreview] = useState<string | undefined>(
     user?.avatar
   )

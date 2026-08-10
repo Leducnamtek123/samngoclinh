@@ -12,6 +12,36 @@ import { routing } from './I18nRouting';
 // 2. Run manually the workflow on GitHub Actions
 // 3. Every 24 hours at 5am, the workflow will run automatically
 
+async function loadWebMessages(locale: string) {
+  const [
+    common,
+    marketing,
+    auth,
+    products,
+    cart,
+    profile,
+    notifications,
+  ] = await Promise.all([
+    import(`../locales/${locale}/common.json`).then((m) => m.default),
+    import(`../locales/${locale}/marketing.json`).then((m) => m.default),
+    import(`../locales/${locale}/auth.json`).then((m) => m.default),
+    import(`../locales/${locale}/products.json`).then((m) => m.default),
+    import(`../locales/${locale}/cart.json`).then((m) => m.default),
+    import(`../locales/${locale}/profile.json`).then((m) => m.default),
+    import(`../locales/${locale}/notifications.json`).then((m) => m.default),
+  ]);
+
+  return {
+    ...common,
+    ...marketing,
+    ...auth,
+    ...products,
+    ...cart,
+    ...profile,
+    ...notifications,
+  };
+}
+
 export default getRequestConfig(async ({ requestLocale }) => {
   // Typically corresponds to the `[locale]` segment
   const requested = await requestLocale;
@@ -19,7 +49,6 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    // oxlint-disable-next-line unicorn/no-await-expression-member
-    messages: (await import(`../locales/${locale}.json`)).default,
+    messages: await loadWebMessages(locale),
   };
 });

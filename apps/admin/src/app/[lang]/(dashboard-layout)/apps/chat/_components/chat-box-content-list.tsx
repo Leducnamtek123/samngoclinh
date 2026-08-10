@@ -16,7 +16,7 @@ export function ChatBoxContentList({
   user,
   chat,
 }: {
-  user: UserType
+  user?: UserType
   chat: ChatType
 }) {
   const { chatState, handleSelectChat, handleSetUnreadCount } = useChatContext()
@@ -58,7 +58,7 @@ export function ChatBoxContentList({
         <ul className="flex flex-col-reverse gap-y-1.5 px-6 py-3">
           {chat.messages.map((message) => {
             const sender = userMap.get(message.senderId) as UserType
-            const isByCurrentUser = message.senderId === user.id
+            const isByCurrentUser = message.senderId === user?.id
 
             return (
               <MessageBubble

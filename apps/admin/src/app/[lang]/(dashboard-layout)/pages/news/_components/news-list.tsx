@@ -90,7 +90,7 @@ export function NewsList({
                   {art.coverImage || art.image ? (
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-100">
                       <Image
-                        src={art.coverImage || art.image}
+                        src={(art.coverImage || art.image)!}
                         alt={art.title}
                         fill
                         sizes="48px"

@@ -1,0 +1,55 @@
+{
+  "homepage": {
+    "aboutUsBadge": "VỀ CHÚNG TÔI",
+    "aboutTitle": "Hành Trình Gìn Giữ Báu Vật Quốc Gia",
+    "aboutDesc": "Gìn giữ và tôn vinh giá trị của Sâm Ngọc Linh – quốc bảo của núi rừng Việt Nam, kết hợp phương thuốc cổ truyền tinh túy để tạo nên những giọt rượu sâm hảo hạng.",
+    "learnMore": "Tìm hiểu thêm",
+    "yearsExperience": "Năm kinh nghiệm",
+    "altitude": "Độ cao trồng sâm",
+    "happyCustomers": "Khách hàng tin tưởng",
+    "bottlesSupplied": "Chai rượu cung ứng",
+    "latestNews": "Tin Tức Mới Nhất",
+    "latestNewsDesc": "Cập nhật những thông tin và bài viết mới nhất về Sâm Ngọc Linh",
+    "readMore": "Xem chi tiết"
+  },
+  "Index": {
+    "meta_title": "Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Quốc Bảo",
+    "meta_description": "Ứng dụng đầu tiên tại Việt Nam cho phép mua, sở hữu, chăm sóc và truy xuất nguồn gốc Sâm Ngọc Linh chính gốc ngay trên điện thoại.",
+    "sponsors_title": "Đối tác đồng hành",
+    "zap_emoji_label": "Tia sét"
+  },
+  "Counter": {
+    "meta_title": "Bộ đếm",
+    "meta_description": "Ví dụ thao tác cơ sở dữ liệu",
+    "security_powered_by": "Bảo mật & giới hạn truy cập bởi"
+  },
+  "CounterForm": {
+    "presentation": "Giá trị bộ đếm lưu trong cơ sở dữ liệu và tăng theo giá trị bạn nhập.",
+    "label_increment": "Tăng thêm",
+    "button_increment": "Tăng số",
+    "error_increment_range": "Giá trị phải từ 1 đến 3"
+  },
+  "CurrentCount": {
+    "count": "Số lượng: {count}"
+  },
+  "About": {
+    "meta_title": "Giới thiệu",
+    "meta_description": "Mô tả trang giới thiệu",
+    "about_paragraph": "Chào mừng bạn đến với trang giới thiệu của chúng tôi! Chúng tôi là đội ngũ tâm huyết phát triển giải pháp phần mềm xuất sắc.",
+    "translation_powered_by": "Hệ thống dịch thuật bởi"
+  },
+  "Portfolio": {
+    "meta_title": "Hồ sơ năng lực",
+    "meta_description": "Chào mừng đến với hồ sơ năng lực!",
+    "presentation": "Chào mừng bạn đến với trang danh mục dự án! Nơi hiển thị các công trình và thành tựu tiêu biểu.",
+    "portfolio_name": "Dự án {name}",
+    "error_reporting_powered_by": "Báo cáo lỗi bởi"
+  },
+  "PortfolioSlug": {
+    "meta_title": "Dự án {slug}",
+    "meta_description": "Mô tả dự án {slug}",
+    "header": "Dự án {slug}",
+    "content": "Thiết kế nhận diện thương hiệu & truyền thông cho doanh nghiệp bao gồm logo, catalogue, banner và ấn phẩm số.",
+    "code_review_powered_by": "Đánh giá mã nguồn bởi"
+  }
+}

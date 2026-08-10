@@ -51,7 +51,7 @@ declare module "next-auth/jwt" {
 
 async function refreshAccessToken(token: any) {
   try {
-    const url = `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/refresh`
+    const url = `${process.env.INTERNAL_API_URL || "http://apis:3000/api"}/v1/shared/user/refresh`
 
     const response = await fetch(url, {
       method: "POST",
@@ -107,7 +107,7 @@ export const authOptions: NextAuthOptions = {
         if (credentials.accessToken) {
           try {
             const res = await fetch(
-              `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/profile`,
+              `${process.env.INTERNAL_API_URL || "http://apis:3000/api"}/v1/shared/user/profile`,
               {
                 method: "GET",
                 headers: {
@@ -155,7 +155,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const res = await fetch(
-            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/public/user/login/credential`,
+            `${process.env.INTERNAL_API_URL || "http://apis:3000/api"}/v1/public/user/login/credential`,
             {
               method: "POST",
               headers: {
@@ -187,7 +187,7 @@ export const authOptions: NextAuthOptions = {
           const tokenExpiresIn = Number(payload.data.tokens.expiresIn) || 3600
 
           const profileRes = await fetch(
-            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/profile`,
+            `${process.env.INTERNAL_API_URL || "http://apis:3000/api"}/v1/shared/user/profile`,
             {
               method: "GET",
               headers: {

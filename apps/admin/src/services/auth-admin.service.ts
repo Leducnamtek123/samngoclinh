@@ -9,7 +9,7 @@ export interface AdminRegisterRequest {
 }
 
 export interface AdminVerifyEmailRequest {
-  token: string;
+  token?: string;
   email?: string;
 }
 

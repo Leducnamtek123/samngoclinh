@@ -18,6 +18,7 @@ export type CreateQuickOrderPayload = {
   recipientName: string;
   recipientPhone: string;
   shippingAddress: string;
+  deliveryType?: 'shipping' | 'pickup';
   notes?: string;
   paymentMethod?: string;
 };

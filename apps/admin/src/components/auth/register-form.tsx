@@ -45,7 +45,7 @@ export function RegisterForm() {
     const { firstName, lastName, username, email, password } = data
 
     try {
-      await apiAdminRegister({
+      const res = await apiAdminRegister({
         firstName,
         lastName,
         username,

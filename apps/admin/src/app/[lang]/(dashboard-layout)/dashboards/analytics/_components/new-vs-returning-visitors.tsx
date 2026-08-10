@@ -4,7 +4,9 @@ import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { NewVsReturningVisitorsChart } from "./new-vs-returning-visitors-chart"
 import { NewVsReturningVisitorsList } from "./new-vs-returning-visitors-list"
 
-export function NewVsReturningVisitors({ stats }: { stats: any }) {
+import type { AnalyticsDashboardStats } from "../types"
+
+export function NewVsReturningVisitors({ stats }: { stats?: AnalyticsDashboardStats }) {
   const visitors = stats?.newVsReturning
     ? {
         new: {

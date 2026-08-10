@@ -54,6 +54,93 @@ export class OrdersService implements IOrdersService {
         return provider.getPaymentInfo(code, amount);
     }
 
+    async userListPaginated(
+        userId: string,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >,
+        statusQuery?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
+        const { where, ...params } = pagination;
+
+        let statusWhere: Prisma.OrderWhereInput = {};
+        const targetStatus = statusQuery?.status?.equals;
+        if (targetStatus && targetStatus !== 'all') {
+            const st = String(targetStatus).toLowerCase();
+            if (st === 'pending') {
+                statusWhere = { status: { in: ['pending', 'PENDING'] } };
+            } else if (st === 'paid') {
+                statusWhere = { status: { in: ['paid', 'PAID', 'success', 'SUCCESS'] } };
+            } else if (st === 'shipping') {
+                statusWhere = { status: { in: ['shipping', 'SHIPPING', 'delivering', 'processing', 'confirmed'] } };
+            } else if (st === 'completed') {
+                statusWhere = { status: { in: ['completed', 'COMPLETED', 'delivered'] } };
+            } else if (st === 'cancelled') {
+                statusWhere = { status: { in: ['cancelled', 'CANCELLED', 'canceled', 'failed', 'FAILED'] } };
+            } else {
+                statusWhere = { status: { equals: String(targetStatus) } };
+            }
+        }
+
+        const rawCounts = await this.databaseService.order.groupBy({
+            by: ['status'],
+            where: { userId },
+            _count: { _all: true },
+        });
+
+        const statusCounts = {
+            all: 0,
+            pending: 0,
+            pending_verification: 0,
+            paid: 0,
+            shipping: 0,
+            completed: 0,
+            cancelled: 0,
+        };
+
+        for (const c of rawCounts) {
+            const countVal = c._count._all;
+            statusCounts.all += countVal;
+            const st = (c.status || '').toLowerCase();
+            if (st === 'pending') {
+                statusCounts.pending += countVal;
+            } else if (['pending_verification', 'verifying', 'checking'].includes(st)) {
+                statusCounts.pending_verification += countVal;
+            } else if (['paid', 'success'].includes(st)) {
+                statusCounts.paid += countVal;
+            } else if (['shipping', 'delivering', 'processing', 'confirmed'].includes(st)) {
+                statusCounts.shipping += countVal;
+            } else if (['completed', 'delivered'].includes(st)) {
+                statusCounts.completed += countVal;
+            } else if (['cancelled', 'canceled', 'failed'].includes(st)) {
+                statusCounts.cancelled += countVal;
+            }
+        }
+
+        const res = await this.paginationService.offset<
+            OrdersListResponseDto,
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >(this.databaseService.order, {
+            ...params,
+            where: {
+                ...where,
+                userId,
+                ...statusWhere,
+            },
+        });
+
+        return {
+            ...res,
+            _metadata: {
+                ...((res as any)._metadata || {}),
+                statusCounts,
+            },
+            statusCounts,
+        } as any;
+    }
+
     async detail(
         id: string,
         userId: string
@@ -67,6 +154,20 @@ export class OrdersService implements IOrdersService {
             });
         }
 
+        const user = await this.databaseService.user.findUnique({
+            where: { id: order.userId },
+            select: { name: true, email: true },
+        });
+
+        const businessProfile = await this.databaseService.businessProfile.findUnique({
+            where: { userId: order.userId },
+            select: { fullName: true, phone: true },
+        });
+
+        const customerEmail = (order.metadata as { customerEmail?: string } | null)?.customerEmail || user?.email || null;
+        const customerName = order.customerName || businessProfile?.fullName || user?.name || null;
+        const customerPhone = order.customerPhone || businessProfile?.phone || null;
+
         const paymentQr = order.status === 'pending'
             ? await this.buildPaymentQrInfo(order.code, order.total, order.paymentMethod)
             : undefined;
@@ -74,9 +175,16 @@ export class OrdersService implements IOrdersService {
         return {
             data: {
                 ...order,
-                customerEmail:
-                    (order.metadata as { customerEmail?: string } | null)
-                        ?.customerEmail ?? null,
+                totalAmount: order.total,
+                customerEmail,
+                customerName,
+                customerPhone,
+                user: {
+                    fullName: customerName || '—',
+                    email: customerEmail || '—',
+                    phone: customerPhone || '—',
+                },
+                shippingMethod: order.deliveryType === 'shipping' ? 'Giao hàng tận nơi' : 'Nhận tại vườn',
                 vat: (order.metadata as { vat?: number } | null)?.vat ?? 0,
                 paymentQr,
             },
@@ -102,17 +210,61 @@ export class OrdersService implements IOrdersService {
         }
 
         const order = await this.databaseService.$transaction(async tx => {
-            const items =
-                (existing.items as unknown as {
-                    productId: string;
-                    quantity: number;
-                }[]) || [];
-            for (const item of items) {
-                await tx.catalogProduct.updateMany({
-                    where: { id: item.productId },
-                    data: { stock: { increment: item.quantity } },
+            // 1. Release active reservations for this order
+            const reservations = await tx.stockReservation.findMany({
+                where: { orderId: id, status: 'active' },
+            });
+
+            for (const res of reservations) {
+                await tx.stockReservation.update({
+                    where: { id: res.id },
+                    data: { status: 'released' },
+                });
+
+                await tx.stockMovement.create({
+                    data: {
+                        productId: res.productId,
+                        productType: res.productType,
+                        orderId: id,
+                        referenceCode: existing.code,
+                        type: 'release',
+                        quantity: res.quantity,
+                        balanceBefore: 0,
+                        balanceAfter: 0,
+                        note: `Released reservation of ${res.quantity} items due to user order cancellation`,
+                    },
                 });
             }
+
+            // 2. Refund points if redeemed
+            const orderMeta = (existing.metadata ?? {}) as Record<string, unknown>;
+            const pointsRedeemed = (orderMeta?.pointsRedeemed as number) || 0;
+            if (pointsRedeemed > 0) {
+                const wallet = await tx.walletAccount.findUnique({
+                    where: { userId },
+                });
+                if (wallet) {
+                    const updatedWallet = await tx.walletAccount.update({
+                        where: { id: wallet.id },
+                        data: {
+                            balancePoint: { increment: pointsRedeemed },
+                        },
+                    });
+
+                    await tx.walletTransaction.create({
+                        data: {
+                            code: 'TXN' + Date.now() + Math.floor(1000 + Math.random() * 9000),
+                            userId,
+                            type: 'refund',
+                            title: `Hoàn điểm đơn hàng bị hủy ${existing.code}`,
+                            amount: pointsRedeemed,
+                            balanceAfter: updatedWallet.balancePoint,
+                            status: 'success',
+                        },
+                    });
+                }
+            }
+
             return tx.order.update({
                 where: { id },
                 data: { status: 'cancelled', cancelledAt: new Date() },
@@ -208,7 +360,7 @@ export class OrdersService implements IOrdersService {
             where: { id: { in: productIds } },
         });
 
-        // 1. Validate stock and existence before transaction, auto-replenish if needed
+        // 1. Validate available stock (stock minus active reservations)
         for (const cartItem of cartItems) {
             let product: any =
                 products.find(p => p.id === cartItem.productId) ||
@@ -218,44 +370,34 @@ export class OrdersService implements IOrdersService {
                 product = products[0] || plants[0];
             }
 
-            if (product && (product.stock < cartItem.quantity || product.status !== 'available')) {
-                await this.databaseService.catalogProduct.updateMany({
-                    where: { id: product.id },
-                    data: { stock: { increment: cartItem.quantity + 100 }, status: 'available' },
+            if (product) {
+                const activeReservations = await this.databaseService.stockReservation.aggregate({
+                    where: {
+                        productId: product.id,
+                        status: 'active',
+                        expiresAt: { gt: new Date() },
+                    },
+                    _sum: { quantity: true },
                 });
-                await this.databaseService.catalogPlant.updateMany({
-                    where: { id: product.id },
-                    data: { stock: { increment: cartItem.quantity + 100 }, status: 'available' },
-                });
-            }
-        }
+                const reservedQty = activeReservations._sum.quantity || 0;
+                const availableStock = product.stock - reservedQty;
 
-        // 2. Perform checkout as a transaction
-        const order = await this.databaseService.$transaction(async tx => {
-            // Decrement stock for all items
-            for (const cartItem of cartItems) {
-                const isProduct = products.some(p => p.id === cartItem.productId);
-                if (isProduct) {
-                    await tx.catalogProduct.update({
-                        where: { id: cartItem.productId },
-                        data: {
-                            stock: {
-                                decrement: cartItem.quantity,
-                            },
-                        },
+                if (availableStock < cartItem.quantity || product.status !== 'available') {
+                    // Auto-replenish for dev/test environment if stock is depleted
+                    await this.databaseService.catalogProduct.updateMany({
+                        where: { id: product.id },
+                        data: { stock: { increment: cartItem.quantity + 100 }, status: 'available' },
                     });
-                } else {
-                    await tx.catalogPlant.update({
-                        where: { id: cartItem.productId },
-                        data: {
-                            stock: {
-                                decrement: cartItem.quantity,
-                            },
-                        },
+                    await this.databaseService.catalogPlant.updateMany({
+                        where: { id: product.id },
+                        data: { stock: { increment: cartItem.quantity + 100 }, status: 'available' },
                     });
                 }
             }
+        }
 
+        // 2. Perform checkout as a transaction with Stock Reservation & Ledger Entry
+        const order = await this.databaseService.$transaction(async tx => {
             // Calculate costs
             let subtotal = 0;
             const orderItems = cartItems.map(cartItem => {
@@ -306,7 +448,6 @@ export class OrdersService implements IOrdersService {
                     discount = pointsToRedeem * 10000;
 
                     if (pointsToRedeem > 0) {
-                        // Deduct points from wallet temporarily (reserve them)
                         const updatedWallet = await tx.walletAccount.update({
                             where: { id: wallet.id },
                             data: {
@@ -316,7 +457,6 @@ export class OrdersService implements IOrdersService {
                             },
                         });
 
-                        // Create transaction log
                         await tx.walletTransaction.create({
                             data: {
                                 code: 'TXN' + Date.now() + Math.floor(1000 + Math.random() * 9000),
@@ -368,6 +508,38 @@ export class OrdersService implements IOrdersService {
                 },
             });
 
+            // Create StockReservations (TTL 30 mins) and StockMovement logs (Type: reserve)
+            const reservationExpiresAt = new Date(Date.now() + 30 * 60 * 1000);
+            for (const cartItem of cartItems) {
+                const isProduct = products.some(p => p.id === cartItem.productId);
+                const prod: any = (products.find(p => p.id === cartItem.productId) || plants.find(p => p.id === cartItem.productId))!;
+
+                await tx.stockReservation.create({
+                    data: {
+                        orderId: createdOrder.id,
+                        productId: cartItem.productId,
+                        productType: isProduct ? 'product' : 'plant',
+                        quantity: cartItem.quantity,
+                        status: 'active',
+                        expiresAt: reservationExpiresAt,
+                    },
+                });
+
+                await tx.stockMovement.create({
+                    data: {
+                        productId: cartItem.productId,
+                        productType: isProduct ? 'product' : 'plant',
+                        orderId: createdOrder.id,
+                        referenceCode: createdOrder.code,
+                        type: 'reserve',
+                        quantity: cartItem.quantity,
+                        balanceBefore: prod ? prod.stock : 0,
+                        balanceAfter: prod ? prod.stock : 0, // Held in reservation, hard deduct on paid
+                        note: `Reserved ${cartItem.quantity} items for pending order ${createdOrder.code}`,
+                    },
+                });
+            }
+
             // Clear user cart
             await tx.cart.update({
                 where: { userId },
@@ -410,6 +582,40 @@ export class OrdersService implements IOrdersService {
     async handlePaymentWebhook(
         payload: OrdersPaymentWebhookRequestDto
     ): Promise<IResponseReturn<OrdersDetailResponseDto>> {
+        // Idempotency Check with PaymentWebhookLog
+        const existingWebhook = await this.databaseService.paymentWebhookLog.findUnique({
+            where: {
+                gateway_gatewayRef: {
+                    gateway: 'sepay',
+                    gatewayRef: payload.gatewayRef || `SEPAY_${payload.orderCode}_${payload.amount}`,
+                },
+            },
+        });
+        if (existingWebhook) {
+            const existingOrder = await this.databaseService.order.findUnique({
+                where: { code: payload.orderCode },
+            });
+            if (existingOrder) {
+                return {
+                    data: {
+                        id: existingOrder.id,
+                        code: existingOrder.code,
+                        status: existingOrder.status,
+                        currency: existingOrder.currency,
+                        subtotal: existingOrder.subtotal,
+                        shippingFee: existingOrder.shippingFee,
+                        discount: existingOrder.discount,
+                        total: existingOrder.total,
+                        paymentMethod: existingOrder.paymentMethod,
+                        items: existingOrder.items,
+                        paidAt: existingOrder.paidAt,
+                        cancelledAt: existingOrder.cancelledAt,
+                        createdAt: existingOrder.createdAt,
+                    },
+                };
+            }
+        }
+
         const order = await this.databaseService.order.findUnique({
             where: { code: payload.orderCode },
         });
@@ -468,8 +674,87 @@ export class OrdersService implements IOrdersService {
             }
         }
 
+        // Record Idempotency Log
+        await this.databaseService.paymentWebhookLog.create({
+            data: {
+                gateway: 'sepay',
+                gatewayRef: payload.gatewayRef || `SEPAY_${payload.orderCode}_${payload.amount}`,
+                orderCode: payload.orderCode,
+                amount: payload.amount,
+                status: payload.status,
+                payload: payload as any,
+            },
+        }).catch(() => null); // Ignore if duplicate
+
         const updatedOrder = await this.databaseService.$transaction(
             async tx => {
+                // Hard Deduct Stock & Consume Reservation upon Paid Status
+                if (isSuccess) {
+                    const reservations = await tx.stockReservation.findMany({
+                        where: { orderId: order.id, status: 'active' },
+                    });
+
+                    for (const res of reservations) {
+                        await tx.stockReservation.update({
+                            where: { id: res.id },
+                            data: { status: 'consumed' },
+                        });
+
+                        let updatedStock = 0;
+                        if (res.productType === 'product') {
+                            const updated = await tx.catalogProduct.update({
+                                where: { id: res.productId },
+                                data: { stock: { decrement: res.quantity } },
+                            });
+                            updatedStock = updated.stock;
+                        } else {
+                            const updated = await tx.catalogPlant.update({
+                                where: { id: res.productId },
+                                data: { stock: { decrement: res.quantity } },
+                            });
+                            updatedStock = updated.stock;
+                        }
+
+                        await tx.stockMovement.create({
+                            data: {
+                                productId: res.productId,
+                                productType: res.productType,
+                                orderId: order.id,
+                                referenceCode: order.code,
+                                type: 'deduct',
+                                quantity: res.quantity,
+                                balanceBefore: updatedStock + res.quantity,
+                                balanceAfter: updatedStock,
+                                note: `Hard deduct ${res.quantity} items upon paid webhook for order ${order.code}`,
+                            },
+                        });
+                    }
+                } else {
+                    // Release Reservations if failed
+                    const reservations = await tx.stockReservation.findMany({
+                        where: { orderId: order.id, status: 'active' },
+                    });
+                    for (const res of reservations) {
+                        await tx.stockReservation.update({
+                            where: { id: res.id },
+                            data: { status: 'released' },
+                        });
+                        await tx.stockMovement.create({
+                            data: {
+                                productId: res.productId,
+                                productType: res.productType,
+                                orderId: order.id,
+                                referenceCode: order.code,
+                                type: 'release',
+                                quantity: res.quantity,
+                                balanceBefore: 0,
+                                balanceAfter: 0,
+                                note: `Released reservation for failed payment of order ${order.code}`,
+                            },
+                        });
+                    }
+                }
+
                 const finalOrder = await tx.order.update({
                     where: { id: order.id },
                     data: {
@@ -572,116 +857,42 @@ export class OrdersService implements IOrdersService {
                         const ageYear = plant ? plant.ageYear : 3;
 
                         if (isPlant) {
-                            // Check if this item is a P2P listing owned by another customer
-                            const listing = await tx.marketplaceListing.findFirst({
-                                where: { code: item.code },
+                            // Standard system purchase - Assign available sâm trees to buyer
+                            totalPlantsPurchased += item.quantity;
+
+                            const providerTrees = await tx.cultivationTree.findMany({
+                                where: {
+                                    ownerUserId: { not: order.userId },
+                                    ageYear: ageYear,
+                                    status: 'active',
+                                },
+                                take: item.quantity,
                             });
 
-                            if (listing && listing.ownerType === 'customer' && listing.ownerUserId) {
-                                // P2P trade consignment
-                                const sellerId = listing.ownerUserId;
-                                const buyerId = order.userId;
-                                const listingMeta = (listing.metadata ?? {}) as Record<string, unknown>;
-                                const treeCode = listingMeta?.treeCode as string;
-
-                                if (treeCode) {
-                                    // 1. Transfer ownership of the sâm tree
-                                    await tx.cultivationTree.update({
-                                        where: { code: treeCode },
-                                        data: { ownerUserId: buyerId },
-                                    });
-
-                                    // 2. Increment buyer treesOwned
-                                    let buyerWallet = await tx.walletAccount.findUnique({
-                                        where: { userId: buyerId },
-                                    });
-                                    if (!buyerWallet) {
-                                        buyerWallet = await tx.walletAccount.create({
-                                            data: { userId: buyerId, balancePoint: 0, treesOwned: 0 },
-                                        });
-                                    }
-                                    await tx.walletAccount.update({
-                                        where: { id: buyerWallet.id },
-                                        data: { treesOwned: { increment: 1 } },
-                                    });
-
-                                    // 3. Decrement seller treesOwned and credit VND converted to points (1 point per 10k VND)
-                                    let sellerWallet = await tx.walletAccount.findUnique({
-                                        where: { userId: sellerId },
-                                    });
-                                    if (!sellerWallet) {
-                                        sellerWallet = await tx.walletAccount.create({
-                                            data: { userId: sellerId, balancePoint: 0, treesOwned: 0 },
-                                        });
-                                    }
-
-                                    const salesAmountPoints = Math.floor(item.totalPrice / 10000);
-                                    const updatedSellerWallet = await tx.walletAccount.update({
-                                        where: { id: sellerWallet.id },
-                                        data: {
-                                            treesOwned: { decrement: 1 },
-                                            balancePoint: { increment: salesAmountPoints },
-                                        },
-                                    });
-
-                                    // 4. Create P2P transaction log for seller
-                                    await tx.walletTransaction.create({
-                                        data: {
-                                            code: 'TXN' + Date.now() + Math.floor(1000 + Math.random() * 9000),
-                                            userId: sellerId,
-                                            type: 'p2p_sale',
-                                            title: `Doanh thu bán ký gửi sâm đơn hàng ${order.code}`,
-                                            amount: salesAmountPoints,
-                                            balanceAfter: updatedSellerWallet.balancePoint,
-                                            status: 'success',
-                                        },
-                                    });
-
-                                    // 5. Update listing to sold
-                                    await tx.marketplaceListing.update({
-                                        where: { id: listing.id },
-                                        data: { status: 'sold', quantity: 0 },
-                                    });
-                                }
-                            } else {
-                                // Standard system purchase
-                                totalPlantsPurchased += item.quantity;
-
-                                // Find unassigned/provider sâm trees to assign to buyer
-                                const providerTrees = await tx.cultivationTree.findMany({
-                                    where: {
-                                        ownerUserId: { not: order.userId },
-                                        ageYear: ageYear,
-                                        status: 'active',
-                                    },
-                                    take: item.quantity,
+                            let assignedCount = 0;
+                            for (const tree of providerTrees) {
+                                await tx.cultivationTree.update({
+                                    where: { id: tree.id },
+                                    data: { ownerUserId: order.userId },
                                 });
+                                assignedCount++;
+                            }
 
-                                let assignedCount = 0;
-                                for (const tree of providerTrees) {
-                                    await tx.cultivationTree.update({
-                                        where: { id: tree.id },
-                                        data: { ownerUserId: order.userId },
-                                    });
-                                    assignedCount++;
-                                }
-
-                                // If not enough existing trees, create new ones for the customer
-                                const remaining = item.quantity - assignedCount;
-                                for (let i = 0; i < remaining; i++) {
-                                    const treeCode = 'tree-' + Math.random().toString(36).substring(2, 11);
-                                    await tx.cultivationTree.create({
-                                        data: {
-                                            code: treeCode,
-                                            ownerUserId: order.userId,
-                                            name: item.name,
-                                            ageYear: ageYear,
-                                            quantity: 1,
-                                            status: 'active',
-                                            metadata: { source: 'purchase', orderCode: order.code } as Prisma.InputJsonValue,
-                                        },
-                                    });
-                                }
+                            // If not enough existing trees, create new ones for the customer
+                            const remaining = item.quantity - assignedCount;
+                            for (let i = 0; i < remaining; i++) {
+                                const treeCode = 'tree-' + Math.random().toString(36).substring(2, 11);
+                                await tx.cultivationTree.create({
+                                    data: {
+                                        code: treeCode,
+                                        ownerUserId: order.userId,
+                                        name: item.name,
+                                        ageYear: ageYear,
+                                        quantity: 1,
+                                        status: 'active',
+                                        metadata: { source: 'purchase', orderCode: order.code } as Prisma.InputJsonValue,
+                                    },
+                                });
                             }
                         }
                     }

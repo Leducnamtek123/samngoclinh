@@ -1,0 +1,15 @@
+{
+  "title": "Service Packages",
+  "addPackage": "Add Service Package",
+  "editPackage": "Edit Service Package",
+  "createSubtitle": "Enter details for the package and click Save to complete.",
+  "fields": {
+    "code": "Package Code",
+    "name": "Package Name",
+    "price": "Unit Price (VND)",
+    "duration": "Duration (Months)",
+    "description": "Description",
+    "status": "Status",
+    "coverage": "Coverage / Insurance Scope"
+  }
+}

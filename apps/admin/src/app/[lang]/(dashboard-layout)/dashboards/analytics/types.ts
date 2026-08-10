@@ -103,3 +103,42 @@ export interface RetentionVsChurnType {
   period: string
   summary: { retention: number; churn: number; total: number }
 }
+
+export interface AnalyticsDashboardStats {
+  totalPendingApprovals?: number
+  totalActiveProviders?: number
+  totalArticles?: number
+  totalGardens?: number
+  totalBeds?: number
+  totalTrees?: number
+  totalOrders?: number
+  totalRevenue?: number
+  totalContracts?: number
+  totalSignedContracts?: number
+  totalUsers?: number
+  visitorsByCountry?: Array<{
+    country: string
+    code: string
+    visitors: number
+    percentageChange: number
+  }>
+  trafficSources?: Array<{
+    name: string
+    visitors: number
+    fill: string
+    percentageChange: number
+    icon: DynamicIconNameType
+  }>
+  monthlyRevenue?: Array<{
+    month: string
+    visitors: number
+    conversions: number
+    revenue?: number
+  }>
+  newVsReturning?: {
+    summary: {
+      newVisitors: number
+      returningVisitors: number
+    }
+  }
+}

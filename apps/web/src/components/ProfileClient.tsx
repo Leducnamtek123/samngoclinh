@@ -66,11 +66,19 @@ export const ProfileClient = ({
   const {
     userOrders,
     ordersLoading,
+    ordersError,
+    statusFilter,
+    setStatusFilter,
+    hasMore,
+    loadMore,
+    statusCounts,
+    pagination,
     viewingOrderDetail,
     setViewingOrderDetail,
     selectedOrderForPayment,
     setSelectedOrderForPayment,
     refetchOrders,
+    handleViewOrderDetail,
   } = useProfileOrders(tabs);
 
   const {
@@ -119,7 +127,7 @@ export const ProfileClient = ({
   const safeTrees = Array.isArray(trees) ? trees : Array.isArray(trees?.data) ? trees.data : [];
   const safeAddresses = Array.isArray(addresses) ? addresses : [];
 
-  const fullName = profile?.fullName || 'Nhà đầu tư';
+  const fullName = profile?.fullName ?? profile?.name ?? '—';
   const email = profile?.email || '';
   const rank = profile?.rank || 'Đồng';
   const referralCode = profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
@@ -144,7 +152,6 @@ export const ProfileClient = ({
           }
         }}
         profile={{ fullName, email, rank }}
-        ordersCount={safeOrders.length > 0 ? safeOrders.length : undefined}
         treesCount={safeTrees.length > 0 ? safeTrees.length : undefined}
         contractsCount={Array.isArray(contractsData) && contractsData.length > 0 ? contractsData.length : undefined}
       >
@@ -167,11 +174,19 @@ export const ProfileClient = ({
           {tabs === 'orders' && (
             <ProfileOrdersTab
               ordersLoading={ordersLoading}
+              ordersError={ordersError}
               safeOrders={safeOrders}
-              onViewDetail={(ord) => setViewingOrderDetail(ord as any)}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+              statusCounts={statusCounts}
+              pagination={pagination}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              onViewDetail={(ord) => handleViewOrderDetail(ord)}
               onPayOrder={(ord) => {
                 window.location.href = `/api/proxy/public/payment/sepay/pay/${ord.code || ord.id}`;
               }}
+              onRetry={refetchOrders}
             />
           )}
 

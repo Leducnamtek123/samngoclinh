@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Plus, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -81,6 +82,7 @@ export function NewsManager({
   metadata,
   errorMsg: initialError,
 }: NewsManagerProps) {
+  const { t } = useTranslation()
   const {
     filteredArticles,
     errorMsg,
@@ -143,10 +145,10 @@ export function NewsManager({
             onValueChange={handleCategoryFilterChange}
           >
             <SelectTrigger className="w-full sm:w-48 h-9 text-xs">
-              <SelectValue placeholder="Tất cả chuyên mục" />
+              <SelectValue placeholder={t("common.actions.filterAll")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả chuyên mục</SelectItem>
+              <SelectItem value="all">{t("common.actions.filterAll")}</SelectItem>
               {categoryOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
