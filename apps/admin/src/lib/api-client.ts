@@ -6,9 +6,7 @@ const apiBaseUrl = isServer
   ? process.env.INTERNAL_API_URL || "http://apis:3000/api"
   : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
-const apiKey =
-  process.env.NEXT_PUBLIC_API_KEY ||
-  "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP"
+const apiKey = process.env.NEXT_PUBLIC_API_KEY || ""
 
 export interface ApiResponse<T = any> {
   statusCode?: number;

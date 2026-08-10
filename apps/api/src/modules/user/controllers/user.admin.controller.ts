@@ -291,7 +291,7 @@ export class UserAdminController {
 
     @Response('user.kycList')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/kyc-list')
@@ -301,21 +301,25 @@ export class UserAdminController {
 
     @Response('user.approveKyc')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/approve')
-    async approveKyc(@Param('id') id: string) {
+    async approveKyc(
+        @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    ) {
         return this.userService.approveIdentityVerificationAdmin(id);
     }
 
     @Response('user.rejectKyc')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/reject')
-    async rejectKyc(@Param('id') id: string) {
+    async rejectKyc(
+        @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    ) {
         return this.userService.rejectIdentityVerificationAdmin(id);
     }
 }

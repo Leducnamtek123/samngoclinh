@@ -69,7 +69,7 @@ export function useTreesManager({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetchApi("/admin/user/list")
+        const res = await fetchApi("/admin/user/list?page=1&perPage=100")
         const payload = await res.json()
         if (res.status < 400) {
           const list = Array.isArray(payload.data)
