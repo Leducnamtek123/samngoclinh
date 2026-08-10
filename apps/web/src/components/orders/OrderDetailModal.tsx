@@ -36,6 +36,7 @@ export type OrderDetailData = {
   totalAmount?: number;
   total?: number;
   subtotal?: number;
+  vatAmount?: number;
   shippingFee?: number;
   user?: {
     fullName?: string;
@@ -82,7 +83,26 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
   const items = Array.isArray(order.items) ? order.items : [];
   const rawTotal = order.totalAmount ?? order.total;
   const finalTotal = rawTotal != null ? Number(rawTotal) : null;
-  const subtotalVal = order.subtotal != null ? Number(order.subtotal) : finalTotal;
+  const itemsSubtotal = items.reduce(
+    (sum, item) => sum + (Number(item.price || item.treePrice || 0)) * (Number(item.quantity || 1)),
+    0
+  );
+  const subtotalVal =
+    order.subtotal != null
+      ? Number(order.subtotal)
+      : itemsSubtotal > 0
+      ? itemsSubtotal
+      : finalTotal;
+  const shippingFeeVal = Number(order.shippingFee || 0);
+  const vatVal =
+    order.vatAmount != null
+      ? Number(order.vatAmount)
+      : finalTotal != null && subtotalVal != null
+      ? Math.max(0, finalTotal - subtotalVal - shippingFeeVal)
+      : 0;
+  const safeSubtotal = subtotalVal ?? 0;
+  const vatPercent =
+    vatVal > 0 && safeSubtotal > 0 ? Math.round((vatVal / safeSubtotal) * 100) : 0;
 
   const handleConfirmCancelOrder = async () => {
     const orderIdToCancel = order.id || rawCode;
@@ -291,8 +311,14 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Phí vận chuyển</span>
-                    <span className="font-bold text-emerald-700">{order.shippingFee ? `${Number(order.shippingFee).toLocaleString('vi-VN')} đ` : 'Miễn phí'}</span>
+                    <span className="font-bold text-emerald-700">{shippingFeeVal > 0 ? `${shippingFeeVal.toLocaleString('vi-VN')} đ` : 'Miễn phí'}</span>
                   </div>
+                  {vatVal > 0 && (
+                    <div className="flex justify-between items-center text-amber-800 font-semibold">
+                      <span>Thuế VAT{vatPercent > 0 ? ` (${vatPercent}%)` : ''}</span>
+                      <span>+{vatVal.toLocaleString('vi-VN')} đ</span>
+                    </div>
+                  )}
 
                   <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between items-center text-sm font-black text-gray-900">
                     <span>Tổng cộng:</span>

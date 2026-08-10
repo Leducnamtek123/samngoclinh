@@ -262,6 +262,7 @@ function ContractsFilters({
   paymentFilter,
   setPaymentFilter,
 }: ContractsFiltersProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
       <Input
@@ -288,8 +289,8 @@ function ContractsFilters({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">{t("common.actions.filterAll")}</SelectItem>
-          <SelectItem value="unpaid">Chưa thanh toán</SelectItem>
-          <SelectItem value="paid">Đã thanh toán</SelectItem>
+          <SelectItem value="unpaid">{t("common.status.pending")}</SelectItem>
+          <SelectItem value="paid">{t("common.status.paid")}</SelectItem>
         </SelectContent>
       </Select>
     </div>

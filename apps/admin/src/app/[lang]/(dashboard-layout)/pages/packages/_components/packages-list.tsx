@@ -42,8 +42,8 @@ interface CarePackagesListProps {
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (amount: number) => string
-  metadata: any
-  handlePageChange: (page: number) => void
+  metadata?: any
+  handlePageChange?: (page: number) => void
 }
 
 interface ProtectionPackagesListProps {
@@ -52,8 +52,8 @@ interface ProtectionPackagesListProps {
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (amount: number) => string
-  metadata: any
-  handlePageChange: (page: number) => void
+  metadata?: any
+  handlePageChange?: (page: number) => void
 }
 
 export function CarePackagesList({
@@ -63,7 +63,7 @@ export function CarePackagesList({
   onOpenCreate,
   formatVND,
   metadata,
-  handlePageChange,
+  handlePageChange = () => {},
 }: CarePackagesListProps) {
   const { t } = useTranslation()
 
@@ -84,7 +84,7 @@ export function CarePackagesList({
         <TableBody>
           {packages.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="py-8">
+              <TableCell colSpan={7} className="h-24 text-center">
                 <EmptyState
                   title={t("common.table.noResults")}
                   description={t("common.table.noResults")}
@@ -96,16 +96,14 @@ export function CarePackagesList({
           ) : (
             packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono font-medium">
+                <TableCell className="font-mono text-xs font-semibold">
                   {pkg.code}
                 </TableCell>
-                <TableCell className="font-semibold">{pkg.name}</TableCell>
-                <TableCell className="font-medium text-emerald-600">
-                  {formatVND(pkg.price)}
-                </TableCell>
+                <TableCell className="font-medium">{pkg.name}</TableCell>
+                <TableCell>{formatVND(pkg.price)}</TableCell>
                 <TableCell>{pkg.durationMonths} tháng</TableCell>
-                <TableCell className="max-w-[200px] truncate text-slate-500">
-                  {pkg.description || "-"}
+                <TableCell className="max-w-[200px] truncate text-muted-foreground text-xs">
+                  {pkg.description || "—"}
                 </TableCell>
                 <TableCell>
                   <Badge
@@ -115,14 +113,17 @@ export function CarePackagesList({
                         : "secondary"
                     }
                   >
-                    {t(`common.status.${pkg.status.toLowerCase()}`)}
+                    {pkg.status.toLowerCase() === "active"
+                      ? t("common.status.active")
+                      : t("common.status.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => onEdit(pkg)}
                     >
                       <Pencil className="h-4 w-4" />
@@ -130,7 +131,7 @@ export function CarePackagesList({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-red-500 hover:text-red-700"
+                      className="h-8 w-8 text-destructive hover:bg-destructive/10"
                       onClick={() => onDelete(pkg.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -154,7 +155,7 @@ export function ProtectionPackagesList({
   onOpenCreate,
   formatVND,
   metadata,
-  handlePageChange,
+  handlePageChange = () => {},
 }: ProtectionPackagesListProps) {
   const { t } = useTranslation()
 

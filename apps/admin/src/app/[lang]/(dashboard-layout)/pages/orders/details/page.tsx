@@ -44,6 +44,7 @@ interface OrderDetail {
   status: string
   currency: string
   subtotal: number
+  vatAmount?: number
   shippingFee: number
   discount: number
   total: number
@@ -237,6 +238,26 @@ function OrderProductsCard({
   order: OrderDetail
   itemsList: any[]
 }) {
+  const itemsSubtotal = itemsList.reduce(
+    (sum: number, item: any) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+    0
+  )
+  const subtotalVal =
+    order.subtotal != null
+      ? Number(order.subtotal)
+      : itemsSubtotal > 0
+      ? itemsSubtotal
+      : Number(order.total || 0)
+  const shippingFeeVal = Number(order.shippingFee || 0)
+  const discountVal = Number(order.discount || 0)
+  const totalVal = Number(order.total || order.subtotal || 0)
+  const vatVal =
+    order.vatAmount != null
+      ? Number(order.vatAmount)
+      : Math.max(0, totalVal - (subtotalVal + shippingFeeVal - discountVal))
+  const vatPercent =
+    vatVal > 0 && subtotalVal > 0 ? Math.round((vatVal / subtotalVal) * 100) : 0
+
   return (
     <Card className="md:col-span-2">
       <CardHeader>
@@ -299,22 +320,28 @@ function OrderProductsCard({
       <CardFooter className="flex flex-col items-end gap-2 border-t pt-4 bg-muted/20">
         <div className="flex justify-between w-64 text-sm text-muted-foreground">
           <span>Tạm tính:</span>
-          <span>{formatVND(order.subtotal)}</span>
+          <span>{formatVND(subtotalVal)}</span>
         </div>
         <div className="flex justify-between w-64 text-sm text-muted-foreground">
           <span>Phí vận chuyển:</span>
-          <span>{formatVND(order.shippingFee)}</span>
+          <span>{shippingFeeVal > 0 ? formatVND(shippingFeeVal) : "Miễn phí"}</span>
         </div>
-        {order.discount > 0 && (
+        {vatVal > 0 && (
+          <div className="flex justify-between w-64 text-sm text-amber-700 font-semibold dark:text-amber-400">
+            <span>Thuế VAT{vatPercent > 0 ? ` (${vatPercent}%)` : ""}:</span>
+            <span>+{formatVND(vatVal)}</span>
+          </div>
+        )}
+        {discountVal > 0 && (
           <div className="flex justify-between w-64 text-sm text-destructive font-semibold">
             <span>Khuyến mãi:</span>
-            <span>-{formatVND(order.discount)}</span>
+            <span>-{formatVND(discountVal)}</span>
           </div>
         )}
         <div className="flex justify-between w-64 text-lg font-bold border-t pt-2 mt-2">
           <span>Tổng thanh toán:</span>
           <span className="text-emerald-700 dark:text-emerald-400">
-            {formatVND(order.total)}
+            {formatVND(totalVal)}
           </span>
         </div>
       </CardFooter>
