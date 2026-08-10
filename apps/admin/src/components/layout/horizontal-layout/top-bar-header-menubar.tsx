@@ -58,7 +58,7 @@ export function TopBarHeaderMenubar({
       return (
         <MenubarSub>
           <MenubarSubTrigger className="gap-2">
-            {"iconName" in item && (
+            {"iconName" in item && item.iconName && (
               <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
             )}
             <span>{title}</span>
@@ -88,7 +88,7 @@ export function TopBarHeaderMenubar({
             href={localizedPathname}
             className={cn("w-full gap-2", isActive && "bg-accent")}
           >
-            {"iconName" in item ? (
+            {"iconName" in item && item.iconName ? (
               <DynamicIcon name={item.iconName} className="h-4 w-4" />
             ) : (
               <DynamicIcon name="Circle" className="h-2 w-2" />

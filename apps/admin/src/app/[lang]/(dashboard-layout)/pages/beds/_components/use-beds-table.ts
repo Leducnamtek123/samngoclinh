@@ -20,7 +20,7 @@ export interface Bed {
   ageYear: number
   treeCount: number
   status: string
-  createdAt: string
+  createdAt?: string
   maxTrees?: number
   width?: number
   length?: number
@@ -257,10 +257,10 @@ export function useBedsTable(
       )
       const payload = await res.json()
       if (res.status < 400 && payload.data) {
-        const newBeds = Array.isArray(payload.data) ? payload.data : []
+        const newBeds: any[] = Array.isArray(payload.data) ? payload.data : []
         setBeds((prev) => {
-          const existingIds = new Set(prev.map((b) => b.id))
-          const filteredNew = newBeds.filter((b) => !existingIds.has(b.id))
+          const existingIds = new Set(prev.map((b: any) => b.id))
+          const filteredNew = newBeds.filter((b: any) => !existingIds.has(b.id))
           return [...prev, ...filteredNew]
         })
         localMetadataRef.current = payload.metadata || null

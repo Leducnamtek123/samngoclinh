@@ -14,34 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface EContract {
-  id: string
-  code: string
-  userId: string
-  treeCode?: string
-  title: string
-  content: string
-  status: string
-  contractValue: number
-  paymentStatus: string
-  signedAt?: string
-  expiredAt: string
-  signatureUrl?: string
-  isReminderSent: boolean
-  reminderSentAt?: string
-  contractType?: string
-  partyA?: string
-  partyB?: string
-  pdfUrl?: string
-  terms?: string
-}
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-}
+import type { EContract, User } from "./use-contracts-manager"
 
 interface ContractsListProps {
   contracts: EContract[]

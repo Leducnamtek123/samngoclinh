@@ -17,7 +17,10 @@ export function SettingsProvider({
 }) {
   const [storedSettings, setStoredSettings, deleteStoredSettings] =
     useCookie("settings")
-  const [settings, setSettings] = useState<SettingsType | null>(null)
+  const [settings, setSettings] = useState<SettingsType>({
+    ...defaultSettings,
+    locale,
+  })
 
   useEffect(() => {
     if (storedSettings) {

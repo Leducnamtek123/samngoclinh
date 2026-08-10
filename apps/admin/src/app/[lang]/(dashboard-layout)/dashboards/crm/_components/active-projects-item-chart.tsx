@@ -45,7 +45,7 @@ export function ActiveProjectsItemChart({
         />
         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
           <Label
-            content={({ viewBox }) => {
+            content={({ viewBox }: { viewBox?: any }) => {
               if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                 return (
                   <text

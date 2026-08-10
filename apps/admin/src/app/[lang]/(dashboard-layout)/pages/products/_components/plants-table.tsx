@@ -27,19 +27,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PlantDialog } from "./plant-dialog"
 import { PlantsList } from "./plants-list"
-import { usePlantsManager } from "./use-plants-manager"
-
-interface Plant {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  price: number
-  stock: number
-  status: string
-  description?: string
-  images?: string[]
-}
+import { usePlantsManager, type Plant } from "./use-plants-manager"
 
 interface PlantsTableProps {
   initialPlants: Plant[]

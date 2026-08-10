@@ -213,7 +213,9 @@ export function UsersTable({
                             : "bg-amber-500/10 text-amber-600 border-transparent font-semibold"
                       }
                     >
-                      {user.status.toUpperCase()}
+                      {t(`common.status.${user.status.toLowerCase()}`) === `common.status.${user.status.toLowerCase()}`
+                        ? user.status
+                        : t(`common.status.${user.status.toLowerCase()}`)}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right text-slate-500">

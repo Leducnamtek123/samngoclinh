@@ -221,20 +221,28 @@
       "generate": "Tạo mã"
     },
     "status": {
+      "all": "Tất cả trạng thái",
       "active": "Hoạt động",
       "inactive": "Không hoạt động",
-      "pending": "Chờ xử lý",
+      "pending": "Chờ thanh toán",
+      "paid": "Đã thanh toán",
+      "shipping": "Đang giao hàng",
       "completed": "Hoàn thành",
       "cancelled": "Đã hủy",
+      "failed": "Thất bại",
       "success": "Thành công",
+      "processing": "Đang xử lý",
+      "expired": "Hết hạn",
+      "draft": "Bản nháp",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối",
       "error": "Lỗi",
       "warning": "Cảnh báo",
       "info": "Thông tin",
-      "healthy": "Khoe mạnh",
+      "healthy": "Khỏe mạnh",
       "diseased": "Có bệnh",
       "harvested": "Đã thu hoạch",
-      "approved": "Đã duyệt",
-      "rejected": "Đã từ chối"
+      "justNow": "Vừa xong"
     },
     "table": {
       "rowsPerPage": "Số hàng mỗi trang",

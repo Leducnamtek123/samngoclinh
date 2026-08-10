@@ -12,17 +12,7 @@ export const metadata: Metadata = {
   description: "Ginseng product list and catalog management",
 }
 
-interface Plant {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  price: number
-  status: string
-  createdAt: string
-  description?: string
-  images?: string[]
-}
+import type { Plant } from "./_components/use-plants-manager"
 
 interface ProductsPageProps {
   params: Promise<{

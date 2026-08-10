@@ -115,7 +115,7 @@ export function CommandMenu({
           <CommandItem asChild>
             <CollapsibleTrigger className="w-full flex justify-between items-center gap-2 px-2 py-1.5 [&[data-state=open]>svg]:rotate-180">
               <span className="flex items-center gap-2">
-                {"iconName" in item && (
+                {"iconName" in item && item.iconName && (
                   <DynamicIcon name={item.iconName} className="h-4 w-4" />
                 )}
                 <span>{title}</span>
@@ -147,7 +147,7 @@ export function CommandMenu({
             isActive && "bg-accent"
           )}
         >
-          {"iconName" in item ? (
+          {"iconName" in item && item.iconName ? (
             <DynamicIcon name={item.iconName} />
           ) : (
             <DynamicIcon name="Circle" />

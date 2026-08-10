@@ -7,6 +7,7 @@ import type { LocaleType } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import { Truck, Store } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -69,6 +70,7 @@ function OrderDetailsContent() {
   const locale = params.lang as LocaleType
   const searchParams = useSearchParams()
   const orderId = searchParams.get("id")
+  const { t } = useTranslation()
 
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -173,7 +175,9 @@ function OrderDetailsContent() {
               variant={getStatusBadgeVariant(order.status)}
               className="text-sm font-semibold"
             >
-              {order.status.toUpperCase()}
+              {t(`common.status.${order.status.toLowerCase()}`) === `common.status.${order.status.toLowerCase()}`
+                ? order.status
+                : t(`common.status.${order.status.toLowerCase()}`)}
             </Badge>
           </div>
           <p className="text-muted-foreground font-mono">
@@ -245,6 +249,7 @@ function OrderProductsCard({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-16">Hình ảnh</TableHead>
               <TableHead>Mã vật phẩm</TableHead>
               <TableHead>Tên sản phẩm</TableHead>
               <TableHead className="text-right">Đơn giá</TableHead>
@@ -253,19 +258,41 @@ function OrderProductsCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {itemsList.map((item: any) => (
-              <TableRow key={item.code || item.id || item.name}>
-                <TableCell className="font-mono text-sm">{item.code || item.productId || "-"}</TableCell>
-                <TableCell className="font-semibold">{item.name || item.productName}</TableCell>
-                <TableCell className="text-right">
-                  {formatVND(item.price)}
-                </TableCell>
-                <TableCell className="text-center">{item.quantity}</TableCell>
-                <TableCell className="text-right font-semibold">
-                  {formatVND(item.price * item.quantity)}
-                </TableCell>
-              </TableRow>
-            ))}
+            {itemsList.map((item: any) => {
+              const imgUrl =
+                Array.isArray(item.images) && item.images.length > 0
+                  ? item.images[0]
+                  : typeof item.images === "string"
+                    ? item.images
+                    : item.image || item.photo || null
+
+              return (
+                <TableRow key={item.code || item.id || item.name}>
+                  <TableCell>
+                    <div className="w-12 h-12 rounded-lg border border-border overflow-hidden bg-muted/50 flex items-center justify-center shrink-0">
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={item.name || "Sản phẩm"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Store className="w-5 h-5 text-muted-foreground/60" />
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">{item.code || item.productId || "-"}</TableCell>
+                  <TableCell className="font-semibold">{item.name || item.productName}</TableCell>
+                  <TableCell className="text-right">
+                    {formatVND(item.price)}
+                  </TableCell>
+                  <TableCell className="text-center">{item.quantity}</TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatVND(item.price * item.quantity)}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </CardContent>
@@ -371,8 +398,12 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
       <CardContent className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Hình thức:</span>
-          <span className="font-semibold uppercase">
-            {order.paymentMethod || "COD"}
+          <span className="font-semibold">
+            {order.paymentMethod === "bank_transfer" || order.paymentMethod === "sepay" || (order.paymentMethod || "").toLowerCase().includes("bank")
+              ? "Chuyển khoản"
+              : order.paymentMethod === "cod"
+                ? "Thanh toán COD"
+                : "Chuyển khoản"}
           </span>
         </div>
         <div className="flex justify-between">

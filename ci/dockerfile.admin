@@ -16,17 +16,19 @@ COPY . .
 # Declare build arguments for Next.js public env variables
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_API_KEY
+ENV NEXT_PUBLIC_API_KEY=$NEXT_PUBLIC_API_KEY
 ARG NEXT_PUBLIC_HOME_PATHNAME
 ENV NEXT_PUBLIC_HOME_PATHNAME=$NEXT_PUBLIC_HOME_PATHNAME
 
 # Generate prisma client for admin using local prisma version relative to the apps/admin folder
-RUN pnpm --filter shadboard-nextjs-full-kit exec prisma generate --schema=prisma/schema.prisma
+RUN pnpm --filter @samngoclinh/admin exec prisma generate --schema=prisma/schema.prisma
 
 # Copy the generated client to the root node_modules so Next.js can resolve it in the monorepo if needed
 RUN mkdir -p node_modules/.prisma && (cp -R apps/admin/node_modules/.prisma/client node_modules/.prisma/ 2>/dev/null || true)
 
 # Build the admin application
-RUN pnpm --filter shadboard-nextjs-full-kit build
+RUN pnpm --filter @samngoclinh/admin build
 
 WORKDIR /app/apps/admin
 

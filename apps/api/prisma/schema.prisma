@@ -560,29 +560,6 @@ model PromotionCampaign {
   @@map("PromotionCampaigns")
 }
 
-model MarketplaceListing {
-  id           String @id @default(uuid())
-  code         String
-  title        String
-  category     String
-  price        Int
-  quantity     Int
-  ownerType    String
-  ownerUserId  String?
-  status       String
-  publishedAt  DateTime?
-  metadata     Json?
-
-  createdAt DateTime @default(now())
-  createdBy String?
-  updatedAt DateTime @updatedAt
-  updatedBy String?
-
-  @@unique(fields: [code])
-  @@index(fields: [category, status, price])
-  @@map("MarketplaceListings")
-}
-
 model ContentArticle {
   id          String @id @default(uuid())
   slug        String
@@ -1157,4 +1134,92 @@ model Banner {
 
   @@map("Banners")
 }
+
+model StockReservation {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  productType String   @default("product") // product, plant
+  quantity    Int
+  status      String   @default("active") // active, consumed, released
+  expiresAt   DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt, status])
+  @@index([orderId])
+  @@index([productId, status])
+  @@map("StockReservations")
+}
+
+model StockMovement {
+  id            String   @id @default(uuid())
+  productId     String
+  productType   String   @default("product") // product, plant, tree
+  orderId       String?
+  referenceCode String?
+  type          String   // reserve, deduct, release, po_receipt, adjustment, p2p_transfer
+  quantity      Int
+  balanceBefore Int
+  balanceAfter  Int
+  note          String?
+
+  createdAt     DateTime @default(now())
+  createdBy     String?
+
+  @@index([productId, createdAt(sort: Desc)])
+  @@index([type, createdAt(sort: Desc)])
+  @@map("StockMovements")
+}
+
+model PurchaseOrder {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  supplierName String
+  status       String   @default("draft") // draft, approved, received, cancelled
+  totalAmount  Int      @default(0)
+  items        Json     @default("[]")
+  approvedBy   String?
+  approvedAt   DateTime?
+  note         String?
+
+  createdAt    DateTime @default(now())
+  createdBy    String?
+  updatedAt    DateTime @updatedAt
+
+  @@map("PurchaseOrders")
+}
+
+model GoodsReceipt {
+  id              String   @id @default(uuid())
+  receiptCode     String   @unique
+  purchaseOrderId String
+  receivedAt      DateTime @default(now())
+  items           Json     @default("[]")
+  note            String?
+
+  createdAt       DateTime @default(now())
+  createdBy       String?
+
+  @@map("GoodsReceipts")
+}
+
+model PaymentWebhookLog {
+  id          String   @id @default(uuid())
+  gateway     String   @default("sepay")
+  gatewayRef  String
+  orderCode   String
+  amount      Int
+  status      String
+  payload     Json?
+  processedAt DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+
+  @@unique([gateway, gatewayRef])
+  @@index([orderCode])
+  @@map("PaymentWebhookLogs")
+}
+
 

@@ -11,8 +11,6 @@ import { WalletUserController } from '@modules/wallet/controllers/wallet.user.co
 import { WalletModule } from '@modules/wallet/wallet.module';
 import { UserUserController } from '@modules/user/controllers/user.user.controller';
 import { UserModule } from '@modules/user/user.module';
-import { MarketplaceProviderController } from '@modules/marketplace/controllers/marketplace.provider.controller';
-import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
 import { EContractUserController } from '@modules/e-contract/controllers/e-contract.user.controller';
 import { EContractModule } from '@modules/e-contract/e-contract.module';
 import { PackagesUserController } from '@modules/packages/controllers/packages.user.controller';
@@ -31,7 +29,6 @@ import { Module } from '@nestjs/common';
         CultivationUserController,
         CultivationProviderController,
         CartUserController,
-        MarketplaceProviderController,
         EContractUserController,
         PackagesUserController,
     ],
@@ -44,9 +41,9 @@ import { Module } from '@nestjs/common';
         OrdersModule,
         CultivationModule,
         CartModule,
-        MarketplaceModule,
         EContractModule,
         PackagesModule,
     ],
 })
 export class RoutesUserModule {}
+

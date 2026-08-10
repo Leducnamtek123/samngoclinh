@@ -221,20 +221,28 @@
       "generate": "Generate"
     },
     "status": {
+      "all": "All statuses",
       "active": "Active",
       "inactive": "Inactive",
       "pending": "Pending",
+      "paid": "Paid",
+      "shipping": "Shipping",
       "completed": "Completed",
       "cancelled": "Cancelled",
+      "failed": "Failed",
       "success": "Success",
+      "processing": "Processing",
+      "expired": "Expired",
+      "draft": "Draft",
+      "approved": "Approved",
+      "rejected": "Rejected",
       "error": "Error",
       "warning": "Warning",
       "info": "Info",
       "healthy": "Healthy",
       "diseased": "Diseased",
       "harvested": "Harvested",
-      "approved": "Approved",
-      "rejected": "Rejected"
+      "justNow": "Just now"
     },
     "table": {
       "rowsPerPage": "Rows per page",

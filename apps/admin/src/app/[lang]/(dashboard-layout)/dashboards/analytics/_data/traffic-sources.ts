@@ -15,7 +15,7 @@ export const trafficSourcesData: TrafficSourcesType = {
       visitors: 2500,
       fill: "hsl(var(--chart-2))",
       percentageChange: 0.25,
-      icon: "Home",
+      icon: "House",
     },
     {
       name: "Đơn hàng Online",

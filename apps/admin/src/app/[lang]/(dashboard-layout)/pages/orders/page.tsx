@@ -3,22 +3,8 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
-
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
-import { OrdersTable } from "./_components/orders-table"
-
-export const metadata: Metadata = {
-  title: "Quản lý Đơn hàng | Sâm Ngọc Linh Admin",
-  description: "Danh sách đơn hàng trong hệ thống Sâm Ngọc Linh",
-}
-
-interface Order {
-  id: string
-  code: string
-  status: string
-  total: number
-  createdAt?: string
-}
+import { OrdersTable, type Order } from "./_components/orders-table"
 
 interface OrdersPageProps {
   params: Promise<{

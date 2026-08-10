@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { ProfileInfoForm } from "./profile-info-form"
 
-export function ProfileInfo({ user }: { user: UserType }) {
+export function ProfileInfo({ user }: { user?: UserType }) {
   return (
     <Card>
       <CardHeader>

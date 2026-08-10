@@ -207,6 +207,18 @@ export function ChartTooltipContent({
 
   const nestLabel = payload.length === 1 && indicator !== "dot"
 
+  const tooltipLabel = (
+    <ChartTooltipLabel
+      hideLabel={hideLabel}
+      payload={payload}
+      labelKey={labelKey}
+      config={config}
+      label={label}
+      labelFormatter={labelFormatter}
+      labelClassName={labelClassName}
+    />
+  )
+
   return (
     <div
       className={cn(
@@ -214,17 +226,7 @@ export function ChartTooltipContent({
         className
       )}
     >
-      {!nestLabel ? (
-        <ChartTooltipLabel
-          hideLabel={hideLabel}
-          payload={payload}
-          labelKey={labelKey}
-          config={config}
-          label={label}
-          labelFormatter={labelFormatter}
-          labelClassName={labelClassName}
-        />
-      ) : null}
+      {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`

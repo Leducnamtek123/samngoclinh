@@ -29,17 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface Plant {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  price: number
-  stock: number
-  status: string
-  description?: string
-  images?: string[]
-}
+import type { Plant } from "./use-plants-manager"
 
 interface PlantsListProps {
   plants: Plant[]

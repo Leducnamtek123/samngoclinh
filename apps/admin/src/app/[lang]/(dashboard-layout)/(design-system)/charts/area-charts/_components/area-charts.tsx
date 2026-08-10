@@ -113,7 +113,7 @@ export function AreaCharts() {
             <AreaChart data={areaChartsData} stackOffset="expand">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
-              <YAxis tickFormatter={(value) => `${value * 100}%`} />
+              <YAxis tickFormatter={(value: number) => `${value * 100}%`} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Area
                 type="monotone"

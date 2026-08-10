@@ -12,7 +12,7 @@ import { ChatBoxFooter } from "./chat-box-footer"
 import { ChatBoxHeader } from "./chat-box-header"
 import { ChatBoxNotFound } from "./chat-box-not-found"
 
-export function ChatBox({ user }: { user: UserType }) {
+export function ChatBox({ user }: { user?: UserType }) {
   const { chatState } = useChatContext()
   const params = useParams()
 

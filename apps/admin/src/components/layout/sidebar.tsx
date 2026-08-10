@@ -56,7 +56,7 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
 
   const locale = params.lang as LocaleType
   const direction = i18n.localeDirection[locale]
-  const isRTL = direction === "rtl"
+  const isRTL = (direction as string) === "rtl"
   const isHoizontalAndDesktop = settings.layout === "horizontal" && !isMobile
 
   // If the layout is horizontal and not on mobile, don't render the sidebar. (We use a menubar for horizontal layout navigation.)
@@ -90,7 +90,7 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
           <CollapsibleTrigger asChild>
             <SidebarMenuButton className="w-full justify-between [&[data-state=open]>svg]:rotate-180">
               <span className="flex items-center">
-                {"iconName" in item && (
+                {"iconName" in item && item.iconName && (
                   <DynamicIcon name={item.iconName} className="me-2 h-4 w-4" />
                 )}
                 <span>{title}</span>
@@ -128,7 +128,7 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
           asChild
         >
           <Link href={localizedPathname}>
-            {"iconName" in item && (
+            {"iconName" in item && item.iconName && (
               <DynamicIcon name={item.iconName} className="h-4 w-4" />
             )}
             <span>{title}</span>

@@ -34,42 +34,12 @@ import {
 } from "@/components/ui/select"
 import { ContractDialog } from "./contract-dialog"
 import { ContractsList } from "./contracts-list"
-import { useContractsManager } from "./use-contracts-manager"
-
-interface EContract {
-  id: string
-  code: string
-  userId: string
-  treeCode?: string
-  title: string
-  content: string
-  status: string
-  contractValue: number
-  paymentStatus: string
-  signedAt?: string
-  expiredAt: string
-  signatureUrl?: string
-  isReminderSent: boolean
-  reminderSentAt?: string
-  contractType?: string
-  partyA?: string
-  partyB?: string
-  pdfUrl?: string
-  terms?: string
-}
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-}
-
-interface Tree {
-  id: string
-  code: string
-  name: string
-}
+import {
+  useContractsManager,
+  type EContract,
+  type Tree,
+  type User,
+} from "./use-contracts-manager"
 
 interface ContractsManagerProps {
   initialContracts: EContract[]

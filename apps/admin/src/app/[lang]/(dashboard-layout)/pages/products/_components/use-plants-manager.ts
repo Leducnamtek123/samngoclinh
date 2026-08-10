@@ -8,14 +8,15 @@ import { fetchApi } from "@/lib/api"
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
 
-interface Plant {
+export interface Plant {
   id: string
   code: string
   name: string
   ageYear: number
   price: number
-  stock: number
+  stock?: number
   status: string
+  createdAt?: string
   description?: string
   images?: string[]
 }
@@ -366,7 +367,7 @@ export function usePlantsManager({
         name: plant.name,
         ageYear: plant.ageYear,
         price: plant.price,
-        stock: plant.stock,
+        stock: plant.stock ?? 0,
         status: plant.status,
         description: plant.description || "",
         imageUrl: plantImages[0] || "",

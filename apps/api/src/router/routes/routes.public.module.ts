@@ -6,8 +6,6 @@ import { ContentPublicController } from '@modules/content/controllers/content.pu
 import { ContentModule } from '@modules/content/content.module';
 import { HelloPublicController } from '@modules/hello/controllers/hello.public.controller';
 import { HelloModule } from '@modules/hello/hello.module';
-import { MarketplacePublicController } from '@modules/marketplace/controllers/marketplace.public.controller';
-import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
 import { PromotionPublicController } from '@modules/promotion/controllers/promotion.public.controller';
 import { PromotionModule } from '@modules/promotion/promotion.module';
 import { TermPolicyPublicController } from '@modules/term-policy/controllers/term-policy.public.controller';
@@ -34,7 +32,6 @@ import { Module } from '@nestjs/common';
         CatalogPublicController,
         ContentPublicController,
         HelloPublicController,
-        MarketplacePublicController,
         PromotionPublicController,
         UserPublicController,
         TermPolicyPublicController,
@@ -51,7 +48,6 @@ import { Module } from '@nestjs/common';
         CatalogModule,
         ContentModule,
         HelloModule,
-        MarketplaceModule,
         PromotionModule,
         UserModule,
         ContactModule,
