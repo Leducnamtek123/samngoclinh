@@ -1,0 +1,8 @@
+{
+  "saveSuccess": "Saved successfully!",
+  "deleteSuccess": "Deleted successfully!",
+  "createSuccess": "Created successfully!",
+  "updateSuccess": "Updated successfully!",
+  "errorOccurred": "An error occurred. Please try again.",
+  "networkError": "Network error. Please check your connection."
+}

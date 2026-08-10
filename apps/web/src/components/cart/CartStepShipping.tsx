@@ -2,19 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { MapPin, User, QrCode, ArrowLeft, Plus, Truck, Store, Phone, Check } from 'lucide-react';
+import { MapPin, QrCode, ArrowLeft, Truck, Store, Phone } from 'lucide-react';
 import type { CartItem } from '@/utils/cart';
-import {
-  Form,
-  FormInput,
-  FormPhoneInput,
-  FormTextarea,
-} from '@/components/ui/form';
-import { FormAddressPicker } from '@/components/address/FormAddressPicker';
+import { Form, FormTextarea } from '@/components/ui/form';
 import { Button, ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useProfileMe } from '@/hooks/queries/useProfile';
+import { AddressSelector } from '@/components/address/AddressSelector';
 import { AddressModal } from '@/components/address/AddressModal';
 import {
   shippingAddressSchema,
@@ -36,7 +30,7 @@ type CartStepShippingProps = {
   setDeliveryType?: (val: 'shipping' | 'pickup') => void;
   shippingFee?: number;
   loading: boolean;
-  t: (key: string) => string;
+  t?: (key: string) => string;
   onSubmit: (data?: (ShippingAddressFormValues & { deliveryType?: 'shipping' | 'pickup' }) | React.FormEvent) => void;
   onPrevStep: () => void;
 };
@@ -56,16 +50,36 @@ export const CartStepShipping = ({
   setDeliveryType,
   shippingFee = 30000,
   loading,
-  t,
   onSubmit,
   onPrevStep,
 }: CartStepShippingProps) => {
   const tShipping = useTranslations('cartStepShipping');
   const { data: profile, refetch: refetchProfile } = useProfileMe();
-  const savedAddresses = profile?.addresses || [];
+
+  const [localAddresses, setLocalAddresses] = useState<any[]>(() => {
+    try {
+      const saved = typeof window !== 'undefined' ? localStorage.getItem('user_addresses:v1') : null;
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const apiAddresses = (profile?.addresses || []).map((a: any) => ({
+    id: a.id,
+    name: a.recipient || a.name || profile?.fullName || '',
+    recipient: a.recipient || a.name || profile?.fullName || '',
+    phone: a.phone || profile?.mobileNumber || '',
+    address: a.detail || a.address || '',
+    detail: a.detail || a.address || '',
+    isDefault: !!a.isDefault,
+  }));
+
+  const allAddresses = Array.from(
+    new Map([...apiAddresses, ...localAddresses].map((a) => [a.id, a])).values()
+  );
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
 
   const form = useForm<ShippingAddressFormValues>({
@@ -78,12 +92,12 @@ export const CartStepShipping = ({
     },
   });
 
-  // Auto select default address when savedAddresses are available
+  // Auto select default or first address when available
   useEffect(() => {
-    if (savedAddresses.length > 0) {
-      let targetAddr = savedAddresses.find((a: any) => a.id === selectedAddressId);
+    if (allAddresses.length > 0) {
+      let targetAddr = allAddresses.find((a: any) => a.id === selectedAddressId);
       if (!targetAddr) {
-        targetAddr = savedAddresses.find((a: any) => a.isDefault) || savedAddresses[0];
+        targetAddr = allAddresses.find((a: any) => a.isDefault) || allAddresses[0];
       }
 
       if (targetAddr) {
@@ -101,11 +115,11 @@ export const CartStepShipping = ({
         setShippingAddress(detail);
       }
     }
-  }, [savedAddresses, profile]);
+  }, [allAddresses.length, profile]);
 
   const handleSelectAddress = (addressId: string) => {
     setSelectedAddressId(addressId);
-    const targetAddr = savedAddresses.find((a: any) => a.id === addressId);
+    const targetAddr = allAddresses.find((a: any) => a.id === addressId);
     if (targetAddr) {
       const name = targetAddr.recipient || targetAddr.name || profile?.fullName || '';
       const phone = targetAddr.phone || profile?.mobileNumber || '';
@@ -130,6 +144,21 @@ export const CartStepShipping = ({
   };
 
   const handleModalAddSuccess = (data: ShippingAddressFormValues & { newId?: string }) => {
+    const newAddr = {
+      id: data.newId || Date.now().toString(),
+      name: data.recipientName,
+      recipient: data.recipientName,
+      phone: data.recipientPhone,
+      address: data.shippingAddress,
+      detail: data.shippingAddress,
+      isDefault: allAddresses.length === 0,
+    };
+    const updated = [newAddr, ...localAddresses];
+    setLocalAddresses(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_addresses:v1', JSON.stringify(updated));
+    }
+
     form.setValue('recipientName', data.recipientName, { shouldValidate: true });
     form.setValue('recipientPhone', data.recipientPhone, { shouldValidate: true });
     form.setValue('shippingAddress', data.shippingAddress, { shouldValidate: true });
@@ -142,13 +171,10 @@ export const CartStepShipping = ({
       setNotes(data.notes);
     }
 
-    if (data.newId) {
-      setSelectedAddressId(data.newId);
-    }
+    setSelectedAddressId(newAddr.id);
     refetchProfile();
   };
 
-  const selectedAddress = savedAddresses.find((a: any) => a.id === selectedAddressId) || savedAddresses[0];
   const calculatedShippingFee = deliveryType === 'shipping' ? shippingFee : 0;
   const calculatedGrandTotal = totalAmount + calculatedShippingFee;
 
@@ -217,86 +243,18 @@ export const CartStepShipping = ({
             </div>
           </div>
 
-          {/* CASE 1: USER HAS SAVED ADDRESSES & SHIPPING IS SELECTED */}
-          {deliveryType === 'shipping' && savedAddresses.length > 0 && selectedAddress ? (
-            <div className="space-y-4">
-              <div className="bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/80 rounded-2xl p-5 space-y-3 shadow-2xs">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-extrabold text-sm text-gray-900 dark:text-gray-100">
-                      {selectedAddress.recipient || selectedAddress.name || recipientName}
-                    </span>
-                    <span className="text-xs font-semibold text-gray-500">
-                      · {selectedAddress.phone || recipientPhone}
-                    </span>
-                    {selectedAddress.isDefault && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-extrabold text-[10px] border-none flex items-center gap-1"
-                      >
-                        <Check className="w-3 h-3 text-emerald-700 dark:text-emerald-400" />
-                        <span>{tShipping('defaultBadge')}</span>
-                      </Badge>
-                    )}
-                  </div>
-                </div>
+          {/* SHIPPING SELECTED -> RENDER ADDRESS SELECTOR */}
+          {deliveryType === 'shipping' && (
+            <AddressSelector
+              addresses={allAddresses}
+              selectedAddressId={selectedAddressId}
+              setSelectedAddressId={handleSelectAddress}
+              onOpenAddAddressModal={() => setIsAddModalOpen(true)}
+            />
+          )}
 
-                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {selectedAddress.detail || selectedAddress.address || shippingAddress}
-                </p>
-
-                <div className="flex items-center gap-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-800/50 flex-wrap">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsChangeModalOpen(true)}
-                    className="text-xs font-bold text-emerald-800 dark:text-emerald-400 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100/60 cursor-pointer"
-                  >
-                    {tShipping('changeAddress')}
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:bg-emerald-100/40 flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>{tShipping('addNewAddress')}</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : deliveryType === 'shipping' ? (
-            /* CASE 2: SHIPPING SELECTED & NO SAVED ADDRESSES -> RENDER DIRECT ADD FORM */
-            <div className="space-y-4">
-              <FormInput
-                control={form.control}
-                name="recipientName"
-                label={t('recipientName')}
-                required
-                prefixIcon={<User className="w-4 h-4 text-emerald-700" />}
-              />
-
-              <FormPhoneInput
-                control={form.control}
-                name="recipientPhone"
-                label={t('phoneNumber')}
-                required
-              />
-
-              <FormAddressPicker
-                control={form.control}
-                name="shippingAddress"
-                label={tShipping('addressDetailLabel')}
-                required
-                enableMapPicker={true}
-              />
-            </div>
-          ) : (
-            /* CASE 3: PICKUP SELECTED */
+          {/* PICKUP SELECTED */}
+          {deliveryType === 'pickup' && (
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 space-y-3 text-xs">
               <p className="font-bold text-gray-900">{tShipping('pickupAddressTitle')}</p>
               <p className="text-gray-600 leading-relaxed font-medium flex items-center gap-1.5">
@@ -391,17 +349,6 @@ export const CartStepShipping = ({
           </div>
         </Card>
       </Form>
-
-      {/* Change Address Modal */}
-      <AddressModal
-        isOpen={isChangeModalOpen}
-        mode="select"
-        onClose={() => setIsChangeModalOpen(false)}
-        savedAddresses={savedAddresses}
-        selectedAddressId={selectedAddressId}
-        onSelectAddress={handleSelectAddress}
-        onOpenAddModal={() => setIsAddModalOpen(true)}
-      />
 
       {/* Add Address Modal */}
       <AddressModal

@@ -1,0 +1,30 @@
+{
+  "notifications": {
+    "title": "Notifications & Alerts",
+    "markAllRead": "Mark All as Read",
+    "noNotifications": "No notifications yet.",
+    "unreadCount": "{count} unread"
+  },
+  "trace": {
+    "title": "Origin Traceability & QR Audit",
+    "subtitle": "Verify origin, batch details, and growth logs of Ngoc Linh ginseng",
+    "searchPlaceholder": "Enter QR Code or Tree Code...",
+    "verifyBtn": "Verify Origin",
+    "originDetails": "Origin Information",
+    "treeCode": "Tree Code",
+    "gardenLocation": "Garden Location",
+    "harvestDate": "Harvest Date",
+    "certificate": "Origin Certificate",
+    "verifiedBadge": "100% Genuine Certified"
+  },
+  "mapLocationPicker": {
+    "searchPlaceholder": "Search address, street name, district...",
+    "searchAriaLabel": "Address search input",
+    "useCurrentLocation": "Use Current Location",
+    "selectedLocationTitle": "SELECTED LOCATION:",
+    "confirmLocationBtn": "Confirm Selection",
+    "geoNotSupported": "Browser does not support Geolocation.",
+    "geoPermDenied": "Geolocation permission denied.",
+    "geoError": "Unable to retrieve current location."
+  }
+}

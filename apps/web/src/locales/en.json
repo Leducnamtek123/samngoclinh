@@ -124,6 +124,22 @@
     "origin": "Origin",
     "originLocation": "Dak To - Tu Mo Rong, Quang Nam"
   },
+  "productDetail": {
+    "notFoundTitle": "Product Not Found",
+    "notFoundDesc": "This product may no longer be available or the URL is incorrect.",
+    "backToProducts": "Back to Product List",
+    "home": "Home",
+    "products": "Products",
+    "relatedProducts": "Related Products",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCartToast": "Added {quantity} \"{name}\" to cart!"
+  },
+  "errorState": {
+    "title": "An error occurred",
+    "description": "Unable to load data. Please try again later.",
+    "retry": "Try again"
+  },
   "cart": {
     "title": "Your Shopping Cart",
     "empty": "Your cart is currently empty",

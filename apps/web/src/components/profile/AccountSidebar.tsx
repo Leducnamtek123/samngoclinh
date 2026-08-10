@@ -24,7 +24,6 @@ type AccountSidebarProps = {
     email?: string;
     rank?: string;
   } | null;
-  ordersCount?: number;
   treesCount?: number;
   contractsCount?: number;
 };
@@ -33,7 +32,6 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
   activeTab,
   onSelectTab,
   profile,
-  ordersCount,
   treesCount,
   contractsCount,
 }) => {
@@ -50,7 +48,6 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
           id: 'orders',
           label: 'Lịch sử đơn hàng',
           icon: <ShoppingBag className="w-4 h-4" />,
-          badge: ordersCount,
         },
         {
           id: 'assets',

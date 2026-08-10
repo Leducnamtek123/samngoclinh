@@ -65,8 +65,9 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
   };
 
   const openProductDetail = (item: any) => {
-    setSelectedDetailProduct(item);
-    setActiveImageIdx(0);
+    if (item?.id) {
+      window.location.href = `/${locale}/ginseng/${item.id}`;
+    }
   };
 
   const handleAgeToggle = (age: number) => {

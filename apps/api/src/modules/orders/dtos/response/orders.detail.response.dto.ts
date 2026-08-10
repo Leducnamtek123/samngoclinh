@@ -60,6 +60,20 @@ export class OrdersDetailResponseDto {
 
     @ApiProperty({
         required: false,
+        example: 1235716,
+    })
+    @Expose()
+    totalAmount?: number;
+
+    @ApiProperty({
+        required: false,
+        example: 'Giao hàng tận nơi',
+    })
+    @Expose()
+    shippingMethod?: string;
+
+    @ApiProperty({
+        required: false,
         example: 'bank_transfer',
     })
     @Expose()

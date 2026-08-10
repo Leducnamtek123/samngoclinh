@@ -91,7 +91,7 @@ export function ShopItemsList({
               <TableHead>{t("products.fields.sku")}</TableHead>
               <TableHead>{t("products.fields.name")}</TableHead>
               <TableHead>{t("products.fields.category")}</TableHead>
-              <TableHead>Unit</TableHead>
+              <TableHead>{t("products.fields.unit")}</TableHead>
               <TableHead>{t("products.fields.price")}</TableHead>
               <TableHead>{t("products.fields.stock")}</TableHead>
               <TableHead>{t("products.fields.status")}</TableHead>

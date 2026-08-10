@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect, useSyncExternalStore } from 'react';
-import Image from 'next/image';
-
 // @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { QrCode, XCircle } from 'lucide-react';
@@ -10,6 +8,7 @@ import { useCancelOrder } from '@/hooks/queries/useOrderDetail';
 import { toast } from 'sonner';
 import { Button, ConfirmModal } from '@/components';
 import { getOrderStatusInfo } from '@/components/profile/ProfileOrdersTab';
+import { formatLocalDateTime } from '@/utils/datetime';
 
 const emptySubscribe = () => () => {};
 
@@ -25,6 +24,8 @@ export type OrderDetailItem = {
   vatProtection?: number;
   shippingFee?: number;
   imageUrl?: string;
+  image?: string;
+  images?: string[];
 };
 
 export type OrderDetailData = {
@@ -32,7 +33,10 @@ export type OrderDetailData = {
   code: string;
   createdAt: string;
   status: 'PAID' | 'PENDING' | 'CANCELLED' | string;
-  totalAmount: number;
+  totalAmount?: number;
+  total?: number;
+  subtotal?: number;
+  shippingFee?: number;
   user?: {
     fullName?: string;
     email?: string;
@@ -68,40 +72,17 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
 
   const orderCode = order.code.startsWith('#') ? order.code : `#${order.code}`;
   const rawCode = order.code.replace('#', '');
-  const isPaid = order.status === 'PAID' || order.status === 'completed';
-  const isCancelled = order.status === 'CANCELLED' || order.status === 'cancelled';
+  const statusLower = (order.status || '').toLowerCase();
+  const canPayOrCancel = statusLower === 'pending';
 
-  const userFullName = order.user?.fullName || 'Nhà đầu tư';
-  const userEmail = order.user?.email || 'N/A';
-  const userPhone = order.user?.phone || 'N/A';
+  const userFullName = order.user?.fullName ?? '—';
+  const userEmail = order.user?.email ?? '—';
+  const userPhone = order.user?.phone ?? '—';
 
-  const items = Array.isArray(order.items) && order.items.length > 0 
-    ? order.items 
-    : [
-        {
-          name: 'Cây Sâm Ngọc Linh',
-          quantity: 1,
-          price: order.totalAmount || 180000,
-          treePrice: Math.round((order.totalAmount || 180000) * 0.6),
-          careFee: Math.round((order.totalAmount || 180000) * 0.4),
-          protectionFee: 0,
-          imageUrl: '/assets/images/kon_tum_ginseng.png'
-        }
-      ];
-
-  const firstItem: Partial<OrderDetailItem> = items[0] || {};
-  const itemPrice = firstItem.price || order.totalAmount || 0;
-  const treePrice = firstItem.treePrice || Math.round(itemPrice * 0.6);
-  const careFee = firstItem.careFee || Math.round(itemPrice * 0.4);
-  const protectionFee = firstItem.protectionFee || 0;
-  
-  const vatProduct = Math.round(treePrice * 0.05);
-  const vatCare = Math.round(careFee * 0.1);
-  const vatProtection = Math.round(protectionFee * 0.1);
-  const shippingFee = 0;
-
-  const computedTotal = treePrice + vatProduct + careFee + vatCare + protectionFee + vatProtection + shippingFee;
-  const finalTotal = order.totalAmount > 0 ? order.totalAmount : computedTotal;
+  const items = Array.isArray(order.items) ? order.items : [];
+  const rawTotal = order.totalAmount ?? order.total;
+  const finalTotal = rawTotal != null ? Number(rawTotal) : null;
+  const subtotalVal = order.subtotal != null ? Number(order.subtotal) : finalTotal;
 
   const handleConfirmCancelOrder = async () => {
     const orderIdToCancel = order.id || rawCode;
@@ -144,7 +125,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
             </div>
 
             {/* Quick Action Buttons Header */}
-            {!isPaid && !isCancelled && (
+            {canPayOrCancel && (
               <div className="flex items-center gap-2">
                 <Button
                   size="sm"
@@ -181,7 +162,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                   <span>{orderCode}</span>
                 </div>
                 <p className="text-xs text-gray-400 font-medium mt-1">
-                  {order.createdAt}
+                  {formatLocalDateTime(order.createdAt)}
                 </p>
               </div>
 
@@ -261,48 +242,61 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
 
                 {/* Items Card List */}
                 <div className="space-y-4">
-                  {items.map((item) => (
-                    <div key={item.name} className="border border-gray-100 rounded-xl p-4 bg-gray-50/50 flex gap-4 items-center">
-                      <div className="relative w-16 h-16 shrink-0">
-                        <Image
-                          src={item.imageUrl || '/assets/images/kon_tum_ginseng.png'}
-                          alt={item.name}
-                          fill
-                          sizes="64px"
-                          unoptimized
-                          className="object-cover rounded-lg border border-gray-200 bg-white"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <h4 className="font-bold text-gray-900 text-sm truncate">{item.name}</h4>
-                        <p className="text-xs text-gray-500 font-medium">Số lượng: {item.quantity}</p>
-                        <div className="flex flex-wrap gap-x-3 text-[11px] text-gray-600 font-medium pt-0.5">
-                          <span>Đơn giá: <strong>{(item.price || treePrice).toLocaleString('vi-VN')} đ</strong></span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-extrabold text-gray-900 text-sm">
-                          {((item.price || treePrice) * item.quantity).toLocaleString('vi-VN')} đ
-                        </span>
-                      </div>
+                  {items.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                      Không có chi tiết sản phẩm nào trong đơn hàng này
                     </div>
-                  ))}
+                  ) : (
+                    items.map((item, idx) => {
+                      const itemPrice = Number(item.price) || 0;
+                      const itemQty = Number(item.quantity) || 1;
+                      const rawImg = item.imageUrl || item.image || (Array.isArray(item.images) ? item.images[0] : null);
+                      const initialImg = rawImg && typeof rawImg === 'string' && rawImg.trim() !== '' ? rawImg : '/images/kon_tum_ginseng.png';
+
+                      return (
+                        <div key={item.name || idx} className="border border-gray-100 rounded-xl p-4 bg-gray-50/50 flex gap-4 items-center">
+                          <div className="relative w-16 h-16 shrink-0 bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center">
+                            <img
+                              src={initialImg}
+                              alt={item.name || 'Sản phẩm'}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/kon_tum_ginseng.png';
+                              }}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <h4 className="font-bold text-gray-900 text-sm truncate">{item.name || 'Sản phẩm'}</h4>
+                            <p className="text-xs text-gray-500 font-medium">Số lượng: {itemQty}</p>
+                            <div className="flex flex-wrap gap-x-3 text-[11px] text-gray-600 font-medium pt-0.5">
+                              <span>Đơn giá: <strong>{itemPrice.toLocaleString('vi-VN')} đ</strong></span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-extrabold text-gray-900 text-sm">
+                              {(itemPrice * itemQty).toLocaleString('vi-VN')} đ
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
 
                 {/* Detailed Cost Breakdown Table */}
                 <div className="border-t border-gray-100 pt-4 space-y-2 text-xs font-medium text-gray-600">
                   <div className="flex justify-between items-center">
                     <span>Tạm tính</span>
-                    <span className="font-bold text-gray-800">{finalTotal.toLocaleString('vi-VN')} đ</span>
+                    <span className="font-bold text-gray-800">{subtotalVal != null ? `${subtotalVal.toLocaleString('vi-VN')} đ` : '—'}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Phí vận chuyển</span>
-                    <span className="font-bold text-emerald-700">Miễn phí</span>
+                    <span className="font-bold text-emerald-700">{order.shippingFee ? `${Number(order.shippingFee).toLocaleString('vi-VN')} đ` : 'Miễn phí'}</span>
                   </div>
 
                   <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between items-center text-sm font-black text-gray-900">
                     <span>Tổng cộng:</span>
-                    <span className="text-lg text-emerald-800">{finalTotal.toLocaleString('vi-VN')} đ</span>
+                    <span className="text-lg text-emerald-800">{finalTotal != null ? `${finalTotal.toLocaleString('vi-VN')} đ` : '—'}</span>
                   </div>
                 </div>
               </div>

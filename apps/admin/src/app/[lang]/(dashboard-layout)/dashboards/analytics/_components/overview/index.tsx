@@ -6,10 +6,10 @@ import { UniqueVisitors } from "./unique-visitors"
 import type { AnalyticsDashboardStats } from "../../types"
 
 export function Overview({ stats }: { stats?: AnalyticsDashboardStats }) {
-  const rev = stats?.totalRevenue || 452000000
-  const trees = stats?.totalTrees || 1540
-  const contracts = stats?.totalContracts || 42
-  const users = stats?.totalUsers || 286
+  const rev = Number(stats?.totalRevenue) || 0
+  const trees = Number(stats?.totalTrees) || 0
+  const contracts = Number(stats?.totalContracts) || 0
+  const users = Number(stats?.totalUsers) || 0
 
   const uniqueVisitorsData = {
     averageValue: rev,

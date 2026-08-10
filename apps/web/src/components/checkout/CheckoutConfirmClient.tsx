@@ -31,11 +31,22 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
 
   useEffect(() => {
     setIsClient(true);
-    const cart = getCartItems();
-    if (cart.length === 0) {
+    let checkoutItems: CartItem[] = [];
+    try {
+      const savedSelected = localStorage.getItem('checkout_selected_items:v1');
+      if (savedSelected) {
+        checkoutItems = JSON.parse(savedSelected);
+      }
+    } catch {}
+
+    if (!checkoutItems || checkoutItems.length === 0) {
+      checkoutItems = getCartItems();
+    }
+
+    if (checkoutItems.length === 0) {
       router.push(`/${locale}/cart`);
     } else {
-      setItems(cart);
+      setItems(checkoutItems);
     }
   }, [locale, router]);
 

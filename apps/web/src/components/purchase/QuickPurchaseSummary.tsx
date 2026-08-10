@@ -16,6 +16,7 @@ type QuickPurchaseSummaryProps = {
   vatProtection: number;
   productSubtotal: number;
   vatProduct8: number;
+  shippingFee?: number;
   grandTotal: number;
   t: (key: string, params?: Record<string, any>) => string;
 };
@@ -34,6 +35,7 @@ export const QuickPurchaseSummary: React.FC<QuickPurchaseSummaryProps> = ({
   vatProtection,
   productSubtotal,
   vatProduct8,
+  shippingFee,
   grandTotal,
   t,
 }) => {
@@ -80,6 +82,14 @@ export const QuickPurchaseSummary: React.FC<QuickPurchaseSummaryProps> = ({
             <span>{t('vatProduct8Label')}</span>
             <span>+{vatProduct8.toLocaleString('vi-VN')} đ</span>
           </div>
+          {shippingFee !== undefined && (
+            <div className="flex justify-between font-semibold text-gray-700 pt-1 border-t border-emerald-100">
+              <span>Phí vận chuyển</span>
+              <span className="text-emerald-700 font-bold">
+                {shippingFee > 0 ? `+${shippingFee.toLocaleString('vi-VN')} đ` : 'Miễn phí'}
+              </span>
+            </div>
+          )}
         </>
       )}
 

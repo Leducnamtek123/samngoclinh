@@ -2,6 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/feedback-components"
@@ -40,9 +41,19 @@ interface CarePackagesListProps {
   onEdit: (pkg: CarePackage) => void
   onDelete: (id: string) => void
   onOpenCreate: () => void
-  formatVND: (price: number) => string
-  metadata?: any
-  handlePageChange?: (page: number) => void
+  formatVND: (amount: number) => string
+  metadata: any
+  handlePageChange: (page: number) => void
+}
+
+interface ProtectionPackagesListProps {
+  packages: ProtectionPackage[]
+  onEdit: (pkg: ProtectionPackage) => void
+  onDelete: (id: string) => void
+  onOpenCreate: () => void
+  formatVND: (amount: number) => string
+  metadata: any
+  handlePageChange: (page: number) => void
 }
 
 export function CarePackagesList({
@@ -54,18 +65,20 @@ export function CarePackagesList({
   metadata,
   handlePageChange,
 }: CarePackagesListProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Mã gói</TableHead>
-            <TableHead>Tên gói dịch vụ</TableHead>
-            <TableHead>Đơn giá</TableHead>
-            <TableHead>Thời hạn</TableHead>
-            <TableHead>Mô tả</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead className="text-right">Thao tác</TableHead>
+            <TableHead>{t("packages.fields.code")}</TableHead>
+            <TableHead>{t("packages.fields.name")}</TableHead>
+            <TableHead>{t("packages.fields.price")}</TableHead>
+            <TableHead>{t("packages.fields.duration")}</TableHead>
+            <TableHead>{t("packages.fields.description")}</TableHead>
+            <TableHead>{t("packages.fields.status")}</TableHead>
+            <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,9 +86,9 @@ export function CarePackagesList({
             <TableRow>
               <TableCell colSpan={7} className="py-8">
                 <EmptyState
-                  title="Chưa có gói chăm sóc"
-                  description="Chưa cấu hình gói chăm sóc định kỳ nào trong hệ thống. Hãy tạo gói đầu tiên để tiếp tục."
-                  actionLabel="Thêm gói mới"
+                  title={t("common.table.noResults")}
+                  description={t("common.table.noResults")}
+                  actionLabel={t("common.actions.add")}
                   onAction={onOpenCreate}
                 />
               </TableCell>
@@ -83,41 +96,42 @@ export function CarePackagesList({
           ) : (
             packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono text-xs font-semibold">
+                <TableCell className="font-mono font-medium">
                   {pkg.code}
                 </TableCell>
-                <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
-                  {pkg.name}
-                </TableCell>
+                <TableCell className="font-semibold">{pkg.name}</TableCell>
                 <TableCell className="font-medium text-emerald-600">
                   {formatVND(pkg.price)}
                 </TableCell>
                 <TableCell>{pkg.durationMonths} tháng</TableCell>
-                <TableCell className="text-sm max-w-[200px] truncate">
-                  {pkg.description || "—"}
+                <TableCell className="max-w-[200px] truncate text-slate-500">
+                  {pkg.description || "-"}
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={pkg.status === "active" ? "default" : "outline"}
+                    variant={
+                      pkg.status.toLowerCase() === "active"
+                        ? "default"
+                        : "secondary"
+                    }
                   >
-                    {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
+                    {t(`common.status.${pkg.status.toLowerCase()}`)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex justify-end gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(pkg)}
-                      className="h-8 w-8 text-blue-600"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="text-red-500 hover:text-red-700"
                       onClick={() => onDelete(pkg.id)}
-                      className="h-8 w-8 text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -128,21 +142,9 @@ export function CarePackagesList({
           )}
         </TableBody>
       </Table>
-      {handlePageChange && metadata && (
-        <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-2" />
-      )}
+      <Pagination metadata={metadata} onPageChange={handlePageChange} />
     </div>
   )
-}
-
-interface ProtectionPackagesListProps {
-  packages: ProtectionPackage[]
-  onEdit: (pkg: ProtectionPackage) => void
-  onDelete: (id: string) => void
-  onOpenCreate: () => void
-  formatVND: (price: number) => string
-  metadata?: any
-  handlePageChange?: (page: number) => void
 }
 
 export function ProtectionPackagesList({
@@ -154,18 +156,20 @@ export function ProtectionPackagesList({
   metadata,
   handlePageChange,
 }: ProtectionPackagesListProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Mã gói</TableHead>
-            <TableHead>Tên gói bảo vệ</TableHead>
-            <TableHead>Đơn giá</TableHead>
-            <TableHead>Phạm vi bảo hiểm</TableHead>
-            <TableHead>Mô tả</TableHead>
-            <TableHead>Trạng thái</TableHead>
-            <TableHead className="text-right">Thao tác</TableHead>
+            <TableHead>{t("packages.fields.code")}</TableHead>
+            <TableHead>{t("packages.fields.name")}</TableHead>
+            <TableHead>{t("packages.fields.price")}</TableHead>
+            <TableHead>{t("packages.fields.coverage")}</TableHead>
+            <TableHead>{t("packages.fields.description")}</TableHead>
+            <TableHead>{t("packages.fields.status")}</TableHead>
+            <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -173,9 +177,9 @@ export function ProtectionPackagesList({
             <TableRow>
               <TableCell colSpan={7} className="py-8">
                 <EmptyState
-                  title="Chưa có gói bảo vệ"
-                  description="Chưa cấu hình gói bảo vệ/bảo hiểm nào trong hệ thống. Hãy tạo gói bảo vệ đầu tiên."
-                  actionLabel="Thêm gói mới"
+                  title={t("common.table.noResults")}
+                  description={t("common.table.noResults")}
+                  actionLabel={t("common.actions.add")}
                   onAction={onOpenCreate}
                 />
               </TableCell>
@@ -200,7 +204,7 @@ export function ProtectionPackagesList({
                   <Badge
                     variant={pkg.status === "active" ? "default" : "outline"}
                   >
-                    {pkg.status === "active" ? "Hoạt động" : "Tạm ngưng"}
+                    {t(`common.status.${pkg.status.toLowerCase()}`)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">

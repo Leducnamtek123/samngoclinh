@@ -1,0 +1,55 @@
+{
+  "homepage": {
+    "aboutUsBadge": "ABOUT US",
+    "aboutTitle": "Journey Preserving Vietnamese Heritage",
+    "aboutDesc": "Dedicated to preserving the value of Ngoc Linh Ginseng – treasure of the mountains, combining traditional recipes to craft premium liquor.",
+    "learnMore": "Learn More",
+    "yearsExperience": "Years Experience",
+    "altitude": "Cultivation Altitude",
+    "happyCustomers": "Happy Customers",
+    "bottlesSupplied": "Bottles Supplied",
+    "latestNews": "Latest News",
+    "latestNewsDesc": "Stay updated with latest news and articles about Ngoc Linh Ginseng",
+    "readMore": "Read More"
+  },
+  "Index": {
+    "meta_title": "Ngoc Linh Ginseng Liquor | Digitizing Value Chain",
+    "meta_description": "First app in Vietnam to buy, own, care, and trace genuine Ngoc Linh Ginseng products directly via mobile.",
+    "sponsors_title": "Partners",
+    "zap_emoji_label": "Lightning"
+  },
+  "Counter": {
+    "meta_title": "Counter",
+    "meta_description": "DB Operation Example",
+    "security_powered_by": "Security, bot detection & rate limiting by"
+  },
+  "CounterForm": {
+    "presentation": "Counter is stored in database and incremented by provided value.",
+    "label_increment": "Increment by",
+    "button_increment": "Increment",
+    "error_increment_range": "Value must be between 1 and 3"
+  },
+  "CurrentCount": {
+    "count": "Quantity: {count}"
+  },
+  "About": {
+    "meta_title": "About Us",
+    "meta_description": "About description",
+    "about_paragraph": "Welcome to our about page! We are a passionate team dedicated to software excellence.",
+    "translation_powered_by": "Translation powered by"
+  },
+  "Portfolio": {
+    "meta_title": "Portfolio",
+    "meta_description": "Welcome to my portfolio!",
+    "presentation": "Welcome to our portfolio page! Here you will find carefully selected projects and achievements.",
+    "portfolio_name": "Portfolio {name}",
+    "error_reporting_powered_by": "Error reporting powered by"
+  },
+  "PortfolioSlug": {
+    "meta_title": "Portfolio {slug}",
+    "meta_description": "Portfolio description {slug}",
+    "header": "Portfolio {slug}",
+    "content": "Branding & communication media design for enterprises including logo, flyers, banners, and digital assets.",
+    "code_review_powered_by": "Code review powered by"
+  }
+}

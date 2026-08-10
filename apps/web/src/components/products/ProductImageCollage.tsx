@@ -23,7 +23,7 @@ export const ProductImageCollage = ({
         : [];
 
   const count = images.length;
-  const name = item?.name || 'Sản phẩm';
+  const name = item?.name ?? '—';
 
   if (count === 0) {
     return (

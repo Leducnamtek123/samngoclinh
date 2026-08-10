@@ -1,0 +1,27 @@
+{
+  "title": "Content Management",
+  "subtitle": "Manage banners, news articles, and contact inquiries",
+  "banners": {
+    "title": "Banner Settings",
+    "addBanner": "Add Banner",
+    "bannerTitle": "Banner Title",
+    "imageUrl": "Image URL",
+    "linkUrl": "Link URL"
+  },
+  "articles": {
+    "title": "Articles & News",
+    "addArticle": "Add Article",
+    "articleTitle": "Article Title",
+    "author": "Author",
+    "publishedDate": "Published Date",
+    "category": "Category"
+  },
+  "contacts": {
+    "title": "Contact Requests",
+    "name": "Sender Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "receivedAt": "Received At"
+  }
+}

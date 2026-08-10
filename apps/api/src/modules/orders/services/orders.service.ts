@@ -54,6 +54,93 @@ export class OrdersService implements IOrdersService {
         return provider.getPaymentInfo(code, amount);
     }
 
+    async userListPaginated(
+        userId: string,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >,
+        statusQuery?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
+        const { where, ...params } = pagination;
+
+        let statusWhere: Prisma.OrderWhereInput = {};
+        const targetStatus = statusQuery?.status?.equals;
+        if (targetStatus && targetStatus !== 'all') {
+            const st = String(targetStatus).toLowerCase();
+            if (st === 'pending') {
+                statusWhere = { status: { in: ['pending', 'PENDING'] } };
+            } else if (st === 'paid') {
+                statusWhere = { status: { in: ['paid', 'PAID', 'success', 'SUCCESS'] } };
+            } else if (st === 'shipping') {
+                statusWhere = { status: { in: ['shipping', 'SHIPPING', 'delivering', 'processing', 'confirmed'] } };
+            } else if (st === 'completed') {
+                statusWhere = { status: { in: ['completed', 'COMPLETED', 'delivered'] } };
+            } else if (st === 'cancelled') {
+                statusWhere = { status: { in: ['cancelled', 'CANCELLED', 'canceled', 'failed', 'FAILED'] } };
+            } else {
+                statusWhere = { status: { equals: String(targetStatus) } };
+            }
+        }
+
+        const rawCounts = await this.databaseService.order.groupBy({
+            by: ['status'],
+            where: { userId },
+            _count: { _all: true },
+        });
+
+        const statusCounts = {
+            all: 0,
+            pending: 0,
+            pending_verification: 0,
+            paid: 0,
+            shipping: 0,
+            completed: 0,
+            cancelled: 0,
+        };
+
+        for (const c of rawCounts) {
+            const countVal = c._count._all;
+            statusCounts.all += countVal;
+            const st = (c.status || '').toLowerCase();
+            if (st === 'pending') {
+                statusCounts.pending += countVal;
+            } else if (['pending_verification', 'verifying', 'checking'].includes(st)) {
+                statusCounts.pending_verification += countVal;
+            } else if (['paid', 'success'].includes(st)) {
+                statusCounts.paid += countVal;
+            } else if (['shipping', 'delivering', 'processing', 'confirmed'].includes(st)) {
+                statusCounts.shipping += countVal;
+            } else if (['completed', 'delivered'].includes(st)) {
+                statusCounts.completed += countVal;
+            } else if (['cancelled', 'canceled', 'failed'].includes(st)) {
+                statusCounts.cancelled += countVal;
+            }
+        }
+
+        const res = await this.paginationService.offset<
+            OrdersListResponseDto,
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >(this.databaseService.order, {
+            ...params,
+            where: {
+                ...where,
+                userId,
+                ...statusWhere,
+            },
+        });
+
+        return {
+            ...res,
+            _metadata: {
+                ...((res as any)._metadata || {}),
+                statusCounts,
+            },
+            statusCounts,
+        } as any;
+    }
+
     async detail(
         id: string,
         userId: string
@@ -67,6 +154,20 @@ export class OrdersService implements IOrdersService {
             });
         }
 
+        const user = await this.databaseService.user.findUnique({
+            where: { id: order.userId },
+            select: { name: true, email: true },
+        });
+
+        const businessProfile = await this.databaseService.businessProfile.findUnique({
+            where: { userId: order.userId },
+            select: { fullName: true, phone: true },
+        });
+
+        const customerEmail = (order.metadata as { customerEmail?: string } | null)?.customerEmail || user?.email || null;
+        const customerName = order.customerName || businessProfile?.fullName || user?.name || null;
+        const customerPhone = order.customerPhone || businessProfile?.phone || null;
+
         const paymentQr = order.status === 'pending'
             ? await this.buildPaymentQrInfo(order.code, order.total, order.paymentMethod)
             : undefined;
@@ -74,9 +175,16 @@ export class OrdersService implements IOrdersService {
         return {
             data: {
                 ...order,
-                customerEmail:
-                    (order.metadata as { customerEmail?: string } | null)
-                        ?.customerEmail ?? null,
+                totalAmount: order.total,
+                customerEmail,
+                customerName,
+                customerPhone,
+                user: {
+                    fullName: customerName || '—',
+                    email: customerEmail || '—',
+                    phone: customerPhone || '—',
+                },
+                shippingMethod: order.deliveryType === 'shipping' ? 'Giao hàng tận nơi' : 'Nhận tại vườn',
                 vat: (order.metadata as { vat?: number } | null)?.vat ?? 0,
                 paymentQr,
             },

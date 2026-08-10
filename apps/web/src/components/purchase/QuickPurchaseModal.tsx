@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Truck, Store } from 'lucide-react';
 import { AddressModal } from '@/components/address/AddressModal';
 import { PlantPackageSelector } from './PlantPackageSelector';
 import { AddressSelector } from '@/components/address/AddressSelector';
@@ -158,14 +159,78 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
               />
             )}
 
-            {/* Shipping Address Selection for Physical Products */}
+            {/* Shipping Method & Address Selection for Physical Products */}
             {mode === 'product' && (
-              <AddressSelector
-                addresses={form.addresses}
-                selectedAddressId={form.selectedAddressId}
-                setSelectedAddressId={form.setSelectedAddressId}
-                onOpenAddAddressModal={() => form.setIsAddAddressModalOpen(true)}
-              />
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider block">
+                    Phương thức nhận hàng
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => form.setDeliveryType('shipping')}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1 ${
+                        form.deliveryType === 'shipping'
+                          ? 'border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20'
+                          : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-xs text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
+                          <Truck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                          <span>Giao hàng tận nơi</span>
+                        </span>
+                        <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
+                          30.000 đ
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 font-medium">
+                        Giao tận địa chỉ bạn chọn
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => form.setDeliveryType('pickup')}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1 ${
+                        form.deliveryType === 'pickup'
+                          ? 'border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20'
+                          : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-xs text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
+                          <Store className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                          <span>Nhận tại vườn</span>
+                        </span>
+                        <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
+                          Miễn phí
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-500 font-medium">
+                        Tự đến nhận sản phẩm tại vườn
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {form.deliveryType === 'shipping' ? (
+                  <AddressSelector
+                    addresses={form.addresses}
+                    selectedAddressId={form.selectedAddressId}
+                    setSelectedAddressId={form.setSelectedAddressId}
+                    onOpenAddAddressModal={() => form.setIsAddAddressModalOpen(true)}
+                  />
+                ) : (
+                  <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/60 rounded-xl p-4 space-y-1 text-xs">
+                    <p className="font-bold text-gray-900 dark:text-gray-100">Địa chỉ nhận tại vườn</p>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                      Vườn sâm Ngọc Linh, Xã Trà Nam, Huyện Nam Trà My, Tỉnh Quảng Nam
+                    </p>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Terms Agreement Checkbox for Plants */}
@@ -192,6 +257,7 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
               vatProtection={form.vatProtection}
               productSubtotal={form.productSubtotal}
               vatProduct8={form.vatProduct8}
+              shippingFee={mode === 'product' ? form.shippingFee : undefined}
               grandTotal={form.grandTotal}
               t={t}
             />

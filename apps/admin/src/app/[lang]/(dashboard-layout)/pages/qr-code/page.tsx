@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { toast } from "sonner"
 import {
   Calendar,
   Download,
@@ -82,15 +83,8 @@ export default function QrCodeTraceabilityPage() {
     if (found) {
       setSelectedTree(found)
     } else {
-      setSelectedTree({
-        id: searchCode,
-        code: searchCode.toUpperCase(),
-        name: "Plant Code",
-        age: 5,
-        gardenName: "Ginseng Cultivation Zone",
-        plantedAt: new Date().toISOString(),
-        status: "ACTIVE",
-      })
+      setSelectedTree(null)
+      toast.error(t("common.notFound") || "Không tìm thấy cây sâm với mã này")
     }
   }
 
@@ -249,7 +243,7 @@ export default function QrCodeTraceabilityPage() {
                       {t("trees.fields.garden")} &amp; {t("trees.fields.bed")}
                     </span>
                     <p className="font-semibold mt-1 text-sm">
-                      {activeTree.gardenName || "Ginseng Cultivation Zone"}
+                      {activeTree.gardenName || "—"}
                     </p>
                   </div>
                 </div>
@@ -319,7 +313,7 @@ export default function QrCodeTraceabilityPage() {
                       <TableCell className="font-mono text-xs font-semibold">
                         {tree.code || tree.id}
                       </TableCell>
-                      <TableCell>{tree.name || "Plant"}</TableCell>
+                      <TableCell>{tree.name || tree.code || "—"}</TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"

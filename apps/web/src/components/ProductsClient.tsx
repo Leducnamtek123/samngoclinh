@@ -63,8 +63,9 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
   };
 
   const openProductDetail = (item: any) => {
-    setSelectedDetailProduct(item);
-    setActiveImageIdx(0);
+    if (item?.id) {
+      window.location.href = `/${locale}/products/${item.id}`;
+    }
   };
 
   const displayItems = items || [];

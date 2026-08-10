@@ -166,6 +166,10 @@
     "banners": "Banners",
     "manageNews": "Tin tức",
     "contactRequests": "Liên hệ",
+    "systemSettings": "Cài đặt hệ thống",
+    "shippingFee": "Phí vận chuyển",
+    "pointsConversion": "Tỷ lệ điểm thưởng",
+    "generalSettings": "Cấu hình chung",
     "cultivation": "Quản lý Vườn & Cây Sâm",
     "business": "Quản lý Bán hàng",
     "system": "Hệ thống & Người dùng",
@@ -218,12 +222,14 @@
       "approve": "Phê duyệt",
       "reject": "Từ chối",
       "scan": "Quét mã QR",
-      "generate": "Tạo mã"
+      "generate": "Tạo mã",
+      "filterAll": "Lọc: Tất cả"
     },
     "status": {
       "all": "Tất cả trạng thái",
       "active": "Hoạt động",
       "inactive": "Không hoạt động",
+      "blocked": "Đã khóa",
       "pending": "Chờ thanh toán",
       "paid": "Đã thanh toán",
       "shipping": "Đang giao hàng",
@@ -242,14 +248,17 @@
       "healthy": "Khỏe mạnh",
       "diseased": "Có bệnh",
       "harvested": "Đã thu hoạch",
-      "justNow": "Vừa xong"
+      "justNow": "Vừa xong",
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh"
     },
     "table": {
       "rowsPerPage": "Số hàng mỗi trang",
       "pageOf": "Trang {page} trên {total}",
       "noResults": "Không tìm thấy dữ liệu.",
       "selected": "Đã chọn {count}",
-      "showing": "Hiển thị {start} đến {end} trong tổng số {total} mục"
+      "showing": "Hiển thị {start} đến {end} trong tổng số {total} mục",
+      "total": "tổng số"
     },
     "confirmations": {
       "deleteTitle": "Bạn có chắc chắn?",
@@ -264,9 +273,15 @@
     "addUser": "Thêm người dùng",
     "editUser": "Sửa người dùng",
     "userDetails": "Chi tiết người dùng",
+    "accountList": {
+      "title": "Danh sách tài khoản",
+      "subtitle": "Hiển thị tên người dùng, email, trạng thái và ngày đăng ký."
+    },
     "fields": {
       "fullName": "Họ và tên",
+      "username": "Tên người dùng",
       "email": "Email",
+      "verified": "Đã xác minh",
       "phone": "Số điện thoại",
       "role": "Vai trò",
       "status": "Trạng thái",
@@ -274,6 +289,13 @@
       "lastLogin": "Đăng nhập gần nhất",
       "address": "Địa chỉ",
       "avatar": "Ảnh đại diện"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "blocked": "Đã khóa",
+      "pending": "Chờ xử lý",
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh"
     },
     "roles": {
       "admin": "Quản trị viên",
@@ -297,6 +319,10 @@
       "plantedDate": "Ngày trồng",
       "age": "Tuổi cây (năm)",
       "healthStatus": "Tình trạng sức khỏe",
+      "quantity": "Số lượng",
+      "owner": "Chủ sở hữu",
+      "carePackage": "Gói chăm sóc",
+      "protectionPackage": "Gói bảo vệ",
       "notes": "Ghi chú",
       "qrCode": "Mã QR"
     },
@@ -323,7 +349,27 @@
       "stock": "Số lượng tồn kho",
       "status": "Trạng thái",
       "description": "Mô tả",
-      "image": "Hình ảnh sản phẩm"
+      "image": "Hình ảnh sản phẩm",
+      "approval": "Phê duyệt",
+      "importPrice": "Giá nhập",
+      "plantedDate": "Ngày trồng",
+      "age": "Tuổi",
+      "unit": "Đơn tính"
+    }
+  },
+  "packages": {
+    "title": "Gói Dịch Vụ",
+    "addPackage": "Thêm Gói Dịch Vụ Mới",
+    "editPackage": "Chỉnh Sửa Gói Dịch Vụ",
+    "createSubtitle": "Nhập các thông tin chi tiết cho gói dịch vụ. Nhấn Lưu để hoàn tất.",
+    "fields": {
+      "code": "Mã gói dịch vụ",
+      "name": "Tên gói dịch vụ",
+      "price": "Đơn giá (VND)",
+      "duration": "Thời hạn gói (tháng)",
+      "description": "Mô tả dịch vụ",
+      "status": "Trạng thái hoạt động",
+      "coverage": "Phạm vi bảo vệ / bồi thường"
     }
   },
   "content": {

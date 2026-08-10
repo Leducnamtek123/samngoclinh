@@ -1,0 +1,29 @@
+{
+  "title": "Plant & Tree Management",
+  "subtitle": "Manage Ginseng trees, gardens, beds, and growth logs",
+  "addTree": "Add Plant/Tree",
+  "editTree": "Edit Plant/Tree",
+  "treeDetails": "Plant Details",
+  "fields": {
+    "code": "Tree Code",
+    "name": "Plant Name",
+    "garden": "Garden",
+    "bed": "Bed",
+    "plantedDate": "Planted Date",
+    "age": "Age (Years)",
+    "healthStatus": "Health Status",
+    "quantity": "Quantity",
+    "owner": "Owner",
+    "carePackage": "Care Package",
+    "protectionPackage": "Protection Package",
+    "notes": "Notes",
+    "qrCode": "QR Code"
+  },
+  "careLogs": {
+    "title": "Care Logs",
+    "addLog": "Add Care Log",
+    "activity": "Activity",
+    "performer": "Performed By",
+    "date": "Date"
+  }
+}

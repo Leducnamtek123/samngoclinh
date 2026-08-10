@@ -94,7 +94,7 @@ export function Pagination({
   }
 
   const pages = getPageNumbers(currentPage, calculatedTotalPages || 1)
-  const totalLabel = t("common.actions.actions") === "Hành động" ? "tổng số" : "total"
+  const totalLabel = t("common.table.total")
 
   return (
     <div className={`grid grid-cols-1 md:grid-cols-3 items-center gap-4 px-6 py-4 border-t border-border bg-card/50 ${className}`}>
