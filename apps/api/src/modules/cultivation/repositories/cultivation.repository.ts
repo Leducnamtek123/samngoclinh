@@ -1,5 +1,5 @@
 import { DatabaseService } from '@common/database/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
     ICultivationBedDetail,
@@ -453,6 +453,46 @@ export class CultivationRepository {
         });
     }
 
+    async updateTreeWithConcurrencyCheck(
+        id: string,
+        expectedStatus: string,
+        payload: CultivationUpdateTreeRequestDto
+    ): Promise<CultivationTree> {
+        const res = await this.databaseService.cultivationTree.updateMany({
+            where: {
+                id,
+                status: expectedStatus,
+            },
+            data: {
+                name: payload.name,
+                ageYear: payload.ageYear,
+                quantity: payload.quantity,
+                status: payload.status,
+                ownerUserId: payload.ownerUserId,
+                plantedAt: payload.plantedAt ? new Date(payload.plantedAt) : undefined,
+                healthStatus: payload.healthStatus,
+                lastCareDate: payload.lastCareDate ? new Date(payload.lastCareDate) : undefined,
+                nextCareDate: payload.nextCareDate ? new Date(payload.nextCareDate) : undefined,
+                expectedHarvestAt: payload.expectedHarvestAt ? new Date(payload.expectedHarvestAt) : undefined,
+                images: payload.images,
+                priceBought: payload.priceBought,
+                metadata: payload.metadata ? (payload.metadata as Prisma.InputJsonValue) : undefined,
+            },
+        });
+
+        if (res.count === 0) {
+            throw new ConflictException(
+                'Tree status was updated concurrently by another request'
+            );
+        }
+
+        const updated = await this.databaseService.cultivationTree.findUnique({ where: { id } });
+        if (!updated) {
+            throw new NotFoundException('Tree not found');
+        }
+        return updated;
+    }
+
     async deleteTree(id: string): Promise<void> {
         const tree = await this.databaseService.cultivationTree.findUnique({ where: { id } });
         if (!tree) {
@@ -610,9 +650,18 @@ export class CultivationRepository {
         >,
         status?: Record<string, IPaginationEqual>,
         health?: Record<string, IPaginationEqual>,
-        ownerUserId?: Record<string, IPaginationEqual>
+        ownerUserId?: Record<string, IPaginationEqual>,
+        ageYearQuery?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CultivationTree>> {
         const { where, ...params } = pagination;
+        let ageWhere: Prisma.CultivationTreeWhereInput = {};
+        if (ageYearQuery?.ageYear?.equals !== undefined) {
+            const ageNum = parseInt(String(ageYearQuery.ageYear.equals), 10);
+            if (!isNaN(ageNum)) {
+                ageWhere = { ageYear: { equals: ageNum } };
+            }
+        }
+
         return this.paginationService.offset<
             CultivationTree,
             Prisma.CultivationTreeSelect,
@@ -624,6 +673,7 @@ export class CultivationRepository {
                 ...status,
                 ...health,
                 ...ownerUserId,
+                ...ageWhere,
             },
         });
     }

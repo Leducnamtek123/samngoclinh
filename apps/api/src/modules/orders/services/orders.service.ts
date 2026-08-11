@@ -2,8 +2,10 @@ import {
     BadRequestException,
     Injectable,
     NotFoundException,
+    OnModuleInit,
     UnauthorizedException,
 } from '@nestjs/common';
+import { validateStateTransition } from '@common/domain/domain-state-machine';
 import * as crypto from 'crypto';
 import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { IOrdersService } from '@modules/orders/interfaces/orders.service.interface';
@@ -23,7 +25,7 @@ import { IPaymentQrInfo } from '@modules/payment-gateway/interfaces/payment-gate
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class OrdersService implements IOrdersService {
+export class OrdersService implements IOrdersService, OnModuleInit {
     constructor(
         private readonly ordersRepository: OrdersRepository,
         private readonly databaseService: DatabaseService,
@@ -31,6 +33,45 @@ export class OrdersService implements IOrdersService {
         private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
         private readonly configService: ConfigService
     ) {}
+
+    async onModuleInit() {
+        try {
+            const ordersWithoutItems = await this.databaseService.order.findMany({
+                where: {
+                    orderItems: {
+                        none: {},
+                    },
+                },
+                take: 1000,
+            });
+
+            for (const order of ordersWithoutItems) {
+                const rawItems = Array.isArray(order.items) ? (order.items as any[]) : [];
+                if (rawItems.length === 0) continue;
+
+                const createData = rawItems.map((item) => {
+                    const code = String(item.code || '').toLowerCase();
+                    const name = String(item.name || '').toLowerCase();
+                    const isPlant = code.includes('plant') || code.includes('tree') || name.includes('cây') || item.productType === 'plant';
+                    return {
+                        orderId: order.id,
+                        productId: item.productId || null,
+                        productType: isPlant ? 'plant' : 'product',
+                        productName: item.name || item.productName || 'Sản phẩm',
+                        quantity: Number(item.quantity || 1),
+                        unitPrice: Number(item.price || item.unitPrice || 0),
+                        totalPrice: Number((item.price || item.unitPrice || 0) * (item.quantity || 1)),
+                    };
+                });
+
+                await this.databaseService.orderItem.createMany({
+                    data: createData,
+                });
+            }
+        } catch (e) {
+            console.error('Failed to auto-sync OrderItems:', e);
+        }
+    }
 
     async list(
         userId: string
@@ -478,6 +519,18 @@ export class OrdersService implements IOrdersService {
                 dto.paymentMethod === 'cod' ? 'cod' : 'bank_transfer';
             const code =
                 'ORD' + Date.now() + Math.floor(1000 + Math.random() * 9000);
+            const orderItemsCreate = cartItems.map((cartItem) => {
+                const isProduct = products.some(p => p.id === cartItem.productId);
+                const prod: any = (products.find(p => p.id === cartItem.productId) || plants.find(p => p.id === cartItem.productId))!;
+                return {
+                    productId: cartItem.productId,
+                    productType: isProduct ? 'product' : 'plant',
+                    productName: prod ? prod.name : 'Sản phẩm',
+                    quantity: cartItem.quantity,
+                    unitPrice: prod ? prod.price : 0,
+                    totalPrice: (prod ? prod.price : 0) * cartItem.quantity,
+                };
+            });
 
             // Create order
             const createdOrder = await tx.order.create({
@@ -504,6 +557,9 @@ export class OrdersService implements IOrdersService {
                         pointsRedeemed: pointsToRedeem,
                         vat,
                         customerEmail: dto.customerEmail ?? null,
+                    },
+                    orderItems: {
+                        create: orderItemsCreate,
                     },
                 },
             });
@@ -1026,9 +1082,34 @@ export class OrdersService implements IOrdersService {
             Prisma.OrderSelect,
             Prisma.OrderWhereInput
         >,
-        status?: Record<string, IPaginationEqual>
+        status?: Record<string, IPaginationEqual>,
+        productTypeQuery?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
         const { where, ...params } = pagination;
+        let productTypeWhere: Prisma.OrderWhereInput = {};
+
+        const targetType = productTypeQuery?.productType?.equals;
+        if (targetType && targetType !== 'all') {
+            const typeStr = String(targetType).toLowerCase();
+            if (typeStr === 'plant' || typeStr === 'tree') {
+                productTypeWhere = {
+                    orderItems: {
+                        some: {
+                            productType: { in: ['plant', 'tree'] },
+                        },
+                    },
+                };
+            } else if (typeStr === 'product' || typeStr === 'processed') {
+                productTypeWhere = {
+                    orderItems: {
+                        some: {
+                            productType: { in: ['product', 'shop-item'] },
+                        },
+                    },
+                };
+            }
+        }
+
         return this.paginationService.offset<
             OrdersListResponseDto,
             Prisma.OrderSelect,
@@ -1038,6 +1119,7 @@ export class OrdersService implements IOrdersService {
             where: {
                 ...where,
                 ...status,
+                ...productTypeWhere,
             },
         });
     }
@@ -1102,6 +1184,8 @@ export class OrdersService implements IOrdersService {
                 message: 'order.error.notFound',
             });
         }
+
+        validateStateTransition('Order', order.status, status);
 
         if (status === 'paid') {
             return this.handlePaymentWebhook({

@@ -52,9 +52,11 @@ export class OrdersAdminController {
             Prisma.OrderWhereInput
         >,
         @PaginationQueryFilterEqualString('status')
-        status?: Record<string, IPaginationEqual>
+        status?: Record<string, IPaginationEqual>,
+        @PaginationQueryFilterEqualString('productType')
+        productType?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
-        return this.ordersService.adminListPaginated(pagination, status);
+        return this.ordersService.adminListPaginated(pagination, status, productType);
     }
 
     @OrdersAdminDetailDoc()

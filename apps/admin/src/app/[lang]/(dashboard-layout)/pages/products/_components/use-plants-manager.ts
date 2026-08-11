@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { fetchApi } from "@/lib/api"
-
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
+import type { PlantFormValues } from "@/schemas/plant-schema"
 
 export interface Plant {
   id: string
@@ -86,7 +86,11 @@ export function usePlantsManager({
   const [searchQuery, setSearchQuery] = useState(initialSearch)
 
   const statusFilter = searchParams.get("status") || "all"
-  const [ageTab, setAgeTab] = useState("all")
+  const ageTab = searchParams.get("ageYear") || "all"
+
+  const setAgeTab = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ ageYear: val })}`)
+  }
 
   // Sync plants on props change
   useEffect(() => {
@@ -472,17 +476,7 @@ export function usePlantsManager({
     }))
   }
 
-  const handleSavePlant = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!dialogState.formData.name) {
-      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
-      return
-    }
-    if (!dialogState.formData.code) {
-      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
-      return
-    }
-
+  const handleSavePlant = async (values: PlantFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setErrorMsg("")
     setSuccessMsg("")

@@ -18,6 +18,7 @@ interface OrdersPageProps {
     perPage?: string
     search?: string
     status?: string
+    productType?: string
   }>
 }
 
@@ -32,6 +33,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
+  const productType = resolvedSearchParams.productType || ""
 
   let orders: Order[] = []
   let metadata: any = null
@@ -43,6 +45,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("status", status)
+    if (productType && productType !== "all") queryParams.append("productType", productType)
 
     const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()

@@ -37,9 +37,11 @@ export class CatalogPublicController {
             Prisma.CatalogPlantWhereInput
         >,
         @PaginationQueryFilterEqualString('status')
-        status?: Record<string, IPaginationEqual>
+        status?: Record<string, IPaginationEqual>,
+        @PaginationQueryFilterEqualString('ageYear')
+        ageYear?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CatalogPlant>> {
-        return this.catalogService.listPlantsPaginated(pagination, status);
+        return this.catalogService.listPlantsPaginated(pagination, status, ageYear);
     }
 
     @CatalogPublicListShopItemsDoc()

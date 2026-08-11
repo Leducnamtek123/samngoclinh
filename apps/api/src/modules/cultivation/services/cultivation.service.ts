@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { validateStateTransition } from '@common/domain/domain-state-machine';
 import { ConfigService } from '@nestjs/config';
 import * as QRCode from 'qrcode';
 import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
@@ -207,6 +208,19 @@ export class CultivationService implements ICultivationService {
     }
 
     async updateTree(id: string, payload: CultivationUpdateTreeRequestDto): Promise<IResponseReturn<CultivationTree>> {
+        if (payload.status) {
+            const existing = await this.cultivationRepository.getTreeDetail(id, '', true);
+            if (!existing) {
+                throw new NotFoundException('Tree not found');
+            }
+            validateStateTransition('Tree', existing.status, payload.status);
+            const res = await this.cultivationRepository.updateTreeWithConcurrencyCheck(
+                id,
+                existing.status,
+                payload
+            );
+            return { data: res };
+        }
         const res = await this.cultivationRepository.updateTree(id, payload);
         return { data: res };
     }
@@ -272,8 +286,9 @@ export class CultivationService implements ICultivationService {
         >,
         status?: Record<string, IPaginationEqual>,
         health?: Record<string, IPaginationEqual>,
-        ownerUserId?: Record<string, IPaginationEqual>
+        ownerUserId?: Record<string, IPaginationEqual>,
+        ageYear?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CultivationTree>> {
-        return this.cultivationRepository.listAllTreesAdminPaginated(pagination, status, health, ownerUserId);
+        return this.cultivationRepository.listAllTreesAdminPaginated(pagination, status, health, ownerUserId, ageYear);
     }
 }

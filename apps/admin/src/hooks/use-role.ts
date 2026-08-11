@@ -13,6 +13,7 @@ export function useRole() {
 
   const isSuperAdmin =
     strRole.includes("SUPER_ADMIN") ||
+    strRole.includes("SUPERADMIN") ||
     email.includes("superadmin") ||
     email.includes("super_admin")
   const isAdmin =

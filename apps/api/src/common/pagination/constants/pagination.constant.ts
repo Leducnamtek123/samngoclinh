@@ -3,9 +3,9 @@ import { IPaginationOrderBy } from '@common/pagination/interfaces/pagination.int
 
 export const PaginationDefaultPerPage = 20;
 
-export const PaginationDefaultMaxPerPage = 100;
+export const PaginationDefaultMaxPerPage = 500;
 
-export const PaginationDefaultMaxPage = 20;
+export const PaginationDefaultMaxPage = 100000;
 
 export const PaginationDefaultCursorField = 'id';
 

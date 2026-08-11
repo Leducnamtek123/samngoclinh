@@ -166,6 +166,10 @@ model User {
   deviceOwnerships        DeviceOwnership[]          @relation("DeviceOwnershipUser")
   revokedSessions         Session[]                  @relation("SessionRevokedByUser")
   revokedDeviceOwnerships DeviceOwnership[]          @relation("DeviceOwnershipRevokedByUser")
+  gardens                 CultivationGarden[]        @relation("UserGardens")
+  beds                    CultivationBed[]           @relation("UserBeds")
+  trees                   CultivationTree[]          @relation("UserTrees")
+  orders                  Order[]                    @relation("UserOrders")
 
   @@unique(fields: [username])
   @@unique(fields: [email])
@@ -609,6 +613,9 @@ model CultivationGarden {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  ownerUser User?            @relation("UserGardens", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  beds      CultivationBed[] @relation("GardenBeds")
+
   @@unique(fields: [code])
   @@index(fields: [status, ownerUserId])
   @@map("CultivationGardens")
@@ -636,6 +643,10 @@ model CultivationBed {
   createdBy String?
   updatedAt DateTime @updatedAt
   updatedBy String?
+
+  garden    CultivationGarden @relation("GardenBeds", fields: [gardenCode], references: [code], onDelete: Cascade)
+  ownerUser User?             @relation("UserBeds", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  trees     CultivationTree[] @relation("BedTrees")
 
   @@unique(fields: [code])
   @@index(fields: [gardenCode, status, ageYear])
@@ -668,6 +679,9 @@ model CultivationTree {
   createdBy String?
   updatedAt DateTime @updatedAt
   updatedBy String?
+
+  bed       CultivationBed? @relation("BedTrees", fields: [bedCode], references: [code], onDelete: SetNull)
+  ownerUser User?           @relation("UserTrees", fields: [ownerUserId], references: [id], onDelete: SetNull)
 
   @@unique(fields: [code])
   @@index(fields: [status, ageYear, ownerUserId])
@@ -757,9 +771,33 @@ model Order {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  user       User?       @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[] @relation("OrderItems")
+
   @@unique(fields: [code])
   @@index(fields: [userId, status, createdAt(sort: Desc)])
   @@map("Orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String?
+  productType String?  @default("product")
+  productName String
+  quantity    Int
+  unitPrice   Int
+  totalPrice  Int
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order Order @relation("OrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("OrderItems")
 }
 
 model UserIdentityDocument {
@@ -1222,4 +1260,46 @@ model PaymentWebhookLog {
   @@map("PaymentWebhookLogs")
 }
 
+enum EnumGardenStatus {
+  active
+  inactive
+  maintenance
+}
 
+enum EnumBedStatus {
+  active
+  inactive
+  empty
+  full
+}
+
+enum EnumTreeStatus {
+  planted
+  growing
+  available
+  harvested
+  sold
+}
+
+enum EnumTreeHealthStatus {
+  healthy
+  warning
+  sick
+  recovering
+}
+
+enum EnumOrderStatus {
+  pending
+  processing
+  paid
+  shipping
+  completed
+  cancelled
+}
+
+enum EnumPaymentStatus {
+  pending
+  paid
+  refunded
+  failed
+}

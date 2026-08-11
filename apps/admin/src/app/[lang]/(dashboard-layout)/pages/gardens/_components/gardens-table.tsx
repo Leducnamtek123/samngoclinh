@@ -158,12 +158,6 @@ export function GardensTable({
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={(updater) =>
-          setDialogState((prev) => ({
-            ...prev,
-            formData: updater(prev.formData),
-          }))
-        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}

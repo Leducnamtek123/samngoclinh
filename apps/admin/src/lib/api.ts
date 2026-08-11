@@ -55,7 +55,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || ""
+  const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
 
   const headers: HeadersInit = {
     "x-api-key": apiKey,
@@ -83,3 +83,13 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers,
   })
 }
+
+export {
+  apiClient,
+  fetchApiData,
+  postApiData,
+  putApiData,
+  deleteApiData,
+  type ApiResponse,
+} from "./api-client"
+

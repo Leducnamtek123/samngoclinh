@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { fetchApi } from "@/lib/api"
-
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
+import type { TreeFormValues } from "@/schemas/tree-schema"
 
 interface Tree {
   id: string
@@ -255,42 +255,36 @@ export function useTreesManager({
     })
   }
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!dialogState.formData.name.trim()) {
-      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
-      return
-    }
-
+  const handleSave = async (values: TreeFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setSuccessMsg("")
 
     try {
       const payload: any = {
-        name: dialogState.formData.name,
-        ageYear: Number(dialogState.formData.ageYear),
-        quantity: Number(dialogState.formData.quantity),
-        healthStatus: dialogState.formData.healthStatus,
-        plantedAt: dialogState.formData.plantedAt
-          ? new Date(dialogState.formData.plantedAt).toISOString()
+        name: values.name,
+        ageYear: Number(values.ageYear),
+        quantity: Number(values.quantity),
+        healthStatus: values.healthStatus,
+        plantedAt: values.plantedAt
+          ? new Date(values.plantedAt).toISOString()
           : undefined,
-        lastCareDate: dialogState.formData.lastCareDate
-          ? new Date(dialogState.formData.lastCareDate).toISOString()
+        lastCareDate: values.lastCareDate
+          ? new Date(values.lastCareDate).toISOString()
           : undefined,
-        nextCareDate: dialogState.formData.nextCareDate
-          ? new Date(dialogState.formData.nextCareDate).toISOString()
+        nextCareDate: values.nextCareDate
+          ? new Date(values.nextCareDate).toISOString()
           : undefined,
-        expectedHarvestAt: dialogState.formData.expectedHarvestAt
-          ? new Date(dialogState.formData.expectedHarvestAt).toISOString()
+        expectedHarvestAt: values.expectedHarvestAt
+          ? new Date(values.expectedHarvestAt).toISOString()
           : undefined,
-        priceBought: dialogState.formData.priceBought
-          ? parseInt(dialogState.formData.priceBought)
+        priceBought: values.priceBought
+          ? parseInt(values.priceBought)
           : undefined,
-        ownerUserId: dialogState.formData.ownerUserId || undefined,
-        status: dialogState.formData.status,
+        ownerUserId: values.ownerUserId || undefined,
+        status: values.status,
       }
-      if (dialogState.formData.bedCode !== "none") {
-        payload.bedCode = dialogState.formData.bedCode
+      if (values.bedCode && values.bedCode !== "none") {
+        payload.bedCode = values.bedCode
       }
 
       if (dialogState.mode === "create") {

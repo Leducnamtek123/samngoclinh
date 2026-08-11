@@ -1,0 +1,19 @@
+{
+  "title": "Order Management",
+  "subtitle": "Manage and track order statuses in the system",
+  "tabs": {
+    "all": "All Orders",
+    "plant": "Garden Plants",
+    "product": "Processed Products"
+  },
+  "filterAge": {
+    "all": "All Plant Ages",
+    "label": "Filter by Plant Age",
+    "1": "1-Year-Old Ginseng",
+    "2": "2-Year-Old Ginseng",
+    "3": "3-Year-Old Ginseng",
+    "4": "4-Year-Old Ginseng",
+    "5": "5-Year-Old Ginseng",
+    "6": "Ginseng > 5 Years Old"
+  }
+}
