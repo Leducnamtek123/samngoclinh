@@ -88,9 +88,18 @@ export class CatalogRepository {
             Prisma.CatalogPlantSelect,
             Prisma.CatalogPlantWhereInput
         >,
-        status?: Record<string, IPaginationEqual>
+        status?: Record<string, IPaginationEqual>,
+        ageYearQuery?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CatalogPlant>> {
         const { where, ...params } = pagination;
+        let ageWhere: Prisma.CatalogPlantWhereInput = {};
+        if (ageYearQuery?.ageYear?.equals !== undefined) {
+            const ageNum = parseInt(String(ageYearQuery.ageYear.equals), 10);
+            if (!isNaN(ageNum)) {
+                ageWhere = { ageYear: { equals: ageNum } };
+            }
+        }
+
         return this.paginationService.offset<
             CatalogPlant,
             Prisma.CatalogPlantSelect,
@@ -100,6 +109,7 @@ export class CatalogRepository {
             where: {
                 ...where,
                 ...status,
+                ...ageWhere,
             },
         });
     }

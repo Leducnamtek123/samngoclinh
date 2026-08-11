@@ -1,9 +1,13 @@
 "use client"
 
+import { useEffect } from "react"
 import Image from "next/image"
 import Cropper from "react-easy-crop"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 import { useTranslation } from "@/providers/i18n-provider"
+import { plantFormSchema, PlantFormValues } from "@/schemas/plant-schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,8 +18,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { InlineAlert } from "@/components/ui/feedback-components"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -29,23 +40,9 @@ interface PlantDialogProps {
   isOpen: boolean
   onClose: () => void
   mode: "create" | "edit"
-  formData: {
-    code: string
-    name: string
-    ageYear: number
-    price: number
-    stock: number
-    status: string
-    description: string
-    imageUrl: string
-    images?: string[]
-  }
-  onChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void
-  onSelectStatus: (val: string) => void
+  formData: PlantFormValues & { images?: string[]; code?: string }
   onImageFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (values: PlantFormValues) => void
   loading: boolean
   error: string
   uploadingImage: boolean
@@ -68,8 +65,6 @@ export function PlantDialog({
   onClose,
   mode,
   formData,
-  onChange,
-  onSelectStatus,
   onImageFileChange,
   onSubmit,
   loading,
@@ -84,208 +79,181 @@ export function PlantDialog({
 }: PlantDialogProps) {
   const { t } = useTranslation()
 
+  const form = useForm<PlantFormValues>({
+    resolver: zodResolver(plantFormSchema),
+    defaultValues: formData,
+  })
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset(formData)
+    }
+  }, [isOpen, formData, form])
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(val) => !val && onClose()}>
         <DialogContent className="sm:max-w-[475px]">
-          <form onSubmit={onSubmit}>
-            <DialogHeader>
-              <DialogTitle>
-                {mode === "create"
-                  ? t("products.addProduct")
-                  : t("products.editProduct")}
-              </DialogTitle>
-              <DialogDescription>{t("products.subtitle")}</DialogDescription>
-            </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <DialogHeader>
+                <DialogTitle>
+                  {mode === "create"
+                    ? t("products.addProduct")
+                    : t("products.editProduct")}
+                </DialogTitle>
+                <DialogDescription>{t("products.subtitle")}</DialogDescription>
+              </DialogHeader>
 
-            {error && (
-              <InlineAlert
-                type="error"
-                title={t("common.status.error")}
-                description={error}
-                className="my-3"
-              />
-            )}
+              {error && (
+                <InlineAlert
+                  type="error"
+                  title={t("common.status.error")}
+                  description={error}
+                />
+              )}
 
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-name">
-                    {t("products.fields.name")}
-                  </Label>
-                  <Input
-                    id="dialog-name"
-                    name="name"
-                    placeholder={t("products.fields.name")}
-                    value={formData.name}
-                    onChange={onChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-code">
-                    {t("products.fields.sku")}
-                  </Label>
-                  <Input
-                    id="dialog-code"
-                    name="code"
-                    placeholder={t("products.fields.sku")}
-                    value={formData.code}
-                    onChange={onChange}
-                    disabled={mode === "edit"}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-ageYear">Age</Label>
-                  <Input
-                    id="dialog-ageYear"
-                    name="ageYear"
-                    type="number"
-                    min={0}
-                    value={formData.ageYear}
-                    onChange={onChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-price">
-                    {t("products.fields.price")} (VND)
-                  </Label>
-                  <Input
-                    id="dialog-price"
-                    name="price"
-                    type="number"
-                    min={0}
-                    value={formData.price}
-                    onChange={onChange}
-                    required
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-stock">
-                    {t("products.fields.stock")}
-                  </Label>
-                  <Input
-                    id="dialog-stock"
-                    name="stock"
-                    type="number"
-                    min={0}
-                    value={formData.stock}
-                    onChange={onChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-status">
-                    {t("products.fields.status")}
-                  </Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={onSelectStatus}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("products.fields.status")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">
-                        {t("common.status.active")}
-                      </SelectItem>
-                      <SelectItem value="harvested">
-                        {t("common.status.completed")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="dialog-image">
-                    {t("products.fields.image")}
-                  </Label>
-                  <Input
-                    id="dialog-image"
-                    name="imageFile"
-                    type="file"
-                    accept="image/*"
-                    onChange={onImageFileChange}
-                  />
-                  {uploadingImage && (
-                    <span className="text-xs text-slate-500">
-                      {t("common.status.pending")}
-                    </span>
+              <div className="grid gap-4 py-2">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("products.fields.name")}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("products.fields.name")} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                  {formData.images && formData.images.length > 0 ? (
-                    <div className="flex gap-2 mt-2 overflow-x-auto py-1">
-                      {formData.images.map((url, idx) => (
-                        <div
-                          key={idx}
-                          className="relative w-14 h-14 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0"
-                        >
-                          <Image
-                            src={url}
-                            alt={`Preview ${idx + 1}`}
-                            fill
-                            sizes="56px"
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : formData.imageUrl ? (
-                    <div className="relative w-14 h-14 rounded-lg overflow-hidden border mt-1">
-                      <Image
-                        src={formData.imageUrl}
-                        alt="Preview"
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : null}
-                </div>
-              </div>
+                />
 
-              <div className="grid gap-2">
-                <Label htmlFor="dialog-description">
-                  {t("products.fields.description")}
-                </Label>
-                <Textarea
-                  id="dialog-description"
+                <div className="grid grid-cols-3 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="ageYear"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("products.fields.price")}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("products.fields.stock")}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("products.fields.status")}</FormLabel>
+                        <Select
+                          value={field.value || "available"}
+                          onValueChange={field.onChange}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder={t("products.fields.status")} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="available">
+                              {t("common.status.active")}
+                            </SelectItem>
+                            <SelectItem value="harvested">
+                              {t("common.status.completed")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-2">
+                    <FormLabel>{t("products.fields.image")}</FormLabel>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={onImageFileChange}
+                    />
+                    {uploadingImage && (
+                      <span className="text-xs text-slate-500">
+                        {t("common.status.pending")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <FormField
+                  control={form.control}
                   name="description"
-                  placeholder={t("products.fields.description")}
-                  value={formData.description}
-                  onChange={onChange}
-                  rows={3}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("products.fields.description")}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t("products.fields.description")}
+                          rows={3}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-            </div>
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>
-                {t("common.actions.cancel")}
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-              >
-                {loading
-                  ? t("common.status.pending")
-                  : mode === "create"
-                    ? t("common.actions.create")
-                    : t("common.actions.save")}
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={onClose}>
+                  {t("common.actions.cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                >
+                  {loading
+                    ? t("common.status.pending")
+                    : mode === "create"
+                      ? t("common.actions.create")
+                      : t("common.actions.save")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 

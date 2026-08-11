@@ -57,9 +57,11 @@ export class CultivationAdminController {
         @PaginationQueryFilterEqualString('healthStatus')
         health?: Record<string, IPaginationEqual>,
         @PaginationQueryFilterEqualString('ownerUserId')
-        ownerUserId?: Record<string, IPaginationEqual>
+        ownerUserId?: Record<string, IPaginationEqual>,
+        @PaginationQueryFilterEqualString('ageYear')
+        ageYear?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CultivationTree>> {
-        return this.cultivationService.listAllTreesAdminPaginated(pagination, status, health, ownerUserId);
+        return this.cultivationService.listAllTreesAdminPaginated(pagination, status, health, ownerUserId, ageYear);
     }
 
     @CultivationAdminUpdateBookingStatusDoc()

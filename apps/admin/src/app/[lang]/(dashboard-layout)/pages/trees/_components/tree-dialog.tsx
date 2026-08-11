@@ -1,6 +1,11 @@
 "use client"
 
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+
 import { useTranslation } from "@/providers/i18n-provider"
+import { treeFormSchema, TreeFormValues } from "@/schemas/tree-schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,8 +15,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -30,25 +42,10 @@ interface TreeDialogProps {
   isOpen: boolean
   onClose: () => void
   mode: "create" | "edit"
-  formData: {
-    name: string
-    ageYear: number
-    quantity: number
-    bedCode: string
-    status: string
-    healthStatus: string
-    plantedAt: string
-    lastCareDate: string
-    nextCareDate: string
-    expectedHarvestAt: string
-    priceBought: string
-    ownerUserId: string
-  }
+  formData: TreeFormValues
   beds: Bed[]
   users: any[]
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onSelectChange: (field: string, val: string) => void
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (values: TreeFormValues) => void
   loading: boolean
   error: string
 }
@@ -60,247 +57,275 @@ export function TreeDialog({
   formData,
   beds,
   users,
-  onChange,
-  onSelectChange,
   onSubmit,
   loading,
   error,
 }: TreeDialogProps) {
   const { t } = useTranslation()
 
+  const form = useForm<TreeFormValues>({
+    resolver: zodResolver(treeFormSchema),
+    defaultValues: formData,
+  })
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset(formData)
+    }
+  }, [isOpen, formData, form])
+
   return (
     <Dialog open={isOpen} onOpenChange={(val) => !val && onClose()}>
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
-        <form onSubmit={onSubmit}>
-          <DialogHeader>
-            <DialogTitle>
-              {mode === "create" ? t("trees.addTree") : t("trees.editTree")}
-            </DialogTitle>
-            <DialogDescription>{t("trees.subtitle")}</DialogDescription>
-          </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle>
+                {mode === "create" ? t("trees.addTree") : t("trees.editTree")}
+              </DialogTitle>
+              <DialogDescription>{t("trees.subtitle")}</DialogDescription>
+            </DialogHeader>
 
-          {error && (
-            <div className="my-3 p-3 bg-destructive/15 text-destructive rounded-md text-xs font-medium">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="p-3 bg-destructive/15 text-destructive rounded-md text-xs font-medium">
+                {error}
+              </div>
+            )}
 
-          <div className="grid gap-4 py-4 grid-cols-2">
-            <div className="grid gap-2 col-span-2">
-              <Label htmlFor="tree-name">{t("trees.fields.name")}</Label>
-              <Input
-                id="tree-name"
+            <div className="grid gap-4 py-2 grid-cols-2">
+              <FormField
+                control={form.control}
                 name="name"
-                value={formData.name}
-                onChange={onChange}
-                placeholder={t("trees.fields.name")}
-                required
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>{t("trees.fields.name")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("trees.fields.name")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-age">{t("trees.fields.age")}</Label>
-              <Input
-                id="tree-age"
+              <FormField
+                control={form.control}
                 name="ageYear"
-                type="number"
-                value={formData.ageYear}
-                onChange={onChange}
-                min={0}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("trees.fields.age")}</FormLabel>
+                    <FormControl>
+                      <Input type="number" min={0} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-quantity">Quantity</Label>
-              <Input
-                id="tree-quantity"
+              <FormField
+                control={form.control}
                 name="quantity"
-                type="number"
-                value={formData.quantity}
-                onChange={onChange}
-                min={1}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input type="number" min={1} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            {mode === "create" && (
-              <div className="grid gap-2">
-                <Label htmlFor="tree-bedCode">{t("trees.fields.bed")}</Label>
-                <Select
-                  value={formData.bedCode}
-                  onValueChange={(val) => onSelectChange("bedCode", val)}
-                >
-                  <SelectTrigger id="tree-bedCode">
-                    <SelectValue placeholder={t("trees.fields.bed")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">— None —</SelectItem>
-                    {beds.map((bed) => (
-                      <SelectItem key={bed.id} value={bed.code}>
-                        {bed.name} ({bed.code})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+              {mode === "create" && (
+                <FormField
+                  control={form.control}
+                  name="bedCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("trees.fields.bed")}</FormLabel>
+                      <Select
+                        value={field.value || "none"}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("trees.fields.bed")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">— None —</SelectItem>
+                          {beds.map((bed) => (
+                            <SelectItem key={bed.id} value={bed.code}>
+                              {bed.name} ({bed.code})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-            {mode === "edit" && (
-              <div className="grid gap-2">
-                <Label htmlFor="tree-status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(val) => onSelectChange("status", val)}
-                >
-                  <SelectTrigger id="tree-status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">
-                      {t("common.status.active")}
-                    </SelectItem>
-                    <SelectItem value="harvested">
-                      {t("common.status.completed")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+              {mode === "edit" && (
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        value={field.value || "active"}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="active">
+                            {t("common.status.active")}
+                          </SelectItem>
+                          <SelectItem value="harvested">
+                            {t("common.status.completed")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-health">
-                {t("trees.fields.healthStatus")}
-              </Label>
-              <Select
-                value={formData.healthStatus}
-                onValueChange={(val) => onSelectChange("healthStatus", val)}
-              >
-                <SelectTrigger id="tree-health">
-                  <SelectValue placeholder={t("trees.fields.healthStatus")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="healthy">
-                    {t("common.status.healthy")}
-                  </SelectItem>
-                  <SelectItem value="diseased">
-                    {t("common.status.diseased")}
-                  </SelectItem>
-                  <SelectItem value="weak">
-                    {t("common.status.warning")}
-                  </SelectItem>
-                  <SelectItem value="dead">
-                    {t("common.status.error")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <FormField
+                control={form.control}
+                name="healthStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("trees.fields.healthStatus")}</FormLabel>
+                    <Select
+                      value={field.value || "healthy"}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("trees.fields.healthStatus")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="healthy">
+                          {t("common.status.healthy")}
+                        </SelectItem>
+                        <SelectItem value="diseased">
+                          {t("common.status.diseased")}
+                        </SelectItem>
+                        <SelectItem value="weak">
+                          {t("common.status.warning")}
+                        </SelectItem>
+                        <SelectItem value="dead">
+                          {t("common.status.error")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-planted">
-                {t("trees.fields.plantedDate")}
-              </Label>
-              <Input
-                id="tree-planted"
+              <FormField
+                control={form.control}
                 name="plantedAt"
-                type="date"
-                value={formData.plantedAt}
-                onChange={onChange}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("trees.fields.plantedDate")}</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-expected-harvest">Expected Harvest</Label>
-              <Input
-                id="tree-expected-harvest"
+              <FormField
+                control={form.control}
                 name="expectedHarvestAt"
-                type="date"
-                value={formData.expectedHarvestAt}
-                onChange={onChange}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expected Harvest</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-last-care">Last Care Date</Label>
-              <Input
-                id="tree-last-care"
-                name="lastCareDate"
-                type="date"
-                value={formData.lastCareDate}
-                onChange={onChange}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="tree-next-care">Next Care Date</Label>
-              <Input
-                id="tree-next-care"
-                name="nextCareDate"
-                type="date"
-                value={formData.nextCareDate}
-                onChange={onChange}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="tree-price">
-                {t("products.fields.price")} (VND)
-              </Label>
-              <Input
-                id="tree-price"
+              <FormField
+                control={form.control}
                 name="priceBought"
-                type="number"
-                value={formData.priceBought}
-                onChange={onChange}
-                placeholder="5000000"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("products.fields.price")} (VND)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="5000000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="ownerUserId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Owner</FormLabel>
+                    <Select
+                      value={field.value || "system"}
+                      onValueChange={(val) => field.onChange(val === "system" ? "" : val)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select owner" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="system">System</SelectItem>
+                        {users.map((u) => {
+                          const name = `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
+                          return (
+                            <SelectItem key={u.id} value={u.id}>
+                              {name}
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="tree-owner">Owner</Label>
-              <Select
-                value={formData.ownerUserId || "system"}
-                onValueChange={(val) =>
-                  onSelectChange("ownerUserId", val === "system" ? "" : val)
-                }
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={loading}
               >
-                <SelectTrigger id="tree-owner">
-                  <SelectValue placeholder="Select owner" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="system">System</SelectItem>
-                  {users.map((u) => {
-                    const name =
-                      `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
-                    return (
-                      <SelectItem key={u.id} value={u.id}>
-                        {name}
-                      </SelectItem>
-                    )
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-            >
-              {t("common.actions.cancel")}
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              {loading ? t("common.status.pending") : t("common.actions.save")}
-            </Button>
-          </DialogFooter>
-        </form>
+                {t("common.actions.cancel")}
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {loading ? t("common.status.pending") : t("common.actions.save")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

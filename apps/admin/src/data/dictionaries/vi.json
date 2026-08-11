@@ -195,6 +195,25 @@
       "signOut": "Đăng xuất"
     }
   },
+  "orders": {
+    "title": "Danh sách đơn hàng",
+    "subtitle": "Quản lý và theo dõi trạng thái đơn hàng trong hệ thống",
+    "tabs": {
+      "all": "Tất cả đơn hàng",
+      "plant": "Sản phẩm tại vườn",
+      "product": "Sâm chế biến"
+    },
+    "filterAge": {
+      "all": "Tất cả số tuổi",
+      "label": "Lọc theo tuổi sâm",
+      "1": "Sâm 1 năm tuổi",
+      "2": "Sâm 2 năm tuổi",
+      "3": "Sâm 3 năm tuổi",
+      "4": "Sâm 4 năm tuổi",
+      "5": "Sâm 5 năm tuổi",
+      "6": "Sâm > 5 năm tuổi"
+    }
+  },
   "common": {
     "actions": {
       "add": "Thêm mới",

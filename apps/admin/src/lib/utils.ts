@@ -38,10 +38,12 @@ export function getCreditCardBrandName(number: string) {
 }
 
 export function remToPx(rem: number) {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    return rem * 16
+  }
   // Get the root font size (default is 16px if not set otherwise)
-  const rootFontSize = parseFloat(
-    getComputedStyle(document.documentElement).fontSize
-  )
+  const rootFontSize =
+    parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
   return rem * rootFontSize
 }
 

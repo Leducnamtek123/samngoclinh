@@ -77,8 +77,21 @@ export class OrdersRepository {
         paymentMethod: string | null;
         items: Prisma.InputJsonValue;
     }): Promise<IOrderDetail> {
+        const rawItems = Array.isArray(data.items) ? data.items : [];
+        const parsedItems = rawItems.map((item: any) => ({
+            productId: item.id || item.productId || null,
+            productType: item.type || item.productType || 'product',
+            productName: item.name || item.title || item.productName || 'Product Item',
+            quantity: Number(item.quantity) || 1,
+            unitPrice: Number(item.price || item.unitPrice) || 0,
+            totalPrice: (Number(item.quantity) || 1) * (Number(item.price || item.unitPrice) || 0),
+        }));
+
         const order = await this.databaseService.order.create({
-            data,
+            data: {
+                ...data,
+                orderItems: parsedItems.length > 0 ? { create: parsedItems } : undefined,
+            },
         });
 
         return {

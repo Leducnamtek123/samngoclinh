@@ -1,8 +1,12 @@
 "use client"
 
+import { useEffect } from "react"
 import Image from "next/image"
-import Cropper from "react-easy-crop"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Image as ImageIcon, Loader2 } from "lucide-react"
+import Cropper from "react-easy-crop"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,8 +18,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { InlineAlert } from "@/components/ui/feedback-components"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -25,18 +36,19 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
-interface ShopItem {
-  id: string
-  code: string
-  name: string
-  price: number
-  unit: string
-  category: string
-  stock?: number
-  status?: string
-  images?: string[]
-  description?: string
-}
+const shopItemSchema = z.object({
+  code: z.string().min(1, "Mã sản phẩm không được để trống"),
+  name: z.string().min(2, "Tên sản phẩm phải có ít nhất 2 ký tự"),
+  category: z.string().min(1, "Vui lòng chọn danh mục"),
+  unit: z.string().min(1, "Vui lòng chọn đơn vị tính"),
+  price: z.coerce.number({ invalid_type_error: "Đơn giá phải là số" }).min(0, "Đơn giá không được âm"),
+  stock: z.coerce.number({ invalid_type_error: "Tồn kho phải là số" }).min(0, "Tồn kho không được âm"),
+  status: z.string().min(1, "Vui lòng chọn trạng thái"),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+})
+
+export type ShopItemFormValues = z.infer<typeof shopItemSchema>
 
 interface ShopItemDialogProps {
   isOpen: boolean
@@ -61,7 +73,7 @@ interface ShopItemDialogProps {
   onSelectUnit: (val: string) => void
   onSelectStatus: (val: string) => void
   onImageFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (data: ShopItemFormValues) => void
   loading: boolean
   error: string
   uploadingImage: boolean
@@ -79,13 +91,26 @@ interface ShopItemDialogProps {
   onCloseCrop: () => void
 }
 
+const DEFAULT_UNITS = [
+  { value: "cái", label: "Cái / Chiếc" },
+  { value: "chai", label: "Chai" },
+  { value: "Chai 750ml", label: "Chai 750ml" },
+  { value: "hũ", label: "Hũ" },
+  { value: "Hũ 200ml", label: "Hũ 200ml" },
+  { value: "lọ", label: "Lọ" },
+  { value: "hộp", label: "Hộp" },
+  { value: "Hộp 20 gói", label: "Hộp 20 gói" },
+  { value: "gói", label: "Gói" },
+  { value: "kg", label: "Kg (Kilogam)" },
+  { value: "pcs", label: "Chiếc (Pcs)" },
+]
+
 export function ShopItemDialog({
   isOpen,
   onClose,
   mode,
   formData,
   categoryOptions,
-  onChange,
   onSelectCategory,
   onSelectUnit,
   onSelectStatus,
@@ -101,6 +126,62 @@ export function ShopItemDialog({
   onCropSave,
   onCloseCrop,
 }: ShopItemDialogProps) {
+  const form = useForm<ShopItemFormValues>({
+    resolver: zodResolver(shopItemSchema),
+    defaultValues: {
+      code: formData.code || "",
+      name: formData.name || "",
+      category: formData.category || "processed",
+      unit: formData.unit || "cái",
+      price: formData.price || 0,
+      stock: formData.stock || 0,
+      status: formData.status || "active",
+      description: formData.description || "",
+      imageUrl: formData.imageUrl || "",
+    },
+  })
+
+  // Sync form values whenever dialog opens or formData prop changes
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        code: formData.code || "",
+        name: formData.name || "",
+        category: formData.category || "processed",
+        unit: formData.unit || "cái",
+        price: formData.price || 0,
+        stock: formData.stock || 0,
+        status: formData.status || "active",
+        description: formData.description || "",
+        imageUrl: formData.imageUrl || "",
+      })
+    }
+  }, [isOpen, formData, form])
+
+  // Dynamically build unit options to guarantee the selected value exists in the select
+  const currentUnit = form.watch("unit") || formData.unit
+  const unitOptions = [...DEFAULT_UNITS]
+  if (currentUnit && !unitOptions.some((u) => u.value === currentUnit)) {
+    unitOptions.push({ value: currentUnit, label: currentUnit })
+  }
+
+  // Dynamically build category options to guarantee selected category exists
+  const currentCategory = form.watch("category") || formData.category
+  const dynamicCategoryOptions = [...categoryOptions]
+  if (
+    currentCategory &&
+    !dynamicCategoryOptions.some((c) => c.value === currentCategory)
+  ) {
+    dynamicCategoryOptions.push({
+      value: currentCategory,
+      label: currentCategory,
+    })
+  }
+
+  const handleFormSubmit = (values: ShopItemFormValues) => {
+    onSubmit(values)
+  }
+
   return (
     <>
       {/* Interactive Add/Edit Dialog */}
@@ -118,180 +199,253 @@ export function ShopItemDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={onSubmit} className="space-y-4 my-2">
-            {error && (
-              <InlineAlert
-                type="error"
-                title="Lỗi"
-                description={error}
-                className="my-2"
-              />
-            )}
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleFormSubmit)}
+              className="space-y-4 my-2"
+            >
+              {error && (
+                <InlineAlert
+                  type="error"
+                  title="Lỗi xử lý"
+                  description={error}
+                  className="my-2"
+                />
+              )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="code">Mã sản phẩm</Label>
-                <Input
-                  id="code"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
                   name="code"
-                  value={formData.code}
-                  onChange={onChange}
-                  disabled={mode === "edit"}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mã sản phẩm (SKU)</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          disabled={mode === "edit"}
+                          placeholder="PROD-01"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="name">Tên sản phẩm</Label>
-                <Input
-                  id="name"
+                <FormField
+                  control={form.control}
                   name="name"
-                  value={formData.name}
-                  onChange={onChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tên sản phẩm</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Rượu Sâm Ngọc Linh..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="category">Danh mục phân loại</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={onSelectCategory}
-                >
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="Chọn danh mục" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoryOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Danh mục phân loại</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(val) => {
+                          field.onChange(val)
+                          onSelectCategory(val)
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn danh mục" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {dynamicCategoryOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2">
-                <Label htmlFor="unit">Đơn vị tính</Label>
-                <Select value={formData.unit} onValueChange={onSelectUnit}>
-                  <SelectTrigger id="unit">
-                    <SelectValue placeholder="Đơn vị tính" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cái">Cái / Chiếc</SelectItem>
-                    <SelectItem value="chai">Chai</SelectItem>
-                    <SelectItem value="hộp">Hộp</SelectItem>
-                    <SelectItem value="gói">Gói</SelectItem>
-                    <SelectItem value="kg">Kg (Kilogam)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <FormField
+                  control={form.control}
+                  name="unit"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đơn vị tính</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(val) => {
+                          field.onChange(val)
+                          onSelectUnit(val)
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn đơn vị tính" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {unitOptions.map((u) => (
+                            <SelectItem key={u.value} value={u.value}>
+                              {u.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2">
-                <Label htmlFor="price">Đơn giá (VND)</Label>
-                <Input
-                  id="price"
+                <FormField
+                  control={form.control}
                   name="price"
-                  type="number"
-                  min="0"
-                  value={formData.price}
-                  onChange={onChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Đơn giá (VND)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="stock">Tồn kho ban đầu</Label>
-                <Input
-                  id="stock"
+                <FormField
+                  control={form.control}
                   name="stock"
-                  type="number"
-                  min="0"
-                  value={formData.stock}
-                  onChange={onChange}
-                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Số lượng tồn kho</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          {...field}
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2 col-span-2">
-                <Label htmlFor="status">Trạng thái kinh doanh</Label>
-                <Select value={formData.status} onValueChange={onSelectStatus}>
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Chọn trạng thái" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">
-                      Hoạt động (Được mở bán)
-                    </SelectItem>
-                    <SelectItem value="inactive">
-                      Tạm ngưng hoạt động
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Trạng thái kinh doanh</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(val) => {
+                          field.onChange(val)
+                          onSelectStatus(val)
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn trạng thái" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="active">
+                            Hoạt động (Được mở bán)
+                          </SelectItem>
+                          <SelectItem value="inactive">
+                            Tạm ngưng hoạt động
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="space-y-2 col-span-2">
-                <Label htmlFor="description">Mô tả chi tiết</Label>
-                <Textarea
-                  id="description"
+                <FormField
+                  control={form.control}
                   name="description"
-                  value={formData.description}
-                  onChange={onChange}
-                  placeholder="Nhập thông số hoặc mô tả sản phẩm..."
-                  rows={3}
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Mô tả chi tiết</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Nhập thông số hoặc mô tả sản phẩm..."
+                          rows={3}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2 col-span-2 border-t pt-4">
-                <Label>Hình ảnh sản phẩm</Label>
-                <div className="flex gap-4 items-center">
-                  <div className="relative size-24 rounded-md overflow-hidden border bg-muted flex items-center justify-center text-muted-foreground">
-                    {formData.imageUrl ? (
-                      <Image
-                        src={formData.imageUrl}
-                        alt="Product Preview"
-                        fill
-                        sizes="96px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <ImageIcon className="size-8" />
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="image-file"
-                        type="file"
-                        accept="image/*"
-                        onChange={onImageFileChange}
-                        className="max-w-xs"
-                      />
+                <div className="md:col-span-2 border-t pt-4 space-y-2">
+                  <FormLabel>Hình ảnh sản phẩm</FormLabel>
+                  <div className="flex gap-4 items-center">
+                    <div className="relative size-24 rounded-md overflow-hidden border bg-muted flex items-center justify-center text-muted-foreground">
+                      {formData.imageUrl || form.watch("imageUrl") ? (
+                        <Image
+                          src={formData.imageUrl || form.watch("imageUrl") || ""}
+                          alt="Product Preview"
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="size-8" />
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ
-                      lệ vuông 1:1.
-                    </p>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="image-file"
+                          type="file"
+                          accept="image/*"
+                          onChange={onImageFileChange}
+                          className="max-w-xs"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ
+                        lệ vuông 1:1.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <DialogFooter className="mt-6 border-t pt-4">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Hủy
-              </Button>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-                Lưu sản phẩm
-              </Button>
-            </DialogFooter>
-          </form>
+              <DialogFooter className="mt-6 border-t pt-4">
+                <Button type="button" variant="outline" onClick={onClose}>
+                  Hủy
+                </Button>
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
+                  Lưu sản phẩm
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 
@@ -315,7 +469,7 @@ export function ShopItemDialog({
                 image={cropState.imageSrc}
                 crop={cropState.crop}
                 zoom={cropState.zoom}
-                aspect={1} // 1:1 Aspect ratio
+                aspect={1}
                 onCropChange={(c) =>
                   onCropStateChange((prev) => ({ ...prev, crop: c }))
                 }
@@ -328,7 +482,7 @@ export function ShopItemDialog({
           )}
 
           <div className="space-y-2">
-            <Label>Độ phóng đại (Zoom)</Label>
+            <FormLabel>Độ phóng đại (Zoom)</FormLabel>
             <Input
               type="range"
               min={1}
@@ -357,7 +511,6 @@ export function ShopItemDialog({
               type="button"
               disabled={uploadingImage}
               onClick={onCropSave}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               {uploadingImage && (
                 <Loader2 className="size-4 mr-2 animate-spin" />

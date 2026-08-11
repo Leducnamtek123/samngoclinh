@@ -3,6 +3,9 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
+import { createTranslator } from "@/lib/i18n"
+import { getDictionary } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { OrdersTable, type Order } from "./_components/orders-table"
 
@@ -15,15 +18,22 @@ interface OrdersPageProps {
     perPage?: string
     search?: string
     status?: string
+    productType?: string
   }>
 }
 
-export default async function OrdersPage({ searchParams }: OrdersPageProps) {
+export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
+  const resolvedParams = await params
+  const lang = (resolvedParams?.lang || "vi") as LocaleType
+  const dictionary = await getDictionary(lang)
+  const t = createTranslator(dictionary)
+
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
+  const productType = resolvedSearchParams.productType || ""
 
   let orders: Order[] = []
   let metadata: any = null
@@ -35,6 +45,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("status", status)
+    if (productType && productType !== "all") queryParams.append("productType", productType)
 
     const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()
@@ -46,26 +57,25 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     }
   } catch (e) {
     console.error("Error fetching orders:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = "Unable to connect to server"
   }
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Đơn hàng</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("navigation.orders")}</h1>
         <p className="text-muted-foreground">
-          Theo dõi và xử lý đơn đặt hàng của khách hàng từ website.
+          {t("common.status.all")}
         </p>
       </div>
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
           <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
-            Danh sách đơn hàng
+            {t("navigation.orders")}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Hiển thị thông tin mã đơn, trạng thái, tổng tiền thanh toán và thời
-            gian tạo.
+            {t("common.status.all")}
           </p>
         </div>
 

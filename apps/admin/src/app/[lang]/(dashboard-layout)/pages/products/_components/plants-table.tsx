@@ -214,8 +214,6 @@ export function PlantsTable({
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
         mode={dialogState.mode}
         formData={dialogState.formData}
-        onChange={handleFormChange}
-        onSelectStatus={handleSelectStatus}
         onImageFileChange={handleImageFileChange}
         onSubmit={handleSavePlant}
         loading={dialogState.loading}

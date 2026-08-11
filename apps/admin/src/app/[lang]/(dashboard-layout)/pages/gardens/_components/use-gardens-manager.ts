@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { fetchApi } from "@/lib/api"
-
 import { useEvent } from "@/hooks/use-event"
+import type { GardenFormValues } from "@/schemas/garden-schema"
 
 interface Garden {
   id: string
@@ -236,41 +236,19 @@ export function useGardensManager({
     })
   }
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!dialogState.formData.name.trim()) {
-      setDialogState((prev) => ({
-        ...prev,
-        error: "Tên khu vườn không được để trống",
-      }))
-      return
-    }
-
+  const handleSave = async (values: GardenFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setSuccessMsg("")
 
     try {
       const payloadBody = {
-        name: dialogState.formData.name,
-        location: dialogState.formData.location || undefined,
-        description: dialogState.formData.description || undefined,
-        area: dialogState.formData.area
-          ? parseFloat(dialogState.formData.area)
-          : undefined,
-        latitude: dialogState.formData.latitude
-          ? parseFloat(dialogState.formData.latitude)
-          : undefined,
-        longitude: dialogState.formData.longitude
-          ? parseFloat(dialogState.formData.longitude)
-          : undefined,
-        managerName: dialogState.formData.managerName || undefined,
-        managerPhone: dialogState.formData.managerPhone || undefined,
-        establishedAt: dialogState.formData.establishedAt
-          ? new Date(dialogState.formData.establishedAt).toISOString()
-          : undefined,
-        maxBeds: dialogState.formData.maxBeds
-          ? parseInt(dialogState.formData.maxBeds)
-          : undefined,
+        name: values.name,
+        location: values.location || undefined,
+        description: values.description || undefined,
+        area: values.area ? Number(values.area) : undefined,
+        managerName: values.managerName || undefined,
+        managerPhone: values.managerPhone || undefined,
+        maxBeds: values.maxBeds ? Number(values.maxBeds) : undefined,
       }
 
       if (dialogState.mode === "create") {

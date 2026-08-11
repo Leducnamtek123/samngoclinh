@@ -13,10 +13,11 @@ export function useRole() {
 
   const isSuperAdmin =
     strRole.includes("SUPER_ADMIN") ||
+    strRole.includes("SUPERADMIN") ||
     email.includes("superadmin") ||
     email.includes("super_admin")
   const isAdmin =
-    isSuperAdmin || strRole.includes("ADMIN") || email.includes("admin") || true // Admin portal default fallback
+    isSuperAdmin || strRole.includes("ADMIN") || email.includes("admin")
   const isLoading = status === "loading"
 
   const role: UserRole = isSuperAdmin
