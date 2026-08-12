@@ -51,7 +51,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
   const isServer = typeof window === "undefined"
   const apiBaseUrl = isServer
-    ? process.env.INTERNAL_API_URL || "http://apis:3000/api"
+    ? process.env.INTERNAL_API_URL || "http://localhost:3000/api"
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`

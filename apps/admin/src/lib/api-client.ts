@@ -9,7 +9,7 @@ export { fetchApi, getSessionToken }
 
 const isServer = typeof window === "undefined"
 const apiBaseUrl = isServer
-  ? process.env.INTERNAL_API_URL || "http://apis:3000/api"
+  ? process.env.INTERNAL_API_URL || "http://localhost:3000/api"
   : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
 const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
