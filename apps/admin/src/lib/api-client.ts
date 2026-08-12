@@ -1,5 +1,8 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios"
+import axios from "axios"
 import { getSession } from "next-auth/react"
+
+import type { AxiosInstance, AxiosRequestConfig } from "axios"
+
 import { fetchApi, getSessionToken } from "./api"
 
 export { fetchApi, getSessionToken }
@@ -12,10 +15,10 @@ const apiBaseUrl = isServer
 const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
 
 export interface ApiResponse<T = any> {
-  statusCode?: number;
-  message?: string;
-  data?: T;
-  meta?: any;
+  statusCode?: number
+  message?: string
+  data?: T
+  meta?: any
 }
 
 export const apiClient: AxiosInstance = axios.create({

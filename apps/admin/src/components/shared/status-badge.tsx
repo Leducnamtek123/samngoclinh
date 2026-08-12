@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+
 import { Badge } from "@/components/ui/badge"
 
 export type StatusDomain =
@@ -22,12 +23,14 @@ const STATUS_MAP: Record<string, StatusConfig> = {
   // User statuses
   active: {
     defaultLabel: "Active",
-    className: "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
     variant: "outline",
   },
   inactive: {
     defaultLabel: "Inactive",
-    className: "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
+    className:
+      "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
     variant: "outline",
   },
   blocked: {
@@ -69,7 +72,8 @@ const STATUS_MAP: Record<string, StatusConfig> = {
   },
   completed: {
     defaultLabel: "Completed",
-    className: "bg-emerald-500/10 text-emerald-700 border-emerald-300 font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-700 border-emerald-300 font-semibold",
     variant: "outline",
   },
   cancelled: {
@@ -86,34 +90,40 @@ const STATUS_MAP: Record<string, StatusConfig> = {
   },
   growing: {
     defaultLabel: "Growing",
-    className: "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
     variant: "outline",
   },
   available: {
     defaultLabel: "Available",
-    className: "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
     variant: "outline",
   },
   harvested: {
     defaultLabel: "Harvested",
-    className: "bg-purple-500/10 text-purple-600 border-transparent font-semibold",
+    className:
+      "bg-purple-500/10 text-purple-600 border-transparent font-semibold",
     variant: "outline",
   },
   sold: {
     defaultLabel: "Sold",
-    className: "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
+    className:
+      "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
     variant: "outline",
   },
 
   // Health statuses
   healthy: {
     defaultLabel: "Healthy",
-    className: "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
     variant: "outline",
   },
   warning: {
     defaultLabel: "Warning",
-    className: "bg-amber-500/10 text-amber-600 border-transparent font-semibold",
+    className:
+      "bg-amber-500/10 text-amber-600 border-transparent font-semibold",
     variant: "outline",
   },
   sick: {
@@ -130,17 +140,20 @@ const STATUS_MAP: Record<string, StatusConfig> = {
   // Bed/Garden statuses
   empty: {
     defaultLabel: "Empty",
-    className: "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
+    className:
+      "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
     variant: "outline",
   },
   full: {
     defaultLabel: "Full",
-    className: "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
+    className:
+      "bg-emerald-500/10 text-emerald-600 border-transparent font-semibold",
     variant: "outline",
   },
   maintenance: {
     defaultLabel: "Maintenance",
-    className: "bg-amber-500/10 text-amber-600 border-transparent font-semibold",
+    className:
+      "bg-amber-500/10 text-amber-600 border-transparent font-semibold",
     variant: "outline",
   },
 }
@@ -151,11 +164,16 @@ interface StatusBadgeProps {
   className?: string
 }
 
-export function StatusBadge({ status, label, className = "" }: StatusBadgeProps) {
+export function StatusBadge({
+  status,
+  label,
+  className = "",
+}: StatusBadgeProps) {
   const normalizedKey = (status || "").toLowerCase().trim()
   const config = STATUS_MAP[normalizedKey] || {
     defaultLabel: status || "Unknown",
-    className: "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
+    className:
+      "bg-slate-500/10 text-slate-600 border-transparent font-semibold",
     variant: "outline" as const,
   }
 

@@ -266,7 +266,6 @@ export function useContentManager({
   }
 
   const handleDelete = (id: string) => {
-    const article = articles.find((a) => a.id === id)
     setConfirmDialog({
       isOpen: true,
       title: t("common.confirmations.deleteTitle"),

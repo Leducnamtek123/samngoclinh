@@ -3,10 +3,10 @@
 import { Pencil, Trash2 } from "lucide-react"
 
 import { useTranslation } from "@/providers/i18n-provider"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { EmptyState } from "@/components/ui/feedback-components"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   Table,
   TableBody,
@@ -78,7 +78,9 @@ export function CarePackagesList({
             <TableHead>{t("packages.fields.duration")}</TableHead>
             <TableHead>{t("packages.fields.description")}</TableHead>
             <TableHead>{t("packages.fields.status")}</TableHead>
-            <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+            <TableHead className="text-right">
+              {t("common.actions.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -170,7 +172,9 @@ export function ProtectionPackagesList({
             <TableHead>{t("packages.fields.coverage")}</TableHead>
             <TableHead>{t("packages.fields.description")}</TableHead>
             <TableHead>{t("packages.fields.status")}</TableHead>
-            <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+            <TableHead className="text-right">
+              {t("common.actions.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -234,7 +238,11 @@ export function ProtectionPackagesList({
         </TableBody>
       </Table>
       {handlePageChange && metadata && (
-        <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-2" />
+        <Pagination
+          metadata={metadata}
+          onPageChange={handlePageChange}
+          className="px-4 pb-2"
+        />
       )}
     </div>
   )

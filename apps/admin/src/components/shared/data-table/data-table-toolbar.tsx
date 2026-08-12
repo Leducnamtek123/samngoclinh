@@ -43,7 +43,9 @@ export function DataTableToolbar({
   actionsSlot,
   extraFiltersSlot,
 }: DataTableToolbarProps) {
-  const hasFilters = Boolean(searchValue || (statusValue && statusValue !== "all"))
+  const hasFilters = Boolean(
+    searchValue || (statusValue && statusValue !== "all")
+  )
 
   return (
     <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">

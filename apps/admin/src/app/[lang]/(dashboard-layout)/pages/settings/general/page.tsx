@@ -1,4 +1,5 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+
 import { GeneralSettingsManager } from "./_components/general-settings-manager"
 
 export const metadata: Metadata = {

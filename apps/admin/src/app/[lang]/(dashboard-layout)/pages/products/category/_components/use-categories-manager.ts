@@ -22,7 +22,8 @@ export const INITIAL_CATEGORIES: ProductCategory[] = [
     code: "processed",
     name: "Sản phẩm chế biến",
     slug: "san-pham-che-bien",
-    description: "Rượu sâm, trà sâm, mật ong sâm, cao sâm và các chế phẩm cao cấp",
+    description:
+      "Rượu sâm, trà sâm, mật ong sâm, cao sâm và các chế phẩm cao cấp",
     productCount: 6,
     status: "active",
     createdAt: "2024-01-15",
@@ -73,7 +74,8 @@ export function useCategoriesManager() {
   const router = useRouter()
   const { t } = useTranslation()
 
-  const [categories, setCategories] = useState<ProductCategory[]>(INITIAL_CATEGORIES)
+  const [categories, setCategories] =
+    useState<ProductCategory[]>(INITIAL_CATEGORIES)
   const [searchQuery, setSearchQuery] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
   const [errorMsg, setErrorMsg] = useState("")

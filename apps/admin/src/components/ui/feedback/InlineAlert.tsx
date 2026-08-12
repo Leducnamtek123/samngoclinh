@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { AlertCircle, AlertTriangle, CheckCircle, Info, X } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 export interface InlineAlertProps {
@@ -18,13 +19,17 @@ const INLINE_ALERT_STYLES = {
   success: {
     wrapper:
       "bg-emerald-50 border-emerald-200/80 text-emerald-800 dark:bg-emerald-950/20 dark:border-emerald-850/30",
-    icon: <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />,
+    icon: (
+      <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+    ),
     action: "text-emerald-700 hover:text-emerald-900 dark:text-emerald-300",
   },
   warning: {
     wrapper:
       "bg-amber-50 border-amber-200/80 text-amber-800 dark:bg-amber-950/20 dark:border-amber-850/30",
-    icon: <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />,
+    icon: (
+      <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+    ),
     action: "text-emerald-700 hover:text-emerald-900 dark:text-emerald-300",
   },
   error: {

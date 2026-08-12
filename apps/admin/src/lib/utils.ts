@@ -11,7 +11,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getInitials(fullName?: string) {
-  if (!fullName || typeof fullName !== "string" || fullName.trim().length === 0) return ""
+  if (!fullName || typeof fullName !== "string" || fullName.trim().length === 0)
+    return ""
 
   // Split the name by spaces
   const names = fullName.trim().split(/\s+/)
@@ -47,7 +48,7 @@ export function remToPx(rem: number) {
   return rem * rootFontSize
 }
 
-function isUrl(text: string) {
+export function isUrl(text: string) {
   return z.string().url().safeParse(text).success
 }
 
@@ -86,7 +87,7 @@ export function formatFileSize(bytes: number, decimals: number = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
-function formatFileType(type: string) {
+export function formatFileType(type: string) {
   return type.slice(0, type.lastIndexOf("/"))
 }
 
@@ -155,7 +156,7 @@ export function formatDate(value: string | number | Date) {
   return format(value, "PP")
 }
 
-function formatRelativeDate(value?: string | number | Date) {
+export function formatRelativeDate(value?: string | number | Date) {
   if (!value) return "No Date"
 
   const date = new Date(value)
@@ -324,7 +325,7 @@ export function getDiscountedPrice(
   }
 }
 
-function isBeforeToday(date: Date) {
+export function isBeforeToday(date: Date) {
   // Get the start of today
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
 

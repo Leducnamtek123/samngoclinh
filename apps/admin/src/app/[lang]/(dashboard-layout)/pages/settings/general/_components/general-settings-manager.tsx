@@ -1,10 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Check, Loader2, Save, Sliders, Info } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Check, Info, Loader2, Save, Sliders } from "lucide-react"
+
 import { fetchApi } from "@/lib/api"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export function GeneralSettingsManager() {
   const [settingsList, setSettingsList] = useState<any[]>([])
@@ -19,7 +27,8 @@ export function GeneralSettingsManager() {
         const res = await fetchApi("/settings")
         if (res.ok) {
           const payload = await res.json()
-          const items = payload.data?.items || payload.data || payload.items || []
+          const items =
+            payload.data?.items || payload.data || payload.items || []
           if (mounted) {
             setSettingsList(items)
           }
@@ -65,7 +74,8 @@ export function GeneralSettingsManager() {
           <span>Cấu Hình Hệ Thống Chung</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Tổng hợp toàn bộ các tham số vận hành và cài đặt hệ thống được lưu trong cơ sở dữ liệu.
+          Tổng hợp toàn bộ các tham số vận hành và cài đặt hệ thống được lưu
+          trong cơ sở dữ liệu.
         </p>
       </div>
 
@@ -87,16 +97,26 @@ export function GeneralSettingsManager() {
             </div>
           ) : settingsList.length === 0 ? (
             <div className="p-4 bg-gray-50 dark:bg-gray-800/40 rounded-xl text-xs text-muted-foreground font-medium text-center">
-              Chưa có cấu hình bổ sung nào khác. Các cấu hình chính như Phí vận chuyển và Tỷ lệ điểm đã được phân chia theo menu con riêng.
+              Chưa có cấu hình bổ sung nào khác. Các cấu hình chính như Phí vận
+              chuyển và Tỷ lệ điểm đã được phân chia theo menu con riêng.
             </div>
           ) : (
             <div className="space-y-3">
               {settingsList.map((item) => (
-                <div key={item.key || item.id} className="p-4 border border-border rounded-xl flex items-center justify-between gap-4 bg-card">
+                <div
+                  key={item.key || item.id}
+                  className="p-4 border border-border rounded-xl flex items-center justify-between gap-4 bg-card"
+                >
                   <div className="space-y-1">
-                    <p className="font-bold text-xs text-foreground uppercase tracking-wider">{item.key}</p>
-                    <p className="text-xs text-muted-foreground font-medium">{item.description || "Tham số cài đặt hệ thống"}</p>
-                    <p className="text-xs font-semibold text-emerald-600">Giá trị hiện tại: {item.value}</p>
+                    <p className="font-bold text-xs text-foreground uppercase tracking-wider">
+                      {item.key}
+                    </p>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {item.description || "Tham số cài đặt hệ thống"}
+                    </p>
+                    <p className="text-xs font-semibold text-emerald-600">
+                      Giá trị hiện tại: {item.value}
+                    </p>
                   </div>
                   <Button
                     type="button"
@@ -121,7 +141,10 @@ export function GeneralSettingsManager() {
           <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 rounded-xl p-4 flex items-start gap-3 text-xs text-emerald-900 dark:text-emerald-300 font-medium">
             <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Bạn có thể dễ dàng quản lý nhanh các thông số <strong>Phí vận chuyển</strong> và <strong>Tỷ lệ điểm thưởng</strong> trực tiếp tại 2 menu con phía trên.
+              Bạn có thể dễ dàng quản lý nhanh các thông số{" "}
+              <strong>Phí vận chuyển</strong> và{" "}
+              <strong>Tỷ lệ điểm thưởng</strong> trực tiếp tại 2 menu con phía
+              trên.
             </p>
           </div>
         </CardContent>

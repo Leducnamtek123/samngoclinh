@@ -1,4 +1,5 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+
 import { PointsSettingsManager } from "./_components/points-settings-manager"
 
 export const metadata: Metadata = {

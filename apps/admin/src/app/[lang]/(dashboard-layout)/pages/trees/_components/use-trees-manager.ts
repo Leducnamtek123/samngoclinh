@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
+import type { TreeFormValues } from "@/schemas/tree-schema"
+
 import { fetchApi } from "@/lib/api"
+
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
-import type { TreeFormValues } from "@/schemas/tree-schema"
 
 interface Tree {
   id: string
@@ -369,7 +371,6 @@ export function useTreesManager({
   }
 
   const handleDelete = (id: string) => {
-    const tree = trees.find((t) => t.id === id)
     setConfirmDialog({
       isOpen: true,
       title: t("common.confirmations.deleteTitle"),

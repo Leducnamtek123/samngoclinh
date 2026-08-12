@@ -21,17 +21,27 @@ async function loadLocaleDomains(locale: LocaleType) {
     search,
   ] = await Promise.all([
     import(`@/data/dictionaries/${locale}/auth.json`).then((m) => m.default),
-    import(`@/data/dictionaries/${locale}/navigation.json`).then((m) => m.default),
+    import(`@/data/dictionaries/${locale}/navigation.json`).then(
+      (m) => m.default
+    ),
     import(`@/data/dictionaries/${locale}/common.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/users.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/trees.json`).then((m) => m.default),
-    import(`@/data/dictionaries/${locale}/products.json`).then((m) => m.default),
+    import(`@/data/dictionaries/${locale}/products.json`).then(
+      (m) => m.default
+    ),
     import(`@/data/dictionaries/${locale}/orders.json`).then((m) => m.default),
-    import(`@/data/dictionaries/${locale}/packages.json`).then((m) => m.default),
+    import(`@/data/dictionaries/${locale}/packages.json`).then(
+      (m) => m.default
+    ),
     import(`@/data/dictionaries/${locale}/content.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/qrCode.json`).then((m) => m.default),
-    import(`@/data/dictionaries/${locale}/messages.json`).then((m) => m.default),
-    import(`@/data/dictionaries/${locale}/validation.json`).then((m) => m.default),
+    import(`@/data/dictionaries/${locale}/messages.json`).then(
+      (m) => m.default
+    ),
+    import(`@/data/dictionaries/${locale}/validation.json`).then(
+      (m) => m.default
+    ),
     import(`@/data/dictionaries/${locale}/label.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/search.json`).then((m) => m.default),
   ])

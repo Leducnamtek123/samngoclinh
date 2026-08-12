@@ -1,8 +1,6 @@
-import {
-  UseQueryOptions,
-  UseQueryResult,
-  useQuery,
-} from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
+
+import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
 
 import { fetchApiData } from "@/lib/api-client"
 

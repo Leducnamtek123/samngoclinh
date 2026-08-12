@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+import type { ProductCategory } from "./use-categories-manager"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -32,7 +34,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import type { ProductCategory } from "./use-categories-manager"
 
 const categorySchema = z.object({
   code: z.string().min(2, "Mã danh mục phải có ít nhất 2 ký tự"),
@@ -125,7 +126,10 @@ export function CategoryDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 my-2">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 my-2"
+          >
             <FormField
               control={form.control}
               name="code"
@@ -133,7 +137,11 @@ export function CategoryDialog({
                 <FormItem>
                   <FormLabel>Mã danh mục (Code)</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="VD: processed" disabled={mode === "edit"} />
+                    <Input
+                      {...field}
+                      placeholder="VD: processed"
+                      disabled={mode === "edit"}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,9 +228,7 @@ export function CategoryDialog({
               <Button type="button" variant="outline" onClick={onClose}>
                 Hủy
               </Button>
-              <Button type="submit">
-                Lưu danh mục
-              </Button>
+              <Button type="submit">Lưu danh mục</Button>
             </DialogFooter>
           </form>
         </Form>

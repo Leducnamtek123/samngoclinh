@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { Tree, User } from "./_components/use-contracts-manager"
 
 import { fetchApi } from "@/lib/api"
 
@@ -26,8 +27,6 @@ interface Contract {
   expiredAt: string
   createdAt: string
 }
-
-import type { Tree, User } from "./_components/use-contracts-manager"
 
 interface ContractsPageProps {
   params: Promise<{

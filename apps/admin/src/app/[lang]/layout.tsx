@@ -1,6 +1,6 @@
 import { Cairo, Lato } from "next/font/google"
-import { getServerSession } from "next-auth"
 import { cookies } from "next/headers"
+import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
 import { authOptions } from "@/configs/next-auth"
@@ -16,7 +16,6 @@ import type { ReactNode } from "react"
 
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Toaster } from "@/components/ui/toaster"
-
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
@@ -89,7 +88,7 @@ export default async function RootLayout(props: {
       const parsed = JSON.parse(decodeURIComponent(settingsCookie))
       if (parsed.theme) initialTheme = parsed.theme
       if (parsed.radius !== undefined) initialRadius = parsed.radius
-    } catch (e) {
+    } catch (_e) {
       // Ignore JSON parse errors
     }
   }
@@ -139,4 +138,3 @@ export default async function RootLayout(props: {
     </html>
   )
 }
-

@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import {
-  Calendar,
-  Eye,
-  Mail,
-  Phone,
-  Search,
-  User,
-} from "lucide-react"
+import { Calendar, Eye, Mail, Phone, Search, User } from "lucide-react"
 
 import { fetchApi } from "@/lib/api"
 

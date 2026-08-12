@@ -13,7 +13,6 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 import { ensureRedirectPathname } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
-import { apiAdminRegister } from "@/services/auth-admin.service"
 import { ButtonLoading } from "@/components/ui/button"
 import {
   Form,
@@ -26,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { SeparatorWithText } from "@/components/ui/separator"
 import { OAuthLinks } from "./oauth-links"
+import { apiAdminRegister } from "@/services/auth-admin.service"
 
 export function RegisterForm() {
   const router = useRouter()

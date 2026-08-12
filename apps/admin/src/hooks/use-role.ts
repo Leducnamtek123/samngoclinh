@@ -8,7 +8,7 @@ export function useRole() {
   const user = session?.user as any
   const email = user?.email?.toLowerCase() || ""
 
-  let rawRole = user?.role?.code || user?.role?.name || user?.role || ""
+  const rawRole = user?.role?.code || user?.role?.name || user?.role || ""
   const strRole = String(rawRole).toUpperCase()
 
   const isSuperAdmin =

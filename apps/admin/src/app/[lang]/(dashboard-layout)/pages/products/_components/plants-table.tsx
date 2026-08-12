@@ -2,6 +2,8 @@
 
 import { Plus, Trash2 } from "lucide-react"
 
+import type { Plant } from "./use-plants-manager"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,7 +29,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PlantDialog } from "./plant-dialog"
 import { PlantsList } from "./plants-list"
-import { usePlantsManager, type Plant } from "./use-plants-manager"
+import { usePlantsManager } from "./use-plants-manager"
 
 interface PlantsTableProps {
   initialPlants: Plant[]

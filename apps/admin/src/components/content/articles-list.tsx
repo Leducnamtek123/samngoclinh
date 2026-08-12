@@ -69,9 +69,7 @@ export function ArticlesList({
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200 font-bold text-gray-500 uppercase tracking-wider">
-                <th className="px-6 py-4">
-                  {t("products.fields.image")}
-                </th>
+                <th className="px-6 py-4">{t("products.fields.image")}</th>
                 <th className="px-6 py-4">
                   {t("content.articles.articleTitle")}
                 </th>

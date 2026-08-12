@@ -121,10 +121,7 @@ export function SignInForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    {...field}
-                  />
+                  <Input type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,7 +151,11 @@ export function SignInForm() {
                 </div>
                 <FormControl>
                   <div className="relative">
-                    <Input type={showPassword ? "text" : "password"} className="pe-10" {...field} />
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      className="pe-10"
+                      {...field}
+                    />
                     <button
                       type="button"
                       tabIndex={-1}
@@ -162,7 +163,11 @@ export function SignInForm() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                       title={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
                     </button>
                   </div>
                 </FormControl>

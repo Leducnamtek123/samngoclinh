@@ -336,7 +336,10 @@ export default function QrCodeTraceabilityPage() {
                   ))}
                 </TableBody>
               </Table>
-              <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
+              <Pagination
+                metadata={metadata}
+                onPageChange={(p) => setPage(p)}
+              />
             </CardContent>
           </Card>
         )}

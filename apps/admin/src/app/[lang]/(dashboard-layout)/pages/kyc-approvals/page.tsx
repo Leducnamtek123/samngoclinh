@@ -2,7 +2,14 @@
 
 import React, { useState } from "react"
 import { toast } from "sonner"
-import { CheckCircle2, Eye, PenTool, RefreshCw, UserCheck, XCircle } from "lucide-react"
+import {
+  CheckCircle2,
+  Eye,
+  PenTool,
+  RefreshCw,
+  UserCheck,
+  XCircle,
+} from "lucide-react"
 
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -54,8 +61,15 @@ interface KYCRequest {
 
 const getFullImageUrl = (url?: string) => {
   if (!url) return ""
-  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) return url
-  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api").replace(/\/api\/?$/, "")
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("data:")
+  )
+    return url
+  const baseUrl = (
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+  ).replace(/\/api\/?$/, "")
   return `${baseUrl}${url.startsWith("/") ? "" : "/"}${url}`
 }
 
@@ -71,10 +85,7 @@ export default function KycApprovalsPage() {
     isLoading,
     refetch,
     isError,
-  } = useApiQuery<any>(
-    ["kyc-approvals"],
-    `/admin/user/kyc-list`
-  )
+  } = useApiQuery<any>(["kyc-approvals"], `/admin/user/kyc-list`)
 
   const mutation = useApiMutation()
 
@@ -195,9 +206,7 @@ export default function KycApprovalsPage() {
                         <TableCell>
                           <Badge
                             variant={
-                              kyc.status === "APPROVED"
-                                ? "default"
-                                : "outline"
+                              kyc.status === "APPROVED" ? "default" : "outline"
                             }
                             className={
                               kyc.status === "APPROVED"
@@ -205,7 +214,9 @@ export default function KycApprovalsPage() {
                                 : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
                             }
                           >
-                            {kyc.status === "APPROVED" ? "Đã Phê Duyệt" : "Chờ Duyệt"}
+                            {kyc.status === "APPROVED"
+                              ? "Đã Phê Duyệt"
+                              : "Chờ Duyệt"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -225,7 +236,10 @@ export default function KycApprovalsPage() {
                     ))}
                   </TableBody>
                 </Table>
-                <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
+                <Pagination
+                  metadata={metadata}
+                  onPageChange={(p) => setPage(p)}
+                />
               </>
             )}
           </CardContent>
@@ -266,28 +280,40 @@ export default function KycApprovalsPage() {
                     <span className="text-xs font-medium text-muted-foreground block">
                       Mặt trước CCCD
                     </span>
-                    {getFullImageUrl(selectedKyc.idFrontUrl || selectedKyc.frontImage) ? (
+                    {getFullImageUrl(
+                      selectedKyc.idFrontUrl || selectedKyc.frontImage
+                    ) ? (
                       <img
-                        src={getFullImageUrl(selectedKyc.idFrontUrl || selectedKyc.frontImage)}
+                        src={getFullImageUrl(
+                          selectedKyc.idFrontUrl || selectedKyc.frontImage
+                        )}
                         alt="Mặt trước CCCD"
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
-                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
+                        Chưa có ảnh
+                      </div>
                     )}
                   </div>
                   <div className="space-y-1">
                     <span className="text-xs font-medium text-muted-foreground block">
                       Mặt sau CCCD
                     </span>
-                    {getFullImageUrl(selectedKyc.idBackUrl || selectedKyc.backImage) ? (
+                    {getFullImageUrl(
+                      selectedKyc.idBackUrl || selectedKyc.backImage
+                    ) ? (
                       <img
-                        src={getFullImageUrl(selectedKyc.idBackUrl || selectedKyc.backImage)}
+                        src={getFullImageUrl(
+                          selectedKyc.idBackUrl || selectedKyc.backImage
+                        )}
                         alt="Mặt sau CCCD"
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
-                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">Chưa có ảnh</div>
+                      <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
+                        Chưa có ảnh
+                      </div>
                     )}
                   </div>
                 </div>
@@ -298,10 +324,18 @@ export default function KycApprovalsPage() {
                     <PenTool className="w-3.5 h-3.5 text-emerald-600" />
                     Chữ ký số cá nhân (Digital Signature)
                   </span>
-                  {getFullImageUrl(selectedKyc.signatureUrl || selectedKyc.digitalSignatureUrl || selectedKyc.digitalSignature) ? (
+                  {getFullImageUrl(
+                    selectedKyc.signatureUrl ||
+                      selectedKyc.digitalSignatureUrl ||
+                      selectedKyc.digitalSignature
+                  ) ? (
                     <div className="p-2 border rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 flex items-center justify-center">
                       <img
-                        src={getFullImageUrl(selectedKyc.signatureUrl || selectedKyc.digitalSignatureUrl || selectedKyc.digitalSignature)}
+                        src={getFullImageUrl(
+                          selectedKyc.signatureUrl ||
+                            selectedKyc.digitalSignatureUrl ||
+                            selectedKyc.digitalSignature
+                        )}
                         alt="Chữ ký số cá nhân"
                         className="max-h-28 object-contain"
                       />
@@ -331,7 +365,9 @@ export default function KycApprovalsPage() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleReject(selectedKyc.id || selectedKyc.userId)}
+                        onClick={() =>
+                          handleReject(selectedKyc.id || selectedKyc.userId)
+                        }
                       >
                         Xác nhận Từ chối
                       </Button>
@@ -348,7 +384,9 @@ export default function KycApprovalsPage() {
                     </Button>
                     <Button
                       className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1"
-                      onClick={() => handleApprove(selectedKyc.id || selectedKyc.userId)}
+                      onClick={() =>
+                        handleApprove(selectedKyc.id || selectedKyc.userId)
+                      }
                     >
                       <CheckCircle2 className="w-4 h-4" /> Phê duyệt eKYC
                     </Button>

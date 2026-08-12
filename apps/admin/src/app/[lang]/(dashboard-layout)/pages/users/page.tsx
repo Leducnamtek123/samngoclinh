@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
+import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
-
-import { createTranslator } from "@/lib/i18n"
 import { getDictionary } from "@/lib/get-dictionary"
-import type { LocaleType } from "@/types"
+import { createTranslator } from "@/lib/i18n"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { UsersTable } from "./_components/users-table"
@@ -39,7 +38,10 @@ interface UsersPageProps {
   }>
 }
 
-export default async function UsersPage({ params, searchParams }: UsersPageProps) {
+export default async function UsersPage({
+  params,
+  searchParams,
+}: UsersPageProps) {
   const resolvedParams = await params
   const lang = (resolvedParams?.lang || "vi") as LocaleType
   const dictionary = await getDictionary(lang)
@@ -78,10 +80,10 @@ export default async function UsersPage({ params, searchParams }: UsersPageProps
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">{t("users.title")}</h1>
-        <p className="text-muted-foreground">
-          {t("users.subtitle")}
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t("users.title")}
+        </h1>
+        <p className="text-muted-foreground">{t("users.subtitle")}</p>
       </div>
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">

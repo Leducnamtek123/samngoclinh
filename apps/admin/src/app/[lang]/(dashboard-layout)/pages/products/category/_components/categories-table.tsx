@@ -101,7 +101,10 @@ export function CategoriesTable() {
               <TableBody>
                 {categories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={7}
+                      className="h-32 text-center text-muted-foreground"
+                    >
                       Không tìm thấy danh mục phù hợp.
                     </TableCell>
                   </TableRow>
@@ -131,7 +134,10 @@ export function CategoriesTable() {
                             Hoạt động
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-muted-foreground">
+                          <Badge
+                            variant="outline"
+                            className="text-muted-foreground"
+                          >
                             Tạm ẩn
                           </Badge>
                         )}

@@ -1,7 +1,8 @@
 "use client"
 
-import { ChangeEvent, FormEvent } from "react"
 import Image from "next/image"
+
+import type { ChangeEvent, FormEvent } from "react"
 
 type Article = {
   id: string

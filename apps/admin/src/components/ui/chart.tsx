@@ -8,11 +8,7 @@ import type {
   ComponentType,
   ReactNode,
 } from "react"
-import type {
-  LegendProps,
-  ResponsiveContainerProps,
-  TooltipProps,
-} from "recharts"
+import type { LegendProps, TooltipProps } from "recharts"
 
 import { cn } from "@/lib/utils"
 
@@ -310,7 +306,7 @@ type ChartLegendContentProps = ComponentProps<"div"> &
     nameKey?: string
   }
 
-function ChartLegendContent({
+export function ChartLegendContent({
   className,
   hideIcon = false,
   payload,
