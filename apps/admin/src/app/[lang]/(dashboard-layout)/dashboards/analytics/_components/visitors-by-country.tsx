@@ -1,11 +1,15 @@
+import type { AnalyticsDashboardStats } from "../types"
+
 import { visitorsByCountryData } from "../_data/visitors-by-country"
 
 import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { VisitorsByCountryList } from "./visitors-by-country-list"
 
-import type { AnalyticsDashboardStats } from "../types"
-
-export function VisitorsByCountry({ stats }: { stats?: AnalyticsDashboardStats }) {
+export function VisitorsByCountry({
+  stats,
+}: {
+  stats?: AnalyticsDashboardStats
+}) {
   const data = stats?.visitorsByCountry
     ? {
         summary: {

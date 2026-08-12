@@ -1,10 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Check, Loader2, Save, Truck, Info } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Check, Info, Loader2, Save, Truck } from "lucide-react"
+
 import { fetchApi } from "@/lib/api"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -68,7 +76,8 @@ export function ShippingSettingsManager() {
           <span>Cấu hình Phí Vận Chuyển</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Quản lý mức phí giao hàng tận nơi áp dụng cho toàn bộ đơn hàng trên sàn Sâm Ngọc Linh.
+          Quản lý mức phí giao hàng tận nơi áp dụng cho toàn bộ đơn hàng trên
+          sàn Sâm Ngọc Linh.
         </p>
       </div>
 
@@ -79,7 +88,8 @@ export function ShippingSettingsManager() {
             <span>Phí Giao Hàng Tận Nơi (Standard Shipping Fee)</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Khi người mua chọn phương thức &quot;Giao hàng tận nơi&quot;, hệ thống sẽ tự động tính số tiền này vào đơn hàng.
+            Khi người mua chọn phương thức &quot;Giao hàng tận nơi&quot;, hệ
+            thống sẽ tự động tính số tiền này vào đơn hàng.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-5">
@@ -129,7 +139,12 @@ export function ShippingSettingsManager() {
           <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 rounded-xl p-4 flex items-start gap-3 text-xs text-emerald-900 dark:text-emerald-300 font-medium">
             <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Mức phí <strong>{Number(shippingFee || 0).toLocaleString("vi-VN")} đ</strong> sẽ lập tức đồng bộ sang toàn bộ trang Web bán hàng & API đặt hàng. Phương thức &quot;Nhận tại vườn&quot; luôn mặc định là Miễn phí.
+              Mức phí{" "}
+              <strong>
+                {Number(shippingFee || 0).toLocaleString("vi-VN")} đ
+              </strong>{" "}
+              sẽ lập tức đồng bộ sang toàn bộ trang Web bán hàng & API đặt hàng.
+              Phương thức &quot;Nhận tại vườn&quot; luôn mặc định là Miễn phí.
             </p>
           </div>
         </CardContent>

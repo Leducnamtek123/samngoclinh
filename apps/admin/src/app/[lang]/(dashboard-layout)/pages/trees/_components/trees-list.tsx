@@ -2,10 +2,12 @@
 
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { ColumnDef } from "@/components/shared/data-table"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ColumnDef, DataTable } from "@/components/shared/data-table"
+import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
 
 interface Tree {

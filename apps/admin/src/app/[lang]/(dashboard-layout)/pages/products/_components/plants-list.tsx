@@ -3,15 +3,16 @@
 import Image from "next/image"
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { ColumnDef } from "@/components/shared/data-table"
+import type { Plant } from "./use-plants-manager"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ImagePlaceholder } from "@/components/ui/feedback-components"
-import { ColumnDef, DataTable } from "@/components/shared/data-table"
+import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
-
-import type { Plant } from "./use-plants-manager"
 
 interface PlantsListProps {
   plants: Plant[]
@@ -59,10 +60,7 @@ export function PlantsList({
   const columns: ColumnDef<Plant>[] = [
     {
       header: (
-        <Checkbox
-          checked={allFilteredSelected}
-          onCheckedChange={onToggleAll}
-        />
+        <Checkbox checked={allFilteredSelected} onCheckedChange={onToggleAll} />
       ),
       className: "w-12",
       cell: (plant) => (

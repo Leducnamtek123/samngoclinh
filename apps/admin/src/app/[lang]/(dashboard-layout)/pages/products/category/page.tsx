@@ -7,7 +7,8 @@ import { CategoriesTable } from "./_components/categories-table"
 
 export const metadata: Metadata = {
   title: "Product Categories | Sâm Ngọc Linh Admin",
-  description: "Manage commercial product categories and agricultural classifications",
+  description:
+    "Manage commercial product categories and agricultural classifications",
 }
 
 interface CategoryPageProps {
@@ -25,4 +26,3 @@ export default async function CategoryPage({}: CategoryPageProps) {
     </div>
   )
 }
-

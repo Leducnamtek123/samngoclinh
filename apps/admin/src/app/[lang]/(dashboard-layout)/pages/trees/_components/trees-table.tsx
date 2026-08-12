@@ -100,7 +100,7 @@ export function TreesTable({
     handleOpenEdit,
     handleSave,
     handleDelete,
-    handleFormChange,
+    handleFormChange: _handleFormChange,
   } = useTreesManager({ initialTrees, beds, initialError })
 
   if (trees.length === 0 && errorMsg) {

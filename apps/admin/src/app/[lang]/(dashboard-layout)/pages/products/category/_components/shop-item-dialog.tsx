@@ -3,10 +3,10 @@
 import { useEffect } from "react"
 import Image from "next/image"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Image as ImageIcon, Loader2 } from "lucide-react"
 import Cropper from "react-easy-crop"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { Image as ImageIcon, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -41,8 +41,12 @@ const shopItemSchema = z.object({
   name: z.string().min(2, "Tên sản phẩm phải có ít nhất 2 ký tự"),
   category: z.string().min(1, "Vui lòng chọn danh mục"),
   unit: z.string().min(1, "Vui lòng chọn đơn vị tính"),
-  price: z.coerce.number({ invalid_type_error: "Đơn giá phải là số" }).min(0, "Đơn giá không được âm"),
-  stock: z.coerce.number({ invalid_type_error: "Tồn kho phải là số" }).min(0, "Tồn kho không được âm"),
+  price: z.coerce
+    .number({ invalid_type_error: "Đơn giá phải là số" })
+    .min(0, "Đơn giá không được âm"),
+  stock: z.coerce
+    .number({ invalid_type_error: "Tồn kho phải là số" })
+    .min(0, "Tồn kho không được âm"),
   status: z.string().min(1, "Vui lòng chọn trạng thái"),
   description: z.string().optional(),
   imageUrl: z.string().optional(),
@@ -239,10 +243,7 @@ export function ShopItemDialog({
                     <FormItem>
                       <FormLabel>Tên sản phẩm</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Rượu Sâm Ngọc Linh..."
-                        />
+                        <Input {...field} placeholder="Rượu Sâm Ngọc Linh..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -405,7 +406,9 @@ export function ShopItemDialog({
                     <div className="relative size-24 rounded-md overflow-hidden border bg-muted flex items-center justify-center text-muted-foreground">
                       {formData.imageUrl || form.watch("imageUrl") ? (
                         <Image
-                          src={formData.imageUrl || form.watch("imageUrl") || ""}
+                          src={
+                            formData.imageUrl || form.watch("imageUrl") || ""
+                          }
                           alt="Product Preview"
                           fill
                           sizes="96px"
@@ -427,8 +430,8 @@ export function ShopItemDialog({
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ
-                        lệ vuông 1:1.
+                        Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh
+                        tỉ lệ vuông 1:1.
                       </p>
                     </div>
                   </div>

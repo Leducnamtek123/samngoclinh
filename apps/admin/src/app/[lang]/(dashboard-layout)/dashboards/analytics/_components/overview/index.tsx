@@ -1,9 +1,9 @@
+import type { AnalyticsDashboardStats } from "../../types"
+
 import { AverageSessionDuration } from "./average-session-duration"
 import { BounceRate } from "./bounce-rate"
 import { ConversionRate } from "./conversion-rate"
 import { UniqueVisitors } from "./unique-visitors"
-
-import type { AnalyticsDashboardStats } from "../../types"
 
 export function Overview({ stats }: { stats?: AnalyticsDashboardStats }) {
   const rev = Number(stats?.totalRevenue) || 0
@@ -28,11 +28,31 @@ export function Overview({ stats }: { stats?: AnalyticsDashboardStats }) {
     averageValue: trees,
     percentageChange: 0.082,
     perMonth: [
-      { month: "January", value: Math.round(trees * 0.8), fill: "hsl(var(--chart-1))" },
-      { month: "February", value: Math.round(trees * 0.82), fill: "hsl(var(--chart-2))" },
-      { month: "March", value: Math.round(trees * 0.85), fill: "hsl(var(--chart-1))" },
-      { month: "April", value: Math.round(trees * 0.9), fill: "hsl(var(--chart-2))" },
-      { month: "May", value: Math.round(trees * 0.95), fill: "hsl(var(--chart-1))" },
+      {
+        month: "January",
+        value: Math.round(trees * 0.8),
+        fill: "hsl(var(--chart-1))",
+      },
+      {
+        month: "February",
+        value: Math.round(trees * 0.82),
+        fill: "hsl(var(--chart-2))",
+      },
+      {
+        month: "March",
+        value: Math.round(trees * 0.85),
+        fill: "hsl(var(--chart-1))",
+      },
+      {
+        month: "April",
+        value: Math.round(trees * 0.9),
+        fill: "hsl(var(--chart-2))",
+      },
+      {
+        month: "May",
+        value: Math.round(trees * 0.95),
+        fill: "hsl(var(--chart-1))",
+      },
       { month: "June", value: trees, fill: "hsl(var(--chart-1))" },
     ],
   }

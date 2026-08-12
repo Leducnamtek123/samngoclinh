@@ -3,8 +3,6 @@
 import { useCallback } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import {
-  AlignLeft,
-  AlignRight,
   AlignStartHorizontal,
   AlignStartVertical,
   MoonStar,
@@ -41,9 +39,9 @@ export function Customizer() {
   const params = useParams()
 
   const locale = params.lang as LocaleType
-  const direction = i18n.localeDirection[locale]
+  const _direction = i18n.localeDirection[locale]
 
-  const handleSetLocale = useCallback(
+  const _handleSetLocale = useCallback(
     (localeName: LocaleType) => {
       updateSettings({ ...settings, locale: localeName })
       router.push(relocalizePathname(pathname, localeName))

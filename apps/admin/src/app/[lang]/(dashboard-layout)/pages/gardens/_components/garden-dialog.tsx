@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
-import { useTranslation } from "@/providers/i18n-provider"
-import { gardenFormSchema, GardenFormValues } from "@/schemas/garden-schema"
+import type { GardenFormValues } from "@/schemas/garden-schema"
+
+import { gardenFormSchema } from "@/schemas/garden-schema"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -191,7 +193,9 @@ export function GardenDialog({
                 disabled={loading}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {loading ? t("common.status.pending") : t("common.actions.save")}
+                {loading
+                  ? t("common.status.pending")
+                  : t("common.actions.save")}
               </Button>
             </DialogFooter>
           </form>

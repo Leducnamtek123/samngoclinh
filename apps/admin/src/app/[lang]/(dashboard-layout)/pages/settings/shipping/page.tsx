@@ -1,4 +1,5 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
+
 import { ShippingSettingsManager } from "./_components/shipping-settings-manager"
 
 export const metadata: Metadata = {

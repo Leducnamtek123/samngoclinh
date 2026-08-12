@@ -2,9 +2,11 @@
 
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { ColumnDef } from "@/components/shared/data-table"
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ColumnDef, DataTable } from "@/components/shared/data-table"
+import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
 
 interface Garden {

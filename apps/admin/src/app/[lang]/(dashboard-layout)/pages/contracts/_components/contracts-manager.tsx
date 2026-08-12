@@ -1,10 +1,11 @@
 "use client"
 
-import { useTranslation } from "@/providers/i18n-provider"
 import { Bell, ChevronLeft, ChevronRight, Plus } from "lucide-react"
 
+import type { EContract, Tree, User } from "./use-contracts-manager"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,12 +37,7 @@ import {
 } from "@/components/ui/select"
 import { ContractDialog } from "./contract-dialog"
 import { ContractsList } from "./contracts-list"
-import {
-  useContractsManager,
-  type EContract,
-  type Tree,
-  type User,
-} from "./use-contracts-manager"
+import { useContractsManager } from "./use-contracts-manager"
 
 interface ContractsManagerProps {
   initialContracts: EContract[]
@@ -130,10 +127,7 @@ export function ContractsManager({
             getStatusBadge={getStatusBadge}
           />
 
-          <Pagination
-            metadata={metadata}
-            onPageChange={handlePageChange}
-          />
+          <Pagination metadata={metadata} onPageChange={handlePageChange} />
         </CardContent>
       </Card>
 
@@ -280,7 +274,9 @@ function ContractsFilters({
           <SelectItem value="pending">{t("common.status.pending")}</SelectItem>
           <SelectItem value="signed">{t("common.status.completed")}</SelectItem>
           <SelectItem value="expired">{t("common.status.expired")}</SelectItem>
-          <SelectItem value="terminated">{t("common.status.cancelled")}</SelectItem>
+          <SelectItem value="terminated">
+            {t("common.status.cancelled")}
+          </SelectItem>
         </SelectContent>
       </Select>
       <Select value={paymentFilter} onValueChange={setPaymentFilter}>
@@ -296,8 +292,6 @@ function ContractsFilters({
     </div>
   )
 }
-
-
 
 const vndFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",

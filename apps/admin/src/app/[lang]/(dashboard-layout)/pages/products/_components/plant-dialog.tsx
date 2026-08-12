@@ -2,12 +2,15 @@
 
 import { useEffect } from "react"
 import Image from "next/image"
+import { zodResolver } from "@hookform/resolvers/zod"
 import Cropper from "react-easy-crop"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+
+import type { PlantFormValues } from "@/schemas/plant-schema"
+
+import { plantFormSchema } from "@/schemas/plant-schema"
 
 import { useTranslation } from "@/providers/i18n-provider"
-import { plantFormSchema, PlantFormValues } from "@/schemas/plant-schema"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -121,7 +124,10 @@ export function PlantDialog({
                     <FormItem>
                       <FormLabel>{t("products.fields.name")}</FormLabel>
                       <FormControl>
-                        <Input placeholder={t("products.fields.name")} {...field} />
+                        <Input
+                          placeholder={t("products.fields.name")}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -185,7 +191,9 @@ export function PlantDialog({
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder={t("products.fields.status")} />
+                              <SelectValue
+                                placeholder={t("products.fields.status")}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>

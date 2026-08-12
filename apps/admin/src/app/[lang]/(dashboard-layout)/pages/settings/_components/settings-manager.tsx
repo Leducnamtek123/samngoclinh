@@ -1,13 +1,28 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Loader2, Save, Settings as SettingsIcon, Truck, Coins } from "lucide-react"
+import {
+  Check,
+  Coins,
+  Loader2,
+  Save,
+  Settings as SettingsIcon,
+  Truck,
+} from "lucide-react"
+
 import { fetchApi } from "@/lib/api"
+
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export interface SystemSettingItem {
   id?: string
@@ -21,7 +36,10 @@ interface SettingsManagerProps {
   errorMsg?: string
 }
 
-export function SettingsManager({ initialSettings, errorMsg }: SettingsManagerProps) {
+export function SettingsManager({
+  initialSettings,
+  errorMsg,
+}: SettingsManagerProps) {
   const [settings, setSettings] = useState<SystemSettingItem[]>(initialSettings)
   const [savingKey, setSavingKey] = useState<string | null>(null)
   const [successKey, setSuccessKey] = useState<string | null>(null)
@@ -80,7 +98,8 @@ export function SettingsManager({ initialSettings, errorMsg }: SettingsManagerPr
           <span>Cài đặt & Cấu hình Hệ thống</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Quản lý các cấu hình phí vận chuyển, tỷ lệ điểm thưởng và các tham số vận hành sàn Sâm Ngọc Linh.
+          Quản lý các cấu hình phí vận chuyển, tỷ lệ điểm thưởng và các tham số
+          vận hành sàn Sâm Ngọc Linh.
         </p>
       </div>
 
@@ -98,7 +117,9 @@ export function SettingsManager({ initialSettings, errorMsg }: SettingsManagerPr
             <span>Phí Vận Chuyển Giao Hàng (Shipping Fee)</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Mức phí vận chuyển mặc định áp dụng cho tất cả các đơn hàng mua bán trên Web khi người dùng chọn phương thức &quot;Giao hàng tận nơi&quot;.
+            Mức phí vận chuyển mặc định áp dụng cho tất cả các đơn hàng mua bán
+            trên Web khi người dùng chọn phương thức &quot;Giao hàng tận
+            nơi&quot;.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
@@ -154,7 +175,8 @@ export function SettingsManager({ initialSettings, errorMsg }: SettingsManagerPr
             <span>Tỷ Lệ Quy Đổi Điểm Thưởng (Point Conversion Rate)</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Giá trị VNĐ tương ứng với 1 điểm thưởng khi người dùng đổi điểm tích lũy để thanh toán đơn hàng.
+            Giá trị VNĐ tương ứng với 1 điểm thưởng khi người dùng đổi điểm tích
+            lũy để thanh toán đơn hàng.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-4">

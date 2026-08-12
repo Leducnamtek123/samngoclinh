@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
-import { useTranslation } from "@/providers/i18n-provider"
+import type { ColumnDef } from "@/components/shared/data-table"
+
 import { useDataTable } from "@/hooks/use-data-table"
-import { ColumnDef, DataTable } from "@/components/shared/data-table"
-import { StatusBadge } from "@/components/shared/status-badge"
+import { useTranslation } from "@/providers/i18n-provider"
 import { ToastCard } from "@/components/ui/feedback-components"
+import { DataTable } from "@/components/shared/data-table"
+import { StatusBadge } from "@/components/shared/status-badge"
 
 export interface User {
   id: string

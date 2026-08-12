@@ -1,6 +1,3 @@
-import { match } from "@formatjs/intl-localematcher"
-import Negotiator from "negotiator"
-
 import type { LocaleType } from "@/types"
 import type { NextRequest } from "next/server"
 
@@ -53,13 +50,20 @@ export function getPreferredLocale(request: NextRequest) {
   return i18n.defaultLocale as LocaleType
 }
 
-export function getNestedValue(obj: any, path: string): any {
+export function getNestedValue(
+  obj: Record<string, unknown> | unknown,
+  path: string
+): unknown {
   if (!obj || !path) return undefined
   const keys = path.split(".")
-  let current = obj
+  let current: unknown = obj
   for (const key of keys) {
-    if (current && typeof current === "object" && key in current) {
-      current = current[key]
+    if (
+      current &&
+      typeof current === "object" &&
+      key in (current as Record<string, unknown>)
+    ) {
+      current = (current as Record<string, unknown>)[key]
     } else {
       return undefined
     }
@@ -87,13 +91,13 @@ const FALLBACK_TRANSLATIONS: Record<string, string> = {
 }
 
 export function translate(
-  dictionary: any,
+  dictionary: Record<string, unknown> | unknown,
   key: string,
   params?: Record<string, string | number>
 ): string {
   let val = getNestedValue(dictionary, key)
-  if (typeof val !== "string") {
-    val = dictionary?.[key]
+  if (typeof val !== "string" && dictionary && typeof dictionary === "object") {
+    val = (dictionary as Record<string, unknown>)[key]
   }
   if (typeof val !== "string") {
     val = FALLBACK_TRANSLATIONS[key] || key
@@ -107,7 +111,9 @@ export function translate(
   return val
 }
 
-export function createTranslator(dictionary: any) {
+export function createTranslator(
+  dictionary: Record<string, unknown> | unknown
+) {
   return (key: string, params?: Record<string, string | number>): string =>
     translate(dictionary, key, params)
 }

@@ -2,6 +2,8 @@
 
 import React from "react"
 
+import type { TableMetadata } from "./data-table-pagination"
+
 import {
   Table,
   TableBody,
@@ -12,7 +14,7 @@ import {
 } from "@/components/ui/table"
 import { DataTableEmpty } from "./data-table-empty"
 import { DataTableLoading } from "./data-table-loading"
-import { DataTablePagination, TableMetadata } from "./data-table-pagination"
+import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 
 export interface ColumnDef<T> {
@@ -70,20 +72,27 @@ export function DataTable<T extends Record<string, any>>({
                   </TableHead>
                 ))}
                 {rowActions && (
-                  <TableHead className="text-center">{rowActionsHeader}</TableHead>
+                  <TableHead className="text-center">
+                    {rowActionsHeader}
+                  </TableHead>
                 )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.map((item) => (
-                <TableRow key={keyExtractor(item)} className="hover:bg-muted/30">
+                <TableRow
+                  key={keyExtractor(item)}
+                  className="hover:bg-muted/30"
+                >
                   {columns.map((col, idx) => (
                     <TableCell key={idx} className={col.className || ""}>
                       {col.cell(item)}
                     </TableCell>
                   ))}
                   {rowActions && (
-                    <TableCell className="text-center">{rowActions(item)}</TableCell>
+                    <TableCell className="text-center">
+                      {rowActions(item)}
+                    </TableCell>
                   )}
                 </TableRow>
               ))}
@@ -91,7 +100,10 @@ export function DataTable<T extends Record<string, any>>({
           </Table>
 
           {metadata && onPageChange && (
-            <DataTablePagination metadata={metadata} onPageChange={onPageChange} />
+            <DataTablePagination
+              metadata={metadata}
+              onPageChange={onPageChange}
+            />
           )}
         </div>
       )}

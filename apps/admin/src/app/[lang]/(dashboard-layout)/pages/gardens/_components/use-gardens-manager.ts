@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-import { fetchApi } from "@/lib/api"
-import { useEvent } from "@/hooks/use-event"
 import type { GardenFormValues } from "@/schemas/garden-schema"
+
+import { fetchApi } from "@/lib/api"
+
+import { useEvent } from "@/hooks/use-event"
 
 interface Garden {
   id: string

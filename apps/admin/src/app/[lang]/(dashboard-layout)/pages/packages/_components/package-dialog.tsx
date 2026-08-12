@@ -126,7 +126,9 @@ export function PackageDialog({
 
             {activeTab === "care" ? (
               <div className="grid gap-2">
-                <Label htmlFor="pkg-duration">{t("packages.fields.duration")}</Label>
+                <Label htmlFor="pkg-duration">
+                  {t("packages.fields.duration")}
+                </Label>
                 <Input
                   id="pkg-duration"
                   type="number"
@@ -171,14 +173,20 @@ export function PackageDialog({
                   <SelectValue placeholder={t("packages.fields.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">{t("common.status.active")}</SelectItem>
-                  <SelectItem value="inactive">{t("common.status.inactive")}</SelectItem>
+                  <SelectItem value="active">
+                    {t("common.status.active")}
+                  </SelectItem>
+                  <SelectItem value="inactive">
+                    {t("common.status.inactive")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="pkg-desc">{t("packages.fields.description")}</Label>
+              <Label htmlFor="pkg-desc">
+                {t("packages.fields.description")}
+              </Label>
               <Textarea
                 id="pkg-desc"
                 value={formData.description}
@@ -207,7 +215,9 @@ export function PackageDialog({
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              {loading ? t("common.status.processing") : t("common.actions.save")}
+              {loading
+                ? t("common.status.processing")
+                : t("common.actions.save")}
             </Button>
           </DialogFooter>
         </form>

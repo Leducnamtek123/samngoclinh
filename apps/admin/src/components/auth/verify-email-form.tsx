@@ -13,9 +13,9 @@ import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
 import { toast } from "@/hooks/use-toast"
-import { apiAdminVerifyEmail } from "@/services/auth-admin.service"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { Form } from "@/components/ui/form"
+import { apiAdminVerifyEmail } from "@/services/auth-admin.service"
 
 export function VerifyEmailForm() {
   const params = useParams()

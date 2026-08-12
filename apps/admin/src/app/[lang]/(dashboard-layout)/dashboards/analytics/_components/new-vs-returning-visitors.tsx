@@ -1,12 +1,16 @@
+import type { AnalyticsDashboardStats } from "../types"
+
 import { newVsReturningVisitors } from "../_data/new-vs-returning-visitors"
 
 import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { NewVsReturningVisitorsChart } from "./new-vs-returning-visitors-chart"
 import { NewVsReturningVisitorsList } from "./new-vs-returning-visitors-list"
 
-import type { AnalyticsDashboardStats } from "../types"
-
-export function NewVsReturningVisitors({ stats }: { stats?: AnalyticsDashboardStats }) {
+export function NewVsReturningVisitors({
+  stats,
+}: {
+  stats?: AnalyticsDashboardStats
+}) {
   const visitors = stats?.newVsReturning
     ? {
         new: {

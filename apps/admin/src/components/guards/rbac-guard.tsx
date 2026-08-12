@@ -3,7 +3,9 @@
 import React from "react"
 import { ShieldAlert } from "lucide-react"
 
-import { UserRole, useRole } from "@/hooks/use-role"
+import type { UserRole } from "@/hooks/use-role"
+
+import { useRole } from "@/hooks/use-role"
 import { useTranslation } from "@/providers/i18n-provider"
 
 interface RoleGuardProps {

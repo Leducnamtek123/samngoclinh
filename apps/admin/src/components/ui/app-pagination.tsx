@@ -30,7 +30,10 @@ export interface PaginationProps {
   className?: string
 }
 
-function getPageNumbers(currentPage: number, totalPages: number): (number | "ellipsis")[] {
+function getPageNumbers(
+  currentPage: number,
+  totalPages: number
+): (number | "ellipsis")[] {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, i) => i + 1)
   }
@@ -70,14 +73,15 @@ export function Pagination({
   totalPages: directTotalPages,
   disabled = false,
   onPageChange,
-  onPerPageChange,
+  onPerPageChange: _onPerPageChange,
   className = "",
 }: PaginationProps) {
   const { t } = useTranslation()
 
   // Calculate actual values using metadata or direct props
   const currentPage = metadata?.page ?? directPage ?? 1
-  const currentPerPage = metadata?.perPage ?? metadata?.pageSize ?? directPerPage ?? 10
+  const currentPerPage =
+    metadata?.perPage ?? metadata?.pageSize ?? directPerPage ?? 10
   const count = metadata?.count ?? metadata?.total ?? directTotalItems ?? 0
   const calculatedTotalPages =
     metadata?.totalPage ??
@@ -85,8 +89,8 @@ export function Pagination({
     directTotalPages ??
     (count > 0 ? Math.ceil(count / currentPerPage) : 1)
 
-  const hasPrevious = metadata?.hasPrevious ?? (currentPage > 1)
-  const hasNext = metadata?.hasNext ?? (currentPage < calculatedTotalPages)
+  const hasPrevious = metadata?.hasPrevious ?? currentPage > 1
+  const hasNext = metadata?.hasNext ?? currentPage < calculatedTotalPages
 
   // Hide pagination if there are no items
   if (count === 0 && !metadata) {
@@ -97,7 +101,9 @@ export function Pagination({
   const totalLabel = t("common.table.total")
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-3 items-center gap-4 px-6 py-4 border-t border-border bg-card/50 ${className}`}>
+    <div
+      className={`grid grid-cols-1 md:grid-cols-3 items-center gap-4 px-6 py-4 border-t border-border bg-card/50 ${className}`}
+    >
       {/* LEFT: Information / Count */}
       <div className="justify-self-center md:justify-self-start text-xs text-muted-foreground whitespace-nowrap">
         {t("common.table.pageOf", {
@@ -174,4 +180,3 @@ export function Pagination({
 
 // Alias for convenience
 export const AdminPagination = Pagination
-

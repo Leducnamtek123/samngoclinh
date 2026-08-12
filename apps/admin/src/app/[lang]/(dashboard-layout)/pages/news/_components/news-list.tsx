@@ -1,16 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import {
-  ImageIcon,
-  Pencil,
-  Trash2,
-} from "lucide-react"
+import { ImageIcon, Pencil, Trash2 } from "lucide-react"
 
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   Table,
   TableBody,
@@ -174,7 +170,11 @@ export function NewsList({
       </Table>
 
       {/* Pagination Controls */}
-      <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-4" />
+      <Pagination
+        metadata={metadata}
+        onPageChange={handlePageChange}
+        className="px-4 pb-4"
+      />
     </Card>
   )
 }

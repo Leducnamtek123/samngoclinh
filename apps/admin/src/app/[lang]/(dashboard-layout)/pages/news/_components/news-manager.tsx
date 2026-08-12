@@ -1,8 +1,8 @@
 "use client"
 
-import { useTranslation } from "@/providers/i18n-provider"
 import { Plus, Search } from "lucide-react"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -148,7 +148,9 @@ export function NewsManager({
               <SelectValue placeholder={t("common.actions.filterAll")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("common.actions.filterAll")}</SelectItem>
+              <SelectItem value="all">
+                {t("common.actions.filterAll")}
+              </SelectItem>
               {categoryOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}

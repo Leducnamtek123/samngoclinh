@@ -1,13 +1,15 @@
 import { Suspense } from "react"
 
+import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
+import type { Order } from "./_components/orders-table"
 
 import { fetchApi } from "@/lib/api"
-import { createTranslator } from "@/lib/i18n"
 import { getDictionary } from "@/lib/get-dictionary"
-import type { LocaleType } from "@/types"
+import { createTranslator } from "@/lib/i18n"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
-import { OrdersTable, type Order } from "./_components/orders-table"
+import { OrdersTable } from "./_components/orders-table"
 
 interface OrdersPageProps {
   params: Promise<{
@@ -22,7 +24,10 @@ interface OrdersPageProps {
   }>
 }
 
-export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
+export default async function OrdersPage({
+  params,
+  searchParams,
+}: OrdersPageProps) {
   const resolvedParams = await params
   const lang = (resolvedParams?.lang || "vi") as LocaleType
   const dictionary = await getDictionary(lang)
@@ -45,7 +50,8 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
     if (status && status !== "all") queryParams.append("status", status)
-    if (productType && productType !== "all") queryParams.append("productType", productType)
+    if (productType && productType !== "all")
+      queryParams.append("productType", productType)
 
     const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()
@@ -63,10 +69,10 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">{t("navigation.orders")}</h1>
-        <p className="text-muted-foreground">
-          {t("common.status.all")}
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t("navigation.orders")}
+        </h1>
+        <p className="text-muted-foreground">{t("common.status.all")}</p>
       </div>
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">

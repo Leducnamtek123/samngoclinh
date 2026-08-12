@@ -2,14 +2,14 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { Store, Truck } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
-import { useTranslation } from "@/providers/i18n-provider"
 
-import { Truck, Store } from "lucide-react"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -176,7 +176,8 @@ function OrderDetailsContent() {
               variant={getStatusBadgeVariant(order.status)}
               className="text-sm font-semibold"
             >
-              {t(`common.status.${order.status.toLowerCase()}`) === `common.status.${order.status.toLowerCase()}`
+              {t(`common.status.${order.status.toLowerCase()}`) ===
+              `common.status.${order.status.toLowerCase()}`
                 ? order.status
                 : t(`common.status.${order.status.toLowerCase()}`)}
             </Badge>
@@ -239,15 +240,16 @@ function OrderProductsCard({
   itemsList: any[]
 }) {
   const itemsSubtotal = itemsList.reduce(
-    (sum: number, item: any) => sum + Number(item.price || 0) * Number(item.quantity || 1),
+    (sum: number, item: any) =>
+      sum + Number(item.price || 0) * Number(item.quantity || 1),
     0
   )
   const subtotalVal =
     order.subtotal != null
       ? Number(order.subtotal)
       : itemsSubtotal > 0
-      ? itemsSubtotal
-      : Number(order.total || 0)
+        ? itemsSubtotal
+        : Number(order.total || 0)
   const shippingFeeVal = Number(order.shippingFee || 0)
   const discountVal = Number(order.discount || 0)
   const totalVal = Number(order.total || order.subtotal || 0)
@@ -302,8 +304,12 @@ function OrderProductsCard({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{item.code || item.productId || "-"}</TableCell>
-                  <TableCell className="font-semibold">{item.name || item.productName}</TableCell>
+                  <TableCell className="font-mono text-sm">
+                    {item.code || item.productId || "-"}
+                  </TableCell>
+                  <TableCell className="font-semibold">
+                    {item.name || item.productName}
+                  </TableCell>
                   <TableCell className="text-right">
                     {formatVND(item.price)}
                   </TableCell>
@@ -324,7 +330,9 @@ function OrderProductsCard({
         </div>
         <div className="flex justify-between w-64 text-sm text-muted-foreground">
           <span>Phí vận chuyển:</span>
-          <span>{shippingFeeVal > 0 ? formatVND(shippingFeeVal) : "Miễn phí"}</span>
+          <span>
+            {shippingFeeVal > 0 ? formatVND(shippingFeeVal) : "Miễn phí"}
+          </span>
         </div>
         {vatVal > 0 && (
           <div className="flex justify-between w-64 text-sm text-amber-700 font-semibold dark:text-amber-400">
@@ -379,9 +387,11 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
           </span>
         </div>
         <div className="flex flex-col gap-1 border-b pb-2">
-          <span className="text-xs text-muted-foreground">Phương thức nhận hàng:</span>
+          <span className="text-xs text-muted-foreground">
+            Phương thức nhận hàng:
+          </span>
           <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-            {order.deliveryType === 'pickup' ? (
+            {order.deliveryType === "pickup" ? (
               <>
                 <Store className="w-4 h-4" />
                 <span>Nhận tại cửa hàng / Vườn sâm</span>
@@ -396,7 +406,9 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
         </div>
         {order.shippingAddress && (
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">Địa chỉ giao hàng:</span>
+            <span className="text-xs text-muted-foreground">
+              Địa chỉ giao hàng:
+            </span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               {order.shippingAddress}
             </span>
@@ -416,7 +428,10 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
         <CardTitle className="flex items-center justify-between text-base">
           <span>Phương thức thanh toán</span>
           {isSepay && (
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300 font-bold text-xs">
+            <Badge
+              variant="outline"
+              className="bg-emerald-50 text-emerald-700 border-emerald-300 font-bold text-xs"
+            >
               Thanh toán trực tuyến
             </Badge>
           )}
@@ -426,7 +441,9 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
         <div className="flex justify-between">
           <span className="text-muted-foreground">Hình thức:</span>
           <span className="font-semibold">
-            {order.paymentMethod === "bank_transfer" || order.paymentMethod === "sepay" || (order.paymentMethod || "").toLowerCase().includes("bank")
+            {order.paymentMethod === "bank_transfer" ||
+            order.paymentMethod === "sepay" ||
+            (order.paymentMethod || "").toLowerCase().includes("bank")
               ? "Chuyển khoản"
               : order.paymentMethod === "cod"
                 ? "Thanh toán COD"
@@ -466,7 +483,11 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
               Thanh toán trực tuyến tự động:
             </p>
             <p className="text-muted-foreground">
-              Khách hàng có thể chuyển khoản với cú pháp chứa mã đơn <span className="font-mono font-bold text-emerald-700">{order.code}</span> để hệ thống tự động xác nhận.
+              Khách hàng có thể chuyển khoản với cú pháp chứa mã đơn{" "}
+              <span className="font-mono font-bold text-emerald-700">
+                {order.code}
+              </span>{" "}
+              để hệ thống tự động xác nhận.
             </p>
           </div>
         )}

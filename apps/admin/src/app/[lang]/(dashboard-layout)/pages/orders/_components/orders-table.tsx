@@ -5,10 +5,11 @@ import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
-import { useTranslation } from "@/providers/i18n-provider"
 import { fetchApi } from "@/lib/api"
+
 import { useDataTable } from "@/hooks/use-data-table"
-import { ColumnDef, DataTable } from "@/components/shared/data-table"
+import type { ColumnDef, ColumnDef } from "@/components/shared/data-table"
+import { DataTable } from "@/components/shared/data-table"
 import { Button } from "@/components/ui/button"
 import { ToastCard } from "@/components/ui/feedback-components"
 import {
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { DataTable } from "@/components/shared/data-table"
 
 export interface Order {
   id: string
@@ -86,7 +88,10 @@ export function OrdersTable({
     return translated
   }
 
-  const handleQuickStatusUpdate = async (orderId: string, newStatus: string) => {
+  const handleQuickStatusUpdate = async (
+    orderId: string,
+    newStatus: string
+  ) => {
     setUpdatingId(orderId)
     setLocalError("")
     try {
@@ -192,19 +197,34 @@ export function OrdersTable({
               )}
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="pending" className="text-xs font-semibold text-amber-700">
+              <SelectItem
+                value="pending"
+                className="text-xs font-semibold text-amber-700"
+              >
                 {getStatusLabel("pending")}
               </SelectItem>
-              <SelectItem value="paid" className="text-xs font-semibold text-blue-700">
+              <SelectItem
+                value="paid"
+                className="text-xs font-semibold text-blue-700"
+              >
                 {getStatusLabel("paid")}
               </SelectItem>
-              <SelectItem value="shipping" className="text-xs font-semibold text-blue-700">
+              <SelectItem
+                value="shipping"
+                className="text-xs font-semibold text-blue-700"
+              >
                 {getStatusLabel("shipping")}
               </SelectItem>
-              <SelectItem value="completed" className="text-xs font-semibold text-emerald-700">
+              <SelectItem
+                value="completed"
+                className="text-xs font-semibold text-emerald-700"
+              >
                 {getStatusLabel("completed")}
               </SelectItem>
-              <SelectItem value="cancelled" className="text-xs font-semibold text-red-700">
+              <SelectItem
+                value="cancelled"
+                className="text-xs font-semibold text-red-700"
+              >
                 {getStatusLabel("cancelled")}
               </SelectItem>
             </SelectContent>
@@ -230,7 +250,8 @@ export function OrdersTable({
     {
       header: "Tổng tiền",
       headerClassName: "text-right",
-      className: "text-right font-semibold text-emerald-600 dark:text-emerald-400",
+      className:
+        "text-right font-semibold text-emerald-600 dark:text-emerald-400",
       cell: (order) => formatVND(order.total),
     },
   ]

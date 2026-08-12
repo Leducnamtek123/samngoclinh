@@ -387,8 +387,8 @@ export function useShopItemsManager({
       images: submittedValues.imageUrl
         ? [submittedValues.imageUrl]
         : dialogState.formData.imageUrl
-        ? [dialogState.formData.imageUrl]
-        : [],
+          ? [dialogState.formData.imageUrl]
+          : [],
     }
 
     if (dialogState.mode === "create") {

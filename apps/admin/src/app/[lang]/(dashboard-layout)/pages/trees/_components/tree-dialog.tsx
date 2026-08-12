@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 
-import { useTranslation } from "@/providers/i18n-provider"
-import { treeFormSchema, TreeFormValues } from "@/schemas/tree-schema"
+import type { TreeFormValues } from "@/schemas/tree-schema"
+
+import { treeFormSchema } from "@/schemas/tree-schema"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -209,7 +211,9 @@ export function TreeDialog({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t("trees.fields.healthStatus")} />
+                          <SelectValue
+                            placeholder={t("trees.fields.healthStatus")}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -282,7 +286,9 @@ export function TreeDialog({
                     <FormLabel>Owner</FormLabel>
                     <Select
                       value={field.value || "system"}
-                      onValueChange={(val) => field.onChange(val === "system" ? "" : val)}
+                      onValueChange={(val) =>
+                        field.onChange(val === "system" ? "" : val)
+                      }
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -292,7 +298,8 @@ export function TreeDialog({
                       <SelectContent>
                         <SelectItem value="system">System</SelectItem>
                         {users.map((u) => {
-                          const name = `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
+                          const name =
+                            `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
                           return (
                             <SelectItem key={u.id} value={u.id}>
                               {name}
@@ -321,7 +328,9 @@ export function TreeDialog({
                 disabled={loading}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {loading ? t("common.status.pending") : t("common.actions.save")}
+                {loading
+                  ? t("common.status.pending")
+                  : t("common.actions.save")}
               </Button>
             </DialogFooter>
           </form>

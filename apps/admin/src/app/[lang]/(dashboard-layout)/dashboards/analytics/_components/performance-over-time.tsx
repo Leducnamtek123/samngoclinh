@@ -1,5 +1,7 @@
 import { ChevronDown } from "lucide-react"
 
+import type { AnalyticsDashboardStats } from "../types"
+
 import { performanceOverTimeData } from "../_data/performance-over-time"
 
 import { cn } from "@/lib/utils"
@@ -39,9 +41,11 @@ function PerformanceOverTimeActionButton() {
   )
 }
 
-import type { AnalyticsDashboardStats } from "../types"
-
-export function PerformanceOverTime({ stats }: { stats?: AnalyticsDashboardStats }) {
+export function PerformanceOverTime({
+  stats,
+}: {
+  stats?: AnalyticsDashboardStats
+}) {
   const summary = stats?.monthlyRevenue
     ? {
         totalVisitors: stats.monthlyRevenue.reduce(

@@ -124,7 +124,8 @@ export function ShopItemsTable({
             Quản lý Sản phẩm thương mại
           </h1>
           <p className="text-muted-foreground">
-            Quản lý danh sách các sản phẩm chế biến, đồ uống và vật tư thương mại
+            Quản lý danh sách các sản phẩm chế biến, đồ uống và vật tư thương
+            mại
           </p>
         </div>
         <Button onClick={openCreateDialog}>

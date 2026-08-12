@@ -13,6 +13,8 @@ import {
   User,
 } from "lucide-react"
 
+import type { NotificationItem } from "@/components/ui/feedback-components"
+
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -31,7 +33,6 @@ import {
   ImagePlaceholder,
   InlineAlert,
   NotificationCenter,
-  NotificationItem,
   OfflineState,
   ProgressIndicator,
   SuccessAnimation,

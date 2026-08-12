@@ -3,6 +3,8 @@
 import React from "react"
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { EContract, User } from "./use-contracts-manager"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,8 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import type { EContract, User } from "./use-contracts-manager"
 
 interface ContractsListProps {
   contracts: EContract[]

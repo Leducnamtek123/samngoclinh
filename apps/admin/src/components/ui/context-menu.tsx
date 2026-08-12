@@ -21,7 +21,7 @@ export function ContextMenuTrigger({
   )
 }
 
-function ContextMenuGroup({
+export function ContextMenuGroup({
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.Group>) {
   return (
@@ -29,7 +29,7 @@ function ContextMenuGroup({
   )
 }
 
-function ContextMenuPortal({
+export function ContextMenuPortal({
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.Portal>) {
   return (
@@ -37,13 +37,13 @@ function ContextMenuPortal({
   )
 }
 
-function ContextMenuSub({
+export function ContextMenuSub({
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.Sub>) {
   return <ContextMenuPrimitive.Sub data-slot="context-menu-sub" {...props} />
 }
 
-function ContextMenuRadioGroup({
+export function ContextMenuRadioGroup({
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.RadioGroup>) {
   return (
@@ -60,7 +60,7 @@ type ContextMenuSubTriggerProps = ComponentProps<
   inset?: boolean
 }
 
-function ContextMenuSubTrigger({
+export function ContextMenuSubTrigger({
   className,
   inset,
   children,
@@ -82,7 +82,7 @@ function ContextMenuSubTrigger({
   )
 }
 
-function ContextMenuSubContent({
+export function ContextMenuSubContent({
   className,
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
@@ -141,7 +141,7 @@ export function ContextMenuItem({
   )
 }
 
-function ContextMenuCheckboxItem({
+export function ContextMenuCheckboxItem({
   className,
   children,
   checked,
@@ -167,7 +167,7 @@ function ContextMenuCheckboxItem({
   )
 }
 
-function ContextMenuRadioItem({
+export function ContextMenuRadioItem({
   className,
   children,
   ...props
@@ -197,7 +197,7 @@ type ContextMenuLabelProps = ComponentProps<
   inset?: boolean
 }
 
-function ContextMenuLabel({
+export function ContextMenuLabel({
   className,
   inset,
   ...props
@@ -215,7 +215,7 @@ function ContextMenuLabel({
   )
 }
 
-function ContextMenuSeparator({
+export function ContextMenuSeparator({
   className,
   ...props
 }: ComponentProps<typeof ContextMenuPrimitive.Separator>) {
@@ -228,7 +228,10 @@ function ContextMenuSeparator({
   )
 }
 
-function ContextMenuShortcut({ className, ...props }: ComponentProps<"span">) {
+export function ContextMenuShortcut({
+  className,
+  ...props
+}: ComponentProps<"span">) {
   return (
     <span
       data-slot="context-menu-shortcut"

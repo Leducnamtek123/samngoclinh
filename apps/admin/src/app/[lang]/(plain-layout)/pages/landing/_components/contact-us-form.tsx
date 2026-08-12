@@ -60,10 +60,7 @@ export function ContactUsForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    {...field}
-                  />
+                  <Input type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

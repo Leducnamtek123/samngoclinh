@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -26,7 +27,6 @@ import {
 import { ToastCard } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   Select,
   SelectContent,
@@ -211,7 +211,10 @@ function BannersTable({
   const [page, setPage] = useState(1)
   const perPage = 10
   const totalPages = Math.ceil(sortedBanners.length / perPage) || 1
-  const paginatedBanners = sortedBanners.slice((page - 1) * perPage, page * perPage)
+  const paginatedBanners = sortedBanners.slice(
+    (page - 1) * perPage,
+    page * perPage
+  )
   const metadata = {
     page,
     perPage,

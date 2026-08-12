@@ -1,21 +1,24 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios"
+import axios from "axios"
 import { getSession } from "next-auth/react"
+
+import type { AxiosInstance, AxiosRequestConfig } from "axios"
+
 import { fetchApi, getSessionToken } from "./api"
 
 export { fetchApi, getSessionToken }
 
 const isServer = typeof window === "undefined"
 const apiBaseUrl = isServer
-  ? process.env.INTERNAL_API_URL || "http://apis:3000/api"
+  ? process.env.INTERNAL_API_URL || "http://localhost:3000/api"
   : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
 const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
 
 export interface ApiResponse<T = any> {
-  statusCode?: number;
-  message?: string;
-  data?: T;
-  meta?: any;
+  statusCode?: number
+  message?: string
+  data?: T
+  meta?: any
 }
 
 export const apiClient: AxiosInstance = axios.create({

@@ -1,10 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Check, Loader2, Save, Coins, Info } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Check, Coins, Info, Loader2, Save } from "lucide-react"
+
 import { fetchApi } from "@/lib/api"
+
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -67,7 +75,8 @@ export function PointsSettingsManager() {
           <span>Tỷ Lệ Quy Đổi Điểm Thưởng</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Cấu hình giá trị VNĐ được khấu trừ khi người dùng sử dụng điểm tích lũy thanh toán đơn hàng.
+          Cấu hình giá trị VNĐ được khấu trừ khi người dùng sử dụng điểm tích
+          lũy thanh toán đơn hàng.
         </p>
       </div>
 
@@ -78,7 +87,8 @@ export function PointsSettingsManager() {
             <span>Giá Trị Quy Đổi Điểm (Point Conversion Rate)</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Số tiền VNĐ tương ứng với 1 điểm thưởng tích lũy trong ví thành viên.
+            Số tiền VNĐ tương ứng với 1 điểm thưởng tích lũy trong ví thành
+            viên.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-5">
@@ -128,7 +138,11 @@ export function PointsSettingsManager() {
           <div className="bg-amber-50/60 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60 rounded-xl p-4 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-300 font-medium">
             <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Mỗi 1 điểm tích lũy khi đổi sẽ tương đương với <strong>{Number(pointRate || 0).toLocaleString("vi-VN")} đ</strong> giảm trừ trực tiếp vào tổng bill khi khách mua sắm.
+              Mỗi 1 điểm tích lũy khi đổi sẽ tương đương với{" "}
+              <strong>
+                {Number(pointRate || 0).toLocaleString("vi-VN")} đ
+              </strong>{" "}
+              giảm trừ trực tiếp vào tổng bill khi khách mua sắm.
             </p>
           </div>
         </CardContent>
