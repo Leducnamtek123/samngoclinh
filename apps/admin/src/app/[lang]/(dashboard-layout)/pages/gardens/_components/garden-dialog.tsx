@@ -8,6 +8,7 @@ import type { GardenFormValues } from "@/schemas/garden-schema"
 
 import { gardenFormSchema } from "@/schemas/garden-schema"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

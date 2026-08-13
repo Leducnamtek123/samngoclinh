@@ -31,6 +31,7 @@
   "status": {
     "all": "Tất cả trạng thái",
     "active": "Hoạt động",
+    "available": "Có sẵn",
     "inactive": "Không hoạt động",
     "blocked": "Đã khóa",
     "pending": "Chờ thanh toán",

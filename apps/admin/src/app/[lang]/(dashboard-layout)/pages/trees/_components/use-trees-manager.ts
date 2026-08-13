@@ -130,11 +130,19 @@ export function useTreesManager({
   }
 
   const getOwnerName = (userId: string | undefined) => {
-    if (!userId) return "System"
+    if (!userId) return "Hệ thống (System)"
     const matched = users.find((u) => u.id === userId)
-    return matched
-      ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim()
-      : userId
+    if (!matched) return userId
+    const fullName = (
+      matched.fullName ||
+      matched.name ||
+      [matched.firstName, matched.lastName].filter(Boolean).join(" ")
+    ).trim()
+    const handleOrEmail = matched.username || matched.email || matched.id
+    if (fullName) {
+      return `${fullName} (${handleOrEmail})`
+    }
+    return handleOrEmail
   }
 
   const [errorMsg, setErrorMsg] = useState(initialError || "")
@@ -257,6 +265,12 @@ export function useTreesManager({
     })
   }
 
+  const safeIsoDate = (val?: string) => {
+    if (!val || typeof val !== "string" || val.trim() === "") return undefined
+    const d = new Date(val)
+    return isNaN(d.getTime()) ? undefined : d.toISOString()
+  }
+
   const handleSave = async (values: TreeFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setSuccessMsg("")
@@ -267,21 +281,17 @@ export function useTreesManager({
         ageYear: Number(values.ageYear),
         quantity: Number(values.quantity),
         healthStatus: values.healthStatus,
-        plantedAt: values.plantedAt
-          ? new Date(values.plantedAt).toISOString()
-          : undefined,
-        lastCareDate: values.lastCareDate
-          ? new Date(values.lastCareDate).toISOString()
-          : undefined,
-        nextCareDate: values.nextCareDate
-          ? new Date(values.nextCareDate).toISOString()
-          : undefined,
-        expectedHarvestAt: values.expectedHarvestAt
-          ? new Date(values.expectedHarvestAt).toISOString()
-          : undefined,
-        priceBought: values.priceBought
-          ? parseInt(values.priceBought)
-          : undefined,
+        plantedAt: safeIsoDate(values.plantedAt),
+        lastCareDate: safeIsoDate(values.lastCareDate),
+        nextCareDate: safeIsoDate(values.nextCareDate),
+        expectedHarvestAt: safeIsoDate(values.expectedHarvestAt),
+        priceBought:
+          values.priceBought !== undefined &&
+          values.priceBought !== null &&
+          values.priceBought.trim() !== "" &&
+          !isNaN(Number(values.priceBought))
+            ? Number(values.priceBought)
+            : undefined,
         ownerUserId: values.ownerUserId || undefined,
         status: values.status,
       }

@@ -17,7 +17,8 @@
     "carePackage": "Gói chăm sóc",
     "protectionPackage": "Gói bảo vệ",
     "notes": "Ghi chú",
-    "qrCode": "Mã QR"
+    "qrCode": "Mã QR",
+    "status": "Trạng thái"
   },
   "careLogs": {
     "title": "Nhật ký chăm sóc",
