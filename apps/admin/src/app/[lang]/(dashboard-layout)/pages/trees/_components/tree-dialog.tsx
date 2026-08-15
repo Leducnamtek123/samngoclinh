@@ -8,6 +8,7 @@ import type { TreeFormValues } from "@/schemas/tree-schema"
 
 import { treeFormSchema } from "@/schemas/tree-schema"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -176,20 +177,32 @@ export function TreeDialog({
                     <FormItem>
                       <FormLabel>Status</FormLabel>
                       <Select
-                        value={field.value || "active"}
+                        value={field.value || "available"}
                         onValueChange={field.onChange}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder={t("trees.fields.status")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                          <SelectItem value="available">
+                            {t("common.status.available")} (Có sẵn)
+                          </SelectItem>
                           <SelectItem value="active">
-                            {t("common.status.active")}
+                            {t("common.status.active")} (Hoạt động)
+                          </SelectItem>
+                          <SelectItem value="growing">
+                            Đang phát triển (Growing)
+                          </SelectItem>
+                          <SelectItem value="planted">
+                            Mới trồng (Planted)
                           </SelectItem>
                           <SelectItem value="harvested">
-                            {t("common.status.completed")}
+                            {t("common.status.harvested")} (Đã thu hoạch)
+                          </SelectItem>
+                          <SelectItem value="sold">
+                            Đã bán (Sold)
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -296,13 +309,22 @@ export function TreeDialog({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="system">System</SelectItem>
+                        <SelectItem value="system">
+                          System (Hệ thống)
+                        </SelectItem>
                         {users.map((u) => {
-                          const name =
-                            `${u.firstName || ""} ${u.lastName || ""} (${u.username || u.email})`.trim()
+                          const fullName = (
+                            u.fullName ||
+                            u.name ||
+                            [u.firstName, u.lastName].filter(Boolean).join(" ")
+                          ).trim()
+                          const handleOrEmail = u.username || u.email || u.id
+                          const displayName = fullName
+                            ? `${fullName} (${handleOrEmail})`
+                            : handleOrEmail
                           return (
                             <SelectItem key={u.id} value={u.id}>
-                              {name}
+                              {displayName}
                             </SelectItem>
                           )
                         })}

@@ -33,6 +33,9 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { RoleGuard } from "@/components/guards/rbac-guard"
+import { useParams } from "next/navigation"
+import viKyc from "@/data/dictionaries/vi/kyc.json"
+import enKyc from "@/data/dictionaries/en/kyc.json"
 
 interface KYCRequest {
   id: string
@@ -74,6 +77,10 @@ const getFullImageUrl = (url?: string) => {
 }
 
 export default function KycApprovalsPage() {
+  const params = useParams()
+  const lang = (params?.lang || "vi") as string
+  const dict = lang === "en" ? enKyc : viKyc
+
   const [selectedKyc, setSelectedKyc] = useState<KYCRequest | null>(null)
   const [rejectReason, setRejectReason] = useState("")
   const [showRejectForm, setShowRejectForm] = useState(false)
@@ -101,32 +108,32 @@ export default function KycApprovalsPage() {
         endpoint: `/admin/user/kyc/${id}/approve`,
         method: "POST",
       })
-      toast.success("Phê duyệt eKYC thành công")
+      toast.success(dict.notifications.approveSuccess)
       setSelectedKyc(null)
       refetch()
     } catch (error: any) {
-      toast.error(error?.message || "Có lỗi xảy ra khi phê duyệt eKYC")
+      toast.error(error?.message || dict.notifications.approveError)
     }
   }
 
   const handleReject = async (id: string) => {
     if (!rejectReason) {
-      toast.error("Vui lòng nhập lý do từ chối")
+      toast.error(dict.notifications.requireReason)
       return
     }
     try {
       await mutation.mutateAsync({
         endpoint: `/admin/user/kyc/${id}/reject`,
-        data: { note: rejectReason },
+        data: { reason: rejectReason, note: rejectReason },
         method: "POST",
       })
-      toast.success("Đã từ chối hồ sơ eKYC")
+      toast.success(dict.notifications.rejectSuccess)
       setSelectedKyc(null)
       setShowRejectForm(false)
       setRejectReason("")
       refetch()
     } catch (error: any) {
-      toast.error(error?.message || "Có lỗi xảy ra khi từ chối eKYC")
+      toast.error(error?.message || dict.notifications.rejectError)
     }
   }
 
@@ -137,10 +144,10 @@ export default function KycApprovalsPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <UserCheck className="w-6 h-6 text-emerald-600" />
-              Duyệt Định danh eKYC Khách hàng & Nhà đầu tư
+              {dict.title}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Xác minh thông tin giấy tờ và chân dung nhà đầu tư Sâm Ngọc Linh
+              {dict.subtitle}
             </p>
           </div>
           <Button
@@ -149,39 +156,41 @@ export default function KycApprovalsPage() {
             onClick={() => refetch()}
             className="gap-2"
           >
-            <RefreshCw className="w-4 h-4" /> Làm mới
+            <RefreshCw className="w-4 h-4" /> {lang === "en" ? "Refresh" : "Làm mới"}
           </Button>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">
-              Danh sách Yêu cầu Duyệt eKYC
+              {dict.requestListTitle}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
-                Đang tải danh sách hồ sơ eKYC...
+                {dict.loadingList}
               </div>
             ) : isError ? (
               <div className="py-8 text-center text-sm text-destructive">
-                Không thể kết nối đến hệ thống máy chủ. Vui lòng thử lại sau.
+                {lang === "en"
+                  ? "Unable to connect to server. Please try again later."
+                  : "Không thể kết nối đến hệ thống máy chủ. Vui lòng thử lại sau."}
               </div>
             ) : kycList.length === 0 ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
-                Chưa có yêu cầu duyệt eKYC nào đang chờ xử lý.
+                {dict.emptyList}
               </div>
             ) : (
               <>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Khách Hàng</TableHead>
-                      <TableHead>Số Giấy Tờ (CCCD/CMND)</TableHead>
-                      <TableHead>Ngày Gửi</TableHead>
-                      <TableHead>Trạng Thái</TableHead>
-                      <TableHead className="text-right">Thao Tác</TableHead>
+                      <TableHead>{dict.columns.user}</TableHead>
+                      <TableHead>{dict.columns.idCardNumber}</TableHead>
+                      <TableHead>{dict.columns.submitDate}</TableHead>
+                      <TableHead>{dict.columns.status}</TableHead>
+                      <TableHead className="text-right">{dict.columns.actions}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -200,7 +209,7 @@ export default function KycApprovalsPage() {
                           {kyc.submittedAt || kyc.createdAt
                             ? new Date(
                                 kyc.submittedAt || kyc.createdAt!
-                              ).toLocaleDateString("vi-VN")
+                              ).toLocaleDateString(lang === "en" ? "en-US" : "vi-VN")
                             : "—"}
                         </TableCell>
                         <TableCell>
@@ -211,12 +220,16 @@ export default function KycApprovalsPage() {
                             className={
                               kyc.status === "APPROVED"
                                 ? "bg-emerald-600 text-white font-bold"
+                                : kyc.status === "REJECTED"
+                                ? "bg-rose-100 text-rose-800 border-rose-300 font-bold"
                                 : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
                             }
                           >
                             {kyc.status === "APPROVED"
-                              ? "Đã Phê Duyệt"
-                              : "Chờ Duyệt"}
+                              ? dict.status.approved
+                              : kyc.status === "REJECTED"
+                              ? dict.status.rejected
+                              : dict.status.pending}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -229,7 +242,7 @@ export default function KycApprovalsPage() {
                               setShowRejectForm(false)
                             }}
                           >
-                            <Eye className="w-4 h-4" /> Xem Hồ Sơ
+                            <Eye className="w-4 h-4" /> {dict.actions.review}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -253,7 +266,7 @@ export default function KycApprovalsPage() {
             <DialogContent className="sm:max-w-[650px]">
               <DialogHeader>
                 <DialogTitle>
-                  Chi tiết Hồ sơ eKYC -{" "}
+                  {dict.modal.title} -{" "}
                   {selectedKyc.fullName ||
                     selectedKyc.user?.email ||
                     selectedKyc.id}
@@ -262,13 +275,13 @@ export default function KycApprovalsPage() {
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-2 gap-4 text-sm border-b pb-4">
                   <div>
-                    <span className="text-muted-foreground">Khách hàng:</span>
+                    <span className="text-muted-foreground">{dict.modal.fullName}</span>
                     <p className="font-semibold">
                       {selectedKyc.fullName || selectedKyc.user?.name || "—"}
                     </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Số CCCD/CMND:</span>
+                    <span className="text-muted-foreground">{dict.modal.idNumber}</span>
                     <p className="font-semibold font-mono">
                       {selectedKyc.idNumber || "—"}
                     </p>
@@ -278,7 +291,7 @@ export default function KycApprovalsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <span className="text-xs font-medium text-muted-foreground block">
-                      Mặt trước CCCD
+                      {dict.modal.frontImage}
                     </span>
                     {getFullImageUrl(
                       selectedKyc.idFrontUrl || selectedKyc.frontImage
@@ -287,18 +300,18 @@ export default function KycApprovalsPage() {
                         src={getFullImageUrl(
                           selectedKyc.idFrontUrl || selectedKyc.frontImage
                         )}
-                        alt="Mặt trước CCCD"
+                        alt={dict.modal.frontImage}
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
                       <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                        Chưa có ảnh
+                        {lang === "en" ? "No photo" : "Chưa có ảnh"}
                       </div>
                     )}
                   </div>
                   <div className="space-y-1">
                     <span className="text-xs font-medium text-muted-foreground block">
-                      Mặt sau CCCD
+                      {dict.modal.backImage}
                     </span>
                     {getFullImageUrl(
                       selectedKyc.idBackUrl || selectedKyc.backImage
@@ -307,12 +320,12 @@ export default function KycApprovalsPage() {
                         src={getFullImageUrl(
                           selectedKyc.idBackUrl || selectedKyc.backImage
                         )}
-                        alt="Mặt sau CCCD"
+                        alt={dict.modal.backImage}
                         className="w-full h-40 object-contain rounded border bg-muted p-1"
                       />
                     ) : (
                       <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                        Chưa có ảnh
+                        {lang === "en" ? "No photo" : "Chưa có ảnh"}
                       </div>
                     )}
                   </div>
@@ -322,7 +335,7 @@ export default function KycApprovalsPage() {
                 <div className="space-y-1 pt-2 border-t">
                   <span className="text-xs font-medium text-muted-foreground block flex items-center gap-1.5">
                     <PenTool className="w-3.5 h-3.5 text-emerald-600" />
-                    Chữ ký số cá nhân (Digital Signature)
+                    {dict.modal.digitalSignature}
                   </span>
                   {getFullImageUrl(
                     selectedKyc.signatureUrl ||
@@ -336,31 +349,49 @@ export default function KycApprovalsPage() {
                             selectedKyc.digitalSignatureUrl ||
                             selectedKyc.digitalSignature
                         )}
-                        alt="Chữ ký số cá nhân"
+                        alt={dict.modal.digitalSignature}
                         className="max-h-28 object-contain"
                       />
                     </div>
                   ) : (
                     <div className="w-full h-20 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                      Chưa đăng ký chữ ký số
+                      {dict.modal.noSignature}
                     </div>
                   )}
                 </div>
 
                 {showRejectForm ? (
                   <div className="space-y-3 pt-3 border-t">
-                    <Textarea
-                      placeholder="Nhập lý do từ chối hồ sơ eKYC này..."
-                      value={rejectReason}
-                      onChange={(e) => setRejectReason(e.target.value)}
-                    />
+                    <div>
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">
+                        {dict.modal.rejectReasonTitle}
+                      </span>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {Object.values(dict.modal.presets).map((preset) => (
+                          <button
+                            key={preset}
+                            type="button"
+                            onClick={() => setRejectReason(preset)}
+                            className="text-[11px] px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-rose-50 hover:text-rose-700 border border-gray-200 dark:border-gray-700 text-gray-600 transition-colors text-left font-medium cursor-pointer"
+                          >
+                            + {preset}
+                          </button>
+                        ))}
+                      </div>
+                      <Textarea
+                        placeholder={dict.modal.rejectReasonPlaceholder}
+                        value={rejectReason}
+                        onChange={(e) => setRejectReason(e.target.value)}
+                        rows={3}
+                      />
+                    </div>
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setShowRejectForm(false)}
                       >
-                        Hủy
+                        {dict.actions.cancel}
                       </Button>
                       <Button
                         variant="destructive"
@@ -369,7 +400,7 @@ export default function KycApprovalsPage() {
                           handleReject(selectedKyc.id || selectedKyc.userId)
                         }
                       >
-                        Xác nhận Từ chối
+                        {dict.actions.confirmReject}
                       </Button>
                     </div>
                   </div>
@@ -380,7 +411,7 @@ export default function KycApprovalsPage() {
                       className="text-red-600 border-red-200 hover:bg-red-50 gap-1"
                       onClick={() => setShowRejectForm(true)}
                     >
-                      <XCircle className="w-4 h-4" /> Từ chối Hồ sơ
+                      <XCircle className="w-4 h-4" /> {dict.actions.reject}
                     </Button>
                     <Button
                       className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1"
@@ -388,7 +419,7 @@ export default function KycApprovalsPage() {
                         handleApprove(selectedKyc.id || selectedKyc.userId)
                       }
                     >
-                      <CheckCircle2 className="w-4 h-4" /> Phê duyệt eKYC
+                      <CheckCircle2 className="w-4 h-4" /> {dict.actions.approve}
                     </Button>
                   </div>
                 )}

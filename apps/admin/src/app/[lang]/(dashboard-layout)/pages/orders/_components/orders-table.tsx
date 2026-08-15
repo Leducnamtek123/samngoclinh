@@ -5,11 +5,12 @@ import Link from "next/link"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
+import type { ColumnDef } from "@/components/shared/data-table"
+
 import { fetchApi } from "@/lib/api"
 
 import { useDataTable } from "@/hooks/use-data-table"
-import type { ColumnDef, ColumnDef } from "@/components/shared/data-table"
-import { DataTable } from "@/components/shared/data-table"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { ToastCard } from "@/components/ui/feedback-components"
 import {

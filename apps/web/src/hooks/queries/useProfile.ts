@@ -7,9 +7,9 @@ export function useProfileMe(initialData?: UserProfile) {
     queryKey: ['profile', 'me'],
     queryFn: () =>
       fetchApiClient('/user/profile/me')
-        .then((res) => res.data)
+        .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData,
+    initialData: initialData ?? null,
     retry: false,
   });
 }
@@ -19,9 +19,9 @@ export function useProfileBusiness(initialData?: UserBusiness) {
     queryKey: ['profile', 'business'],
     queryFn: () =>
       fetchApiClient('/user/profile/business')
-        .then((res) => res.data)
+        .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData,
+    initialData: initialData ?? null,
     retry: false,
   });
 }

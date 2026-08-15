@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Pencil, Trash2 } from "lucide-react"
+import { FileDown, Pencil, QrCode, Trash2, UserCheck } from "lucide-react"
 
 import type { EContract, User } from "./use-contracts-manager"
 
@@ -33,6 +33,8 @@ export function ContractsList({
   formatVND,
   getStatusBadge,
 }: ContractsListProps) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -40,7 +42,7 @@ export function ContractsList({
           <TableRow>
             <TableHead>Mã HĐ</TableHead>
             <TableHead>Tiêu đề</TableHead>
-            <TableHead>Khách hàng</TableHead>
+            <TableHead>Khách hàng & eKYC</TableHead>
             <TableHead>Cây trồng</TableHead>
             <TableHead>Giá trị (VND)</TableHead>
             <TableHead>Thanh toán</TableHead>
@@ -63,6 +65,10 @@ export function ContractsList({
           ) : (
             contracts.map((contract) => {
               const userObj = users.find((u) => u.id === contract.userId)
+              const isEkyc = Boolean(userObj?.isVerified)
+              const pdfDownloadUrl = `${apiUrl}/public/contracts/${contract.code}/pdf`
+              const traceUrl = `http://localhost:3002/trace/contract/${contract.code}`
+
               return (
                 <TableRow key={contract.id}>
                   <TableCell className="font-mono text-xs font-semibold">
@@ -72,13 +78,22 @@ export function ContractsList({
                     {contract.title}
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-0.5">
                       <span className="font-medium">
                         {userObj?.name || "Hệ thống"}
                       </span>
-                      <span className="text-muted-foreground">
+                      <span className="text-muted-foreground text-[11px]">
                         {userObj?.email}
                       </span>
+                      {isEkyc ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded w-max border border-emerald-200">
+                          <UserCheck className="w-3 h-3" /> eKYC Đã duyệt
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground">
+                          Chưa eKYC
+                        </span>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-mono text-xs text-slate-600">
@@ -132,11 +147,30 @@ export function ContractsList({
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <a
+                        href={pdfDownloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Xem / Tải PDF có dấu mộc"
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted text-emerald-700 hover:text-emerald-800 transition-colors"
+                      >
+                        <FileDown className="h-4 w-4" />
+                      </a>
+                      <a
+                        href={traceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Tra cứu chứng nhận QR"
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-muted text-slate-600 hover:text-slate-800 transition-colors"
+                      >
+                        <QrCode className="h-4 w-4" />
+                      </a>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => onEdit(contract)}
+                        title="Chỉnh sửa"
                         className="h-8 w-8 text-blue-600 hover:text-blue-700"
                       >
                         <Pencil className="h-4 w-4" />
@@ -145,6 +179,7 @@ export function ContractsList({
                         variant="ghost"
                         size="icon"
                         onClick={() => onDelete(contract.id)}
+                        title="Xóa"
                         className="h-8 w-8 text-destructive hover:text-destructive/90"
                       >
                         <Trash2 className="h-4 w-4" />

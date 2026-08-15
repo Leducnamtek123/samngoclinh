@@ -160,14 +160,17 @@ export function TreesList({
     },
     {
       header: t("trees.fields.status"),
-      cell: (tree) => (
-        <StatusBadge
-          status={tree.status}
-          label={
-            tree.status === "active" ? t("common.status.active") : tree.status
-          }
-        />
-      ),
+      cell: (tree) => {
+        const label =
+          tree.status === "active"
+            ? t("common.status.active")
+            : tree.status === "available"
+              ? t("common.status.available")
+              : tree.status === "harvested"
+                ? t("common.status.harvested")
+                : tree.status
+        return <StatusBadge status={tree.status} label={label} />
+      },
     },
   ]
 

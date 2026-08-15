@@ -33,18 +33,31 @@ async function handleProxy(
   const endpoint = `/${pathStr}${searchParams ? `?${searchParams}` : ''}`;
 
   const method = request.method;
-  let body: string | undefined;
+  const rawContentType = request.headers.get('content-type') || '';
+  let body: any;
+  const customHeaders: Record<string, string> = {};
+
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
-    body = await request.text().catch(() => undefined);
+    if (rawContentType.includes('multipart/form-data')) {
+      body = await request.arrayBuffer().catch(() => undefined);
+      if (rawContentType) {
+        customHeaders['Content-Type'] = rawContentType;
+      }
+    } else {
+      body = await request.text().catch(() => undefined);
+      if (rawContentType) {
+        customHeaders['Content-Type'] = rawContentType;
+      } else if (body) {
+        customHeaders['Content-Type'] = 'application/json';
+      }
+    }
   }
 
   try {
     let res = await fetchApi(endpoint, {
       method,
       body,
-      headers: {
-        ...(body ? { 'Content-Type': request.headers.get('Content-Type') || 'application/json' } : {}),
-      },
+      headers: customHeaders,
     });
 
 
@@ -69,7 +82,7 @@ async function handleProxy(
             method,
             body,
             headers: {
-              'Content-Type': request.headers.get('Content-Type') || 'application/json',
+              ...customHeaders,
               'x-api-key': apiKey,
               'Authorization': `Bearer ${newTokens.accessToken}`,
             },

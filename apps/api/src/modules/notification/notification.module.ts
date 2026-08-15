@@ -16,6 +16,7 @@ import { Global, Module } from '@nestjs/common';
     imports: [UserModule, DeviceModule],
     exports: [
         NotificationService,
+        NotificationSmtpService,
         NotificationProcessorService,
         NotificationEmailProcessorService,
         NotificationPushProcessorService,

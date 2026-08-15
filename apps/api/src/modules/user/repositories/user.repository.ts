@@ -951,19 +951,44 @@ export class UserRepository {
         userId: string,
         { frontImageUrl, backImageUrl }: IUserIdentityDocumentSave
     ): Promise<UserIdentityDocument> {
-        return this.databaseService.userIdentityDocument.upsert({
+        const saved = await this.databaseService.userIdentityDocument.upsert({
             where: { userId },
             create: {
                 userId,
                 frontImageUrl,
                 backImageUrl,
+                status: 'PENDING',
+                rejectionReason: null,
                 createdBy: userId,
             },
             update: {
                 frontImageUrl,
                 backImageUrl,
+                status: 'PENDING',
+                rejectionReason: null,
+                reviewedAt: null,
+                reviewedBy: null,
                 updatedBy: userId,
             },
+        });
+
+        // Record in history log
+        await this.databaseService.userIdentityHistory.create({
+            data: {
+                userId,
+                frontImageUrl,
+                backImageUrl,
+                status: 'PENDING',
+            },
+        });
+
+        return saved;
+    }
+
+    async findIdentityHistories(userId: string) {
+        return this.databaseService.userIdentityHistory.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
         });
     }
 
@@ -986,7 +1011,10 @@ export class UserRepository {
                 fullName: u?.name || u?.email,
                 idFrontUrl: d.frontImageUrl,
                 idBackUrl: d.backImageUrl,
-                status: u?.isVerified ? 'APPROVED' : 'PENDING',
+                status: d.status || (u?.isVerified ? 'APPROVED' : 'PENDING'),
+                rejectionReason: d.rejectionReason,
+                reviewedAt: d.reviewedAt,
+                reviewedBy: d.reviewedBy,
                 createdAt: d.createdAt,
                 submittedAt: d.createdAt,
                 user: u ? { id: u.id, email: u.email, name: u.name ?? undefined } : undefined,
@@ -994,27 +1022,74 @@ export class UserRepository {
         });
     }
 
-    async approveIdentityVerification(idOrUserId: string) {
+    async approveIdentityVerification(idOrUserId: string, adminId?: string) {
         const doc = await this.databaseService.userIdentityDocument.findFirst({
             where: { OR: [{ id: idOrUserId }, { userId: idOrUserId }] },
         });
         const userId = doc ? doc.userId : idOrUserId;
+        const now = new Date();
+
+        if (doc) {
+            await this.databaseService.userIdentityDocument.update({
+                where: { id: doc.id },
+                data: {
+                    status: 'APPROVED',
+                    rejectionReason: null,
+                    reviewedAt: now,
+                    reviewedBy: adminId || 'admin',
+                },
+            });
+
+            await this.databaseService.userIdentityHistory.create({
+                data: {
+                    userId,
+                    frontImageUrl: doc.frontImageUrl,
+                    backImageUrl: doc.backImageUrl,
+                    status: 'APPROVED',
+                    reviewedAt: now,
+                    reviewedBy: adminId || 'admin',
+                },
+            });
+        }
+
         return this.databaseService.user.update({
             where: { id: userId },
-            data: { isVerified: true, verifiedAt: new Date() },
+            data: { isVerified: true, verifiedAt: now },
         });
     }
 
-    async rejectIdentityVerification(idOrUserId: string) {
+    async rejectIdentityVerification(idOrUserId: string, adminId?: string, reason?: string) {
         const doc = await this.databaseService.userIdentityDocument.findFirst({
             where: { OR: [{ id: idOrUserId }, { userId: idOrUserId }] },
         });
+        const userId = doc ? doc.userId : idOrUserId;
+        const now = new Date();
+        const rejectionReason = reason || 'Thông tin giấy tờ CCCD/CMND không hợp lệ hoặc không rõ nét.';
+
         if (doc) {
-            await this.databaseService.userIdentityDocument.delete({
+            await this.databaseService.userIdentityDocument.update({
                 where: { id: doc.id },
+                data: {
+                    status: 'REJECTED',
+                    rejectionReason,
+                    reviewedAt: now,
+                    reviewedBy: adminId || 'admin',
+                },
+            });
+
+            await this.databaseService.userIdentityHistory.create({
+                data: {
+                    userId,
+                    frontImageUrl: doc.frontImageUrl,
+                    backImageUrl: doc.backImageUrl,
+                    status: 'REJECTED',
+                    rejectionReason,
+                    reviewedAt: now,
+                    reviewedBy: adminId || 'admin',
+                },
             });
         }
-        const userId = doc ? doc.userId : idOrUserId;
+
         return this.databaseService.user.update({
             where: { id: userId },
             data: { isVerified: false, verifiedAt: null },

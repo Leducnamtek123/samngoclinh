@@ -302,10 +302,14 @@ export const DigitalSignatureCard: React.FC = () => {
                 savedSignatureUrl.startsWith('http://') ||
                 savedSignatureUrl.startsWith('https://')
                   ? savedSignatureUrl
-                  : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl}`
+                  : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl.startsWith('/') ? '' : '/'}${savedSignatureUrl}`
               }
               alt="Chữ ký điện tử hiện tại"
               className="max-h-24 object-contain bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.style.display = 'none';
+              }}
             />
           </div>
         </div>

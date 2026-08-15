@@ -39,9 +39,8 @@ import { UserVerificationEmailResendLimitExceededException } from '@modules/user
 import { DatabaseIdResponseDto } from '@common/database/dtos/response/database.id.response.dto';
 import {
     EnumFileExtensionDocument,
-    EnumFileExtensionImage,
 } from '@common/file/enums/file.enum';
-import { IFile } from '@common/file/interfaces/file.interface';
+import { IFile, ILocalStorage } from '@common/file/interfaces/file.interface';
 import { RequestParamRequiredException } from '@common/request/exceptions/request.param-required.exception';
 import { FileService } from '@common/file/services/file.service';
 import { HelperService } from '@common/helper/services/helper.service';
@@ -98,7 +97,10 @@ import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.res
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
-import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import {
+    UserIdentityDocumentResponseDto,
+    UserIdentityHistoryResponseDto,
+} from '@modules/user/dtos/user.identity-document.dto';
 import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
@@ -652,33 +654,42 @@ export class UserService implements IUserService {
 
     async saveIdentityDocument(
         userId: string,
-        frontFile: IFile | null,
-        backFile: IFile | null
+        frontFile?: IFile | null,
+        backFile?: IFile | null,
+        frontBase64?: string,
+        backBase64?: string
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
-        if (!frontFile) {
-            throw new RequestParamRequiredException('front');
-        }
-        if (!backFile) {
-            throw new RequestParamRequiredException('back');
-        }
+        let frontImageUrl = '';
+        let backImageUrl = '';
 
-        const user = await this.userRepository.findOneById(userId);
-        if (user?.isVerified) {
-            throw new BadRequestException('Tài khoản của bạn đã được xác minh chính thức, không cần gửi lại eKYC.');
+        if (frontFile && backFile) {
+            frontImageUrl = await this.fileService.uploadFile(
+                frontFile,
+                'identity'
+            );
+            backImageUrl = await this.fileService.uploadFile(
+                backFile,
+                'identity'
+            );
+        } else if (frontBase64 && backBase64) {
+            frontImageUrl = await this.fileService.uploadBase64(
+                frontBase64,
+                'identity'
+            );
+            backImageUrl = await this.fileService.uploadBase64(
+                backBase64,
+                'identity'
+            );
+        } else {
+            throw new RequestParamRequiredException('front & back images required');
         }
 
         try {
             const saved = await this.userRepository.saveIdentityDocument(
                 userId,
                 {
-                    frontImageUrl: this.fileService.saveFileToLocal(
-                        frontFile,
-                        'identity'
-                    ),
-                    backImageUrl: this.fileService.saveFileToLocal(
-                        backFile,
-                        'identity'
-                    ),
+                    frontImageUrl,
+                    backImageUrl,
                 }
             );
 
@@ -691,18 +702,44 @@ export class UserService implements IUserService {
         }
     }
 
+    async getIdentityDocumentHistories(
+        userId: string
+    ): Promise<IResponseReturn<UserIdentityHistoryResponseDto[]>> {
+        const items = await this.userRepository.findIdentityHistories(userId);
+        return {
+            data: items.map((item) => this.userUtil.mapIdentityHistory(item)),
+        };
+    }
+
     async getIdentityDocumentsListAdmin() {
         const items = await this.userRepository.findIdentityDocumentsList();
         return { data: items };
     }
 
-    async approveIdentityVerificationAdmin(id: string) {
-        await this.userRepository.approveIdentityVerification(id);
+    async adminApproveIdentityVerification(
+        idOrUserId: string,
+        adminId?: string
+    ): Promise<IResponseReturn<boolean>> {
+        await this.userRepository.approveIdentityVerification(idOrUserId, adminId);
+        return { data: true };
+    }
+
+    async adminRejectIdentityVerification(
+        idOrUserId: string,
+        adminId?: string,
+        reason?: string
+    ): Promise<IResponseReturn<boolean>> {
+        await this.userRepository.rejectIdentityVerification(idOrUserId, adminId, reason);
+        return { data: true };
+    }
+
+    async approveIdentityVerificationAdmin(id: string, adminId?: string) {
+        await this.userRepository.approveIdentityVerification(id, adminId);
         return { data: { success: true } };
     }
 
-    async rejectIdentityVerificationAdmin(id: string) {
-        await this.userRepository.rejectIdentityVerification(id);
+    async rejectIdentityVerificationAdmin(id: string, adminId?: string, reason?: string) {
+        await this.userRepository.rejectIdentityVerification(id, adminId, reason);
         return { data: { success: true } };
     }
 
@@ -725,16 +762,15 @@ export class UserService implements IUserService {
         let signatureUrl = '';
 
         if (file) {
-            signatureUrl = this.fileService.saveFileToLocal(file, 'signatures');
+            signatureUrl = await this.fileService.uploadFile(file, 'signatures');
         } else if (signatureData) {
             if (
                 signatureData.startsWith('http://') ||
-                signatureData.startsWith('https://') ||
-                signatureData.startsWith('/uploads/')
+                signatureData.startsWith('https://')
             ) {
                 signatureUrl = signatureData;
             } else {
-                signatureUrl = this.fileService.saveBase64ToLocal(
+                signatureUrl = await this.fileService.uploadBase64(
                     signatureData,
                     'signatures'
                 );
@@ -820,17 +856,15 @@ export class UserService implements IUserService {
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
 
         try {
-            const extension: EnumFileExtensionImage =
-                this.fileService.extractExtensionFromFilename(
-                    file.originalname
-                ) as EnumFileExtensionImage;
-
-            const key: string =
-                this.userUtil.createRandomFilenamePhotoProfileWithPath(userId, {
-                    extension,
-                });
-
-            const photo = this.fileService.saveBufferToKey(file.buffer, key);
+            const photoUrl = await this.fileService.uploadFile(file, 'avatars');
+            const extension = this.fileService.extractExtensionFromFilename(file.originalname);
+            const photo: ILocalStorage = {
+                key: photoUrl,
+                url: photoUrl,
+                mime: file.mimetype,
+                extension,
+                size: file.size,
+            };
 
             await this.userRepository.updatePhotoProfile(
                 userId,

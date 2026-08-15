@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { cookies } from 'next/headers';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { fetchApi } from '@/lib/Api';
 import { Link } from '@/lib/I18nNavigation';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { HomeFeaturedProducts } from '@/components/home/HomeFeaturedProducts';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +41,32 @@ async function getArticles() {
     console.error('Error fetching articles:', error);
     return [];
   }
+}
+
+async function getInitialPlants() {
+  try {
+    const res = await fetchApi('/public/catalog/plants', { next: { revalidate: 60 } });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+  } catch (e) {
+    console.error('Error fetching initial plants for homepage:', e);
+  }
+  return [];
+}
+
+async function getInitialShopItems() {
+  try {
+    const res = await fetchApi('/public/catalog/shop-items', { next: { revalidate: 60 } });
+    if (res.ok) {
+      const json = await res.json();
+      return json.data || [];
+    }
+  } catch (e) {
+    console.error('Error fetching initial shop items for homepage:', e);
+  }
+  return [];
 }
 
 async function getBannerImages() {
@@ -445,10 +473,15 @@ export default async function Index(props: IndexPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations('homepage');
 
-  const [articles, bannerImages] = await Promise.all([
+  const [articles, bannerImages, initialPlants, initialShopItems, cookieStore] = await Promise.all([
     getArticles(),
     getBannerImages(),
+    getInitialPlants(),
+    getInitialShopItems(),
+    cookies(),
   ]);
+
+  const isLoggedIn = !!cookieStore.get('user_session')?.value;
 
   const latestArticles = (articles || [])
     .sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
@@ -468,6 +501,15 @@ export default async function Index(props: IndexPageProps) {
           <PageBannerSlider images={bannerImages} />
         </div>
       </section>
+      
+      {/* Featured Products Showcase Section */}
+      <HomeFeaturedProducts
+        locale={locale}
+        initialPlants={initialPlants}
+        initialShopItems={initialShopItems}
+        isLoggedIn={isLoggedIn}
+      />
+
       <AboutSection t={t} />
       <NewsSection t={t} latestArticles={latestArticles} newsImages={newsImages} />
       <ContactSection />
@@ -475,3 +517,4 @@ export default async function Index(props: IndexPageProps) {
     </div>
   );
 }
+

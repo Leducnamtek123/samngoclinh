@@ -86,7 +86,22 @@
     "bottlesSupplied": "Bottles Supplied",
     "latestNews": "Latest News",
     "latestNewsDesc": "Stay updated with latest news and articles about Ngoc Linh Ginseng",
-    "readMore": "Read More"
+    "readMore": "Read More",
+    "featuredProductsBadge": "FEATURED PRODUCTS",
+    "featuredProductsTitle": "Featured Products & Essence of Ngoc Linh Ginseng",
+    "featuredProductsDesc": "Handpicked genuine Ngoc Linh ginseng products from Kon Tum highlands, certified quality and digitally traceable.",
+    "tabAll": "All",
+    "tabPlants": "Ginseng Plants",
+    "tabWine": "Ginseng Liquor",
+    "tabProducts": "Tea & Products",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "viewDetails": "Details",
+    "viewAllProducts": "View All Products",
+    "originKonTum": "Kon Tum 1500m+",
+    "ageYear": "Age: {year} yrs",
+    "stock": "In Stock: {count}",
+    "addedToCart": "Added \"{name}\" to cart!"
   },
   "nav": {
     "home": "Home",

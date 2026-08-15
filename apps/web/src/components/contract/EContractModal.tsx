@@ -94,25 +94,46 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
 
               {/* Signature Section */}
               {modal.isSigned ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold">
-                      <ShieldCheck className="w-6 h-6" />
+                <div className="space-y-4">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">
+                        <ShieldCheck className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h5 className="font-bold text-slate-900 text-sm">Hợp đồng đã có hiệu lực pháp lý</h5>
+                        <p className="text-xs text-slate-500">
+                          Thời gian ký: {modal.contract.signedAt ? new Date(modal.contract.signedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'Đã hoàn tất'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="font-bold text-slate-900 text-sm">Hợp đồng đã có hiệu lực pháp lý</h5>
-                      <p className="text-xs text-slate-500">
-                        Thời gian ký: {modal.contract.signedAt ? new Date(modal.contract.signedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'Đã hoàn tất'}
-                      </p>
-                    </div>
+
+                    {modal.contract.userSignatureUrl && (
+                      <div className="border border-slate-200 rounded-lg p-2 bg-white text-center shrink-0">
+                        <img src={modal.contract.userSignatureUrl} alt="Chữ ký" className="h-12 object-contain mx-auto" />
+                        <span className="text-[10px] text-slate-400 font-semibold block">Chữ ký điện tử</span>
+                      </div>
+                    )}
                   </div>
 
-                  {modal.contract.userSignatureUrl && (
-                    <div className="border border-slate-200 rounded-lg p-2 bg-white text-center">
-                      <img src={modal.contract.userSignatureUrl} alt="Chữ ký" className="h-12 object-contain mx-auto" />
-                      <span className="text-[10px] text-slate-400 font-semibold block">Chữ ký điện tử</span>
-                    </div>
-                  )}
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <a
+                      href={`http://localhost:3000/api/public/contracts/${modal.contract.code}/pdf`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
+                    >
+                      <span>📥 Tải tệp PDF có dấu mộc & QR</span>
+                    </a>
+                    <a
+                      href={`/trace/contract/${modal.contract.code}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+                    >
+                      <span>🔍 Tra cứu chứng nhận số</span>
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <EContractSignaturePad

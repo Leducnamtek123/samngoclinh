@@ -35,6 +35,7 @@ export interface User {
   name?: string
   username?: string
   email?: string
+  isVerified?: boolean
 }
 
 export interface Tree {

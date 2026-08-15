@@ -12,9 +12,9 @@ export function useEContracts(initialData?: any) {
     queryKey: ['contracts', 'list'],
     queryFn: () =>
       fetchApiClient('/user/contracts')
-        .then((res) => res.data || [])
+        .then((res) => res?.data || [])
         .catch(() => []),
-    initialData,
+    initialData: initialData ?? [],
   });
 }
 
@@ -23,7 +23,7 @@ export function useEContractDetail(id: string | null) {
     queryKey: ['contracts', 'detail', id],
     queryFn: () =>
       fetchApiClient(`/user/contracts/${id}`)
-        .then((res) => res.data)
+        .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
     enabled: !!id,
   });

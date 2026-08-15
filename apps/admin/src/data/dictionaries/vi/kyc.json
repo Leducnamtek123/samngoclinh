@@ -1,0 +1,51 @@
+{
+  "title": "Duyệt Định danh eKYC Khách hàng & Nhà đầu tư",
+  "subtitle": "Đối soát thẻ CCCD/CMND và chữ ký số để cấp quyền giao dịch và ký Hợp đồng điện tử",
+  "requestListTitle": "Danh sách Yêu cầu Duyệt eKYC",
+  "loadingList": "Đang tải danh sách hồ sơ eKYC...",
+  "emptyList": "Chưa có yêu cầu duyệt eKYC nào đang chờ xử lý.",
+  "columns": {
+    "user": "Người dùng",
+    "idCardNumber": "Số CCCD/CMND",
+    "submitDate": "Ngày gửi",
+    "status": "Trạng thái",
+    "actions": "Hành động"
+  },
+  "status": {
+    "approved": "Đã duyệt",
+    "pending": "Chờ duyệt",
+    "rejected": "Từ chối"
+  },
+  "actions": {
+    "review": "Xem & Duyệt",
+    "approve": "Phê duyệt eKYC",
+    "reject": "Từ chối Hồ sơ",
+    "confirmReject": "Xác nhận Từ chối",
+    "cancel": "Hủy"
+  },
+  "modal": {
+    "title": "Chi tiết Hồ sơ eKYC",
+    "fullName": "Họ và tên:",
+    "idNumber": "Số CCCD:",
+    "frontImage": "Ảnh mặt trước CCCD",
+    "backImage": "Ảnh mặt sau CCCD",
+    "digitalSignature": "Chữ ký số cá nhân (Digital Signature)",
+    "noSignature": "Chưa đăng ký chữ ký số",
+    "rejectReasonTitle": "Lý do từ chối hồ sơ eKYC:",
+    "rejectReasonPlaceholder": "Nhập chi tiết lý do từ chối để người dùng khắc phục...",
+    "presets": {
+      "blurry": "Ảnh chụp bị mờ / nhòe, không đọc được số CCCD",
+      "glare": "Ảnh chụp bị lóa sáng / mất góc thẻ",
+      "mismatch": "Họ và tên hoặc ngày sinh không trùng khớp",
+      "expired": "Giấy tờ tùy thân đã hết hạn sử dụng",
+      "notOriginal": "Không phải ảnh chụp bản gốc CCCD/CMND"
+    }
+  },
+  "notifications": {
+    "approveSuccess": "Phê duyệt eKYC thành công",
+    "approveError": "Có lỗi xảy ra khi phê duyệt eKYC",
+    "rejectSuccess": "Đã từ chối hồ sơ eKYC",
+    "rejectError": "Có lỗi xảy ra khi từ chối eKYC",
+    "requireReason": "Vui lòng nhập lý do từ chối"
+  }
+}

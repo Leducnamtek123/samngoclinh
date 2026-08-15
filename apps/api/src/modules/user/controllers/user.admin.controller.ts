@@ -305,10 +305,12 @@ export class UserAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/approve')
+    @Put('/kyc/:id/approve')
     async approveKyc(
-        @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+        @Param('id', RequestRequiredPipe) id: string,
+        @AuthJwtPayload('userId') adminId: string
     ) {
-        return this.userService.approveIdentityVerificationAdmin(id);
+        return this.userService.approveIdentityVerificationAdmin(id, adminId);
     }
 
     @Response('user.rejectKyc')
@@ -317,9 +319,12 @@ export class UserAdminController {
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/reject')
+    @Put('/kyc/:id/reject')
     async rejectKyc(
-        @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+        @Param('id', RequestRequiredPipe) id: string,
+        @AuthJwtPayload('userId') adminId: string,
+        @Body() body?: { reason?: string }
     ) {
-        return this.userService.rejectIdentityVerificationAdmin(id);
+        return this.userService.rejectIdentityVerificationAdmin(id, adminId, body?.reason);
     }
 }

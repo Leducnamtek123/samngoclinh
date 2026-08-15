@@ -36,7 +36,10 @@ import { UserListResponseDto } from '@modules/user/dtos/response/user.list.respo
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
-import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import {
+    UserIdentityDocumentResponseDto,
+    UserIdentityHistoryResponseDto,
+} from '@modules/user/dtos/user.identity-document.dto';
 import { UserConfirmEmailVerificationRequestDto } from '@modules/user/dtos/request/user.confirm-email-verification.request.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
@@ -127,9 +130,23 @@ export interface IUserService {
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto | null>>;
     saveIdentityDocument(
         userId: string,
-        frontFile: IFile | null,
-        backFile: IFile | null
+        frontFile?: IFile | null,
+        backFile?: IFile | null,
+        frontBase64?: string,
+        backBase64?: string
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>>;
+    getIdentityDocumentHistories(
+        userId: string
+    ): Promise<IResponseReturn<UserIdentityHistoryResponseDto[]>>;
+    adminApproveIdentityVerification(
+        idOrUserId: string,
+        adminId?: string
+    ): Promise<IResponseReturn<boolean>>;
+    adminRejectIdentityVerification(
+        idOrUserId: string,
+        adminId?: string,
+        reason?: string
+    ): Promise<IResponseReturn<boolean>>;
     requestEmailVerificationOtp(userId: string): Promise<void>;
     confirmEmailVerificationOtp(
         userId: string,
