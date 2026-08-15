@@ -1,6 +1,6 @@
 import bytes from 'bytes';
 
-export const FileSizeInBytes: number = bytes('10mb') ?? 0;
+export const FileSizeInBytes: number = bytes('50mb') ?? 52428800;
 
 export const FileMaxMultiple: number = 3;
 

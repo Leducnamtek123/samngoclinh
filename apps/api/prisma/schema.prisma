@@ -801,10 +801,16 @@ model OrderItem {
 }
 
 model UserIdentityDocument {
-  id            String @id @default(uuid())
-  userId        String @unique
-  frontImageUrl String
-  backImageUrl  String
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  frontImageUrl   String
+  backImageUrl    String
+  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
+  idCardNumber    String?
+  fullName        String?
+  reviewedAt      DateTime?
+  reviewedBy      String?
 
   createdAt DateTime @default(now())
   createdBy String?
@@ -812,6 +818,23 @@ model UserIdentityDocument {
   updatedBy String?
 
   @@map("UserIdentityDocuments")
+}
+
+model UserIdentityHistory {
+  id              String    @id @default(uuid())
+  userId          String
+  frontImageUrl   String
+  backImageUrl    String
+  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
+  idCardNumber    String?
+  fullName        String?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@map("UserIdentityHistories")
 }
 
 model UserSignature {

@@ -21,10 +21,12 @@ import { SepayPublicController } from '@modules/sepay/controllers/sepay.public.c
 import { SepayModule } from '@modules/sepay/sepay.module';
 import { CultivationPublicController } from '@modules/cultivation/controllers/cultivation.public.controller';
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
+import { EContractPublicController } from '@modules/e-contract/controllers/e-contract.public.controller';
+import { EContractModule } from '@modules/e-contract/e-contract.module';
 import { Module } from '@nestjs/common';
 
 /**
- * Mounts unauthenticated public controllers: country, hello, user, term policy, and sepay.
+ * Mounts unauthenticated public controllers: country, hello, user, term policy, sepay, and eContract.
  */
 @Module({
     controllers: [
@@ -40,6 +42,7 @@ import { Module } from '@nestjs/common';
         BannerPublicController,
         SepayPublicController,
         CultivationPublicController,
+        EContractPublicController,
     ],
     providers: [],
     exports: [],
@@ -55,6 +58,7 @@ import { Module } from '@nestjs/common';
         BannerModule,
         SepayModule,
         CultivationModule,
+        EContractModule,
     ],
 })
 export class RoutesPublicModule {}

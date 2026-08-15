@@ -13,6 +13,9 @@ export enum EnumNotificationProcess {
     resetTwoFactorByAdmin = 'resetTwoFactorByAdmin',
     publishTermPolicy = 'publishTermPolicy',
     userAcceptTermPolicy = 'userAcceptTermPolicy',
+    orderSuccess = 'orderSuccess',
+    contractCreated = 'contractCreated',
+    contractSigned = 'contractSigned',
 }
 
 export enum EnumNotificationPushProcess {

@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    Logger,
     NotFoundException,
     OnModuleInit,
     UnauthorizedException,
@@ -23,15 +24,20 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
 import { PaymentGatewayRegistry } from '@modules/payment-gateway/services/payment-gateway.registry';
 import { IPaymentQrInfo } from '@modules/payment-gateway/interfaces/payment-gateway.interface';
 import { ConfigService } from '@nestjs/config';
+import { NotificationSmtpService } from '@modules/notification/services/notification.smtp.service';
+import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
 
 @Injectable()
 export class OrdersService implements IOrdersService, OnModuleInit {
+    private readonly logger = new Logger(OrdersService.name);
+
     constructor(
         private readonly ordersRepository: OrdersRepository,
         private readonly databaseService: DatabaseService,
         private readonly paginationService: PaginationService,
         private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        private readonly notificationSmtpService: NotificationSmtpService
     ) {}
 
     async onModuleInit() {
@@ -976,6 +982,48 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                 },
                             },
                         });
+
+                        // Auto-generate E-Contract for plant ownership & care
+                        const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                        const existingContract = await tx.eContract.findUnique({
+                            where: { code: contractCode },
+                        });
+
+                        if (!existingContract) {
+                            const expiredAt = new Date();
+                            expiredAt.setFullYear(expiredAt.getFullYear() + 2); // 2 years contract by default
+
+                            const userProfile = await tx.businessProfile.findUnique({
+                                where: { userId: order.userId },
+                            });
+                            const userAcc = await tx.user.findUnique({
+                                where: { id: order.userId },
+                            });
+
+                            const customerName = order.customerName || userProfile?.fullName || userAcc?.name || 'Khách hàng';
+
+                            await tx.eContract.create({
+                                data: {
+                                    code: contractCode,
+                                    userId: order.userId,
+                                    title: `Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh #${order.code}`,
+                                    content: `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`,
+                                    status: 'pending',
+                                    contractValue: order.total,
+                                    paymentStatus: 'paid',
+                                    expiredAt,
+                                    contractType: 'purchase_and_care',
+                                    partyA: 'Công ty Cổ phần Sâm Ngọc Linh',
+                                    partyB: `${customerName} (SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
+                                    metadata: {
+                                        orderId: order.id,
+                                        orderCode: order.code,
+                                        totalPlants: totalPlantsPurchased,
+                                        createdAt: new Date().toISOString(),
+                                    } as Prisma.InputJsonValue,
+                                },
+                            });
+                        }
                     }
                 } else {
                     // If payment failed/cancelled, restore stock
@@ -1039,6 +1087,65 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                 return finalOrder;
             }
         );
+
+        if (isSuccess) {
+            // Trigger Email Notifications asynchronously
+            try {
+                const userAcc = await this.databaseService.user.findUnique({
+                    where: { id: order.userId },
+                    select: { email: true, name: true },
+                });
+                const customerEmail = (order.metadata as any)?.customerEmail || userAcc?.email;
+                if (customerEmail && this.notificationSmtpService?.isInitialized()) {
+                    const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
+                    const customerName = order.customerName || userAcc?.name || 'Quý khách';
+                    const sender = this.configService.get<string>('smtp.from') || 'noreply@wefarm.com.vn';
+
+                    // 1. Send Order Success Email
+                    await this.notificationSmtpService.send({
+                        templateName: EnumNotificationProcess.orderSuccess,
+                        sender,
+                        templateData: {
+                            customerName,
+                            orderCode: order.code,
+                            createdAt: new Date().toLocaleDateString('vi-VN'),
+                            subtotal: Number(order.subtotal || 0).toLocaleString('vi-VN'),
+                            vatAmount: Number((order.metadata as any)?.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN'),
+                            totalAmount: Number(order.total || 0).toLocaleString('vi-VN'),
+                            orderUrl: `${webUrl}/profile?tab=orders`,
+                            supportEmail: this.configService.get<string>('email.support') || 'admin@wefarm.com.vn',
+                        },
+                        recipients: [customerEmail],
+                    });
+
+                    // 2. If contract was created, send Contract Created Email
+                    const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                    const contract = await this.databaseService.eContract.findUnique({
+                        where: { code: contractCode },
+                    });
+
+                    if (contract) {
+                        await this.notificationSmtpService.send({
+                            templateName: EnumNotificationProcess.contractCreated,
+                            sender,
+                            templateData: {
+                                customerName,
+                                orderCode: order.code,
+                                contractCode: contract.code,
+                                partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
+                                partyB: contract.partyB || customerName,
+                                contractValue: Number(contract.contractValue || order.total).toLocaleString('vi-VN'),
+                                expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
+                                signContractUrl: `${webUrl}/profile?tab=contracts`,
+                            },
+                            recipients: [customerEmail],
+                        });
+                    }
+                }
+            } catch (emailErr) {
+                this.logger.error('Failed to send order/contract emails:', emailErr);
+            }
+        }
 
         return {
             data: {

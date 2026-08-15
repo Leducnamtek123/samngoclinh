@@ -46,7 +46,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
           toast.success('Đơn hàng đã được thanh toán thành công!');
-          router.push(`/${locale}/thanh-toan/ket-qua?order=${orderId}&status=success`);
+          router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
           return;
         }
 
@@ -98,7 +98,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
           toast.success('Xác nhận thanh toán thành công!');
-          router.push(`/${locale}/thanh-toan/ket-qua?order=${orderId}&status=success`);
+          router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
         }
       } catch {
         // Silent retry
@@ -128,7 +128,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
       if (data?.status === 'paid' || data?.status === 'completed') {
         clearCart();
         toast.success('Xác nhận thanh toán thành công!');
-        router.push(`/${locale}/thanh-toan/ket-qua?order=${orderId}&status=success`);
+        router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
       } else {
         toast.info('Hệ thống chưa ghi nhận giao dịch thành công. Vui lòng kiểm tra lại ứng dụng ngân hàng hoặc chờ trong giây lát.');
       }

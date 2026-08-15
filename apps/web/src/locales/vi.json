@@ -86,7 +86,22 @@
     "bottlesSupplied": "Chai rượu cung cấp",
     "latestNews": "Thông tin mới nhất",
     "latestNewsDesc": "Cập nhật các tin tức, hoạt động và bài viết mới nhất về Sâm Ngọc Linh",
-    "readMore": "Đọc tiếp"
+    "readMore": "Đọc tiếp",
+    "featuredProductsBadge": "SẢN PHẨM TUYỂN CHỌN",
+    "featuredProductsTitle": "Sản Phẩm Nổi Bật & Tinh Hoa Sâm Ngọc Linh",
+    "featuredProductsDesc": "Tuyển chọn những sản phẩm sâm Ngọc Linh chuẩn nguồn gốc Kon Tum, đạt chuẩn kiểm nghiệm và ứng dụng công nghệ số hóa minh bạch.",
+    "tabAll": "Tất cả",
+    "tabPlants": "Cây giống Sâm",
+    "tabWine": "Rượu Sâm Ngọc Linh",
+    "tabProducts": "Chế phẩm & Trà Sâm",
+    "addToCart": "Thêm giỏ hàng",
+    "buyNow": "Mua ngay",
+    "viewDetails": "Chi tiết",
+    "viewAllProducts": "Xem tất cả sản phẩm",
+    "originKonTum": "Kon Tum 1500m+",
+    "ageYear": "Tuổi: {year} năm",
+    "stock": "Còn: {count} sp",
+    "addedToCart": "Đã thêm \"{name}\" vào giỏ hàng!"
   },
   "nav": {
     "home": "Trang chủ",

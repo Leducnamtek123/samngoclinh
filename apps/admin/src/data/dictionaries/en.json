@@ -447,5 +447,56 @@
     "search": "Search...",
     "noResults": "No results found.",
     "typeCommand": "Type a command or search..."
+  },
+  "kyc": {
+    "title": "Investor eKYC Approval & Verification",
+    "subtitle": "Review citizen identity cards (CCCD/ID) and digital signatures for electronic contract signing and transaction authorization",
+    "requestListTitle": "eKYC Verification Request Queue",
+    "loadingList": "Loading eKYC document list...",
+    "emptyList": "No pending eKYC verification requests.",
+    "columns": {
+      "user": "User",
+      "idCardNumber": "ID Card Number",
+      "submitDate": "Submitted Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "review": "Review & Action",
+      "approve": "Approve eKYC",
+      "reject": "Reject Document",
+      "confirmReject": "Confirm Rejection",
+      "cancel": "Cancel"
+    },
+    "modal": {
+      "title": "eKYC Document Details",
+      "fullName": "Full Name:",
+      "idNumber": "ID Number:",
+      "frontImage": "Front ID Photo",
+      "backImage": "Back ID Photo",
+      "digitalSignature": "Personal Digital Signature",
+      "noSignature": "No digital signature registered yet",
+      "rejectReasonTitle": "eKYC Rejection Reason:",
+      "rejectReasonPlaceholder": "Enter detailed reason so the user can fix and re-submit...",
+      "presets": {
+        "blurry": "Image is blurry / illegible ID number",
+        "glare": "Flash glare / cropped corners on card",
+        "mismatch": "Full name or birth date does not match profile",
+        "expired": "Identification card has expired",
+        "notOriginal": "Not an original photo of government ID card"
+      }
+    },
+    "notifications": {
+      "approveSuccess": "eKYC approved successfully",
+      "approveError": "Error occurred while approving eKYC",
+      "rejectSuccess": "eKYC rejected successfully",
+      "rejectError": "Error occurred while rejecting eKYC",
+      "requireReason": "Please provide a rejection reason"
+    }
   }
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xác Nhận Thanh Toán Thành Công</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f5; color: #333333;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f7f5; padding: 30px 10px;">
+    <tr>
+      <td align="center">
+        <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color: #1C3F24; padding: 30px; text-align: center; color: #ffffff;">
+              <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">
+                RƯỢU SÂM NGỌC LINH
+              </h1>
+              <p style="margin: 6px 0 0 0; font-size: 13px; color: #A7F3D0; font-weight: 500;">
+                Tinh hoa dược liệu từ đại ngàn Kon Tum
+              </p>
+            </td>
+          </tr>
+
+          <!-- Success Alert -->
+          <tr>
+            <td style="padding: 30px 30px 15px 30px; text-align: center;">
+              <div style="display: inline-block; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 50px; padding: 8px 20px; color: #065F46; font-size: 14px; font-weight: 700; margin-bottom: 12px;">
+                ✓ Thanh Toán Thành Công
+              </div>
+              <h2 style="margin: 10px 0 5px 0; color: #1C3F24; font-size: 20px; font-weight: 700;">
+                Cảm ơn quý khách {{customerName}}!
+              </h2>
+              <p style="margin: 0; color: #6B7280; font-size: 14px; line-height: 1.5;">
+                Đơn hàng <strong>#{{orderCode}}</strong> của quý khách đã được thanh toán thành công và đang được chuẩn bị để xử lý.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Order Summary Card -->
+          <tr>
+            <td style="padding: 15px 30px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="12" style="background-color: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB; font-size: 14px;">
+                <tr>
+                  <td style="color: #6B7280; width: 40%; border-bottom: 1px solid #E5E7EB;">Mã đơn hàng:</td>
+                  <td style="color: #111827; font-weight: 700; text-align: right; border-bottom: 1px solid #E5E7EB;">#{{orderCode}}</td>
+                </tr>
+                <tr>
+                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Ngày đặt hàng:</td>
+                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">{{createdAt}}</td>
+                </tr>
+                <tr>
+                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Phương thức thanh toán:</td>
+                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">Chuyển khoản VietQR / SePay</td>
+                </tr>
+                <tr>
+                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Tạm tính (Subtotal):</td>
+                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">{{subtotal}} VNĐ</td>
+                </tr>
+                <tr>
+                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Thuế VAT (8%):</td>
+                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">{{vatAmount}} VNĐ</td>
+                </tr>
+                <tr>
+                  <td style="color: #1C3F24; font-weight: 700; font-size: 15px;">Tổng cộng đã thanh toán:</td>
+                  <td style="color: #1C3F24; font-weight: 800; font-size: 17px; text-align: right;">{{totalAmount}} VNĐ</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Action CTA Button -->
+          <tr>
+            <td style="padding: 20px 30px; text-align: center;">
+              <a href="{{orderUrl}}" style="display: inline-block; background-color: #1C3F24; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(28,63,36,0.25);">
+                Xem Chi Tiết Đơn Hàng
+              </a>
+            </td>
+          </tr>
+
+          <!-- Support Footer -->
+          <tr>
+            <td style="background-color: #F3F4F6; padding: 20px 30px; text-align: center; border-top: 1px solid #E5E7EB; font-size: 12px; color: #6B7280; line-height: 1.6;">
+              <p style="margin: 0 0 6px 0;">Nếu quý khách có bất kỳ thắc mắc nào, vui lòng liên hệ hotline: <strong>0967 234 234</strong> hoặc email <strong>{{supportEmail}}</strong></p>
+              <p style="margin: 0; color: #9CA3AF;">© Rượu Sâm Ngọc Linh – Tinh hoa từ đại ngàn Kon Tum.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
