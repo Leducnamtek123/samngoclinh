@@ -59,7 +59,7 @@
         "usernameNotAllowed": "Tên đăng nhập này không được phép.",
         "usernameContainBadWord": "Tên đăng nhập chứa từ ngữ không phù hợp.",
         "verificationTokenInvalid": "Mã xác thực không hợp lệ hoặc đã hết hạn.",
-        "verificationEmailResendLimitExceeded": "Bạn đã vượt quá giới hạn gửi lại email xác thực. Vui lòng thử lại sau {minutes} phút.",
+        "verificationEmailResendLimitExceeded": "Bạn đã vượt quá giới hạn gửi lại email xác thực. Vui lòng thử lại sau {resendIn} phút.",
         "forgotPasswordRequestLimitExceeded": "Bạn đã vượt quá giới hạn yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau {minutes} phút.",
         "importEmailExist": "Đã tồn tại người dùng với các email được cung cấp. Email: {emails}"
     }

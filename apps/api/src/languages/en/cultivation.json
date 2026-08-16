@@ -2,6 +2,8 @@
     "trees": "Tree portfolio loaded successfully.",
     "gardens": "Garden summary loaded successfully.",
     "beds": "Bed list loaded successfully.",
+    "publicGardens": "Garden list loaded successfully.",
+    "publicGardenPurchase": "Garden purchase options loaded successfully.",
     "publicBeds": "Bed list loaded successfully.",
     "publicBedDetail": "Bed detail loaded successfully."
 }

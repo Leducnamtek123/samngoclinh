@@ -7,6 +7,7 @@ export interface IConfigSmtp {
     username: string | null;
     password: string | null;
     from: string | null;
+    fromName: string | null;
 }
 
 export default registerAs(
@@ -18,5 +19,6 @@ export default registerAs(
         username: process.env.SMTP_USER ?? null,
         password: process.env.SMTP_PASSWORD ?? null,
         from: process.env.SMTP_FROM ?? null,
+        fromName: process.env.SMTP_FROM_NAME ?? null,
     })
 );

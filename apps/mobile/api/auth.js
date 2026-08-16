@@ -186,9 +186,10 @@ export async function changePassword({ oldPassword, newPassword }) {
 
 // Cập nhật hồ sơ (tên + giới tính + ngày sinh). Backend yêu cầu countryId; gender bắt buộc ('male' | 'female').
 // birthDate ('YYYY-MM-DD') chỉ gửi khi có giá trị.
-export async function updateProfile({ name, gender, countryId, birthDate }) {
+export async function updateProfile({ name, gender, countryId, birthDate, identityNumber }) {
   const body = { name, gender, countryId };
   if (birthDate) body.birthDate = birthDate;
+  if (identityNumber) body.identityNumber = identityNumber;
   return withAuth((token) =>
     apiRequest('/shared/user/profile/update', {
       method: 'PUT',

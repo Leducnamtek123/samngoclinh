@@ -93,6 +93,7 @@ export interface INotificationEmailSendPayload {
     notificationId: string;
     email: string;
     username: string;
+    name?: string;
     cc?: string[];
     bcc?: string[];
 }

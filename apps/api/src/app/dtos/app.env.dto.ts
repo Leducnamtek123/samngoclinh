@@ -253,6 +253,10 @@ export class AppEnvDto {
     @IsString()
     SMTP_FROM?: string;
 
+    @IsOptional()
+    @IsString()
+    SMTP_FROM_NAME?: string;
+
     @IsNotEmpty()
     @IsString()
     CACHE_REDIS_URL: string;

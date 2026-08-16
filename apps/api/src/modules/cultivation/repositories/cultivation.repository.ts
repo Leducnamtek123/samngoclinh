@@ -8,6 +8,9 @@ import {
     ICultivationGardenSummary,
     ICultivationPublicBedDetail,
     ICultivationPublicBedItem,
+    ICultivationPublicGardenItem,
+    ICultivationPurchaseData,
+    ICultivationPurchaseTreeGroup,
     ICultivationTreeAgeItem,
     ICultivationTreeDetail,
 } from '@modules/cultivation/interfaces/cultivation.interface';
@@ -625,6 +628,57 @@ export class CultivationRepository {
                 ...health,
                 ...ownerUserId,
             },
+        });
+    }
+
+    async getGardenPurchaseData(gardenCode: string): Promise<ICultivationPurchaseData> {
+        const garden = await this.databaseService.cultivationGarden.findUnique({
+            where: { code: gardenCode },
+            select: { code: true, name: true },
+        });
+        if (!garden) {
+            return { garden: null, beds: [], treeGroups: [], priceByAge: {} };
+        }
+
+        const beds = await this.databaseService.cultivationBed.findMany({
+            where: { gardenCode, status: 'active' },
+            select: { code: true, name: true },
+            orderBy: { name: 'asc' },
+        });
+
+        const bedCodes = beds.map(b => b.code);
+        const groups = bedCodes.length
+            ? await this.databaseService.cultivationTree.groupBy({
+                  by: ['bedCode', 'ageYear'],
+                  where: { bedCode: { in: bedCodes }, status: 'available' },
+                  _sum: { quantity: true },
+              })
+            : [];
+        const treeGroups: ICultivationPurchaseTreeGroup[] = groups.map(g => ({
+            bedCode: g.bedCode ?? '',
+            ageYear: g.ageYear,
+            quantity: g._sum.quantity ?? 0,
+        }));
+
+        const ageYears = [...new Set(treeGroups.map(g => g.ageYear))];
+        const catalogs = ageYears.length
+            ? await this.databaseService.catalogPlant.findMany({
+                  where: { ageYear: { in: ageYears } },
+                  select: { ageYear: true, price: true },
+              })
+            : [];
+        const priceByAge: Record<number, number> = {};
+        for (const c of catalogs) {
+            priceByAge[c.ageYear] = c.price;
+        }
+
+        return { garden, beds, treeGroups, priceByAge };
+    }
+
+    async listPublicGardens(): Promise<ICultivationPublicGardenItem[]> {
+        return this.databaseService.cultivationGarden.findMany({
+            orderBy: { createdAt: 'asc' },
+            select: { code: true, name: true },
         });
     }
 

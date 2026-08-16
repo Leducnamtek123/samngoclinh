@@ -17,7 +17,6 @@ import {
 import { UserRepository } from '@modules/user/repositories/user.repository';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { flatten } from 'flat';
 import { Job } from 'bullmq';
 import { IQueueResponse } from '@queues/interfaces/queue.interface';
 import { UserUtil } from '@modules/user/utils/user.util';
@@ -50,7 +49,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         this.noreplyEmail = this.configService.get<string>('email.noreply')!;
         this.supportEmail = this.configService.get<string>('email.support')!;
 
-        this.homeName = this.configService.get<string>('home.name')!;
+        this.homeName = this.configService.get<string>('app.name')!;
         this.homeUrl = this.configService.get<string>('home.url')!;
 
         this.batchSize = this.configService.get<number>('email.batchSize')!;
@@ -276,7 +275,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         >
     ): Promise<IQueueResponse> {
         try {
-            const { email, username, cc, bcc, userId } = job.data.send;
+            const { email, username, name, cc, bcc, userId } = job.data.send;
             const {
                 expiredAt,
                 reference,
@@ -300,6 +299,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: name ?? username,
                     link,
                     otp: otp ?? '',
                     reference,
@@ -472,13 +472,21 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         >
     ): Promise<IQueueResponse> {
         try {
-            const { email, username, cc, bcc } = job.data.send;
+            const { email, username, name, cc, bcc } = job.data.send;
             const {
                 loginFrom,
                 loginWith,
                 loginAt,
                 requestLog: { userAgent, ipAddress },
             } = job.data.data!;
+
+            const browser =
+                `${userAgent?.browser?.name ?? ''} ${userAgent?.browser?.version ?? ''}`.trim() ||
+                'Unknown';
+            const os =
+                `${userAgent?.os?.name ?? ''} ${userAgent?.os?.version ?? ''}`.trim() ||
+                'Unknown';
+            const device = this.helperService.resolveDevice(userAgent);
 
             const result = await this.smtpService.send({
                 templateName: EnumNotificationProcess.newDeviceLogin,
@@ -487,12 +495,15 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: name ?? username,
                     loginFrom,
                     loginWith,
                     loginAt: this.helperService.dateFormatToRFC2822(
                         this.helperService.dateCreateFromIso(loginAt)
                     ),
-                    userAgent: flatten(userAgent),
+                    browser,
+                    device,
+                    os,
                     ipAddress: ipAddress ?? '',
                 },
                 ...(cc?.length && { cc }),

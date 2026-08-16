@@ -52,7 +52,7 @@ export class UserUtil {
     private readonly verificationOtpLength: number;
     readonly verificationExpiredInMinutes: number;
     private readonly verificationTokenLength: number;
-    private readonly verificationResendInMinutes: number;
+    readonly verificationResendInMinutes: number;
     private readonly verificationLinkBaseUrl: string;
 
     private readonly profanity: Profanity;

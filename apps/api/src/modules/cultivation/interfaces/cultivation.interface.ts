@@ -29,6 +29,29 @@ export interface ICultivationTreeAgeItem {
     count: number;
 }
 
+export interface ICultivationPublicGardenItem {
+    code: string;
+    name: string;
+}
+
+export interface ICultivationPurchaseBed {
+    code: string;
+    name: string;
+}
+
+export interface ICultivationPurchaseTreeGroup {
+    bedCode: string;
+    ageYear: number;
+    quantity: number;
+}
+
+export interface ICultivationPurchaseData {
+    garden: { code: string; name: string } | null;
+    beds: ICultivationPurchaseBed[];
+    treeGroups: ICultivationPurchaseTreeGroup[];
+    priceByAge: Record<number, number>;
+}
+
 export interface ICultivationPublicBedItem {
     code: string;
     name: string;

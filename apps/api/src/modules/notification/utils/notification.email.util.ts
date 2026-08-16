@@ -175,6 +175,7 @@ export class NotificationEmailUtil {
         {
             email,
             username,
+            name,
             userId,
             notificationId,
         }: INotificationEmailSendPayload,
@@ -183,6 +184,7 @@ export class NotificationEmailUtil {
             expiredInMinutes,
             link,
             reference,
+            otp,
         }: INotificationVerificationEmailPayload
     ): Promise<void> {
         const payload: INotificationEmailWorkerPayload<INotificationVerificationEmailPayload> =
@@ -191,6 +193,7 @@ export class NotificationEmailUtil {
                     userId,
                     email,
                     username,
+                    name,
                     notificationId,
                 },
                 data: {
@@ -198,6 +201,7 @@ export class NotificationEmailUtil {
                     expiredInMinutes,
                     link,
                     reference,
+                    otp,
                 },
             };
 
@@ -430,6 +434,7 @@ export class NotificationEmailUtil {
         {
             email,
             username,
+            name,
             userId,
             notificationId,
         }: INotificationEmailSendPayload,
@@ -446,6 +451,7 @@ export class NotificationEmailUtil {
                     userId,
                     email,
                     username,
+                    name,
                     notificationId,
                 },
                 data: {

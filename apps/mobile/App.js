@@ -23,6 +23,10 @@ import ComingSoonScreen from './screens/ComingSoonScreen';
 import ProductDetailScreen from './screens/ProductDetailScreen';
 import PlantDetailScreen from './screens/PlantDetailScreen';
 import TreeListScreen from './screens/TreeListScreen';
+import GardenPurchaseScreen from './screens/GardenPurchaseScreen';
+import GardenPurchaseScopeScreen from './screens/GardenPurchaseScopeScreen';
+import TermsOfUseScreen from './screens/TermsOfUseScreen';
+import ContractScreen from './screens/ContractScreen';
 import CartScreen from './screens/CartScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import OrderDetailScreen from './screens/OrderDetailScreen';
@@ -101,6 +105,26 @@ function RootNavigator() {
       <Stack.Screen
         name="PlantDetail"
         component={PlantDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="GardenPurchase"
+        component={GardenPurchaseScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="GardenPurchaseScope"
+        component={GardenPurchaseScopeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TermsOfUse"
+        component={TermsOfUseScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Contract"
+        component={ContractScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />

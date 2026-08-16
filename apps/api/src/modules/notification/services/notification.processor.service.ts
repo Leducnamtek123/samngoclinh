@@ -112,6 +112,7 @@ export class NotificationProcessorService implements INotificationProcessorServi
             userId: user.id,
             email: user.email,
             username: user.username,
+            name: user.name ?? user.username,
             notificationId: verificationEmailNotificationId,
         };
 
@@ -223,6 +224,7 @@ export class NotificationProcessorService implements INotificationProcessorServi
             userId: user.id,
             email: user.email,
             username: user.username,
+            name: user.name ?? user.username,
             notificationId,
         };
 
@@ -565,6 +567,7 @@ export class NotificationProcessorService implements INotificationProcessorServi
             userId: user.id,
             email: user.email,
             username: user.username,
+            name: user.name ?? user.username,
             notificationId,
         };
         const device = this.helperService.resolveDevice(

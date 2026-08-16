@@ -135,6 +135,7 @@ model User {
   status          EnumUserStatus     @default(active)
   gender          EnumUserGender?
   birthDate       DateTime?
+  identityNumber  String?
   countryId       String
   lastLoginAt     DateTime?
   lastIPAddress   String?

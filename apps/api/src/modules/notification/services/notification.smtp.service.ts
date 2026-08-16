@@ -57,6 +57,18 @@ export class NotificationSmtpService implements OnModuleInit {
         return this.configService.get<string | null>('smtp.from') ?? null;
     }
 
+    /** Prefixes a bare from-address with the sender display name from `SMTP_FROM_NAME` (fallback `<app name> Team`). */
+    private formatFrom(address: string): string {
+        if (address.includes('<')) {
+            return address;
+        }
+        const appName = this.configService.get<string>('app.name');
+        const fromName =
+            this.configService.get<string>('smtp.fromName') ??
+            (appName ? `${appName} Team` : null);
+        return fromName ? `"${fromName}" <${address}>` : address;
+    }
+
     private render(
         templateName: string,
         data?: Record<string, string>
@@ -99,7 +111,7 @@ export class NotificationSmtpService implements OnModuleInit {
         const { subject, html } = this.render(templateName, templateData);
 
         return this.transporter.sendMail({
-            from: this.from ?? sender,
+            from: this.formatFrom(this.from ?? sender),
             to: recipients,
             cc,
             bcc,
@@ -130,7 +142,7 @@ export class NotificationSmtpService implements OnModuleInit {
 
             results.push(
                 await this.transporter.sendMail({
-                    from: this.from ?? sender,
+                    from: this.formatFrom(this.from ?? sender),
                     to: item.recipient,
                     subject,
                     html,

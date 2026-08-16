@@ -4,6 +4,8 @@ import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
 import { CultivationPublicBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed.response.dto';
 import { CultivationPublicBedDetailResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed-detail.response.dto';
+import { CultivationPublicGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-garden.response.dto';
+import { CultivationPurchaseResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-purchase.response.dto';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
@@ -24,6 +26,8 @@ import { CultivationUpdateTreeRequestDto } from '@modules/cultivation/dtos/reque
 
 export interface ICultivationService {
     trees(userId: string): Promise<IResponseReturn<CultivationTreeResponseDto[]>>;
+    publicGardens(): Promise<IResponseReturn<CultivationPublicGardenResponseDto[]>>;
+    gardenPurchase(gardenCode: string): Promise<IResponseReturn<CultivationPurchaseResponseDto>>;
     publicBedsByAge(ageYear: number | null): Promise<IResponseReturn<CultivationPublicBedResponseDto[]>>;
     publicBedDetail(code: string): Promise<IResponseReturn<CultivationPublicBedDetailResponseDto>>;
     gardens(userId: string): Promise<IResponseReturn<CultivationGardenResponseDto>>;

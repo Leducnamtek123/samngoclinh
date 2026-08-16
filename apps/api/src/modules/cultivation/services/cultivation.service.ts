@@ -9,6 +9,13 @@ import { CultivationGardenResponseDto } from '@modules/cultivation/dtos/response
 import { CultivationBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.bed.response.dto';
 import { CultivationPublicBedResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed.response.dto';
 import { CultivationPublicBedDetailResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-bed-detail.response.dto';
+import { CultivationPublicGardenResponseDto } from '@modules/cultivation/dtos/response/cultivation.public-garden.response.dto';
+import {
+    CultivationPurchaseLineResponseDto,
+    CultivationPurchaseResponseDto,
+    CultivationPurchaseScopeResponseDto,
+    CultivationPurchaseSplitResponseDto,
+} from '@modules/cultivation/dtos/response/cultivation.public-purchase.response.dto';
 import { CultivationCreateGardenRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-garden.request.dto';
 import { CultivationCreateBedRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-bed.request.dto';
 import { CultivationCreateTreeRequestDto } from '@modules/cultivation/dtos/request/cultivation.create-tree.request.dto';
@@ -23,8 +30,12 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
 import {
     ICultivationBedDetail,
     ICultivationBedLocationsGenerateResult,
+    ICultivationPurchaseTreeGroup,
     ICultivationTreeDetail,
 } from '@modules/cultivation/interfaces/cultivation.interface';
+
+const CultivationVatRate = 0.08;
+const CultivationPaymentSplitThreshold = 500_000_000;
 
 @Injectable()
 export class CultivationService implements ICultivationService {
@@ -39,6 +50,136 @@ export class CultivationService implements ICultivationService {
         return {
             data: groups,
         };
+    }
+
+    async publicGardens(): Promise<IResponseReturn<CultivationPublicGardenResponseDto[]>> {
+        const gardens = await this.cultivationRepository.listPublicGardens();
+
+        return {
+            data: gardens,
+        };
+    }
+
+    async gardenPurchase(
+        gardenCode: string
+    ): Promise<IResponseReturn<CultivationPurchaseResponseDto>> {
+        const { garden, beds, treeGroups, priceByAge } =
+            await this.cultivationRepository.getGardenPurchaseData(gardenCode);
+        if (!garden) {
+            throw new NotFoundException('Garden not found');
+        }
+
+        const scopes: CultivationPurchaseScopeResponseDto[] = [
+            this.buildPurchaseScope(
+                'all',
+                null,
+                garden.name,
+                this.groupPurchaseLines(treeGroups, priceByAge)
+            ),
+            ...beds.map(bed =>
+                this.buildPurchaseScope(
+                    bed.code,
+                    bed.name,
+                    garden.name,
+                    this.groupPurchaseLines(
+                        treeGroups.filter(group => group.bedCode === bed.code),
+                        priceByAge
+                    )
+                )
+            ),
+        ];
+
+        return {
+            data: {
+                garden: { code: garden.code, name: garden.name },
+                scopes,
+            },
+        };
+    }
+
+    private groupPurchaseLines(
+        groups: ICultivationPurchaseTreeGroup[],
+        priceByAge: Record<number, number>
+    ): CultivationPurchaseLineResponseDto[] {
+        const byAge = new Map<number, number>();
+        for (const group of groups) {
+            byAge.set(group.ageYear, (byAge.get(group.ageYear) ?? 0) + group.quantity);
+        }
+        return [...byAge.entries()]
+            .sort((a, b) => a[0] - b[0])
+            .map(([ageYear, treeCount]) =>
+                this.buildPurchaseLine(ageYear, treeCount, priceByAge)
+            );
+    }
+
+    private buildPurchaseLine(
+        ageYear: number,
+        treeCount: number,
+        priceByAge: Record<number, number>
+    ): CultivationPurchaseLineResponseDto {
+        const pricePerTree = priceByAge[ageYear] ?? 0;
+        return {
+            ageYear,
+            treeCount,
+            pricePerTree,
+            lineTotal: pricePerTree * treeCount,
+        };
+    }
+
+    private buildPurchaseScope(
+        key: string,
+        bedName: string | null,
+        gardenName: string,
+        lines: CultivationPurchaseLineResponseDto[]
+    ): CultivationPurchaseScopeResponseDto {
+        const treeCount = lines.reduce((sum, line) => sum + line.treeCount, 0);
+        const subtotal = lines.reduce((sum, line) => sum + line.lineTotal, 0);
+        const vat = Math.round(subtotal * CultivationVatRate);
+        return {
+            key,
+            bedName,
+            gardenName,
+            treeCount,
+            lines,
+            subtotal,
+            vat,
+            total: subtotal + vat,
+            split: this.buildPurchaseSplit(lines),
+        };
+    }
+
+    private buildPurchaseSplit(
+        lines: CultivationPurchaseLineResponseDto[]
+    ): CultivationPurchaseSplitResponseDto[] {
+        const orders: CultivationPurchaseSplitResponseDto[] = [];
+        let count = 0;
+        let subtotal = 0;
+        const flush = (): void => {
+            if (count === 0) {
+                return;
+            }
+            orders.push({
+                index: orders.length + 1,
+                treeCount: count,
+                amount: subtotal + Math.round(subtotal * CultivationVatRate),
+            });
+            count = 0;
+            subtotal = 0;
+        };
+        for (const line of lines) {
+            for (let i = 0; i < line.treeCount; i++) {
+                const nextSubtotal = subtotal + line.pricePerTree;
+                const nextTotal =
+                    nextSubtotal + Math.round(nextSubtotal * CultivationVatRate);
+                if (count > 0 && nextTotal > CultivationPaymentSplitThreshold) {
+                    flush();
+                }
+                subtotal += line.pricePerTree;
+                count += 1;
+            }
+        }
+        flush();
+        return orders;
     }
 
     async publicBedsByAge(

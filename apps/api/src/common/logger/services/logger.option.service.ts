@@ -62,6 +62,8 @@ export class LoggerOptionService {
 
     async createOptions(): Promise<Params> {
         return {
+            // @note new path-to-regexp syntax; overrides nestjs-pino's legacy '*' default that triggers the "/api/*" route warning
+            forRoutes: ['{*wildcard}'],
             pinoHttp: {
                 genReqId: this.getReqId,
                 formatters: {

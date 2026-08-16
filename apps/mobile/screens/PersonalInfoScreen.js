@@ -87,6 +87,11 @@ export default function PersonalInfoScreen({ navigation }) {
           <InfoRow icon="mail-outline" label="Email" value={user?.email || 'Chưa cập nhật'} />
           <InfoRow icon="person-outline" label="Giới tính" value={gender} />
           <InfoRow icon="calendar-outline" label="Ngày sinh" value={birthDate} />
+          <InfoRow
+            icon="card-outline"
+            label="Số CCCD"
+            value={user?.identityNumber || 'Chưa cập nhật'}
+          />
           <InfoRow icon="call-outline" label="Số điện thoại" value={phoneDisplay} last />
         </View>
 

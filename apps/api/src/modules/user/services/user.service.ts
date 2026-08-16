@@ -1266,13 +1266,21 @@ export class UserService implements IUserService {
             const canResendAt = this.helperService.dateForward(
                 lastVerification.createdAt,
                 Duration.fromObject({
-                    minutes: this.userUtil.verificationExpiredInMinutes,
+                    minutes: this.userUtil.verificationResendInMinutes,
                 })
             );
 
             if (today < canResendAt) {
+                const resendIn = Math.max(
+                    1,
+                    Math.ceil(
+                        this.helperService
+                            .dateDiff(canResendAt, today)
+                            .as('minutes')
+                    )
+                );
                 throw new UserVerificationEmailResendLimitExceededException(
-                    this.helperService.dateDiff(today, canResendAt).minutes
+                    resendIn
                 );
             }
         }
@@ -1326,13 +1334,21 @@ export class UserService implements IUserService {
             const canResendAt = this.helperService.dateForward(
                 lastVerification.createdAt,
                 Duration.fromObject({
-                    minutes: this.userUtil.verificationExpiredInMinutes,
+                    minutes: this.userUtil.verificationResendInMinutes,
                 })
             );
 
             if (today < canResendAt) {
+                const resendIn = Math.max(
+                    1,
+                    Math.ceil(
+                        this.helperService
+                            .dateDiff(canResendAt, today)
+                            .as('minutes')
+                    )
+                );
                 throw new UserVerificationEmailResendLimitExceededException(
-                    this.helperService.dateDiff(today, canResendAt).minutes
+                    resendIn
                 );
             }
         }

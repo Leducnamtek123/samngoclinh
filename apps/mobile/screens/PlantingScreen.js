@@ -72,6 +72,20 @@ export default function PlantingScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={() => load('refresh')} />
         }
       >
+        <Pressable
+          onPress={() => navigation.navigate('GardenPurchase')}
+          style={({ pressed }) => [styles.buyByGarden, pressed && styles.pressed]}
+        >
+          <View style={styles.buyIcon}>
+            <Ionicons name="albums-outline" size={22} color="#fff" />
+          </View>
+          <View style={styles.buyText}>
+            <Text style={styles.buyTitle}>Mua theo luống / vườn</Text>
+            <Text style={styles.buyDesc}>Mua trọn luống hoặc cả vườn sâm</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={colors.primary} />
+        </Pressable>
+
         {loading ? (
           <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
         ) : plants.length ? (
@@ -149,6 +163,28 @@ const styles = StyleSheet.create({
   scroll: { padding: spacing.lg, gap: spacing.lg },
   loader: { marginTop: spacing.xl },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
+
+  buyByGarden: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: spacing.md,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+  },
+  buyIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buyText: { flex: 1 },
+  buyTitle: { fontSize: 16, fontWeight: '800', color: colors.text },
+  buyDesc: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
 
   card: {
     flexDirection: 'row',

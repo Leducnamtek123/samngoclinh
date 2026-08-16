@@ -144,6 +144,13 @@ export class UserDto extends DatabaseResponseDto {
 
     @ApiProperty({
         required: false,
+        example: '079090000123',
+    })
+    @Expose()
+    identityNumber?: string;
+
+    @ApiProperty({
+        required: false,
         description: 'Last login time of user',
         example: faker.date.recent(),
     })

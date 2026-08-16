@@ -2,6 +2,8 @@
     "trees": "Đã tải danh mục cây thành công.",
     "gardens": "Đã tải thông tin vườn thành công.",
     "beds": "Đã tải danh sách luống trồng thành công.",
+    "publicGardens": "Đã tải danh sách vườn thành công.",
+    "publicGardenPurchase": "Đã tải thông tin mua theo luống/vườn thành công.",
     "publicBeds": "Đã tải danh sách luống trồng thành công.",
     "publicBedDetail": "Đã tải chi tiết luống trồng thành công."
 }
