@@ -22,28 +22,11 @@ import {
 } from "@/components/ui/select"
 import { DataTable } from "@/components/shared/data-table"
 
-export interface Order {
-  id: string
-  code: string
-  status: string
-  total: number
-  paymentMethod?: string | null
-  customerName?: string | null
-  customerPhone?: string | null
-  customerNote?: string | null
-  createdAt?: string
-}
+import type { Order, PaginationMeta } from "@/types"
 
 interface OrdersTableProps {
   initialOrders: Order[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

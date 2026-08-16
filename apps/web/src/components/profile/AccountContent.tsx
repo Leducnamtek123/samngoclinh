@@ -14,7 +14,7 @@ export const AccountContent: React.FC<AccountContentProps> = ({
   return (
     <div
       key={activeTab}
-      className="w-full transition-all duration-200 animate-in fade-in-50 slide-in-from-bottom-2"
+      className="w-full transition-opacity duration-200 animate-in fade-in-50 slide-in-from-bottom-2"
     >
       {children}
     </div>

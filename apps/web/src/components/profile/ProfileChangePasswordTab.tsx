@@ -55,16 +55,15 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
         err?.message ||
           'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu hiện tại.'
       );
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   return (
     <Form
       form={form}
       onSubmit={form.handleSubmit(onValidSubmit)}
-      className="space-y-6 max-w-lg animate-in fade-in duration-200"
+      className="space-y-6 max-w-lg transition-opacity animate-in fade-in duration-200"
     >
       <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100 dark:border-gray-800">
         <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">

@@ -41,15 +41,6 @@ export const signInEmailSchema = z.object({
 
 export type SignInEmailFormValues = z.infer<typeof signInEmailSchema>;
 
-// Sign In Phone Schema
-export const signInPhoneSchema = z.object({
-  phone: phoneSchema,
-  otp: z.string().length(6, 'validation.otp.length'),
-  remember: z.boolean().optional(),
-});
-
-export type SignInPhoneFormValues = z.infer<typeof signInPhoneSchema>;
-
 // Sign Up Schema
 export const signUpSchema = z.object({
   fullName: z

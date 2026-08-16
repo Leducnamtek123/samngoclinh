@@ -1,29 +1,91 @@
 {
-  "title": "Plant & Tree Management",
-  "subtitle": "Manage Ginseng trees, gardens, beds, and growth logs",
-  "addTree": "Add Plant/Tree",
-  "editTree": "Edit Plant/Tree",
-  "treeDetails": "Plant Details",
+  "title": "Plant & Ginseng Garden Management",
+  "subtitle": "Track Ginseng plants, garden areas, beds, and growth logs",
+  "addTree": "Add Plant",
+  "editTree": "Edit Plant",
+  "treeDetails": "Ginseng Plant Details",
+  "tableTitle": "Plant List",
+  "tableDescription": "Displaying a total of {count} ginseng plants being cultivated and monitored.",
+  "placeholders": {
+    "search": "Search plants...",
+    "selectBed": "-- Select Bed --",
+    "noBed": "-- No Bed Assigned --",
+    "selectOwner": "-- Select Owner --",
+    "selectHealthStatus": "-- Select Health --",
+    "selectStatus": "-- Select Status --",
+    "selectDate": "Select date"
+  },
+  "filters": {
+    "bed": "Filter by Bed",
+    "allBeds": "All Beds",
+    "status": "Status",
+    "allStatus": "All Statuses",
+    "search": "Search"
+  },
   "fields": {
-    "code": "Tree Code",
+    "code": "Plant Code",
     "name": "Plant Name",
     "garden": "Garden",
     "bed": "Bed",
+    "bedCode": "Bed Code",
     "plantedDate": "Planted Date",
-    "age": "Age (Years)",
+    "plantedAt": "Planted Date",
+    "age": "Plant Age",
+    "ageYear": "Age (Years)",
     "healthStatus": "Health Status",
     "quantity": "Quantity",
     "owner": "Owner",
     "carePackage": "Care Package",
     "protectionPackage": "Protection Package",
+    "priceBought": "Purchase Price (VND)",
+    "lastCareDate": "Last Care Date",
+    "nextCareDate": "Next Care Date",
+    "expectedHarvestAt": "Expected Harvest Date",
     "notes": "Notes",
-    "qrCode": "QR Code"
+    "qrCode": "QR Code",
+    "status": "Status"
+  },
+  "health": {
+    "good": "Healthy",
+    "normal": "Normal",
+    "poor": "Poor",
+    "critical": "Needs Attention",
+    "healthy": "Healthy",
+    "diseased": "Diseased"
+  },
+  "status": {
+    "active": "Active",
+    "harvested": "Harvested",
+    "diseased": "Diseased",
+    "dead": "Dead / Cancelled"
+  },
+  "notifications": {
+    "createSuccess": "Plant created successfully!",
+    "createError": "Error creating plant.",
+    "updateSuccess": "Plant updated successfully!",
+    "updateError": "Error updating plant.",
+    "deleteSuccess": "Plant deleted successfully!",
+    "deleteError": "Error deleting plant."
+  },
+  "confirm": {
+    "deleteTitle": "Confirm Plant Deletion",
+    "deleteDesc": "Are you sure you want to delete"
   },
   "careLogs": {
     "title": "Care Logs",
-    "addLog": "Add Care Log",
+    "subtitle": "Record watering, fertilizing, and environmental measurements",
+    "addLog": "Add Log",
+    "newLog": "Add New Log",
     "activity": "Activity",
-    "performer": "Performed By",
-    "date": "Date"
+    "performer": "Performer",
+    "date": "Performed Date",
+    "treeCode": "Tree Code",
+    "bedCode": "Bed Code",
+    "action": "Activity / Action",
+    "description": "Task Details",
+    "temperature": "Temperature (°C)",
+    "humidity": "Air Humidity (%)",
+    "submitSuccess": "Care log saved successfully",
+    "submitError": "Error saving care log"
   }
 }

@@ -26,15 +26,9 @@ export function SearchInput({
   containerClassName,
   ...props
 }: SearchInputProps) {
-  const [value, setValue] = useState<string>(
-    (valueProp !== undefined ? valueProp : defaultValue) as string
-  );
-
-  useEffect(() => {
-    if (valueProp !== undefined) {
-      setValue(valueProp as string);
-    }
-  }, [valueProp]);
+  const isControlled = valueProp !== undefined;
+  const [internalValue, setInternalValue] = useState<string>((defaultValue || '') as string);
+  const value = isControlled ? (valueProp as string) : internalValue;
 
   useEffect(() => {
     if (!onSearch) return;
@@ -47,12 +41,16 @@ export function SearchInput({
   }, [value, debounceMs, onSearch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    if (!isControlled) {
+      setInternalValue(e.target.value);
+    }
     onChange?.(e);
   };
 
   const handleClear = () => {
-    setValue('');
+    if (!isControlled) {
+      setInternalValue('');
+    }
     if (onSearch) onSearch('');
   };
 

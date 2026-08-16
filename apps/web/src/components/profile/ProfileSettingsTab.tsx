@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Bell, Shield, Moon, Sun, Monitor, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -19,35 +19,43 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
   const { data: apiSettings } = useNotificationSettings();
   const updateSettingsMutation = useUpdateNotificationSettings();
 
-  // Settings state
-  const [emailNotif, setEmailNotif] = useState(true);
-  const [orderNotif, setOrderNotif] = useState(true);
-  const [promoNotif, setPromoNotif] = useState(false);
-  const [autoLogout, setAutoLogout] = useState('30');
-  const [themeMode, setThemeMode] = useState('light');
-  const [twoFactor, setTwoFactor] = useState(false);
+  // User preference overrides
+  const [userEmailNotif, setUserEmailNotif] = useState<boolean | null>(null);
+  const [userOrderNotif, setUserOrderNotif] = useState<boolean | null>(null);
+  const [userPromoNotif, setUserPromoNotif] = useState<boolean | null>(null);
+  const [userAutoLogout, setUserAutoLogout] = useState<string | null>(null);
+  const [userThemeMode, setUserThemeMode] = useState<string | null>(null);
+  const [userTwoFactor, setUserTwoFactor] = useState<boolean | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (apiSettings) {
-      if (typeof apiSettings.emailNotif === 'boolean') setEmailNotif(apiSettings.emailNotif);
-      if (typeof apiSettings.orderNotif === 'boolean') setOrderNotif(apiSettings.orderNotif);
-      if (typeof apiSettings.promoNotif === 'boolean') setPromoNotif(apiSettings.promoNotif);
-      if (apiSettings.autoLogout) setAutoLogout(String(apiSettings.autoLogout));
-      if (apiSettings.themeMode) setThemeMode(apiSettings.themeMode);
-      if (typeof apiSettings.twoFactor === 'boolean') setTwoFactor(apiSettings.twoFactor);
-    }
-  }, [apiSettings]);
+  const emailNotif = userEmailNotif ?? (typeof apiSettings?.emailNotif === 'boolean' ? apiSettings.emailNotif : true);
+  const setEmailNotif = (val: boolean) => setUserEmailNotif(val);
 
-  const handleSaveSettings = async (e: React.FormEvent) => {
+  const orderNotif = userOrderNotif ?? (typeof apiSettings?.orderNotif === 'boolean' ? apiSettings.orderNotif : true);
+  const setOrderNotif = (val: boolean) => setUserOrderNotif(val);
+
+  const promoNotif = userPromoNotif ?? (typeof apiSettings?.promoNotif === 'boolean' ? apiSettings.promoNotif : false);
+  const setPromoNotif = (val: boolean) => setUserPromoNotif(val);
+
+  const autoLogout = userAutoLogout ?? (apiSettings?.autoLogout ? String(apiSettings.autoLogout) : '30');
+  const setAutoLogout = (val: string) => setUserAutoLogout(val);
+
+  const themeMode = userThemeMode ?? (apiSettings?.themeMode || 'light');
+  const setThemeMode = (val: string) => setUserThemeMode(val);
+
+  const twoFactor = userTwoFactor ?? (typeof apiSettings?.twoFactor === 'boolean' ? apiSettings.twoFactor : false);
+  const setTwoFactor = (val: boolean) => setUserTwoFactor(val);
+
+  const handleSaveSettings = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSaving) return;
     setIsSaving(true);
 
     try {
       // Save local preferences
       if (typeof window !== 'undefined') {
         localStorage.setItem(
-          'samngoclinh_user_settings',
+          'samngoclinh_user_settings:v1',
           JSON.stringify({ autoLogout, themeMode, twoFactor })
         );
       }
@@ -69,13 +77,12 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
       toast.success('Đã lưu cấu hình cài đặt hệ thống thành công!');
     } catch {
       toast.success('Đã lưu cấu hình cài đặt.');
-    } finally {
-      setIsSaving(false);
     }
+    setIsSaving(false);
   };
 
   return (
-    <form onSubmit={handleSaveSettings} className="space-y-8 animate-in fade-in duration-200">
+    <form onSubmit={handleSaveSettings} className="space-y-8 transition-opacity animate-in fade-in duration-200">
       {/* 1. Cài đặt thông báo */}
       <div className="space-y-4">
         <div className="flex items-center gap-2.5 pb-2 border-b border-gray-100 dark:border-gray-800">
@@ -129,7 +136,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-4 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl space-y-2">
-            <label className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm block">Tự động đăng xuất khi không hoạt động</label>
+            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm block">Tự động đăng xuất khi không hoạt động</span>
             <Select value={autoLogout} onValueChange={(val) => setAutoLogout(val)}>
               <SelectTrigger>
                 <SelectValue />

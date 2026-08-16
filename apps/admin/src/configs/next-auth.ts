@@ -49,7 +49,9 @@ declare module "next-auth/jwt" {
   }
 }
 
-async function refreshAccessToken(token: any) {
+import type { JWT } from "next-auth/jwt"
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const url = `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/refresh`
 
@@ -62,10 +64,15 @@ async function refreshAccessToken(token: any) {
       },
     })
 
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null)
+      throw errorData || new Error(`Token refresh failed with status ${response.status}`)
+    }
+
     const refreshedTokens = await response.json()
     const tokenData = refreshedTokens.data?.tokens || refreshedTokens.data
 
-    if (!response.ok || !tokenData?.accessToken) {
+    if (!tokenData?.accessToken) {
       throw refreshedTokens
     }
 
@@ -173,9 +180,17 @@ export const authOptions: NextAuthOptions = {
             }
           )
 
+          if (!res.ok) {
+            const errPayload = await res.json().catch(() => null)
+            throw new Error(
+              errPayload?.message ??
+                "Invalid login credentials. Please check your information."
+            )
+          }
+
           const payload = await res.json()
 
-          if (res.status >= 400 || !payload.data?.tokens?.accessToken) {
+          if (!payload.data?.tokens?.accessToken) {
             throw new Error(
               payload?.message ??
                 "Invalid login credentials. Please check your information."
@@ -197,27 +212,43 @@ export const authOptions: NextAuthOptions = {
             }
           )
 
-          const profilePayload = await profileRes.json()
+          let profilePayload: {
+            data?: {
+              id?: string
+              email?: string
+              role?: string | { name?: string }
+              fullName?: string
+              name?: string
+              avatarUrl?: string
+              username?: string
+            }
+          } | null = null
+          if (profileRes.ok) {
+            profilePayload = await profileRes.json()
+          }
 
-          const userEmail = profilePayload.data?.email || credentials.email
+          const userEmail = profilePayload?.data?.email || credentials.email
+          const rawRole = profilePayload?.data?.role
           const userRole =
-            profilePayload.data?.role?.name ||
-            profilePayload.data?.role ||
-            (userEmail?.includes("superadmin")
-              ? "SUPER_ADMIN"
-              : userEmail?.includes("admin")
-                ? "ADMIN"
-                : "USER")
+            typeof rawRole === "object" && rawRole !== null
+              ? rawRole.name || "USER"
+              : typeof rawRole === "string"
+                ? rawRole
+                : userEmail?.includes("superadmin")
+                  ? "SUPER_ADMIN"
+                  : userEmail?.includes("admin")
+                    ? "ADMIN"
+                    : "USER"
 
           return {
-            id: profilePayload.data?.id || "admin-id",
+            id: profilePayload?.data?.id || "admin-id",
             name:
-              profilePayload.data?.fullName ||
-              profilePayload.data?.name ||
-              profilePayload.data?.username ||
+              profilePayload?.data?.fullName ||
+              profilePayload?.data?.name ||
+              profilePayload?.data?.username ||
               "Admin",
             email: userEmail,
-            avatar: profilePayload.data?.avatarUrl || null,
+            avatar: profilePayload?.data?.avatarUrl || null,
             status: "ONLINE",
             role: userRole,
             accessToken,
@@ -274,7 +305,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (token.error) {
-        ;(session as any).error = token.error
+        ;(session as unknown as { error?: unknown }).error = token.error
       }
 
       return session
@@ -283,9 +314,9 @@ export const authOptions: NextAuthOptions = {
 }
 
 if (typeof window === "undefined") {
-  ;(globalThis as any).getServerSessionToken = async () => {
+  ;(globalThis as unknown as { getServerSessionToken?: () => Promise<string | null> }).getServerSessionToken = async () => {
     const { getServerSession } = require("next-auth")
     const session = await getServerSession(authOptions)
-    return (session?.user as any)?.accessToken || null
+    return (session?.user as { accessToken?: string })?.accessToken || null
   }
 }

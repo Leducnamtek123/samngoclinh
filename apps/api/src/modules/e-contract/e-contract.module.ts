@@ -4,6 +4,7 @@ import { ContractAmendmentRepository } from '@modules/e-contract/repositories/co
 import { EContractService } from '@modules/e-contract/services/e-contract.service';
 import { EContractPdfService } from '@modules/e-contract/services/e-contract.pdf.service';
 import { EContractTemplateService } from '@modules/e-contract/services/e-contract.template.service';
+import { EContractExpirationScheduler } from '@modules/e-contract/services/e-contract-expiration.scheduler';
 
 @Module({
     controllers: [],
@@ -13,6 +14,7 @@ import { EContractTemplateService } from '@modules/e-contract/services/e-contrac
         EContractTemplateService,
         EContractRepository,
         ContractAmendmentRepository,
+        EContractExpirationScheduler,
     ],
     exports: [
         EContractService,
@@ -20,6 +22,7 @@ import { EContractTemplateService } from '@modules/e-contract/services/e-contrac
         EContractTemplateService,
         EContractRepository,
         ContractAmendmentRepository,
+        EContractExpirationScheduler,
     ],
     imports: [],
 })

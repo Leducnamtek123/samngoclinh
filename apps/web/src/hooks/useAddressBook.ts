@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { fetchApiClient } from '@/lib/ApiClient';
 import { toast } from 'sonner';
 import type { AddressItem } from '@/types';
@@ -8,7 +8,7 @@ import type { AddressItem } from '@/types';
 const ADDRESSES_STORAGE_KEY = 'user_addresses:v1';
 
 export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
-  const [addresses, setAddresses] = useState<AddressItem[]>(() => {
+  const [localAddresses, setLocalAddresses] = useState<AddressItem[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
       const saved = localStorage.getItem(ADDRESSES_STORAGE_KEY);
@@ -22,20 +22,18 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
   const [deletingAddressId, setDeletingAddressId] = useState<string | null>(null);
   const [isDeletingAddress, setIsDeletingAddress] = useState(false);
 
-  // Sync with profile addresses if provided
-  useEffect(() => {
-    if (initialProfileAddresses && Array.isArray(initialProfileAddresses) && initialProfileAddresses.length > 0) {
-      const apiAddresses: AddressItem[] = initialProfileAddresses.map((a: AddressItem) => ({
+  const apiAddresses: AddressItem[] = (initialProfileAddresses && Array.isArray(initialProfileAddresses))
+    ? initialProfileAddresses.map((a: AddressItem) => ({
         id: a.id,
         name: a.recipient || a.name || a.label || 'Địa chỉ nhận hàng',
         phone: a.phone || '',
         address: a.detail || a.address || '',
         detail: a.detail || a.address || '',
         isDefault: !!a.isDefault,
-      }));
-      setAddresses(apiAddresses);
-    }
-  }, [initialProfileAddresses]);
+      }))
+    : [];
+
+  const addresses = Array.from(new Map([...apiAddresses, ...localAddresses].map((a) => [a.id, a])).values());
 
   const saveToStorage = (items: AddressItem[]) => {
     if (typeof window !== 'undefined') {
@@ -68,7 +66,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
       }
     } catch {}
     const updated = [...addresses, newAddr];
-    setAddresses(updated);
+    setLocalAddresses(updated);
     saveToStorage(updated);
     setIsAddAddressOpen(false);
     toast.success('Thêm địa chỉ giao hàng mới thành công!');
@@ -76,26 +74,26 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
 
   const setDefaultAddress = (id: string) => {
     const updated = addresses.map((a) => ({ ...a, isDefault: a.id === id }));
-    setAddresses(updated);
+    setLocalAddresses(updated);
     saveToStorage(updated);
   };
 
   const confirmDeleteAddress = async () => {
-    if (!deletingAddressId) return;
+    if (!deletingAddressId || isDeletingAddress) return;
     setIsDeletingAddress(true);
     try {
       await fetchApiClient(`/v1/shared/user/address/delete/${deletingAddressId}`, {
         method: 'DELETE',
       });
+      const updated = addresses.filter((a) => a.id !== deletingAddressId);
+      setLocalAddresses(updated);
+      saveToStorage(updated);
       toast.success('Đã xóa địa chỉ giao hàng thành công!');
     } catch {
-    } finally {
-      const updated = addresses.filter((a) => a.id !== deletingAddressId);
-      setAddresses(updated);
-      saveToStorage(updated);
-      setIsDeletingAddress(false);
-      setDeletingAddressId(null);
+      toast.error('Không thể xóa địa chỉ. Vui lòng thử lại.');
     }
+    setIsDeletingAddress(false);
+    setDeletingAddressId(null);
   };
 
   return {

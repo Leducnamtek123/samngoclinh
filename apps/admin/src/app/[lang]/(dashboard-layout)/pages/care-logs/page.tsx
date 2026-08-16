@@ -46,6 +46,22 @@ interface CareLog {
   performedBy?: string
 }
 
+const formatDateTimeVi = (dateStr?: string) => {
+  if (!dateStr) return "—"
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return "—"
+    const day = String(d.getDate()).padStart(2, "0")
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const year = d.getFullYear()
+    const hours = String(d.getHours()).padStart(2, "0")
+    const minutes = String(d.getMinutes()).padStart(2, "0")
+    return `${hours}:${minutes} ${day}/${month}/${year}`
+  } catch {
+    return "—"
+  }
+}
+
 export default function CareLogsPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -65,7 +81,7 @@ export default function CareLogsPage() {
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<any>(
+  } = useApiQuery<CareLog[] | { items: CareLog[]; metadata?: import("@/types").PaginationMeta }>(
     ["care-logs", page],
     `/user/cultivation/logs?page=${page}&perPage=${perPage}`
   )
@@ -75,13 +91,14 @@ export default function CareLogsPage() {
   const rawData = response?.data
   const careLogs: CareLog[] = Array.isArray(rawData)
     ? rawData
-    : Array.isArray(rawData?.items)
-      ? rawData.items
+    : Array.isArray((rawData as { items?: CareLog[] })?.items)
+      ? (rawData as { items: CareLog[] }).items
       : []
-  const metadata = response?.metadata || response?.data?.metadata || null
+  const metadata = response?.metadata || (rawData as { metadata?: import("@/types").PaginationMeta })?.metadata || null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (mutation.isPending) return
     try {
       await mutation.mutateAsync({
         endpoint: "/user/cultivation/logs",
@@ -95,8 +112,9 @@ export default function CareLogsPage() {
       toast.success("Nhập nhật ký chăm sóc thành công")
       setIsOpen(false)
       refetch()
-    } catch (error: any) {
-      toast.error(error?.message || "Có lỗi xảy ra khi lưu nhật ký")
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu nhật ký"
+      toast.error(message)
     }
   }
 
@@ -301,9 +319,7 @@ export default function CareLogsPage() {
                           {log.description || log.notes || "—"}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
-                          {log.createdAt
-                            ? new Date(log.createdAt).toLocaleString("vi-VN")
-                            : "—"}
+                          {formatDateTimeVi(log.createdAt)}
                         </TableCell>
                       </TableRow>
                     ))}

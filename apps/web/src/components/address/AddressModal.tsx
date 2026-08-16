@@ -35,6 +35,8 @@ export interface AddressModalProps {
   initialValues?: Partial<ShippingAddressFormValues>;
 }
 
+const generateLocalId = () => Date.now().toString();
+
 export function AddressModal({
   isOpen,
   mode = 'add',
@@ -70,8 +72,9 @@ export function AddressModal({
   });
 
   const handleFormSubmit = async (data: ShippingAddressFormValues) => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
-    let createdId = Date.now().toString();
+    let createdId = generateLocalId();
     try {
       const res: any = await fetchApiClient('/v1/shared/user/address/add', {
         method: 'POST',
@@ -88,20 +91,19 @@ export function AddressModal({
       toast.success(tAdd('savedSuccess'));
     } catch {
       // Local fallback
-    } finally {
-      setIsSubmitting(false);
-      onSubmitSuccess?.({ ...data, newId: createdId });
-      onClose();
     }
+    setIsSubmitting(false);
+    onSubmitSuccess?.({ ...data, newId: createdId });
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
+    <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200 overflow-y-auto">
       <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[88vh] shrink-0">
         {/* Sticky Header */}
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10 shrink-0">
+        <div className="px-6 py-4 border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-primary dark:text-emerald-400 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60">
               <MapPin className="w-5 h-5" />
@@ -117,6 +119,7 @@ export function AddressModal({
           </div>
           <button
             type="button"
+            aria-label="Đóng cửa sổ"
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
           >

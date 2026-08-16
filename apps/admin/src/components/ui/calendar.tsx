@@ -2,6 +2,9 @@
 
 import { DayPicker } from "react-day-picker"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { vi } from "date-fns/locale/vi"
+import { enUS } from "date-fns/locale/en-US"
+import { useParams } from "next/navigation"
 
 import type { ComponentProps } from "react"
 
@@ -15,10 +18,17 @@ export function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  locale: propLocale,
   ...props
 }: ComponentProps<typeof DayPicker>) {
+  const params = useParams()
+  const lang = (params?.lang as string) || "vi"
+  const defaultLocale = lang === "en" ? enUS : vi
+  const activeLocale = propLocale || defaultLocale
+
   return (
     <DayPicker
+      locale={activeLocale}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{

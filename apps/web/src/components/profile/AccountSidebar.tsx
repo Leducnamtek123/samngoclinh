@@ -120,7 +120,7 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => onSelectTab(item.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-[color,background-color,box-shadow] ${
                     isActive
                       ? 'bg-primary text-white shadow-xs'
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

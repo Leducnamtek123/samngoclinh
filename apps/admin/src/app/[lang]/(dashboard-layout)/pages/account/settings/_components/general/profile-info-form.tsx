@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
@@ -40,10 +40,14 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
     const file = e.target.files?.[0]
 
     if (file) {
-      // Generate a temporary URL for the uploaded image for preview purposes
-      const imageUrl = URL.createObjectURL(file)
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setPhotoPreview(reader.result)
+        }
+      }
+      reader.readAsDataURL(file)
 
-      setPhotoPreview(imageUrl)
       form.setValue("avatar", file)
       form.trigger("avatar") // Trigger validation for the "avatar" field
     }

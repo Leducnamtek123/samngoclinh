@@ -10,10 +10,18 @@ export type EContractSignPayload = {
 export function useEContracts(initialData?: any) {
   return useQuery({
     queryKey: ['contracts', 'list'],
-    queryFn: () =>
-      fetchApiClient('/user/contracts')
-        .then((res) => res?.data || [])
-        .catch(() => []),
+    queryFn: async () => {
+      try {
+        const res = await fetchApiClient('/user/contracts');
+        if (Array.isArray(res?.data)) return res.data;
+        if (Array.isArray(res)) return res;
+        if (Array.isArray(res?.data?.items)) return res.data.items;
+        return [];
+      } catch (e) {
+        console.error('Failed to fetch user e-contracts:', e);
+        return [];
+      }
+    },
     initialData,
   });
 }

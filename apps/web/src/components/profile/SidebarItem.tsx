@@ -22,7 +22,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-all duration-150 cursor-pointer ${
+      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition-[color,background-color,box-shadow] duration-150 cursor-pointer ${
         active
           ? 'bg-emerald-800 text-white font-semibold shadow-xs shadow-emerald-900/10'
           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/70'

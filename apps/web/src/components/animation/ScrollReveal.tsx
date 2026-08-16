@@ -125,7 +125,7 @@ export function ScrollReveal({
   }, [variant, delay, duration, distance, scaleFrom, once, speed]);
 
   return (
-    <Component ref={ref} className={className} style={{ willChange: 'transform, opacity', ...style }} {...props}>
+    <Component ref={ref} className={className} style={style} {...props}>
       {children}
     </Component>
   );

@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 import { DynamicIcon } from "../dynamic-icon"
 
 const starVariants = cva(
-  "transition-all duration-100 ease-in-out hover:scale-110",
+  "transition-transform duration-100 ease-in-out hover:scale-110",
   {
     variants: {
       size: {

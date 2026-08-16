@@ -106,7 +106,7 @@ export default async function TermsPage(props: TermsPageProps) {
             <Link
               href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
               target="_blank"
-              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm px-5 py-2.5 rounded-xl transition-all shadow-md active:scale-98"
+              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm px-5 py-2.5 rounded-xl transition-[background-color,transform] shadow-md active:scale-98"
             >
               <span>Xem Văn Bản Mẫu Hợp Đồng Điện Tử</span>
               <ArrowRight className="w-4 h-4" />
@@ -128,10 +128,10 @@ export default async function TermsPage(props: TermsPageProps) {
                 <Link
                   key={policy.slug}
                   href={`/terms/${policy.slug}`}
-                  className="group bg-white hover:bg-emerald-50/40 border border-slate-200 hover:border-emerald-500/60 rounded-2xl p-5 sm:p-6 transition-all duration-200 shadow-sm hover:shadow-md flex items-start sm:items-center justify-between gap-4"
+                  className="group bg-white hover:bg-emerald-50/40 border border-slate-200 hover:border-emerald-500/60 rounded-2xl p-5 sm:p-6 transition-[background-color,border-color,box-shadow] duration-200 shadow-sm hover:shadow-md flex items-start sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100/80 text-emerald-800 group-hover:bg-emerald-800 group-hover:text-white transition-all flex items-center justify-center font-bold text-base">
+                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100/80 text-emerald-800 group-hover:bg-emerald-800 group-hover:text-white transition-colors flex items-center justify-center font-bold text-base">
                       <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
 

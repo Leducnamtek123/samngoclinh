@@ -16,19 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface Article {
-  id: string
-  slug: string
-  title: string
-  category: string
-  summary: string
-  body?: string
-  status: string
-  sortOrder?: number
-  coverImage?: string
-  image?: string
-  createdAt: string
-}
+import type { Article, PaginationMeta } from "@/types"
 
 interface NewsListProps {
   articles: Article[]
@@ -36,14 +24,7 @@ interface NewsListProps {
   statusNameMap: Record<string, string>
   onEdit: (art: Article) => void
   onDelete: (id: string) => void
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   handlePageChange: (page: number) => void
 }
 
@@ -117,7 +98,7 @@ export function NewsList({
                     variant="outline"
                     className="text-[10px] px-2 py-0.5 border-slate-200"
                   >
-                    {categoryNameMap[art.category] || art.category}
+                    {art.category ? categoryNameMap[art.category] || art.category : "-"}
                   </Badge>
                 </TableCell>
                 <TableCell>

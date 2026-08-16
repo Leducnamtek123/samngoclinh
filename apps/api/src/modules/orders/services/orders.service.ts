@@ -26,6 +26,7 @@ import { IPaymentQrInfo } from '@modules/payment-gateway/interfaces/payment-gate
 import { ConfigService } from '@nestjs/config';
 import { NotificationSmtpService } from '@modules/notification/services/notification.smtp.service';
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
+import { EContractTemplateService } from '@modules/e-contract/services/e-contract.template.service';
 
 @Injectable()
 export class OrdersService implements IOrdersService, OnModuleInit {
@@ -37,7 +38,8 @@ export class OrdersService implements IOrdersService, OnModuleInit {
         private readonly paginationService: PaginationService,
         private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
         private readonly configService: ConfigService,
-        private readonly notificationSmtpService: NotificationSmtpService
+        private readonly notificationSmtpService: NotificationSmtpService,
+        private readonly eContractTemplateService: EContractTemplateService
     ) {}
 
     async onModuleInit() {
@@ -563,6 +565,10 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         pointsRedeemed: pointsToRedeem,
                         vat,
                         customerEmail: dto.customerEmail ?? null,
+                        identityNumber: dto.identityNumber ?? null,
+                        legalName: dto.legalName ?? dto.customerName,
+                        signatureData: dto.signatureData ?? null,
+                        ...(dto.metadata || {}),
                     },
                     orderItems: {
                         create: orderItemsCreate,
@@ -824,6 +830,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         paidAt: isSuccess ? new Date() : null,
                         cancelledAt: isSuccess ? null : new Date(),
                         metadata: {
+                            ...((order.metadata as object) || {}),
                             gatewayRef: payload.gatewayRef,
                             amountPaid: payload.amount,
                         },
@@ -1031,25 +1038,66 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
                             const customerName = order.customerName || userProfile?.fullName || userAcc?.name || 'Khách hàng';
 
+                            const profileMeta = (userProfile?.metadata || {}) as any;
+                            const identityNo = profileMeta?.identityNumber || profileMeta?.taxCode || (userProfile as any)?.phone || '—';
+                            const customerAddr = profileMeta?.address || order.shippingAddress || '—';
+                            const customerPhone = order.customerPhone || (userProfile as any)?.phone || '—';
+
+                            let contractContent = `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`;
+                            try {
+                                const template = await this.eContractTemplateService.getTemplate(
+                                    'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh',
+                                    {
+                                        TEN_KHACH_HANG: customerName,
+                                        CCCD_MST: identityNo,
+                                        DIA_CHI: customerAddr,
+                                        SO_DIEN_THOAI: customerPhone,
+                                        MA_HOP_DONG: contractCode,
+                                        SO_LUONG_CAY: String(totalPlantsPurchased),
+                                        SO_LUONG_CAY_CHU: `${totalPlantsPurchased} cây`,
+                                        TONG_GIA_TRI: Number(order.total || 0).toLocaleString('vi-VN'),
+                                        TONG_GIA_TRI_CHU: `${Number(order.total || 0).toLocaleString('vi-VN')} đồng`,
+                                        PHI_CHAM_SOC: 'Miễn phí năm đầu',
+                                        PHI_CHAM_SOC_CHU: 'Theo chính sách bảo trợ vườn',
+                                        NGAY_KY: new Date().toLocaleDateString('vi-VN'),
+                                    }
+                                );
+                                if (template?.contentHtml) {
+                                    contractContent = template.contentHtml;
+                                }
+                            } catch (tmplErr: any) {
+                                this.logger.warn(`Could not load full HTML contract template for order ${order.code}: ${tmplErr?.message}`);
+                            }
+
+                            const orderMeta = (order.metadata || {}) as any;
+                            const clientSignature = orderMeta.signatureData || null;
+                            const clientIdentityNo = orderMeta.identityNumber || identityNo;
+                            const isSignedAtCheckout = Boolean(clientSignature);
+
                             await tx.eContract.create({
                                 data: {
                                     code: contractCode,
                                     userId: order.userId,
                                     orderId: order.id,
                                     title: `Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh #${order.code}`,
-                                    content: `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`,
-                                    status: 'pending',
+                                    content: contractContent,
+                                    status: 'draft',
+                                    signedAt: null,
+                                    signatureUrl: clientSignature || null,
                                     contractValue: order.total,
                                     paymentStatus: 'paid',
                                     expiredAt,
                                     contractType: 'purchase_and_care',
                                     partyA: 'Công ty Cổ phần Sâm Ngọc Linh',
-                                    partyB: `${customerName} (SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
+                                    partyB: `${customerName} (CCCD: ${clientIdentityNo}, SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
                                     metadata: {
                                         orderId: order.id,
                                         orderCode: order.code,
                                         totalPlants: totalPlantsPurchased,
                                         createdAt: new Date().toISOString(),
+                                        customerSignature: clientSignature || null,
+                                        checkoutSigned: isSignedAtCheckout,
+                                        identityNumber: clientIdentityNo,
                                     } as Prisma.InputJsonValue,
                                     items: {
                                         create: allocatedTrees.map(t => ({

@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
 
-const defaultValues = {
+const getDefaultValues = () => ({
   title: "",
   description: "",
   label: "Development",
@@ -50,7 +50,7 @@ const defaultValues = {
   assigned: [],
   comments: [],
   attachments: [],
-}
+})
 
 export function KanbanUpdateTaskSidebar() {
   const {
@@ -63,7 +63,7 @@ export function KanbanUpdateTaskSidebar() {
 
   const form = useForm<KanbanTaskFormType>({
     resolver: zodResolver(KanbanTaskSchema),
-    defaultValues,
+    defaultValues: getDefaultValues(),
   })
 
   const { teamMembers, selectedTask } = kanbanState
@@ -100,7 +100,7 @@ export function KanbanUpdateTaskSidebar() {
   }
 
   const handleSidebarClose = () => {
-    form.reset(defaultValues) // Reset the form to the initial values
+    form.reset(getDefaultValues()) // Reset the form to the initial values
     handleSelectTask(undefined) // Unselect the current task
     setKanbanUpdateTaskSidebarIsOpen(false) // Close the sidebar
   }

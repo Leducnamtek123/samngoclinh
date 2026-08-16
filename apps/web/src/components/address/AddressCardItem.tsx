@@ -29,7 +29,7 @@ export function AddressCardItem({
       tabIndex={0}
       onClick={() => onSelect(address.id)}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onSelect(address.id)}
-      className={`p-4 rounded-xl border flex items-start justify-between cursor-pointer transition-all ${
+      className={`p-4 rounded-xl border flex items-start justify-between cursor-pointer transition-[border-color,background-color,box-shadow] ${
         isSelected
           ? 'border-primary bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-primary/20'
           : 'border-gray-200 dark:border-gray-800 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-slate-900'

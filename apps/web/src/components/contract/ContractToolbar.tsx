@@ -80,7 +80,7 @@ export const ContractToolbar = ({
         <Button
           type="button"
           onClick={handlePrint}
-          className="h-9 px-4 text-xs font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl shadow-xs inline-flex items-center gap-2 transition-all hover:shadow-md cursor-pointer"
+          className="h-9 px-4 text-xs font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl shadow-xs inline-flex items-center gap-2 transition-[box-shadow,background-color] hover:shadow-md cursor-pointer"
           title="In hoặc Lưu thành tệp PDF chuẩn"
         >
           <Printer className="w-4 h-4" />

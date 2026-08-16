@@ -1,7 +1,27 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { ExternalLink, Loader2, ShieldCheck, Eye, ListFilter } from 'lucide-react';
+
+const vnDateFormatter = new Intl.DateTimeFormat('vi-VN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+const vnCurrencyFormatter = new Intl.NumberFormat('vi-VN');
+
+const formatVND = (v: number) => vnCurrencyFormatter.format(Number(v || 0)) + ' VNĐ';
+
+const formatDate = (val?: string | number | Date | null) => {
+  if (!val) return '—';
+  try {
+    return vnDateFormatter.format(new Date(val));
+  } catch {
+    return '—';
+  }
+};
 
 type EContractDocumentViewProps = {
   contract: any;
@@ -9,8 +29,6 @@ type EContractDocumentViewProps = {
 
 export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) => {
   const [activeView, setActiveView] = useState<'full' | 'summary'>('full');
-  const [templateHtml, setTemplateHtml] = useState<string>('');
-  const [isLoadingTemplate, setIsLoadingTemplate] = useState<boolean>(true);
 
   const contractCode = contract?.code || contract?.id || 'SNL-2026';
   const customerName = contract?.userName || contract?.user?.name || contract?.partyB || 'Khách hàng';
@@ -21,45 +39,43 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
   const contractValue = contract?.totalAmount || contract?.value || contract?.contractValue || 0;
   const treeCount = String(contract?.items?.length || contract?.metadata?.totalPlants || 1);
 
-  // Load latest dynamic template from API
-  useEffect(() => {
-    async function loadTemplate() {
-      try {
-        const targetSlug = 'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh';
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-        const res = await fetch(`${apiUrl}/public/contracts/templates/${targetSlug}`, {
-          headers: {
-            'x-api-key': 'samngoclinh_secret_key_2026',
-          },
-        });
-        const payload = await res.json();
-        if (res.status < 400 && payload.data?.contentHtml) {
-          setTemplateHtml(payload.data.contentHtml);
-        }
-      } catch (e) {
-        console.warn('Could not load dynamic contract template for modal:', e);
-      } finally {
-        setIsLoadingTemplate(false);
-      }
-    }
-    loadTemplate();
-  }, []);
+  const isTemplateNeeded =
+    !contract?.content ||
+    (!contract.content.includes('<!DOCTYPE') && !contract.content.includes('<html'));
 
-  const renderedFullHtml = React.useMemo(() => {
-    if (contract?.content && (contract.content.includes('<!DOCTYPE') || contract.content.includes('<html'))) {
-      return contract.content;
+  const { data: dynamicTemplateHtml = '', isLoading: isLoadingTemplate } = useQuery({
+    queryKey: ['contract-template', 'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh'],
+    queryFn: async () => {
+      const res = await fetch(
+        '/api/proxy/public/contracts/templates/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh'
+      );
+      if (!res.ok) return '';
+      const payload = await res.json();
+      return (payload?.data?.contentHtml as string) || '';
+    },
+    enabled: isTemplateNeeded,
+  });
+
+  const templateHtml = dynamicTemplateHtml;
+
+  const renderedFullHtml = (() => {
+    if (contract?.content && (contract.content.includes('<!DOCTYPE') || contract.content.includes('<html') || contract.content.length > 100)) {
+      let content = contract.content;
+      if (contract.signatureUrl) {
+        content = content.replace(
+          /Chờ khách hàng ký|Chờ ký/g,
+          `<img src="${contract.signatureUrl}" alt="Chữ ký khách hàng" style="max-height: 48px; display: inline-block; object-fit: contain;" />`
+        );
+      }
+      return content;
     }
     if (!templateHtml) return '';
 
-    const formatVND = (v: number) => Number(v || 0).toLocaleString('vi-VN') + ' VNĐ';
     const totalVal = formatVND(contractValue);
-    const careFee = formatVND(Math.round(contractValue * 0.1));
-    const signDate = contract?.signedAt
-      ? new Date(contract.signedAt).toLocaleDateString('vi-VN')
-      : new Date(contract?.createdAt || Date.now()).toLocaleDateString('vi-VN');
-    const expireDate = contract?.expiredAt
-      ? new Date(contract.expiredAt).toLocaleDateString('vi-VN')
-      : new Date(Date.now() + 2 * 365 * 24 * 3600 * 1000).toLocaleDateString('vi-VN');
+    const meta = (contract?.metadata || {}) as any;
+    const careFee = meta.careFee ? formatVND(meta.careFee) : formatVND(Math.round(contractValue * 0.1));
+    const signDate = formatDate(contract?.signedAt || contract?.createdAt);
+    const expireDate = formatDate(contract?.expiredAt);
 
     let result = templateHtml
       .replace(/\{\{TEN_KHACH_HANG\}\}/g, customerName)
@@ -67,7 +83,7 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
       .replace(/\{\{DIA_CHI\}\}/g, customerAddress)
       .replace(/\{\{SO_DIEN_THOAI\}\}/g, customerPhone)
       .replace(/\{\{EMAIL\}\}/g, customerEmail)
-      .replace(/\{\{MA_HOP_DONG\}\}/g, `HĐ-${String(contractCode).toUpperCase().slice(0, 10)}/2026/SNL`)
+      .replace(/\{\{MA_HOP_DONG\}\}/g, String(contractCode || 'HĐ-SNL/2026/01'))
       .replace(/\{\{SO_LUONG_CAY\}\}/g, treeCount)
       .replace(/\{\{SO_LUONG_CAY_CHU\}\}/g, `${treeCount} cây sâm`)
       .replace(/\{\{TONG_GIA_TRI\}\}/g, totalVal)
@@ -85,7 +101,7 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
     }
 
     return result;
-  }, [contract, templateHtml, customerName, customerCccd, customerAddress, customerPhone, customerEmail, contractValue, treeCount, contractCode]);
+  })();
 
   return (
     <div className="space-y-3">
@@ -95,7 +111,7 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
           <button
             type="button"
             onClick={() => setActiveView('full')}
-            className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] ${
               activeView === 'full'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -107,7 +123,7 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
           <button
             type="button"
             onClick={() => setActiveView('summary')}
-            className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] ${
               activeView === 'summary'
                 ? 'bg-emerald-700 text-white shadow-xs'
                 : 'text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'

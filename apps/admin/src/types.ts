@@ -170,3 +170,5 @@ export type SignInFormType = z.infer<typeof SignInSchema>
 export type VerifyEmailFormType = z.infer<typeof VerifyEmailSchema>
 
 export type ComingSoonFormType = z.infer<typeof ComingSoonSchema>
+
+export * from "./types/index"

@@ -10,7 +10,7 @@ import '@/styles/global.css';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  variable: '--font-inter',
+  variable: '--font-sans',
   display: 'swap',
 });
 

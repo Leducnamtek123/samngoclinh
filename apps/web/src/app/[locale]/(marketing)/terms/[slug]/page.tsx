@@ -102,15 +102,15 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
 
         {/* Main Content Card */}
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          {policy.sections.map((sec, idx) => (
-            <section key={idx} className="space-y-3 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
+          {policy.sections.map((sec) => (
+            <section key={sec.heading} className="space-y-3 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
               <h2 className="text-base sm:text-lg font-bold text-slate-900 text-emerald-950 flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
                 {sec.heading}
               </h2>
               <div className="space-y-2 pl-4">
-                {sec.content.map((p, pIdx) => (
-                  <p key={pIdx} className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+                {sec.content.map((p) => (
+                  <p key={p} className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
                     {p}
                   </p>
                 ))}
@@ -149,7 +149,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
             <Link
               href="/terms"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition-all border border-white/15"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition-colors border border-white/15"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Xem tất cả chính sách</span>
@@ -157,7 +157,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
 
             <Link
               href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-98"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-[background-color,transform] active:scale-98"
             >
               <FileText className="w-4 h-4" />
               <span>Hợp đồng điện tử &amp; Quy chế</span>

@@ -62,9 +62,8 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
       setIsSuccess(true);
     } catch (error) {
       console.error('Claim plant error:', error);
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const plantName = item?.plantCatalog?.name ?? '—';
@@ -109,6 +108,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                   src={imageUrl}
                   alt={plantName}
                   fill
+                  sizes="80px"
                   unoptimized
                   className="w-full h-full object-cover"
                 />
@@ -150,10 +150,10 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
             {/* Package Options */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <Gift className="w-3.5 h-3.5 text-primary" />
                   <span>Gói chăm sóc</span>
-                </label>
+                </span>
                 <Select
                   value={String(careYears)}
                   onValueChange={(val) => setCareYears(Number(val))}
@@ -170,10 +170,10 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
                   <span>Gói đảm bảo</span>
-                </label>
+                </span>
                 <Select
                   value={String(protectionYears)}
                   onValueChange={(val) => setProtectionYears(Number(val))}

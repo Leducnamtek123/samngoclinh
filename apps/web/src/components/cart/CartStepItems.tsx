@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/lib/I18nNavigation';
 import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
@@ -26,30 +26,27 @@ export const CartStepItems = ({
   onNextStep,
 }: CartStepItemsProps) => {
   const [removingItemId, setRemovingItemId] = useState<string | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [unselectedIds, setUnselectedIds] = useState<string[]>([]);
+  const unselectedSet = new Set(unselectedIds);
+  const selectedItems = items.filter((item) => !unselectedSet.has(item.id));
+  const selectedIdSet = new Set(selectedItems.map((i) => i.id));
 
-  // Keep selectedIds valid when items are deleted
-  useEffect(() => {
-    setSelectedIds((prev) => prev.filter((id) => items.some((item) => item.id === id)));
-  }, [items]);
-
-  const allSelected = items.length > 0 && selectedIds.length === items.length;
+  const allSelected = items.length > 0 && selectedItems.length === items.length;
 
   const handleToggleSelectAll = () => {
     if (allSelected) {
-      setSelectedIds([]);
+      setUnselectedIds(items.map((i) => i.id));
     } else {
-      setSelectedIds(items.map((i) => i.id));
+      setUnselectedIds([]);
     }
   };
 
   const handleToggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
+    setUnselectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
-  const selectedItems = items.filter((item) => selectedIds.includes(item.id));
   const selectedTotalAmount = selectedItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -66,7 +63,7 @@ export const CartStepItems = ({
   const handleConfirmRemove = () => {
     if (removingItemId) {
       onRemoveItem(removingItemId);
-      setSelectedIds((prev) => prev.filter((id) => id !== removingItemId));
+      setUnselectedIds((prev) => prev.filter((id) => id !== removingItemId));
       setRemovingItemId(null);
       toast.success('Đã xóa sản phẩm khỏi giỏ hàng!');
     }
@@ -103,6 +100,7 @@ export const CartStepItems = ({
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
+                aria-label="Chọn tất cả sản phẩm"
                 checked={allSelected}
                 onChange={handleToggleSelectAll}
                 className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
@@ -123,7 +121,7 @@ export const CartStepItems = ({
 
           <div className="divide-y divide-gray-100">
             {items.map((item) => {
-              const isSelected = selectedIds.includes(item.id);
+              const isSelected = selectedIdSet.has(item.id);
               const detailUrl = getItemUrl(item);
 
               return (
@@ -131,6 +129,7 @@ export const CartStepItems = ({
                   {/* Checkbox */}
                   <input
                     type="checkbox"
+                    aria-label={`Chọn sản phẩm ${item.name}`}
                     checked={isSelected}
                     onChange={() => handleToggleSelect(item.id)}
                     className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer shrink-0"

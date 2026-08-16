@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { eventsData } from "./_data/events"
+import { getEventsData } from "./_data/events"
 
 import { Card } from "@/components/ui/card"
 import { CalendarContent } from "./_components/calendar-content"
@@ -14,8 +14,9 @@ export const metadata: Metadata = {
 }
 
 export default function CalendarPage() {
+  const events = getEventsData()
   return (
-    <CalendarWrapper events={eventsData}>
+    <CalendarWrapper events={events}>
       <Card>
         <CalendarHeader />
         <CalendarContent />

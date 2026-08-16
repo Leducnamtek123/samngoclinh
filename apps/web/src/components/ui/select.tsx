@@ -56,7 +56,7 @@ const SelectTrigger = React.forwardRef<
       disabled={disabled}
       onClick={() => setOpen(!open)}
       className={cn(
-        'flex h-11 w-full items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
+        'flex h-11 w-full items-center justify-between rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer',
         className
       )}
       {...props}
@@ -87,7 +87,12 @@ const SelectContent = React.forwardRef<
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+      <button
+        type="button"
+        aria-label="Đóng danh sách lựa chọn"
+        className="fixed inset-0 z-40 bg-transparent border-0 cursor-default"
+        onClick={() => setOpen(false)}
+      />
       <div
         ref={ref}
         className={cn(
@@ -103,32 +108,35 @@ const SelectContent = React.forwardRef<
 });
 SelectContent.displayName = 'SelectContent';
 
-export interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SelectItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
 }
 
-const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
+const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
   ({ className, value: itemValue, children, ...props }, ref) => {
     const { value, onValueChange, setOpen } = React.useContext(SelectContext);
     const isSelected = value === itemValue;
 
     return (
-      <div
+      <button
         ref={ref}
+        type="button"
+        role="option"
+        aria-selected={isSelected}
         onClick={() => {
           if (onValueChange) onValueChange(itemValue);
           setOpen(false);
         }}
         className={cn(
-          'flex cursor-pointer select-none items-center justify-between rounded-lg px-3 py-2.5 text-xs sm:text-sm font-semibold transition-colors hover:bg-gray-100 dark:hover:bg-gray-800',
+          'w-full flex cursor-pointer select-none items-center justify-between rounded-lg px-3 py-2.5 text-xs sm:text-sm font-semibold transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 border-0 text-left',
           isSelected ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 font-bold' : 'text-gray-800 dark:text-gray-200',
           className
         )}
         {...props}
       >
         <span>{children}</span>
-        {isSelected && <Check className="h-4 w-4 text-emerald-700" />}
-      </div>
+        {isSelected && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />}
+      </button>
     );
   }
 );

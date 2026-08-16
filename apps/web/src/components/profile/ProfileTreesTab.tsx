@@ -78,7 +78,7 @@ export const ProfileTreesTab = ({ wallet, safeTrees }: ProfileTreesTabProps) => 
             icon={Sprout}
             actionLabel="Khám phá gói trồng sâm"
             onAction={() => {
-              if (typeof window !== 'undefined') window.location.href = '/ginseng';
+              if (typeof window !== 'undefined') window.location.assign('/ginseng');
             }}
             actionVariant="default"
           />
@@ -90,8 +90,8 @@ export const ProfileTreesTab = ({ wallet, safeTrees }: ProfileTreesTabProps) => 
 
               return (
                 <div
-                  key={tree.id || code}
-                  className="bg-white dark:bg-slate-900 border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-all space-y-4 flex flex-col justify-between"
+                  key={tree.id || tree.treeId || tree.code || tree.name}
+                  className="bg-white dark:bg-slate-900 border border-gray-200/80 dark:border-gray-800 rounded-2xl p-5 shadow-2xs hover:shadow-md hover:border-emerald-300 transition-[box-shadow,border-color] space-y-4 flex flex-col justify-between"
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">

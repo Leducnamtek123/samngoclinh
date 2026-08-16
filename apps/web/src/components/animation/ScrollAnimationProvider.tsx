@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,20 +9,19 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+
 interface ScrollAnimationContextType {
   lenis: Lenis | null;
 }
 
 const ScrollAnimationContext = createContext<ScrollAnimationContextType>({ lenis: null });
 
-export const useScrollAnimation = () => useContext(ScrollAnimationContext);
-
 interface ScrollAnimationProviderProps {
   children: React.ReactNode;
 }
 
 export function ScrollAnimationProvider({ children }: ScrollAnimationProviderProps) {
-  const lenisRef = useRef<Lenis | null>(null);
+  const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
 
   useEffect(() => {
     // Respect user's motion preference
@@ -38,28 +37,29 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
       smoothWheel: true,
       touchMultiplier: 1.5,
     });
+    // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
+    setLenisInstance(lenis);
 
-    lenisRef.current = lenis;
-
-    // Connect Lenis with GSAP ScrollTrigger
+    // Sync Lenis scroll with GSAP ScrollTrigger
     const handleScroll = () => {
       ScrollTrigger.update();
     };
-
     lenis.on('scroll', handleScroll);
 
+    // Integrate Lenis RAF with GSAP Ticker
     const updateTicker = (time: number) => {
       lenis.raf(time * 1000);
     };
-
     gsap.ticker.add(updateTicker);
+
+    // Disable GSAP lag smoothing to ensure synchronized momentum
     gsap.ticker.lagSmoothing(0);
 
-    // Refresh ScrollTrigger on DOM resize
+    // Handle document size changes
     const resizeObserver = new ResizeObserver(() => {
+      lenis.resize();
       ScrollTrigger.refresh();
     });
-
     resizeObserver.observe(document.body);
 
     return () => {
@@ -67,12 +67,12 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
       gsap.ticker.remove(updateTicker);
       lenis.off('scroll', handleScroll);
       lenis.destroy();
-      lenisRef.current = null;
+      setLenisInstance(null);
     };
   }, []);
 
   return (
-    <ScrollAnimationContext.Provider value={{ lenis: lenisRef.current }}>
+    <ScrollAnimationContext.Provider value={{ lenis: lenisInstance }}>
       {children}
     </ScrollAnimationContext.Provider>
   );

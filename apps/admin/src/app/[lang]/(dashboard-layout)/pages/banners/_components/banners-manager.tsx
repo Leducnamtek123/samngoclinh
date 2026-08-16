@@ -324,14 +324,23 @@ function BannersTable({
   )
 }
 
+export interface BannerFormData {
+  pageKey: string
+  page?: string
+  title: string
+  subtitle: string
+  image: string
+  order: number
+}
+
 interface BannerDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   dialogMode: "create" | "edit"
   dialogError: string
   handleSave: (e: React.FormEvent) => void
-  formData: any
-  setFormData: any
+  formData: BannerFormData
+  setFormData: React.Dispatch<React.SetStateAction<BannerFormData>>
   banners: Banner[]
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   uploadingImage: boolean
@@ -620,7 +629,10 @@ interface CropDialogProps {
   setCrop: (crop: { x: number; y: number }) => void
   zoom: number
   setZoom: (zoom: number) => void
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void
+  onCropComplete: (
+    croppedArea: { x: number; y: number; width: number; height: number },
+    croppedAreaPixels: { x: number; y: number; width: number; height: number }
+  ) => void
   handleCropSave: () => void
 }
 

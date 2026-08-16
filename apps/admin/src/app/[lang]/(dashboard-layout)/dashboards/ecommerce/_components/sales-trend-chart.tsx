@@ -65,7 +65,7 @@ export function SalesTrendChart({
           tickLine={false}
           axisLine={false}
           tickMargin={10}
-          tickFormatter={(value: any) => formatDateShort(value)}
+          tickFormatter={(value: string) => formatDateShort(value)}
         />
         <Bar dataKey="sales" fill="hsl(var(--chart-4))" radius={radius} />
       </BarChart>

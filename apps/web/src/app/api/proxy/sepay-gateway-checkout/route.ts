@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function htmlEscapeJson(data: any): string {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
 export async function POST(request: NextRequest) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -8,8 +15,19 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    const targetUrl = request.nextUrl.searchParams.get('target') || 'https://pay-sandbox.sepay.vn/checkout';
-    const parsedTarget = new URL(targetUrl);
+    const ALLOWED_SEPAY_HOSTS = ['pay.sepay.vn', 'pay-sandbox.sepay.vn', 'my.sepay.vn', 'sepay.vn'];
+    const rawTarget = request.nextUrl.searchParams.get('target') || 'https://pay-sandbox.sepay.vn/checkout';
+    let parsedTarget: URL;
+    try {
+      parsedTarget = new URL(rawTarget);
+      if (!ALLOWED_SEPAY_HOSTS.includes(parsedTarget.hostname)) {
+        return NextResponse.json({ error: 'Invalid or untrusted target host' }, { status: 403, headers: corsHeaders });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid target URL' }, { status: 400, headers: corsHeaders });
+    }
+
+    const targetUrl = parsedTarget.toString();
     const originHost = `${parsedTarget.protocol}//${parsedTarget.host}`;
 
     const bodyText = await request.text();
@@ -38,8 +56,23 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: reqHeaders,
       body: bodyText,
-      redirect: 'follow',
+      redirect: 'manual',
     });
+
+    if (sepayRes.status >= 300 && sepayRes.status < 400) {
+      const redirectLocation = sepayRes.headers.get('location');
+      if (redirectLocation) {
+        return NextResponse.redirect(new URL(redirectLocation, originHost), { status: sepayRes.status });
+      }
+    }
+
+    if (!sepayRes.ok) {
+      const errText = await sepayRes.text().catch(() => 'Gateway Error');
+      return new NextResponse(errText, {
+        status: sepayRes.status,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
 
     let resHtml = await sepayRes.text();
 
@@ -47,7 +80,7 @@ export async function POST(request: NextRequest) {
     const interceptorScript = `
 <script>
 (function() {
-  const originHost = ${JSON.stringify(originHost)};
+  const originHost = ${htmlEscapeJson(originHost)};
   const origOpen = XMLHttpRequest.prototype.open;
   XMLHttpRequest.prototype.open = function(method, url, ...args) {
     if (typeof url === 'string') {

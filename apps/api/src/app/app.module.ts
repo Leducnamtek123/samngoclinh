@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { CommonModule } from '@common/common.module';
 import { RouterModule } from '@router';
 import { APP_FILTER } from '@nestjs/core';
@@ -37,7 +38,7 @@ import { PaymentGatewayModule } from '@modules/payment-gateway/payment-gateway.m
             useClass: AppValidationImportFilter,
         },
     ],
-    imports: [CommonModule, QueueModule, PaymentGatewayModule, RouterModule],
+    imports: [ScheduleModule.forRoot(), CommonModule, QueueModule, PaymentGatewayModule, RouterModule],
 })
 export class AppModule {}
 

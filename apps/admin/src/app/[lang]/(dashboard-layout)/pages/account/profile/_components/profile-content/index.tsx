@@ -22,77 +22,78 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-export function ProfileContent({ user }: { user?: any }) {
-  const profileUser = user || {}
-  const name = profileUser.name || "Quản trị viên Hệ thống"
-  const email = profileUser.email || "admin@samngoclinh.com"
-  const phone = profileUser.phoneNumber || "0967 234 234"
-  const role = profileUser.role || "SUPER_ADMIN"
+import type { UserProfileData } from "../../page"
 
-  const activityLogs = [
-    {
-      id: "log-1",
-      title: "Duyệt hồ sơ định danh eKYC",
-      desc: "Xác thực tài khoản nhà đầu tư Nguyễn Văn An (#INV-8823)",
-      time: "Hôm nay, 14:32",
-      icon: <FileCheck className="w-4 h-4 text-emerald-600" />,
-    },
-    {
-      id: "log-2",
-      title: "Cập nhật dữ liệu Luống Sâm 31",
-      desc: "Ghi nhận chỉ số độ ẩm đất 72% và phân bón hữu cơ tại Vườn Noàng Sâm 2026",
-      time: "Hôm nay, 10:15",
-      icon: <Sprout className="w-4 h-4 text-emerald-600" />,
-    },
-    {
-      id: "log-3",
-      title: "Xuất bản lô mã QR Code",
-      desc: "Khởi tạo 150 mã QR truy xuất nguồn gốc sâm củ 3 năm tuổi",
-      time: "Hôm qua, 16:40",
-      icon: <QrCode className="w-4 h-4 text-emerald-600" />,
-    },
-    {
-      id: "log-4",
-      title: "Cấu hình chính sách giá & ưu đãi",
-      desc: "Cập nhật tỷ lệ điểm thưởng cho khách hàng hạng Vàng",
-      time: "14/08/2026, 09:20",
-      icon: <History className="w-4 h-4 text-emerald-600" />,
-    },
-    {
-      id: "log-5",
-      title: "Đăng nhập hệ thống thành công",
-      desc: "Truy cập từ bảng điều khiển Quản trị viên (IP: 127.0.0.1)",
-      time: "14/08/2026, 08:00",
-      icon: <Key className="w-4 h-4 text-emerald-600" />,
-    },
-  ]
+const activityLogs = [
+  {
+    id: "log-1",
+    title: "Duyệt hồ sơ định danh eKYC",
+    desc: "Xác thực tài khoản nhà đầu tư Nguyễn Văn An (#INV-8823)",
+    time: "Hôm nay, 14:32",
+    icon: <FileCheck className="w-4 h-4 text-emerald-600" />,
+  },
+  {
+    id: "log-2",
+    title: "Cập nhật dữ liệu Luống Sâm 31",
+    desc: "Ghi nhận chỉ số độ ẩm đất 72% và phân bón hữu cơ tại Vườn Noàng Sâm 2026",
+    time: "Hôm nay, 10:15",
+    icon: <Sprout className="w-4 h-4 text-emerald-600" />,
+  },
+  {
+    id: "log-3",
+    title: "Xuất bản lô mã QR Code",
+    desc: "Khởi tạo 150 mã QR truy xuất nguồn gốc sâm củ 3 năm tuổi",
+    time: "Hôm qua, 16:40",
+    icon: <QrCode className="w-4 h-4 text-emerald-600" />,
+  },
+  {
+    id: "log-4",
+    title: "Cấu hình chính sách giá & ưu đãi",
+    desc: "Cập nhật tỷ lệ điểm thưởng cho khách hàng hạng Vàng",
+    time: "14/08/2026, 09:20",
+    icon: <History className="w-4 h-4 text-emerald-600" />,
+  },
+  {
+    id: "log-5",
+    title: "Đăng nhập hệ thống thành công",
+    desc: "Truy cập từ bảng điều khiển Quản trị viên (IP: 127.0.0.1)",
+    time: "14/08/2026, 08:00",
+    icon: <Key className="w-4 h-4 text-emerald-600" />,
+  },
+]
 
-  const managedGardens = [
-    {
-      id: "garden-noang-1",
-      name: "Noàng Sâm 2026 Số 1",
-      location: "Đăk Tô, Kon Tum",
-      bedsCount: 15,
-      plantsCount: "30.000 cây",
-      status: "Hoạt động",
-    },
-    {
-      id: "gd-kontum-03",
-      name: "Vườn Sâm Đăk Tô Kon Tum",
-      location: "Kon Tum",
-      bedsCount: 20,
-      plantsCount: "350 cây",
-      status: "Hoạt động",
-    },
-    {
-      id: "gd-tralinh-01",
-      name: "Vườn Sâm Trà Linh 01",
-      location: "Trà Linh, Kon Tum",
-      bedsCount: 12,
-      plantsCount: "150 cây",
-      status: "Hoạt động",
-    },
-  ]
+const managedGardens = [
+  {
+    id: "garden-noang-1",
+    name: "Noàng Sâm 2026 Số 1",
+    location: "Đăk Tô, Kon Tum",
+    bedsCount: 15,
+    plantsCount: "30.000 cây",
+    status: "Hoạt động",
+  },
+  {
+    id: "gd-kontum-03",
+    name: "Vườn Sâm Đăk Tô Kon Tum",
+    location: "Kon Tum",
+    bedsCount: 20,
+    plantsCount: "350 cây",
+    status: "Hoạt động",
+  },
+  {
+    id: "gd-tralinh-01",
+    name: "Vườn Sâm Trà Linh 01",
+    location: "Trà Linh, Kon Tum",
+    bedsCount: 12,
+    plantsCount: "150 cây",
+    status: "Hoạt động",
+  },
+]
+
+export function ProfileContent({ user }: { user?: UserProfileData | null }) {
+  const name = user?.name || "Quản trị viên Hệ thống"
+  const email = user?.email || "admin@samngoclinh.com"
+  const phone = user?.phone || "0967 234 234"
+  const role = user?.role || "SUPER_ADMIN"
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6">

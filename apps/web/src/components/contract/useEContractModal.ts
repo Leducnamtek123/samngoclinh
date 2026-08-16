@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useEContractDetail, useSignEContract } from '@/hooks/queries/useEContract';
+import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
 
 type UseEContractModalProps = {
   contractId: string | null;
@@ -8,13 +9,23 @@ type UseEContractModalProps = {
 export function useEContractModal({ contractId }: UseEContractModalProps) {
   const { data: contract, isLoading, isError } = useEContractDetail(contractId);
   const signMutation = useSignEContract();
+  const { data: savedSignatureUrl } = useUserSignature();
+  const saveSignatureMutation = useSaveUserSignature();
 
-  const [signatureType, setSignatureType] = useState<'draw' | 'type'>('draw');
+  const [signatureType, setSignatureType] = useState<'saved' | 'draw' | 'type'>('saved');
   const [typedName, setTypedName] = useState('');
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [hasCanvasDrawn, setHasCanvasDrawn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (savedSignatureUrl) {
+      setSignatureType('saved');
+    } else {
+      setSignatureType('draw');
+    }
+  }, [savedSignatureUrl]);
 
   useEffect(() => {
     if (!contractId) return;
@@ -79,12 +90,19 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     setErrorMessage('');
     let signatureData = '';
 
-    if (signatureType === 'draw') {
+    if (signatureType === 'saved') {
+      if (!savedSignatureUrl) {
+        setErrorMessage('Không tìm thấy chữ ký đã lưu. Vui lòng vẽ hoặc nhập chữ ký mới.');
+        return;
+      }
+      signatureData = savedSignatureUrl;
+    } else if (signatureType === 'draw') {
       if (!hasCanvasDrawn || !canvasRef.current) {
         setErrorMessage('Vui lòng vẽ chữ ký của bạn trước khi xác nhận ký.');
         return;
       }
       signatureData = canvasRef.current.toDataURL('image/png');
+      saveSignatureMutation.mutate(signatureData);
     } else {
       if (!typedName.trim()) {
         setErrorMessage('Vui lòng nhập đầy đủ họ tên để làm chữ ký điện tử.');
@@ -103,6 +121,7 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
         ctx.textBaseline = 'middle';
         ctx.fillText(typedName.trim(), 200, 50);
         signatureData = canvas.toDataURL('image/png');
+        saveSignatureMutation.mutate(signatureData);
       }
     }
 
@@ -116,13 +135,19 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     }
   };
 
-  const isSigned = !!(contract?.status === 'SIGNED' || contract?.signedAt || contract?.userSignatureUrl);
+  const isSigned = !!(
+    contract?.status?.toLowerCase() === 'signed' ||
+    contract?.signedAt ||
+    contract?.signatureUrl ||
+    (contract as any)?.userSignatureUrl
+  );
 
   return {
     contract,
     isLoading,
     isError,
     signMutation,
+    savedSignatureUrl,
     signatureType,
     setSignatureType,
     typedName,

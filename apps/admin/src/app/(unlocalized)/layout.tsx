@@ -14,13 +14,21 @@ import { Toaster } from "@/components/ui/toaster"
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+const getMetadataBase = (): URL => {
+  try {
+    const base = process.env.BASE_URL || "http://localhost:3000"
+    return new URL(base.startsWith("http") ? base : `http://${base}`)
+  } catch {
+    return new URL("http://localhost:3000")
+  }
+}
+
 export const metadata: Metadata = {
   title: {
     template: "%s | Sâm Ngọc Linh Admin",
     default: "Sâm Ngọc Linh Admin",
   },
-  description: "",
-  metadataBase: new URL(process.env.BASE_URL as string),
+  metadataBase: getMetadataBase(),
 }
 
 // Define fonts for the application

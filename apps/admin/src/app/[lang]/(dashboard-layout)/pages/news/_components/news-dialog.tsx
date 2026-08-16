@@ -29,22 +29,24 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
+export interface NewsFormData {
+  title: string
+  slug: string
+  category: string
+  summary: string
+  body: string
+  status: string
+  sortOrder: number
+  coverImage: string
+  authorName: string
+}
+
 interface NewsDialogProps {
   isOpen: boolean
   onClose: () => void
   mode: "create" | "edit"
-  formData: {
-    title: string
-    slug: string
-    category: string
-    summary: string
-    body: string
-    status: string
-    sortOrder: number
-    coverImage: string
-    authorName: string
-  }
-  onChange: (updater: (prev: any) => any) => void
+  formData: NewsFormData
+  onChange: (updater: (prev: NewsFormData) => NewsFormData) => void
   onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onSubmit: (e: React.FormEvent) => void
@@ -216,7 +218,7 @@ export function NewsDialog({
                           onClick={() =>
                             onChange((prev) => ({ ...prev, coverImage: "" }))
                           }
-                          className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white text-[10px] font-bold transition-all"
+                          className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white text-[10px] font-bold transition-colors"
                         >
                           Gỡ bỏ ảnh
                         </button>

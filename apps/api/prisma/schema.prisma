@@ -170,6 +170,7 @@ model User {
   beds                    CultivationBed[]           @relation("UserBeds")
   trees                   CultivationTree[]          @relation("UserTrees")
   orders                  Order[]                    @relation("UserOrders")
+  contracts               EContract[]                @relation("UserContracts")
 
   @@unique(fields: [username])
   @@unique(fields: [email])
@@ -946,6 +947,7 @@ model EContract {
   updatedAt    DateTime        @updatedAt
 
   order        Order?              @relation("OrderContract", fields: [orderId], references: [id], onDelete: SetNull)
+  user         User                @relation("UserContracts", fields: [userId], references: [id], onDelete: Restrict)
   items        EContractItem[]     @relation("ContractItems")
   amendments   ContractAmendment[] @relation("ContractAmendments")
 
@@ -1181,6 +1183,13 @@ enum EnumActivityLogAction {
   adminUserResetTwoFactor
   adminUserImport
   adminDeviceRemove
+
+  contractCreated
+  contractSigned
+  contractAmended
+  contractRenewed
+  contractExpired
+  contractCancelled
 }
 
 enum EnumDevicePlatform {

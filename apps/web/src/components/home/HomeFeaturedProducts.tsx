@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -34,32 +34,28 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
   } | null>(null);
 
   // Normalize items for display
-  const plants = useMemo(() => {
-    return initialPlants.map((item) => ({
+  const plants = initialPlants.map((item) => ({
+    ...item,
+    categoryType: 'plant' as const,
+    displayCategory: 'Cây giống',
+    ageYear: item.ageYear || item.ageYears || 1,
+    stock: item.stock ?? 10,
+    image: item.image || item.imageUrl || (item.images && item.images[0]) || '/images/default_plant.png',
+  }));
+
+  const shopItems = initialShopItems.map((item) => {
+    const isWine = item.name?.toLowerCase().includes('rượu') || item.category?.toLowerCase().includes('rượu') || item.category === 'wine';
+    return {
       ...item,
-      categoryType: 'plant' as const,
-      displayCategory: 'Cây giống',
-      ageYear: item.ageYear || item.ageYears || 1,
-      stock: item.stock ?? 10,
-      image: item.image || item.imageUrl || (item.images && item.images[0]) || '/images/default_plant.png',
-    }));
-  }, [initialPlants]);
+      categoryType: isWine ? ('wine' as const) : ('product' as const),
+      displayCategory: isWine ? 'Rượu sâm' : (item.category || 'Chế phẩm sâm'),
+      ageYear: item.ageYear || item.ageYears || 5,
+      stock: item.stock ?? 25,
+      image: item.image || item.imageUrl || (item.images && item.images[0]) || '/images/default_product.png',
+    };
+  });
 
-  const shopItems = useMemo(() => {
-    return initialShopItems.map((item) => {
-      const isWine = item.name?.toLowerCase().includes('rượu') || item.category?.toLowerCase().includes('rượu') || item.category === 'wine';
-      return {
-        ...item,
-        categoryType: isWine ? ('wine' as const) : ('product' as const),
-        displayCategory: isWine ? 'Rượu sâm' : (item.category || 'Chế phẩm sâm'),
-        ageYear: item.ageYear || item.ageYears || 5,
-        stock: item.stock ?? 25,
-        image: item.image || item.imageUrl || (item.images && item.images[0]) || '/images/default_product.png',
-      };
-    });
-  }, [initialShopItems]);
-
-  const filteredItems = useMemo(() => {
+  const filteredItems = (() => {
     if (activeTab === 'plants') return plants;
     if (activeTab === 'wine') return shopItems.filter((i) => i.categoryType === 'wine');
     if (activeTab === 'products') return shopItems.filter((i) => i.categoryType === 'product');
@@ -67,13 +63,13 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
     // 'all' -> Interleave plants & shop items (up to 8 items)
     const combined = [...plants, ...shopItems];
     return combined.slice(0, 8);
-  }, [activeTab, plants, shopItems]);
+  })();
 
   const handleAddToCart = (e: React.MouseEvent, item: any) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isLoggedIn) {
-      window.location.href = `/${locale}/sign-in?reason=cart`;
+      window.location.assign(`/${locale}/sign-in?reason=cart`);
       return;
     }
     addToCart({
@@ -93,7 +89,7 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
     e.preventDefault();
     e.stopPropagation();
     if (!isLoggedIn) {
-      window.location.href = `/${locale}/sign-in?reason=quick_buy`;
+      window.location.assign(`/${locale}/sign-in?reason=quick_buy`);
       return;
     }
     setQuickPurchaseItem({
@@ -116,47 +112,47 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-emerald-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header Title & Subtitle */}
+        {/* Header Title & Category Controls (Asymmetric Editorial Split) */}
         <ScrollReveal variant="fade-up">
-          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12 space-y-3">
-            <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-              {t('featuredProductsBadge')}
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight font-display-lg">
-              {t('featuredProductsTitle')}
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-base font-medium leading-relaxed">
-              {t('featuredProductsDesc')}
-            </p>
-          </div>
-        </ScrollReveal>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 sm:mb-12 border-b border-emerald-950/5 pb-8">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 bg-emerald-50/90 border border-emerald-200/70 text-emerald-900 text-xs font-black uppercase tracking-widest px-3.5 py-1.5 rounded-full shadow-2xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+                <span>{t('featuredProductsBadge')}</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-primary leading-tight font-display tracking-tight">
+                {t('featuredProductsTitle')}
+              </h2>
+              <p className="text-gray-600 text-sm sm:text-base font-normal leading-relaxed">
+                {t('featuredProductsDesc')}
+              </p>
+            </div>
 
-        {/* Category Tabs */}
-        <ScrollReveal variant="fade-up" delay={0.1}>
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap mb-10">
-            {[
-              { key: 'all', label: t('tabAll') },
-              { key: 'plants', label: t('tabPlants') },
-              { key: 'wine', label: t('tabWine') },
-              { key: 'products', label: t('tabProducts') },
-            ].map((tab) => {
-              const isActive = activeTab === tab.key;
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key as TabType)}
-                  className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
-                    isActive
-                      ? 'bg-primary text-white shadow-md shadow-emerald-900/10 scale-105'
-                      : 'bg-white text-gray-600 hover:bg-emerald-50/60 hover:text-primary border border-gray-200/80 shadow-2xs'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+            {/* Category Filter Tabs */}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap bg-white p-1.5 rounded-2xl border border-gray-200/80 shadow-xs shrink-0 self-start lg:self-end">
+              {[
+                { key: 'all', label: t('tabAll') },
+                { key: 'plants', label: t('tabPlants') },
+                { key: 'wine', label: t('tabWine') },
+                { key: 'products', label: t('tabProducts') },
+              ].map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActiveTab(tab.key as TabType)}
+                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-[color,background-color,box-shadow] duration-200 cursor-pointer ${
+                      isActive
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'text-gray-600 hover:text-primary hover:bg-gray-50'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </ScrollReveal>
 
@@ -175,7 +171,7 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 relative"
+                className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-[box-shadow,transform] duration-300 flex flex-col justify-between group hover:-translate-y-1 relative"
               >
                 {/* Image Section */}
                 <div className="relative aspect-square w-full bg-gray-50/80 overflow-hidden flex items-center justify-center p-4">
@@ -248,7 +244,7 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
                       <button
                         type="button"
                         onClick={(e) => handleBuyNow(e, item)}
-                        className="w-full inline-flex items-center justify-center gap-1 bg-secondary hover:bg-secondary-hover text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer active:scale-95"
+                        className="w-full inline-flex items-center justify-center gap-1 bg-secondary hover:bg-secondary-hover text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-xs hover:shadow-md transition-[box-shadow,transform,background-color] cursor-pointer active:scale-95"
                       >
                         <span>{t('buyNow')}</span>
                       </button>
@@ -264,7 +260,7 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
         <ScrollReveal variant="scale" delay={0.2} className="text-center mt-12 sm:mt-14">
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 bg-white border border-gray-300 hover:border-secondary hover:text-secondary text-primary px-8 py-3.5 rounded-full text-sm font-bold shadow-xs hover:shadow-md transition-all duration-300 group"
+            className="inline-flex items-center gap-2 bg-white border border-gray-300 hover:border-secondary hover:text-secondary text-primary px-8 py-3.5 rounded-full text-sm font-bold shadow-xs hover:shadow-md transition-[border-color,color,box-shadow] duration-300 group"
           >
             <span>{t('viewAllProducts')}</span>
             <svg

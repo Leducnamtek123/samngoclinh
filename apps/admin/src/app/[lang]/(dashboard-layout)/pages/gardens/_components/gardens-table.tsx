@@ -21,38 +21,11 @@ import { GardenDialog } from "./garden-dialog"
 import { GardensList } from "./gardens-list"
 import { useGardensManager } from "./use-gardens-manager"
 
-interface Garden {
-  id: string
-  code: string
-  name: string
-  status: string
-  totalBeds: number
-  activeBeds: number
-  totalTrees: number
-  createdAt: string
-  location?: string
-  description?: string
-  area?: number
-  images?: string[]
-  latitude?: number
-  longitude?: number
-  managerName?: string
-  managerPhone?: string
-  establishedAt?: string
-  maxBeds?: number
-  metadata?: any
-}
+import type { Garden, PaginationMeta } from "@/types"
 
 interface GardensTableProps {
   initialGardens: Garden[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

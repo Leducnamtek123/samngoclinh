@@ -11,27 +11,11 @@ import { ToastCard } from "@/components/ui/feedback-components"
 import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
 
-export interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-  status: string
-  isVerified: boolean
-  signUpDate?: string
-  createdAt?: string
-}
+import type { AdminUser, PaginationMeta } from "@/types"
 
 interface UsersTableProps {
-  initialUsers: User[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  initialUsers: AdminUser[]
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 
@@ -58,7 +42,7 @@ export function UsersTable({
     resetFilters,
   } = useDataTable()
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<AdminUser>[] = [
     {
       header: t("users.fields.fullName"),
       cell: (user) => (
@@ -94,12 +78,21 @@ export function UsersTable({
     },
     {
       header: t("users.fields.status"),
-      cell: (user) => (
-        <StatusBadge
-          status={user.status}
-          label={t(`users.status.${user.status.toLowerCase()}`)}
-        />
-      ),
+      cell: (user) => {
+        const rawStatus = (user.status || "active").toLowerCase()
+        const translated = t(`users.status.${rawStatus}`)
+        const displayLabel = translated && !translated.startsWith("users.status.")
+          ? translated
+          : rawStatus === "inactive"
+          ? "Chưa kích hoạt"
+          : rawStatus === "active"
+          ? "Hoạt động"
+          : rawStatus === "blocked"
+          ? "Đã khóa"
+          : rawStatus
+
+        return <StatusBadge status={rawStatus} label={displayLabel} />
+      },
     },
     {
       header: t("users.fields.createdAt"),

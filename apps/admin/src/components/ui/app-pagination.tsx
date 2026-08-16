@@ -38,8 +38,7 @@ function getPageNumbers(
     return Array.from({ length: totalPages }, (_, i) => i + 1)
   }
 
-  const pages: (number | "ellipsis")[] = []
-  pages.push(1)
+  const pages: (number | "ellipsis")[] = [1]
 
   if (currentPage > 3) {
     pages.push("ellipsis")
@@ -49,18 +48,14 @@ function getPageNumbers(
   const end = Math.min(totalPages - 1, currentPage + 1)
 
   for (let i = start; i <= end; i++) {
-    if (!pages.includes(i)) {
-      pages.push(i)
-    }
+    pages.push(i)
   }
 
   if (currentPage < totalPages - 2) {
     pages.push("ellipsis")
   }
 
-  if (!pages.includes(totalPages)) {
-    pages.push(totalPages)
-  }
+  pages.push(totalPages)
 
   return pages
 }
@@ -148,7 +143,7 @@ export function Pagination({
               size="sm"
               disabled={disabled}
               onClick={() => onPageChange(p)}
-              className={`h-8 min-w-8 px-2.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`h-8 min-w-8 px-2.5 rounded-lg text-xs font-semibold transition-colors ${
                 isSelected
                   ? "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90"
                   : "border-input bg-background hover:bg-muted text-foreground"
@@ -178,5 +173,3 @@ export function Pagination({
   )
 }
 
-// Alias for convenience
-export const AdminPagination = Pagination

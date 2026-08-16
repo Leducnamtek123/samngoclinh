@@ -11,31 +11,31 @@ import type { ChangePasswordSchema } from "./settings/security/_schemas/chnage-p
 import type { SecurityPreferencesSchema } from "./settings/security/_schemas/security-preferences-form-schema"
 
 export interface UserType {
-  id: string
-  firstName: string
-  lastName: string
-  name: string
-  password: string
-  username: string
-  role: string
-  avatar: string
-  background: string
-  status: string
-  phoneNumber: string
-  email: string
-  state: string
-  country: string
-  address: string
-  zipCode: string
-  language: string
-  timeZone: string
-  currency: string
-  organization: string
-  twoFactorAuth: boolean
-  loginAlerts: boolean
+  id?: string
+  firstName?: string
+  lastName?: string
+  name?: string
+  password?: string
+  username?: string
+  role?: string
+  avatar?: string
+  background?: string
+  status?: string
+  phoneNumber?: string
+  email?: string
+  state?: string
+  country?: string
+  address?: string
+  zipCode?: string
+  language?: string
+  timeZone?: string
+  currency?: string
+  organization?: string
+  twoFactorAuth?: boolean
+  loginAlerts?: boolean
   accountReoveryOption?: "email" | "sms" | "codes"
-  connections: number
-  followers: number
+  connections?: number
+  followers?: number
 }
 
 export interface PlanType {

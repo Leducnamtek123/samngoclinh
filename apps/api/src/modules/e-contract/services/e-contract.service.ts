@@ -14,7 +14,7 @@ import { IEContractService } from '@modules/e-contract/interfaces/e-contract.ser
 import { EContractRepository } from '@modules/e-contract/repositories/e-contract.repository';
 import { ContractAmendmentRepository } from '@modules/e-contract/repositories/contract-amendment.repository';
 import { EContractPdfService } from '@modules/e-contract/services/e-contract.pdf.service';
-import { EContract, Prisma } from '@generated/prisma-client';
+import { EContract, EnumActivityLogAction, Prisma } from '@generated/prisma-client';
 import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';
@@ -27,6 +27,7 @@ import { NotificationSmtpService } from '@modules/notification/services/notifica
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
 import { ConfigService } from '@nestjs/config';
 import { FileService } from '@common/file/services/file.service';
+import { EContractTemplateService } from '@modules/e-contract/services/e-contract.template.service';
 
 export interface IPublicContractVerification {
     isValid: boolean;
@@ -56,14 +57,94 @@ export class EContractService implements IEContractService {
         private readonly eContractRepository: EContractRepository,
         private readonly contractAmendmentRepository: ContractAmendmentRepository,
         private readonly eContractPdfService: EContractPdfService,
+        private readonly eContractTemplateService: EContractTemplateService,
         private readonly databaseService: DatabaseService,
         private readonly notificationSmtpService: NotificationSmtpService,
         private readonly configService: ConfigService,
         private readonly fileService: FileService
     ) {}
 
+    private interpolateTemplate(templateHtml: string, data: any): string {
+        const meta = (data.metadata || {}) as any;
+        const today = new Date();
+        const todayStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`;
+        const expDate = data.expiredAt ? new Date(data.expiredAt) : new Date(Date.now() + 2 * 365 * 24 * 3600 * 1000);
+        const expDateStr = `${expDate.getDate().toString().padStart(2, '0')}/${(expDate.getMonth() + 1).toString().padStart(2, '0')}/${expDate.getFullYear()}`;
+
+        const cName = meta.customerName || data.partyB || 'Quý Khách Hàng';
+        const cCccd = meta.customerCccd || '079090001234';
+        const cAddress = meta.customerAddress || 'Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam';
+        const cPhone = meta.customerPhone || '090xxxxxxx';
+        const cEmail = meta.customerEmail || 'contact@khachhang.vn';
+        const cVal = Number(data.contractValue || 0).toLocaleString('vi-VN');
+        const cFee = Number(meta.careFee || Math.round(Number(data.contractValue || 0) * 0.1)).toLocaleString('vi-VN');
+        const cTreeQty = String(meta.treeQuantity || 1);
+
+        let result = templateHtml
+            .replace(/\{\{TEN_KHACH_HANG\}\}/g, cName)
+            .replace(/\{\{CCCD_MST\}\}/g, cCccd)
+            .replace(/\{\{DIA_CHI\}\}/g, cAddress)
+            .replace(/\{\{SO_DIEN_THOAI\}\}/g, cPhone)
+            .replace(/\{\{EMAIL\}\}/g, cEmail)
+            .replace(/\{\{MA_HOP_DONG\}\}/g, data.contractCode || 'HĐ-SNL/2026/01')
+            .replace(/\{\{TONG_GIA_TRI\}\}/g, cVal)
+            .replace(/\{\{TONG_GIA_TRI_CHU\}\}/g, `${cVal} VNĐ`)
+            .replace(/\{\{PHI_CHAM_SOC\}\}/g, cFee)
+            .replace(/\{\{PHI_CHAM_SOC_CHU\}\}/g, `${cFee} VNĐ`)
+            .replace(/\{\{SO_LUONG_CAY\}\}/g, cTreeQty)
+            .replace(/\{\{SO_LUONG_CAY_CHU\}\}/g, `${cTreeQty} cây`)
+            .replace(/\{\{NGAY_KY\}\}/g, todayStr)
+            .replace(/\{\{NGAY_HET_HAN\}\}/g, expDateStr);
+
+        // Dynamic extra custom fields
+        if (meta.customFields && typeof meta.customFields === 'object') {
+            for (const [key, val] of Object.entries(meta.customFields)) {
+                if (val !== undefined && val !== null) {
+                    const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+                    result = result.replace(regex, String(val));
+                }
+            }
+        }
+
+        return result;
+    }
+
     async createContract(payload: EContractCreateRequestDto): Promise<IResponseReturn<EContract>> {
-        const contract = await this.eContractRepository.createContract(payload);
+        const year = new Date().getFullYear();
+        const generatedCode = await this.eContractRepository.generateNextCode(year);
+
+        let finalContent = payload.content;
+        const meta = (payload.metadata || {}) as any;
+        const templateSlug = meta.templateSlug || 'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh';
+
+        if (!finalContent || (!finalContent.includes('<!DOCTYPE') && !finalContent.includes('<html'))) {
+            try {
+                const template = await this.eContractTemplateService.getTemplate(templateSlug);
+                if (template?.contentHtml) {
+                    finalContent = this.interpolateTemplate(template.contentHtml, {
+                        ...payload,
+                        contractCode: generatedCode,
+                    });
+                }
+            } catch (err: any) {
+                this.logger.warn(`Could not interpolate template ${templateSlug}: ${err?.message}`);
+            }
+        }
+
+        const contract = await this.eContractRepository.createContract({
+            ...payload,
+            code: generatedCode,
+            content: finalContent || payload.title,
+            expiredAt: payload.expiredAt || new Date(Date.now() + 2 * 365 * 24 * 3600 * 1000).toISOString(),
+        } as any);
+
+        await this.logActivity(
+            payload.userId,
+            EnumActivityLogAction.contractCreated,
+            `Hợp đồng điện tử ${contract.code} đã được tạo mới`,
+            { contractId: contract.id, code: contract.code, value: contract.contractValue }
+        );
+
         return {
             data: contract,
         };
@@ -167,7 +248,7 @@ export class EContractService implements IEContractService {
             content: contract.content ?? undefined,
             terms: contract.terms ?? undefined,
             signedAt: signedAtIso,
-            expiredAt: contract.expiredAt.toISOString(),
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
             signatureDataUrl: signatureUrl,
             clientIp: clientIp || '127.0.0.1',
             items: (contract as any).items?.map((it: any) => ({
@@ -243,6 +324,13 @@ export class EContractService implements IEContractService {
         } catch (emailErr) {
             this.logger.error('Failed to send contract signed email:', emailErr);
         }
+
+        await this.logActivity(
+            userId,
+            EnumActivityLogAction.contractSigned,
+            `Khách hàng đã ký số thành công hợp đồng ${contract.code}`,
+            { contractId: contract.id, code: contract.code, documentHash, signedIp: clientIp }
+        );
 
         return {
             data: signed,
@@ -336,8 +424,8 @@ export class EContractService implements IEContractService {
             contractValue: contract.contractValue,
             content: contract.content ?? undefined,
             terms: contract.terms ?? undefined,
-            signedAt: (contract.signedAt ?? contract.createdAt).toISOString(),
-            expiredAt: contract.expiredAt.toISOString(),
+            signedAt: (contract.signedAt ? (contract.signedAt instanceof Date ? contract.signedAt : new Date(contract.signedAt)) : (contract.createdAt instanceof Date ? contract.createdAt : new Date(contract.createdAt))).toISOString(),
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
             signatureDataUrl: contract.signatureUrl ?? undefined,
             clientIp: ((contract.metadata as Record<string, unknown>)?.signedIp as string) || '127.0.0.1',
         });
@@ -384,9 +472,9 @@ export class EContractService implements IEContractService {
             isEkycVerified: Boolean(meta.ekycVerified ?? userAcc?.isVerified),
             treeCode: contract.treeCode ?? undefined,
             contractValue: contract.contractValue,
-            signedAt: contract.signedAt ? contract.signedAt.toISOString() : undefined,
-            expiredAt: contract.expiredAt.toISOString(),
-            effectiveExpiredAt: effectiveExpiredAt.toISOString(),
+            signedAt: contract.signedAt ? (contract.signedAt instanceof Date ? contract.signedAt.toISOString() : new Date(contract.signedAt).toISOString()) : undefined,
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
+            effectiveExpiredAt: effectiveExpiredAt instanceof Date ? effectiveExpiredAt.toISOString() : new Date(effectiveExpiredAt).toISOString(),
             documentHash: (meta.documentHash as string) || undefined,
             qrUrl: (meta.qrUrl as string) || undefined,
             pdfDownloadUrl: `/api/public/contracts/${contract.code}/pdf`,
@@ -538,6 +626,14 @@ export class EContractService implements IEContractService {
             });
 
             const refreshed = await this.contractAmendmentRepository.findById(amendment.id);
+
+            await this.logActivity(
+                userId,
+                EnumActivityLogAction.contractRenewed,
+                `Khách hàng đã gia hạn thành công hợp đồng ${contract.code} qua phụ lục ${amendmentCode}`,
+                { contractId: contract.id, code: contract.code, amendmentCode, newExpiredAt }
+            );
+
             return {
                 data: refreshed,
             };
@@ -800,7 +896,15 @@ export class EContractService implements IEContractService {
             throw new BadRequestException('Signed contract is immutable and cannot be modified.');
         }
 
-        const updated = await this.eContractRepository.updateContract(id, payload);
+        const mergedMetadata = {
+            ...((existing.metadata as Record<string, unknown>) || {}),
+            ...(payload.metadata || {}),
+        };
+
+        const updated = await this.eContractRepository.updateContract(id, {
+            ...payload,
+            metadata: mergedMetadata,
+        });
         return {
             data: updated,
         };
@@ -820,27 +924,146 @@ export class EContractService implements IEContractService {
         }
 
         await this.eContractRepository.deleteContract(id);
+
+        await this.logActivity(
+            existing.userId,
+            EnumActivityLogAction.contractCancelled,
+            `Hợp đồng ${existing.code} chưa ký đã bị hủy/xóa`,
+            { contractId: existing.id, code: existing.code }
+        );
+
         return {
             data: { success: true },
         };
     }
 
     async checkExpiringContracts(): Promise<IResponseReturn<{ count: number; notified: string[] }>> {
-        const expiring = await this.eContractRepository.getExpiringContracts(7);
+        const expiring = await this.eContractRepository.getExpiringContracts(30);
         const notified: string[] = [];
+        const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
+        const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
 
         for (const contract of expiring) {
-            this.logger.warn(
-                `Contract ${contract.code} for user ${contract.userId} is expiring soon at ${contract.expiredAt.toISOString()}`
-            );
-            notified.push(contract.code);
+            const latestAmendment = contract.amendments?.[0];
+            const effectiveExpiry = latestAmendment ? new Date(latestAmendment.newExpiredAt) : new Date(contract.expiredAt);
+            const userEmail = contract.user?.email || (contract.metadata as any)?.customerEmail;
+            const customerName = contract.user?.name || contract.partyB || 'Quý khách';
+
+            if (userEmail && this.notificationSmtpService?.isInitialized() && !contract.isReminderSent) {
+                try {
+                    await this.notificationSmtpService.send({
+                        templateName: EnumNotificationProcess.contractCreated,
+                        sender,
+                        templateData: {
+                            customerName,
+                            contractCode: contract.code,
+                            partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
+                            partyB: contract.partyB || customerName,
+                            contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN'),
+                            expiredAt: effectiveExpiry.toLocaleDateString('vi-VN'),
+                            signContractUrl: `${webUrl}/profile?tab=contracts`,
+                        },
+                        recipients: [userEmail],
+                    });
+                } catch (emailErr: any) {
+                    this.logger.error(`Failed to send expiration reminder for contract ${contract.code}: ${emailErr?.message}`);
+                }
+            }
+
+            if (!contract.isReminderSent) {
+                await this.databaseService.eContract.update({
+                    where: { id: contract.id },
+                    data: {
+                        isReminderSent: true,
+                        reminderSentAt: new Date(),
+                    },
+                });
+                notified.push(contract.code);
+            }
         }
 
         return {
             data: {
-                count: expiring.length,
+                count: notified.length,
                 notified,
             },
         };
+    }
+
+    async issueContract(id: string): Promise<IResponseReturn<EContract>> {
+        const contract = await this.eContractRepository.getContractById(id);
+        if (!contract) {
+            throw new NotFoundException('Contract not found');
+        }
+
+        if (contract.status === 'signed') {
+            throw new BadRequestException('Hợp đồng đã được ký kết.');
+        }
+
+        const updated = await this.eContractRepository.updateStatus(id, 'pending');
+
+        await this.logActivity(
+            contract.userId,
+            EnumActivityLogAction.contractCreated,
+            `Hợp đồng điện tử ${contract.code} đã được Ban Quản Trị phát hành và gửi cho khách hàng ký số`,
+            { contractId: contract.id, code: contract.code }
+        );
+
+        const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
+        const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
+
+        const userAcc = await this.databaseService.user.findUnique({
+            where: { id: contract.userId },
+            select: { email: true, name: true },
+        });
+        const userEmail = userAcc?.email || (contract.metadata as any)?.customerEmail;
+        const customerName = userAcc?.name || contract.partyB || 'Quý khách';
+
+        if (userEmail && this.notificationSmtpService?.isInitialized()) {
+            try {
+                await this.notificationSmtpService.send({
+                    templateName: EnumNotificationProcess.contractCreated,
+                    sender,
+                    templateData: {
+                        customerName,
+                        contractCode: contract.code,
+                        partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
+                        partyB: contract.partyB || customerName,
+                        contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN'),
+                        expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
+                        signContractUrl: `${webUrl}/profile?tabs=contracts`,
+                    },
+                    recipients: [userEmail],
+                });
+            } catch (emailErr: any) {
+                this.logger.error(`Failed to send contract issue email for ${contract.code}: ${emailErr?.message}`);
+            }
+        }
+
+        return {
+            data: updated,
+        };
+    }
+
+    private async logActivity(
+        userId: string,
+        action: EnumActivityLogAction,
+        description: string,
+        metadata?: Record<string, any>
+    ): Promise<void> {
+        try {
+            await this.databaseService.activityLog.create({
+                data: {
+                    userId,
+                    action,
+                    description,
+                    userAgent: {},
+                    metadata: metadata ? (metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
+                    createdBy: userId,
+                },
+            });
+        } catch (err: any) {
+            this.logger.warn(`Could not record ActivityLog for ${action}: ${err?.message}`);
+        }
     }
 }

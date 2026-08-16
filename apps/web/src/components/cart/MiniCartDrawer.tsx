@@ -1,22 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from '@/lib/I18nNavigation';
 import { cartStore } from '@/lib/stores/useCartStore';
 import type { CartItem } from '@/types';
 
+const emptyCartList: CartItem[] = [];
+
 export const MiniCartDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState<CartItem[]>([]);
+  const items = useSyncExternalStore(cartStore.subscribe, cartStore.getSnapshot, () => emptyCartList);
 
   useEffect(() => {
-    setItems(cartStore.getSnapshot());
-    const unsubscribe = cartStore.subscribe(() => {
-      setItems(cartStore.getSnapshot());
-    });
-
     const handleOpenDrawer = () => setIsOpen(true);
     const handleCloseDrawer = () => setIsOpen(false);
 
@@ -24,7 +21,6 @@ export const MiniCartDrawer = () => {
     window.addEventListener('close_mini_cart', handleCloseDrawer);
 
     return () => {
-      unsubscribe();
       window.removeEventListener('open_mini_cart', handleOpenDrawer);
       window.removeEventListener('close_mini_cart', handleCloseDrawer);
     };
@@ -45,13 +41,15 @@ export const MiniCartDrawer = () => {
   return (
     <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in"
+      <button
+        type="button"
+        aria-label="Đóng giỏ hàng"
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in cursor-pointer border-0"
         onClick={() => setIsOpen(false)}
       />
 
       {/* Drawer Panel */}
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl h-full flex flex-col z-10 animate-in slide-in-from-right duration-300">
+      <div className="relative w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl h-full flex flex-col z-10 transition-transform animate-in slide-in-from-right duration-300">
         {/* Header */}
         <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-emerald-950 text-white">
           <div className="flex items-center gap-2.5">
@@ -67,6 +65,7 @@ export const MiniCartDrawer = () => {
           </div>
           <button
             type="button"
+            aria-label="Đóng giỏ hàng"
             onClick={() => setIsOpen(false)}
             className="p-2 rounded-xl text-emerald-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
@@ -78,20 +77,12 @@ export const MiniCartDrawer = () => {
         <div className="flex-1 overflow-y-auto p-5 space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
           {items.length === 0 ? (
             <div className="py-20 text-center space-y-3">
-              <div className="size-16 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-gray-400">
-                <ShoppingBag className="w-8 h-8 opacity-40" />
+              <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-slate-800 flex items-center justify-center mx-auto text-emerald-600 dark:text-emerald-400">
+                <ShoppingBag className="w-8 h-8" />
               </div>
-              <p className="text-sm font-bold text-gray-700 dark:text-gray-300">Giỏ hàng của bạn đang trống</p>
-              <p className="text-xs text-gray-400 max-w-xs mx-auto">
-                Khám phá ngay các dòng Rượu Sâm Ngọc Linh thượng hạng và củ sâm tươi nguyên khối.
+              <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                Giỏ hàng của bạn đang trống
               </p>
-              <Link
-                href="/products"
-                onClick={() => setIsOpen(false)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-md transition-colors mt-2"
-              >
-                Khám phá cửa hàng
-              </Link>
             </div>
           ) : (
             items.map((item) => (
@@ -118,8 +109,9 @@ export const MiniCartDrawer = () => {
                     <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-slate-800">
                       <button
                         type="button"
+                        aria-label="Giảm số lượng"
                         onClick={() => cartStore.updateQuantity(item.id, -1)}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors"
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
@@ -128,8 +120,9 @@ export const MiniCartDrawer = () => {
                       </span>
                       <button
                         type="button"
+                        aria-label="Tăng số lượng"
                         onClick={() => cartStore.updateQuantity(item.id, 1)}
-                        className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors"
+                        className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
@@ -137,8 +130,9 @@ export const MiniCartDrawer = () => {
 
                     <button
                       type="button"
+                      aria-label="Xóa sản phẩm"
                       onClick={() => cartStore.removeItem(item.id)}
-                      className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                      className="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
                       title="Xóa sản phẩm"
                     >
                       <Trash2 className="w-4 h-4" />

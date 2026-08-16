@@ -9,6 +9,10 @@ export interface CreateOrderPayload {
   shippingAddress?: string;
   paymentMethod: 'online';
   note?: string;
+  identityNumber?: string;
+  legalName?: string;
+  signatureData?: string;
+  metadata?: Record<string, any>;
   items: { productId: string; quantity: number }[];
 }
 

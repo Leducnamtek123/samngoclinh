@@ -66,7 +66,7 @@ export function ChatBoxFooterActions() {
           <ChevronRight className="size-4 transition-transform duration-200 rtl:-scale-100" />
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="data-[state=closed]:animate-collapsible-left data-[state=open]:animate-collapsible-right duration-1000">
+      <CollapsibleContent className="data-[state=closed]:animate-collapsible-left data-[state=open]:animate-collapsible-right">
         <ImagesUploader />
         <FilesUploader />
         <Button

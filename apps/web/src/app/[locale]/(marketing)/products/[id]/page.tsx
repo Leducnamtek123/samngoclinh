@@ -9,8 +9,7 @@ type PageProps = {
 };
 
 export default async function ProductDetailPage({ params }: PageProps) {
-  const { locale, id } = await params;
-  const token = await getUserSessionToken();
+  const [{ locale, id }, token] = await Promise.all([params, getUserSessionToken()]);
   const isLoggedIn = !!token;
 
   let initialData = null;

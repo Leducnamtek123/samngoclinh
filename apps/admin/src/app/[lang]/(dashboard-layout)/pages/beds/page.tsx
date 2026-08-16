@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { Bed, Garden, PaginationMeta } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -10,31 +11,6 @@ import { BedsTable } from "./_components/beds-table"
 export const metadata: Metadata = {
   title: "Luống | Sâm Ngọc Linh Admin",
   description: "Quản lý danh sách các luống trồng sâm trong vườn",
-}
-
-interface Bed {
-  id: string
-  code: string
-  gardenCode: string
-  name: string
-  status: string
-  soilType?: string
-  width?: number
-  length?: number
-  maxTrees?: number
-  treeCount: number
-  activeTrees?: number
-  lastWateredAt?: string
-  lastFertilizedAt?: string
-  ageYear: number
-  description?: string
-  createdAt?: string
-}
-
-interface Garden {
-  id: string
-  code: string
-  name: string
 }
 
 interface BedsPageProps {
@@ -59,7 +35,7 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
   const gardenCode = resolvedSearchParams.gardenCode || ""
 
   let beds: Bed[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let gardens: Garden[] = []
   let errorMsg = ""
 
@@ -90,9 +66,10 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
     if (gardensRes.status < 400) {
       gardens = Array.isArray(gardensPayload.data) ? gardensPayload.data : []
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching cultivation data:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

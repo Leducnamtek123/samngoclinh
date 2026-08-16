@@ -13,7 +13,7 @@ export function DropdownMenu({
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
 }
 
-export function DropdownMenuPortal({
+function DropdownMenuPortal({
   ...props
 }: ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
   return (

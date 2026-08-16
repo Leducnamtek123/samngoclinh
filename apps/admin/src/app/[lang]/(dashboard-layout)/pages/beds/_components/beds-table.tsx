@@ -3,7 +3,7 @@
 import { Suspense } from "react"
 import { LayoutGrid } from "lucide-react"
 
-import type { Bed, Garden } from "./use-beds-table"
+import type { Bed, Garden, PaginationMeta } from "@/types"
 
 import { BedsSkeleton } from "@/components/ui/loading-skeletons"
 import { BedFormDialog, BedsOtherDialogs } from "./beds-dialogs"
@@ -14,14 +14,7 @@ import { useBedsTable } from "./use-beds-table"
 
 interface BedsTableProps {
   initialBeds: Bed[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   gardens: Garden[]
   errorMsg?: string
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Sprout, LayoutGrid } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
 import { usePublicCultivationBeds } from '@/hooks/queries/useCultivation';
@@ -12,7 +13,6 @@ import { ProductFilterSidebar } from '@/components/products/ProductFilterSidebar
 import { GinsengProductCard } from './ginseng/GinsengProductCard';
 import { ProductDetailModal } from './products/ProductDetailModal';
 import { GinsengBedsGrid } from './ginseng/GinsengBedsGrid';
-import { GinsengCalculator } from './ginseng/GinsengCalculator';
 import { SearchInput } from '@/components/common/SearchInput';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -131,9 +131,6 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
       <PageBannerSlider banners={banners || []} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {/* Interactive ROI Calculator */}
-        <GinsengCalculator locale={locale} />
-
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-4">
           <ProductFilterSidebar
             title="Bộ Lọc Sâm"
@@ -167,20 +164,22 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                 <button
                   type="button"
                   onClick={() => setViewMode('catalog')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'catalog' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  🌱 Catalog
+                  <Sprout className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Danh mục sâm</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode('beds')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'beds' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  🏞️ Vườn Luống Farm
+                  <LayoutGrid className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Vườn luống Farm</span>
                 </button>
               </div>
             </div>

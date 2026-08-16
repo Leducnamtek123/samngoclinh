@@ -2,6 +2,7 @@
 
 
 import dynamic from 'next/dynamic';
+import 'leaflet/dist/leaflet.css';
 import { MapPin, Locate, Search, Check, X, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -42,7 +43,7 @@ export function LeafletMapLocationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/65 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/65 backdrop-blur-md transition-opacity animate-in fade-in duration-200 overflow-y-auto">
       <div className="bg-white dark:bg-slate-900 bg-card text-card-foreground border border-border w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh] shrink-0">
         {/* Sleek Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card">
@@ -80,9 +81,14 @@ export function LeafletMapLocationModal({
               onSubmit={mapPicker.handleSearchAddress}
               className="flex-1 flex items-center gap-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-1.5 pl-3 rounded-xl border border-gray-200/80 dark:border-gray-800/80 shadow-lg"
             >
+              <label htmlFor="map-address-search-input" className="sr-only">
+                Tìm kiếm địa chỉ trên bản đồ
+              </label>
               <Search className="w-4 h-4 text-emerald-600 shrink-0" />
               <input
+                id="map-address-search-input"
                 type="text"
+                aria-label="Tìm kiếm địa chỉ trên bản đồ"
                 placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện..."
                 value={mapPicker.searchQuery}
                 onChange={(e) => mapPicker.setSearchQuery(e.target.value)}

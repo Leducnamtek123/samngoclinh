@@ -303,17 +303,26 @@ export class UserSharedController {
     @FileUploadMultipleFields([
         { field: 'front', maxFiles: 1 },
         { field: 'back', maxFiles: 1 },
+        { field: 'frontImage', maxFiles: 1 },
+        { field: 'backImage', maxFiles: 1 },
     ])
     @RequestTimeout('1m')
     @Put('/identity-document')
     async saveIdentityDocument(
         @AuthJwtPayload('userId') userId: string,
         @UploadedFiles()
-        files?: { front?: IFile[]; back?: IFile[] },
+        files?: {
+            front?: IFile[];
+            back?: IFile[];
+            frontImage?: IFile[];
+            backImage?: IFile[];
+        },
         @Body()
         body?: {
             front?: string;
             back?: string;
+            frontImage?: string;
+            backImage?: string;
             frontBase64?: string;
             backBase64?: string;
             documentType?: string;
@@ -321,12 +330,17 @@ export class UserSharedController {
             fullName?: string;
         }
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
+        const frontFile = files?.front?.[0] ?? files?.frontImage?.[0] ?? null;
+        const backFile = files?.back?.[0] ?? files?.backImage?.[0] ?? null;
+        const frontStr = body?.frontBase64 || body?.front || body?.frontImage;
+        const backStr = body?.backBase64 || body?.back || body?.backImage;
+
         return this.userService.saveIdentityDocument(
             userId,
-            files?.front?.[0] ?? null,
-            files?.back?.[0] ?? null,
-            body?.frontBase64 || body?.front,
-            body?.backBase64 || body?.back,
+            frontFile,
+            backFile,
+            frontStr,
+            backStr,
             body?.documentType || 'cccd',
             body?.idCardNumber,
             body?.fullName

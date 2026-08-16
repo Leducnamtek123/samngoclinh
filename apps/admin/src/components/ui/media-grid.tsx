@@ -55,8 +55,8 @@ export function MediaGrid({
               <video
                 src={item.src}
                 className="object-cover size-full rounded-lg"
-                controls
                 muted
+                playsInline
               />
             ) : (
               <Image
@@ -85,8 +85,8 @@ export function MediaGrid({
               <video
                 src={lastMedia.src}
                 className="object-cover rounded-lg size-full"
-                controls
                 muted
+                playsInline
               />
             ) : (
               <Image

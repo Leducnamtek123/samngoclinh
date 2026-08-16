@@ -1,54 +1,145 @@
-'use client';
-
 import React, { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
-import { fetchApiClient } from '@/lib/ApiClient';
-import { useUpdateUserSignature } from '@/hooks/queries/useEContract';
+import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
 import { toast } from 'sonner';
+
+// Subcomponent: Drawing Canvas Area
+function SignatureCanvasDrawArea({
+  canvasRef,
+  onStartDrawing,
+  onDraw,
+  onStopDrawing,
+  onClear,
+}: {
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  onStartDrawing: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+  onDraw: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+  onStopDrawing: () => void;
+  onClear: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="border border-gray-200 dark:border-gray-700 rounded-2xl bg-white p-2 relative shadow-xs">
+        <canvas
+          ref={canvasRef}
+          width={600}
+          height={200}
+          onMouseDown={onStartDrawing}
+          onMouseMove={onDraw}
+          onMouseUp={onStopDrawing}
+          onMouseLeave={onStopDrawing}
+          onTouchStart={onStartDrawing}
+          onTouchMove={onDraw}
+          onTouchEnd={onStopDrawing}
+          className="w-full h-48 rounded-xl touch-none cursor-crosshair bg-white"
+        />
+      </div>
+
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={onClear}
+          className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 font-semibold transition-colors cursor-pointer"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Xoá nét vẽ</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Image Upload Area
+function SignatureUploadArea({
+  uploadedImageBase64,
+  onFileUpload,
+}: {
+  uploadedImageBase64: string | null;
+  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-emerald-600 transition-colors bg-gray-50/50 dark:bg-gray-800/30">
+        {uploadedImageBase64 ? (
+          <div className="space-y-3">
+            <Image
+              src={uploadedImageBase64}
+              alt="Ảnh chữ ký đã chọn"
+              width={240}
+              height={160}
+              unoptimized
+              className="max-h-40 w-auto mx-auto rounded-lg object-contain bg-white p-2 border border-gray-200"
+            />
+            <label className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:underline cursor-pointer">
+              <Upload className="w-3.5 h-3.5" />
+              <span>Chọn ảnh khác</span>
+              <input type="file" accept="image/*" onChange={onFileUpload} className="hidden" />
+            </label>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center cursor-pointer py-4 space-y-2">
+            <Upload className="w-8 h-8 text-gray-400" />
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+              Nhấp để tải lên ảnh chữ ký (PNG, JPG)
+            </span>
+            <span className="text-[11px] text-gray-400">Nên dùng ảnh nền trắng hoặc trong suốt</span>
+            <input type="file" accept="image/*" onChange={onFileUpload} className="hidden" />
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Saved Signature Preview
+function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: string }) {
+  const finalUrl =
+    savedSignatureUrl.startsWith('data:') ||
+    savedSignatureUrl.startsWith('http://') ||
+    savedSignatureUrl.startsWith('https://')
+      ? savedSignatureUrl
+      : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl.startsWith('/') ? '' : '/'}${savedSignatureUrl}`;
+
+  return (
+    <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <span>Chữ ký điện tử đã được lưu</span>
+        </span>
+      </div>
+      <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl inline-block">
+        <Image
+          src={finalUrl}
+          alt="Chữ ký điện tử hiện tại"
+          width={200}
+          height={96}
+          unoptimized
+          className="max-h-24 w-auto object-contain bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
+        />
+      </div>
+    </div>
+  );
+}
 
 export const DigitalSignatureCard: React.FC = () => {
   const [mode, setMode] = useState<'draw' | 'upload'>('draw');
-  const [savedSignatureUrl, setSavedSignatureUrl] = useState<string | null>(null);
+  const { data: savedSignatureUrl } = useUserSignature();
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
-  const [hasDrawn, setHasDrawn] = useState(false);
 
-  const updateSignatureMutation = useUpdateUserSignature();
-
+  const updateSignatureMutation = useSaveUserSignature();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
+  const hasDrawnRef = useRef(false);
 
-  // Fetch current signature from API
-  useEffect(() => {
-    let isMounted = true;
-    fetchApiClient('/v1/shared/user/signature', {
-      method: 'GET',
-    })
-      .then((res: any) => {
-        if (isMounted && res?.data?.signatureUrl) {
-          setSavedSignatureUrl(res.data.signatureUrl);
-        }
-      })
-      .catch(() => {
-        // Silently fail if not setup yet
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Canvas drawing setup
   useEffect(() => {
     if (mode !== 'draw') return;
-
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    // Set background to white for drawing
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, [mode]);
@@ -60,7 +151,6 @@ export const DigitalSignatureCard: React.FC = () => {
     const rect = canvas.getBoundingClientRect();
     let clientX = 0;
     let clientY = 0;
-
     if ('touches' in e && e.touches && e.touches.length > 0 && e.touches[0]) {
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
@@ -68,43 +158,34 @@ export const DigitalSignatureCard: React.FC = () => {
       clientX = e.clientX;
       clientY = e.clientY;
     }
-
     const x = (clientX - rect.left) * (canvas.width / rect.width);
     const y = (clientY - rect.top) * (canvas.height / rect.height);
     return { x, y };
   };
 
-  const startDrawing = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     isDrawingRef.current = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     const { x, y } = getEventCoordinates(e, canvas);
-
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.strokeStyle = '#1C3F24';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    setHasDrawn(true);
+    hasDrawnRef.current = true;
   };
 
-  const draw = (
-    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
-  ) => {
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawingRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
     const { x, y } = getEventCoordinates(e, canvas);
-
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -120,52 +201,48 @@ export const DigitalSignatureCard: React.FC = () => {
     if (!ctx) return;
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    setHasDrawn(false);
+    hasDrawnRef.current = false;
     setUploadedImageBase64(null);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith('image/')) {
-      toast.error('Vui lòng chọn định dạng file ảnh (PNG, JPG, WEBP).');
+      toast.error('Vui lòng chọn tệp hình ảnh hợp lệ (PNG, JPG, JPEG)');
       return;
     }
-
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Dung lượng ảnh tối đa là 5MB');
+      return;
+    }
     const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setUploadedImageBase64(event.target.result as string);
-      }
+    reader.onload = () => {
+      setUploadedImageBase64(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
 
   const handleSaveSignature = async () => {
     let signatureData = '';
-
     if (mode === 'draw') {
       const canvas = canvasRef.current;
-      if (!canvas || !hasDrawn) {
+      if (!canvas || !hasDrawnRef.current) {
         toast.error('Vui lòng vẽ chữ ký của bạn trước khi lưu.');
         return;
       }
       signatureData = canvas.toDataURL('image/png');
     } else {
       if (!uploadedImageBase64) {
-        toast.error('Vui lòng chọn ảnh chữ ký trước khi lưu.');
+        toast.error('Vui lòng tải lên hình ảnh chữ ký của bạn.');
         return;
       }
       signatureData = uploadedImageBase64;
     }
 
     try {
-      const res: any = await updateSignatureMutation.mutateAsync(signatureData);
-      if (res?.signatureUrl || res?.data?.signatureUrl) {
-        setSavedSignatureUrl(res?.signatureUrl || res?.data?.signatureUrl);
-        toast.success('Lưu chữ ký điện tử thành công!');
-      }
+      await updateSignatureMutation.mutateAsync(signatureData);
+      toast.success('Lưu chữ ký điện tử thành công!');
     } catch (err: any) {
       toast.error(err?.message || 'Lưu chữ ký thất bại. Vui lòng thử lại.');
     }
@@ -189,7 +266,7 @@ export const DigitalSignatureCard: React.FC = () => {
         <button
           type="button"
           onClick={() => setMode('draw')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-[color,background-color,box-shadow] cursor-pointer ${
             mode === 'draw'
               ? 'bg-primary text-white shadow-xs'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
@@ -202,7 +279,7 @@ export const DigitalSignatureCard: React.FC = () => {
         <button
           type="button"
           onClick={() => setMode('upload')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-[color,background-color,box-shadow] cursor-pointer ${
             mode === 'upload'
               ? 'bg-primary text-white shadow-xs'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
@@ -215,62 +292,18 @@ export const DigitalSignatureCard: React.FC = () => {
 
       {/* Editor Content Area */}
       {mode === 'draw' ? (
-        <div className="space-y-3">
-          <div className="border border-gray-200 dark:border-gray-700 rounded-2xl bg-white p-2 relative shadow-xs">
-            <canvas
-              ref={canvasRef}
-              width={600}
-              height={200}
-              onMouseDown={startDrawing}
-              onMouseMove={draw}
-              onMouseUp={stopDrawing}
-              onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
-              className="w-full h-48 rounded-xl touch-none cursor-crosshair bg-white"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={handleClear}
-              className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 font-semibold transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Xoá nét vẽ</span>
-            </button>
-          </div>
-        </div>
+        <SignatureCanvasDrawArea
+          canvasRef={canvasRef}
+          onStartDrawing={startDrawing}
+          onDraw={draw}
+          onStopDrawing={stopDrawing}
+          onClear={handleClear}
+        />
       ) : (
-        <div className="space-y-3">
-          <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-emerald-600 transition-colors bg-gray-50/50 dark:bg-gray-800/30">
-            {uploadedImageBase64 ? (
-              <div className="space-y-3">
-                <img
-                  src={uploadedImageBase64}
-                  alt="Ảnh chữ ký đã chọn"
-                  className="max-h-40 mx-auto rounded-lg object-contain bg-white p-2 border border-gray-200"
-                />
-                <label className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:underline cursor-pointer">
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>Chọn ảnh khác</span>
-                  <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                </label>
-              </div>
-            ) : (
-              <label className="flex flex-col items-center justify-center cursor-pointer py-4 space-y-2">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                  Nhấp để tải lên ảnh chữ ký (PNG, JPG)
-                </span>
-                <span className="text-[11px] text-gray-400">Nên dùng ảnh nền trắng hoặc trong suốt</span>
-                <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-              </label>
-            )}
-          </div>
-        </div>
+        <SignatureUploadArea
+          uploadedImageBase64={uploadedImageBase64}
+          onFileUpload={handleFileUpload}
+        />
       )}
 
       {/* Save Button */}
@@ -286,34 +319,7 @@ export const DigitalSignatureCard: React.FC = () => {
         </ButtonLoading>
       </div>
 
-      {/* Saved Signature Preview Display */}
-      {savedSignatureUrl && (
-        <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Chữ ký điện tử đã được lưu</span>
-            </span>
-          </div>
-          <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl inline-block">
-            <img
-              src={
-                savedSignatureUrl.startsWith('data:') ||
-                savedSignatureUrl.startsWith('http://') ||
-                savedSignatureUrl.startsWith('https://')
-                  ? savedSignatureUrl
-                  : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl.startsWith('/') ? '' : '/'}${savedSignatureUrl}`
-              }
-              alt="Chữ ký điện tử hiện tại"
-              className="max-h-24 object-contain bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
-              onError={(e) => {
-                const target = e.currentTarget;
-                target.style.display = 'none';
-              }}
-            />
-          </div>
-        </div>
-      )}
+      {savedSignatureUrl && <SavedSignaturePreview savedSignatureUrl={savedSignatureUrl} />}
     </div>
   );
 };

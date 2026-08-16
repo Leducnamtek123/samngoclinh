@@ -4,6 +4,7 @@ import { PDFDocument, rgb, StandardFonts, PDFFont, PDFPage } from 'pdf-lib';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
+import * as path from 'path';
 import fontkit from '@pdf-lib/fontkit';
 
 export interface IEContractPdfItem {
@@ -98,34 +99,7 @@ export class EContractPdfService {
         pdfDoc.registerFontkit(fontkit);
 
         // 3. Load TrueType Fonts with Unicode Vietnamese support or fallback
-        let fontRegular: PDFFont;
-        let fontBold: PDFFont;
-        let fontOblique: PDFFont;
-        let isUnicode = false;
-
-        try {
-            const regularFontPath = 'C:/Windows/Fonts/arial.ttf';
-            const boldFontPath = 'C:/Windows/Fonts/arialbd.ttf';
-            const italicFontPath = 'C:/Windows/Fonts/ariali.ttf';
-
-            if (fs.existsSync(regularFontPath) && fs.existsSync(boldFontPath)) {
-                fontRegular = await pdfDoc.embedFont(fs.readFileSync(regularFontPath));
-                fontBold = await pdfDoc.embedFont(fs.readFileSync(boldFontPath));
-                fontOblique = fs.existsSync(italicFontPath)
-                    ? await pdfDoc.embedFont(fs.readFileSync(italicFontPath))
-                    : fontRegular;
-                isUnicode = true;
-            } else {
-                fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-                fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
-            }
-        } catch (e) {
-            this.logger.warn('Could not load system TrueType font, using Helvetica fallback:', e);
-            fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-            fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-            fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
-        }
+        const { fontRegular, fontBold, fontOblique, isUnicode } = await this.loadFonts(pdfDoc);
 
         const safe = (text?: string | null): string => {
             if (!text) return '';
@@ -800,33 +774,8 @@ export class EContractPdfService {
         const pdfDoc = await PDFDocument.create();
         pdfDoc.registerFontkit(fontkit);
 
-        let fontRegular: PDFFont;
-        let fontBold: PDFFont;
-        let fontOblique: PDFFont;
-        let isUnicode = false;
-
-        try {
-            const regularFontPath = 'C:/Windows/Fonts/arial.ttf';
-            const boldFontPath = 'C:/Windows/Fonts/arialbd.ttf';
-            const italicFontPath = 'C:/Windows/Fonts/ariali.ttf';
-
-            if (fs.existsSync(regularFontPath) && fs.existsSync(boldFontPath)) {
-                fontRegular = await pdfDoc.embedFont(fs.readFileSync(regularFontPath));
-                fontBold = await pdfDoc.embedFont(fs.readFileSync(boldFontPath));
-                fontOblique = fs.existsSync(italicFontPath)
-                    ? await pdfDoc.embedFont(fs.readFileSync(italicFontPath))
-                    : fontRegular;
-                isUnicode = true;
-            } else {
-                fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-                fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-                fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
-            }
-        } catch {
-            fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
-            fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-            fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
-        }
+        // 3. Load TrueType Fonts with Unicode Vietnamese support or fallback
+        const { fontRegular, fontBold, fontOblique, isUnicode } = await this.loadFonts(pdfDoc);
 
         const safe = (text?: string | null): string => {
             if (!text) return '';
@@ -1313,5 +1262,68 @@ export class EContractPdfService {
             documentHash: finalHash,
             qrUrl: verifyUrl,
         };
+    }
+
+    /**
+     * Cross-platform Unicode font loader with local assets precedence & OS fallbacks
+     */
+    private async loadFonts(pdfDoc: PDFDocument): Promise<{
+        fontRegular: PDFFont;
+        fontBold: PDFFont;
+        fontOblique: PDFFont;
+        isUnicode: boolean;
+    }> {
+        const candidateDirs = [
+            path.resolve(process.cwd(), 'assets/fonts'),
+            path.resolve(process.cwd(), 'apps/api/assets/fonts'),
+            path.resolve(__dirname, '../../../../assets/fonts'),
+            path.resolve(__dirname, '../../../assets/fonts'),
+            'C:/Windows/Fonts',
+            '/usr/share/fonts/truetype/dejavu',
+            '/usr/share/fonts/truetype/liberation',
+        ];
+
+        let regularPath = '';
+        let boldPath = '';
+        let italicPath = '';
+
+        for (const dir of candidateDirs) {
+            const rPath = path.join(dir, 'arial.ttf');
+            const bPath = path.join(dir, 'arialbd.ttf');
+            const iPath = path.join(dir, 'ariali.ttf');
+
+            if (fs.existsSync(rPath) && fs.existsSync(bPath)) {
+                regularPath = rPath;
+                boldPath = bPath;
+                italicPath = fs.existsSync(iPath) ? iPath : rPath;
+                break;
+            }
+
+            const rRoboto = path.join(dir, 'Roboto-Regular.ttf');
+            const bRoboto = path.join(dir, 'Roboto-Bold.ttf');
+            const iRoboto = path.join(dir, 'Roboto-Italic.ttf');
+            if (fs.existsSync(rRoboto) && fs.existsSync(bRoboto)) {
+                regularPath = rRoboto;
+                boldPath = bRoboto;
+                italicPath = fs.existsSync(iRoboto) ? iRoboto : rRoboto;
+                break;
+            }
+        }
+
+        if (regularPath && boldPath) {
+            try {
+                const fontRegular = await pdfDoc.embedFont(fs.readFileSync(regularPath));
+                const fontBold = await pdfDoc.embedFont(fs.readFileSync(boldPath));
+                const fontOblique = await pdfDoc.embedFont(fs.readFileSync(italicPath));
+                return { fontRegular, fontBold, fontOblique, isUnicode: true };
+            } catch (err) {
+                this.logger.warn('Failed to embed TrueType font, falling back to Helvetica:', err);
+            }
+        }
+
+        const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+        return { fontRegular, fontBold, fontOblique, isUnicode: false };
     }
 }

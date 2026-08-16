@@ -32,7 +32,12 @@ export class EContractUserController {
 
     @EContractUserListDoc()
     @Response('eContract.list')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -45,7 +50,12 @@ export class EContractUserController {
 
     @EContractUserGetDoc()
     @Response('eContract.get')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -59,7 +69,12 @@ export class EContractUserController {
 
     @EContractUserSignDoc()
     @Response('eContract.sign')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -76,7 +91,12 @@ export class EContractUserController {
 
     @EContractUserRenewDoc()
     @Response('eContract.renew')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -92,7 +112,12 @@ export class EContractUserController {
     }
 
     @Response('eContract.getAmendments')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -107,7 +132,12 @@ export class EContractUserController {
     }
 
     @Response('eContract.signAmendment')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -123,7 +153,12 @@ export class EContractUserController {
     }
 
     @Response('eContract.cancelAmendment')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.user,
+        EnumRoleType.admin,
+        EnumRoleType.superAdmin,
+        EnumRoleType.provider
+    )
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

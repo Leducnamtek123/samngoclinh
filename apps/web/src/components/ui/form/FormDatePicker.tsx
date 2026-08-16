@@ -46,11 +46,12 @@ export function FormDatePicker<
   return (
     <FormItem className="space-y-1.5">
       {label && (
-        <label className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+        <label htmlFor={String(name)} className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
       <DatePicker
+        id={String(name)}
         value={field.value}
         onChange={field.onChange}
         placeholder={placeholder}

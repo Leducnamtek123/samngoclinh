@@ -41,6 +41,8 @@ export const ProductFilterSidebar = ({
   hasActiveFilters,
   onClearFilters,
 }: ProductFilterSidebarProps) => {
+  const selectedAgeSet = new Set(selectedAges || []);
+
   return (
     <div className="lg:col-span-1 space-y-6">
       <Card className="rounded-2xl p-6">
@@ -110,8 +112,8 @@ export const ProductFilterSidebar = ({
                   >
                     <Checkbox
                       id={age.id}
-                      checked={selectedAges?.includes(age.value)}
-                      onCheckedChange={() => onAgeToggle(age.value)}
+                      checked={selectedAgeSet.has(age.value)}
+                      onCheckedChange={() => onAgeToggle?.(age.value)}
                       className="shrink-0"
                     />
                     <span>{age.label}</span>

@@ -49,15 +49,15 @@ const DialogTrigger = React.forwardRef<
 });
 DialogTrigger.displayName = 'DialogTrigger';
 
+const emptyDialogSubscribe = () => () => {};
+const useDialogMounted = () =>
+  React.useSyncExternalStore(emptyDialogSubscribe, () => true, () => false);
+
 const DialogPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { open } = React.useContext(DialogContext);
-  const [mounted, setMounted] = React.useState(false);
+  const isMounted = useDialogMounted();
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!open || !mounted) return null;
+  if (!open || !isMounted) return null;
 
   return createPortal(
     <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity duration-200 animate-in fade-in overflow-y-auto">
@@ -68,15 +68,17 @@ const DialogPortal: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 };
 
 const DialogOverlay = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
   const { onOpenChange } = React.useContext(DialogContext);
   return (
-    <div
+    <button
       ref={ref}
+      type="button"
+      aria-label="Đóng hộp thoại"
       onClick={() => onOpenChange(false)}
-      className={cn('fixed inset-0 z-[-1]', className)}
+      className={cn('fixed inset-0 z-[-1] bg-transparent border-0 cursor-default', className)}
       {...props}
     />
   );
@@ -84,20 +86,20 @@ const DialogOverlay = React.forwardRef<
 DialogOverlay.displayName = 'DialogOverlay';
 
 const DialogContent = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLDialogElement,
+  React.DialogHTMLAttributes<HTMLDialogElement>
 >(({ className, children, ...props }, ref) => {
   const { onOpenChange } = React.useContext(DialogContext);
   return (
     <DialogPortal>
       <DialogOverlay />
-      <div
+      <dialog
         ref={ref}
-        role="dialog"
+        open
         aria-modal="true"
         data-lenis-prevent
         className={cn(
-          'relative w-full max-w-2xl bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl p-6 shadow-xl border border-border transform transition-all duration-200 animate-in zoom-in-95 my-auto max-h-[88vh] overflow-y-auto overscroll-contain',
+          'relative w-full max-w-2xl bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl p-6 shadow-xl border border-border transform transition-transform duration-200 animate-in zoom-in-95 my-auto max-h-[88vh] overflow-y-auto overscroll-contain block m-auto',
           className
         )}
         {...props}
@@ -111,7 +113,7 @@ const DialogContent = React.forwardRef<
           <X className="w-4 h-4" />
           <span className="sr-only">Close</span>
         </button>
-      </div>
+      </dialog>
     </DialogPortal>
   );
 });

@@ -107,12 +107,10 @@ export const NewsSidebar = ({
           </h3>
           <div className="space-y-3.5">
             {/* Tất cả */}
-            <div
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
               onClick={() => handleCategorySelect('')}
-              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCategorySelect('')}
-              className="flex items-center gap-3 w-full text-left group cursor-pointer"
+              className="flex items-center gap-3 w-full text-left group cursor-pointer bg-transparent border-0 p-0"
             >
               <Checkbox checked={!selectedCategory} />
               <span className={`text-xs font-semibold ${
@@ -120,19 +118,17 @@ export const NewsSidebar = ({
               }`}>
                 Tất cả
               </span>
-            </div>
+            </button>
 
             {/* Dynamic Categories */}
             {categories.map((cat) => {
               const isChecked = selectedCategory === cat;
               return (
-                <div
+                <button
                   key={cat}
-                  role="button"
-                  tabIndex={0}
+                  type="button"
                   onClick={() => handleCategorySelect(cat)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCategorySelect(cat)}
-                  className="flex items-center gap-3 w-full text-left group cursor-pointer"
+                  className="flex items-center gap-3 w-full text-left group cursor-pointer bg-transparent border-0 p-0"
                 >
                   <Checkbox checked={isChecked} />
                   <span className={`text-xs font-semibold ${
@@ -140,7 +136,7 @@ export const NewsSidebar = ({
                   }`}>
                     {getCategoryLabel(cat)}
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>

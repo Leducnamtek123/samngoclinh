@@ -4,39 +4,19 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import type { TreeFormValues } from "@/schemas/tree-schema"
+import type { AdminUser, Bed, PaginationMeta, Tree } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
 
-interface Tree {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  quantity: number
-  status: string
-  bedCode?: string
-  ownerUserId?: string
-  carePackageCode?: string
-  carePackageExpiredAt?: string
-  protectionPackageCode?: string
-  protectionPackageExpiredAt?: string
-  plantedAt?: string
-  healthStatus?: string
-  lastCareDate?: string
-  nextCareDate?: string
-  expectedHarvestAt?: string
-  images?: string[]
-  priceBought?: number
-  metadata?: any
-}
+export type { Bed, Tree }
 
-interface Bed {
-  id: string
-  code: string
-  name: string
+const safeIsoDate = (val?: string) => {
+  if (!val || typeof val !== "string" || val.trim() === "") return undefined
+  const d = new Date(val)
+  return isNaN(d.getTime()) ? undefined : d.toISOString()
 }
 
 interface UseTreesManagerProps {
@@ -56,35 +36,38 @@ export function useTreesManager({
   const { t } = useTranslation()
 
   const [trees, setTrees] = useState<Tree[]>(initialTrees)
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
 
-  // URL query params states
+  // URL search query param state
   const initialSearch = searchParams.get("search") || ""
-  const [searchQuery, setSearchQuery] = useState(initialSearch)
-  const statusFilter = searchParams.get("status") || "all"
+  const [searchVal, setSearchVal] = useState(initialSearch)
 
-  // Sync trees on props change
+  const [errorMsg, setErrorMsg] = useState(initialError || "")
+  const [successMsg, setSuccessMsg] = useState("")
+
+  // Fetch users for owner assignment
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const res = await fetchApi("/admin/user/list?perPage=100")
+        if (res.ok) {
+          const payload = await res.json()
+          const list = Array.isArray(payload.data)
+            ? payload.data
+            : payload.data?.items || []
+          setUsers(list)
+        }
+      } catch (e: unknown) {
+        console.error("Failed to load users for trees dropdown:", e)
+      }
+    }
+    loadUsers()
+  }, [])
+
+  // Sync state with props
   useEffect(() => {
     setTrees(initialTrees)
   }, [initialTrees])
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetchApi("/admin/user/list?page=1&perPage=100")
-        const payload = await res.json()
-        if (res.status < 400) {
-          const list = Array.isArray(payload.data)
-            ? payload.data
-            : payload.data?.data || []
-          setUsers(list)
-        }
-      } catch (err) {
-        console.error("Error fetching users:", err)
-      }
-    }
-    fetchUsers()
-  }, [])
 
   const createQueryString = useCallback(
     (newParams: Record<string, string | null>) => {
@@ -106,8 +89,8 @@ export function useTreesManager({
 
   const onSearch = useEvent(() => {
     const currentSearch = searchParams.get("search") || ""
-    if (searchQuery !== currentSearch) {
-      router.push(`${pathname}?${createQueryString({ search: searchQuery })}`)
+    if (searchVal !== currentSearch) {
+      router.push(`${pathname}?${createQueryString({ search: searchVal })}`)
     }
   })
 
@@ -117,7 +100,7 @@ export function useTreesManager({
       onSearch()
     }, 400)
     return () => clearTimeout(handler)
-  }, [searchQuery, onSearch])
+  }, [searchVal, onSearch])
 
   const handlePageChange = (newPage: number) => {
     router.push(
@@ -125,30 +108,19 @@ export function useTreesManager({
     )
   }
 
-  const handleStatusFilterChange = (val: string) => {
-    router.push(`${pathname}?${createQueryString({ status: val })}`)
+  // Filter handlers
+  const handleFilterStatus = (status: string) => {
+    router.push(`${pathname}?${createQueryString({ status })}`)
   }
 
-  const getOwnerName = (userId: string | undefined) => {
-    if (!userId) return "Hệ thống (System)"
-    const matched = users.find((u) => u.id === userId)
-    if (!matched) return userId
-    const fullName = (
-      matched.fullName ||
-      matched.name ||
-      [matched.firstName, matched.lastName].filter(Boolean).join(" ")
-    ).trim()
-    const handleOrEmail = matched.username || matched.email || matched.id
-    if (fullName) {
-      return `${fullName} (${handleOrEmail})`
-    }
-    return handleOrEmail
+  const handleFilterBed = (bedCode: string) => {
+    router.push(`${pathname}?${createQueryString({ bedCode })}`)
   }
 
-  const [errorMsg, setErrorMsg] = useState(initialError || "")
-  const [successMsg, setSuccessMsg] = useState("")
+  // Selection state
+  const [selectedTreeIds, setSelectedTreeIds] = useState<string[]>([])
 
-  // Confirmation Dialog States
+  // Consolidated Confirmation Dialog State
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean
     title: string
@@ -163,27 +135,14 @@ export function useTreesManager({
     loading: false,
   })
 
-  // Dialog & Form state
+  // Consolidated Dialog & Form State
   const [dialogState, setDialogState] = useState<{
     isOpen: boolean
     mode: "create" | "edit"
     selectedTree: Tree | null
     loading: boolean
     error: string
-    formData: {
-      name: string
-      ageYear: number
-      quantity: number
-      bedCode: string
-      status: string
-      healthStatus: string
-      plantedAt: string
-      lastCareDate: string
-      nextCareDate: string
-      expectedHarvestAt: string
-      priceBought: string
-      ownerUserId: string
-    }
+    formData: TreeFormValues
   }>({
     isOpen: false,
     mode: "create",
@@ -192,21 +151,45 @@ export function useTreesManager({
     error: "",
     formData: {
       name: "",
+      bedCode: "none",
+      ownerUserId: "",
       ageYear: 1,
       quantity: 1,
-      bedCode: "none",
-      status: "active",
-      healthStatus: "healthy",
-      plantedAt: "",
+      healthStatus: "Tốt",
+      plantedAt: new Date().toISOString().substring(0, 10),
       lastCareDate: "",
       nextCareDate: "",
       expectedHarvestAt: "",
       priceBought: "",
-      ownerUserId: "",
+      status: "active",
     },
   })
 
   const filteredTrees = trees
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedTreeIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    )
+  }
+
+  const handleToggleAll = () => {
+    const allFilteredIds = filteredTrees.map((t) => t.id)
+    const isAllSelected = allFilteredIds.every((id) =>
+      new Set(selectedTreeIds).has(id)
+    )
+
+    if (isAllSelected) {
+      setSelectedTreeIds((prev) => {
+        const set = new Set(allFilteredIds)
+        return prev.filter((id) => !set.has(id))
+      })
+    } else {
+      setSelectedTreeIds((prev) =>
+        Array.from(new Set([...prev, ...allFilteredIds]))
+      )
+    }
+  }
 
   const handleOpenCreate = () => {
     setDialogState({
@@ -216,23 +199,24 @@ export function useTreesManager({
       loading: false,
       error: "",
       formData: {
-        name: "Sâm Ngọc Linh",
-        ageYear: 3,
-        quantity: 10,
-        bedCode: beds[0]?.code || "none",
-        status: "active",
-        healthStatus: "healthy",
+        name: "",
+        bedCode: "none",
+        ownerUserId: "",
+        ageYear: 1,
+        quantity: 1,
+        healthStatus: "Tốt",
         plantedAt: new Date().toISOString().substring(0, 10),
         lastCareDate: "",
         nextCareDate: "",
         expectedHarvestAt: "",
-        priceBought: "0",
-        ownerUserId: "",
+        priceBought: "",
+        status: "active",
       },
     })
   }
 
   const handleOpenEdit = (tree: Tree) => {
+    const treeRecord = tree as unknown as Record<string, unknown>
     setDialogState({
       isOpen: true,
       mode: "edit",
@@ -240,35 +224,31 @@ export function useTreesManager({
       loading: false,
       error: "",
       formData: {
-        name: tree.name,
-        ageYear: tree.ageYear,
-        quantity: tree.quantity,
-        bedCode: tree.bedCode || "none",
-        status: tree.status,
-        healthStatus: tree.healthStatus || "healthy",
-        plantedAt: tree.plantedAt ? tree.plantedAt.substring(0, 10) : "",
-        lastCareDate: tree.lastCareDate
-          ? tree.lastCareDate.substring(0, 10)
+        name: tree.name || "",
+        bedCode: tree.bedCode || tree.bed?.code || "none",
+        ownerUserId: tree.userId || (treeRecord.ownerUserId as string) || "",
+        ageYear: tree.ageYears !== undefined ? tree.ageYears : (treeRecord.ageYear as number) ?? 1,
+        quantity: (treeRecord.quantity as number) ?? 1,
+        healthStatus: tree.healthStatus || "Tốt",
+        plantedAt: tree.plantedDate
+          ? tree.plantedDate.substring(0, 10)
+          : (treeRecord.plantedAt as string)?.substring(0, 10) || "",
+        lastCareDate: (treeRecord.lastCareDate as string)
+          ? (treeRecord.lastCareDate as string).substring(0, 10)
           : "",
-        nextCareDate: tree.nextCareDate
-          ? tree.nextCareDate.substring(0, 10)
+        nextCareDate: (treeRecord.nextCareDate as string)
+          ? (treeRecord.nextCareDate as string).substring(0, 10)
           : "",
-        expectedHarvestAt: tree.expectedHarvestAt
-          ? tree.expectedHarvestAt.substring(0, 10)
-          : "",
+        expectedHarvestAt: tree.estimatedHarvestDate
+          ? tree.estimatedHarvestDate.substring(0, 10)
+          : (treeRecord.expectedHarvestAt as string)?.substring(0, 10) || "",
         priceBought:
-          tree.priceBought !== undefined && tree.priceBought !== null
-            ? String(tree.priceBought)
+          treeRecord.priceBought !== undefined && treeRecord.priceBought !== null
+            ? String(treeRecord.priceBought)
             : "",
-        ownerUserId: tree.ownerUserId || "",
+        status: tree.status || "active",
       },
     })
-  }
-
-  const safeIsoDate = (val?: string) => {
-    if (!val || typeof val !== "string" || val.trim() === "") return undefined
-    const d = new Date(val)
-    return isNaN(d.getTime()) ? undefined : d.toISOString()
   }
 
   const handleSave = async (values: TreeFormValues) => {
@@ -276,7 +256,7 @@ export function useTreesManager({
     setSuccessMsg("")
 
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         name: values.name,
         ageYear: Number(values.ageYear),
         quantity: Number(values.quantity),
@@ -315,9 +295,8 @@ export function useTreesManager({
           }))
         } else {
           setTrees((prev) => [dataPayload.data, ...prev])
-          setSuccessMsg(t("messages.createSuccess"))
+          setSuccessMsg(t("trees.notifications.createSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
-          router.refresh()
         }
       } else if (dialogState.mode === "edit" && dialogState.selectedTree) {
         const res = await fetchApi(
@@ -338,18 +317,20 @@ export function useTreesManager({
           }))
         } else {
           setTrees((prev) =>
-            prev.map((t) =>
-              t.id === dialogState.selectedTree!.id ? dataPayload.data : t
+            prev.map((item) =>
+              item.id === dialogState.selectedTree!.id ? dataPayload.data : item
             )
           )
-          setSuccessMsg(t("messages.updateSuccess"))
+          setSuccessMsg(t("trees.notifications.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
-          router.refresh()
         }
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: t("messages.networkError") }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: t("messages.errorOccurred"),
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -365,64 +346,111 @@ export function useTreesManager({
         method: "DELETE",
       })
       if (res.status >= 400) {
-        const payload = await res.json()
-        setErrorMsg(payload?.message || t("messages.errorOccurred"))
+        const dataPayload = await res.json()
+        setErrorMsg(
+          dataPayload?.message || t("trees.notifications.deleteError")
+        )
       } else {
-        setTrees((prev) => prev.filter((t) => t.id !== id))
-        setSuccessMsg(t("messages.deleteSuccess"))
-        router.refresh()
+        setTrees((prev) => prev.filter((item) => item.id !== id))
+        setSuccessMsg(t("trees.notifications.deleteSuccess"))
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err)
-      setErrorMsg(t("messages.networkError"))
+      setErrorMsg(t("trees.notifications.deleteError"))
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
   }
 
   const handleDelete = (id: string) => {
+    const tree = trees.find((item) => item.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: t("common.confirmations.deleteTitle"),
-      description: t("common.confirmations.deleteDescription"),
+      title: t("trees.confirm.deleteTitle"),
+      description: `${t("trees.confirm.deleteDesc")} "${tree?.name || ""}" (${tree?.code || ""}).`,
       action: () => performDelete(id),
       loading: false,
     })
   }
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target
-    setDialogState((prev) => ({
-      ...prev,
-      formData: {
-        ...prev.formData,
-        [name]: type === "number" ? parseInt(value) || 0 : value,
-      },
-    }))
+  const performBulkDelete = async () => {
+    setConfirmDialog((prev) => ({ ...prev, loading: true }))
+    setErrorMsg("")
+    setSuccessMsg("")
+
+    let successCount = 0
+    let failCount = 0
+
+    await Promise.all(
+      selectedTreeIds.map(async (id) => {
+        try {
+          const res = await fetchApi(`/user/cultivation/trees/${id}`, {
+            method: "DELETE",
+          })
+          if (res.status < 400) {
+            successCount++
+          } else {
+            failCount++
+          }
+        } catch {
+          failCount++
+        }
+      })
+    )
+
+    if (successCount > 0) {
+      setTrees((prev) => {
+        const set = new Set(selectedTreeIds)
+        return prev.filter((item) => !set.has(item.id))
+      })
+      setSelectedTreeIds([])
+      setSuccessMsg(`Đã xóa thành công ${successCount} cây sâm!`)
+      if (failCount > 0) {
+        setErrorMsg(`Không thể xóa ${failCount} cây sâm.`)
+      }
+    } else {
+      setErrorMsg(t("trees.notifications.deleteError"))
+    }
+
+    setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
+  }
+
+  const handleBulkDelete = () => {
+    if (selectedTreeIds.length === 0) return
+    setConfirmDialog({
+      isOpen: true,
+      title: t("trees.confirm.deleteTitle"),
+      description: `${t("trees.confirm.deleteDesc")} ${selectedTreeIds.length} cây sâm đã chọn.`,
+      action: () => performBulkDelete(),
+      loading: false,
+    })
   }
 
   return {
     trees,
     filteredTrees,
-    searchQuery,
-    setSearchQuery,
-    statusFilter,
+    beds,
     users,
-    getOwnerName,
+    searchVal,
+    setSearchVal,
     errorMsg,
     setErrorMsg,
     successMsg,
     setSuccessMsg,
+    selectedTreeIds,
     confirmDialog,
     setConfirmDialog,
     dialogState,
     setDialogState,
-    handlePageChange,
-    handleStatusFilterChange,
+    handleToggleSelect,
+    handleToggleAll,
     handleOpenCreate,
     handleOpenEdit,
     handleSave,
     handleDelete,
-    handleFormChange,
+    handleBulkDelete,
+    handlePageChange,
+    handleFilterStatus,
+    handleFilterBed,
   }
 }

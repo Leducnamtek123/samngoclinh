@@ -22,7 +22,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  if (token) {
+  if (token && !headers['Authorization'] && !headers['authorization']) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 

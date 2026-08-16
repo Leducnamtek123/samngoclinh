@@ -20,6 +20,7 @@ async function loadLocaleDomains(locale: LocaleType) {
     label,
     search,
     kyc,
+    contracts,
   ] = await Promise.all([
     import(`@/data/dictionaries/${locale}/auth.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/navigation.json`).then(
@@ -46,6 +47,9 @@ async function loadLocaleDomains(locale: LocaleType) {
     import(`@/data/dictionaries/${locale}/label.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/search.json`).then((m) => m.default),
     import(`@/data/dictionaries/${locale}/kyc.json`).then((m) => m.default),
+    import(`@/data/dictionaries/${locale}/contracts.json`).then(
+      (m) => m.default
+    ),
   ])
 
   return {
@@ -64,6 +68,7 @@ async function loadLocaleDomains(locale: LocaleType) {
     label,
     search,
     kyc,
+    contracts,
   }
 }
 

@@ -23,14 +23,3 @@ export function usePublicCultivationBeds(ageYear?: number | string, initialData?
   });
 }
 
-export function usePublicCultivationBedDetail(code: string, enabled: boolean = true) {
-  return useQuery({
-    queryKey: ['public-cultivation-bed-detail', code],
-    queryFn: () =>
-      fetchApiClient(`/public/cultivation/beds/${encodeURIComponent(code)}`)
-        .then((res) => res.data || null)
-        .catch(() => null),
-    enabled: enabled && !!code,
-  });
-}
-

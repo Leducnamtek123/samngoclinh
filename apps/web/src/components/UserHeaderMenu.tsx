@@ -1,6 +1,6 @@
 'use client';
 
-
+import { useRef } from 'react';
 import { NotificationPopover } from '@/components/NotificationPopover';
 import { OrderDetailModal } from '@/components/orders/OrderDetailModal';
 import { useUserHeaderMenu } from '@/hooks/useUserHeaderMenu';
@@ -32,10 +32,11 @@ const UKFlag = () => (
 );
 
 export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
-  const menu = useUserHeaderMenu(profile);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menu = useUserHeaderMenu(profile, menuRef);
 
   return (
-    <div className="flex items-center gap-4 sm:gap-5" ref={menu.menuRef}>
+    <div className="flex items-center gap-4 sm:gap-5" ref={menuRef}>
       {/* Shopping Cart Icon with MiniCart trigger */}
       <button
         type="button"

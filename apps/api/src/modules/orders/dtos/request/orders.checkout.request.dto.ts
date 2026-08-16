@@ -58,4 +58,20 @@ export class OrdersUserCheckoutRequestDto {
     @ValidateNested({ each: true })
     @Type(() => CartCheckoutItemDto)
     items?: CartCheckoutItemDto[];
+
+    @IsOptional()
+    @IsString()
+    identityNumber?: string;
+
+    @IsOptional()
+    @IsString()
+    signatureData?: string;
+
+    @IsOptional()
+    @IsString()
+    legalName?: string;
+
+    @IsOptional()
+    metadata?: Record<string, any>;
 }
+

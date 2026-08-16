@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
-import type { EContract, Tree, User } from "./_components/contracts-manager"
+import type { AdminUser, EContract, PaginationMeta, Tree } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -11,21 +11,6 @@ import { ContractsManager } from "./_components/contracts-manager"
 export const metadata: Metadata = {
   title: "Quản lý hợp đồng | Sâm Ngọc Linh Admin",
   description: "Quản lý hợp đồng điện tử ký gửi sâm Ngọc Linh",
-}
-
-interface Contract {
-  id: string
-  contractCode: string
-  userId: string
-  userEmail?: string
-  treeId: string
-  treeCode?: string
-  contractValue: number
-  paymentStatus: string
-  status: string
-  signedAt?: string
-  expiredAt: string
-  createdAt: string
 }
 
 interface ContractsPageProps {
@@ -47,10 +32,10 @@ export default async function ContractsPage({
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
 
-  let contracts: Contract[] = []
-  let users: User[] = []
+  let contracts: EContract[] = []
+  let users: AdminUser[] = []
   let trees: Tree[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
@@ -64,38 +49,41 @@ export default async function ContractsPage({
     if (res.status >= 400) {
       errorMsg = payload?.message || "Không thể tải danh sách hợp đồng"
     } else {
-      contracts = Array.isArray(payload.data?.items)
+      contracts = Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(payload.data?.items)
         ? payload.data.items
-        : payload.data || []
-      metadata = payload.metadata || null
+        : []
+      metadata = payload.metadata || payload.data?.metadata || null
     }
 
-    const usersRes = await fetchApi("/admin/user/list?page=1&perPage=500")
+    const usersRes = await fetchApi("/admin/user/list?perPage=100")
     const usersPayload = await usersRes.json()
     if (usersRes.status < 400) {
-      users = Array.isArray(usersPayload.data) ? usersPayload.data : []
+      users = Array.isArray(usersPayload.data)
+        ? usersPayload.data
+        : usersPayload.data?.items || []
     }
 
-    const treesRes = await fetchApi(
-      "/admin/cultivation/trees?page=1&perPage=500"
-    )
+    const treesRes = await fetchApi("/admin/cultivation/trees?perPage=100")
     const treesPayload = await treesRes.json()
     if (treesRes.status < 400) {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []
     }
-  } catch (e) {
-    console.error("Error loading contracts page data:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    console.error("Error fetching contracts page data:", e)
+    errorMsg = message
   }
 
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
+      <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <ContractsManager
-          initialContracts={contracts}
+          initialContracts={contracts as unknown as EContract[]}
+          metadata={metadata}
           users={users}
           trees={trees}
-          metadata={metadata}
           errorMsg={errorMsg}
         />
       </Suspense>

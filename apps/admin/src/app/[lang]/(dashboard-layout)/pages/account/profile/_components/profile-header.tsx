@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ShieldCheck, UserPen, MapPin, Sparkles } from "lucide-react"
 
 import type { LocaleType } from "@/types"
+import type { UserProfileData } from "../page"
 
 import { ensureLocalizedPathname } from "@/lib/i18n"
 import { cn, getInitials } from "@/lib/utils"
@@ -17,12 +18,12 @@ export function ProfileHeader({
   user,
 }: {
   locale: LocaleType
-  user?: any
+  user?: UserProfileData | null
 }) {
-  const profileUser = user || {}
-  const name = profileUser.name || "Quản trị viên Hệ thống"
-  const email = profileUser.email || "admin@samngoclinh.com"
-  const roleName = profileUser.role || "SUPER_ADMIN"
+  const name = user?.name || "Quản trị viên Hệ thống"
+  const email = user?.email || "admin@samngoclinh.com"
+  const roleName = user?.role || "SUPER_ADMIN"
+  const avatar = user?.avatar || ""
 
   return (
     <section className="bg-card border-b border-border rounded-b-2xl overflow-hidden shadow-xs">
@@ -31,6 +32,7 @@ export function ProfileHeader({
           src="/images/banners/homepage_banner_1.png"
           fill
           priority
+          sizes="100vw"
           className="h-full w-full object-cover opacity-40 mix-blend-overlay"
           alt="Profile Background"
         />
@@ -40,7 +42,7 @@ export function ProfileHeader({
         <div className="relative -mt-16 md:-mt-20">
           <Avatar className="size-28 md:size-32 ring-4 ring-card shadow-xl">
             <AvatarImage
-              src={profileUser.avatar}
+              src={avatar}
               alt="Profile Avatar"
               className="object-cover"
             />

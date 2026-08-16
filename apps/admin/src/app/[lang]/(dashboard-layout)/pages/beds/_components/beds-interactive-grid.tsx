@@ -22,14 +22,11 @@ import {
   ZoomOut,
 } from "lucide-react"
 
-import type {
-  Bed,
-  CultivationBedLocation,
-  Garden,
-  Tree,
-} from "./use-beds-table"
+import type { Bed, Garden, Tree } from "@/types"
+import type { CultivationBedLocation } from "./use-beds-table"
 
 import { fetchApi } from "@/lib/api"
+import { useApiQuery } from "@/hooks/use-api-query"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -51,8 +48,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
+import type { useBedsTable } from "./use-beds-table"
+import type { AdminUser, CareLog } from "@/types"
+
+type TableData = ReturnType<typeof useBedsTable>
+
 interface BedsInteractiveGridProps {
-  tableData: any
+  tableData: TableData
   gardens: Garden[]
 }
 
@@ -118,6 +120,17 @@ export function BedsInteractiveGrid({
   gardens,
 }: BedsInteractiveGridProps) {
   const { activeBed, activeTab, setActiveTab, openEditDialog } = tableData
+
+  if (!activeBed) {
+    return (
+      <div className="flex-1 flex items-center justify-center h-full text-muted-foreground p-8 text-center bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+        <div>
+          <p className="text-sm font-medium">Chưa chọn luống trồng nào</p>
+          <p className="text-xs text-muted-foreground mt-1">Vui lòng chọn một luống từ danh sách bên trái để xem chi tiết.</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -221,21 +234,21 @@ export function BedsInteractiveGrid({
           <button
             type="button"
             onClick={() => setActiveTab("grid")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "grid" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "grid" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Sơ đồ (Grid)
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("trees")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "trees" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "trees" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Danh sách cây
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("overview")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "overview" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "overview" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Tổng quan luống
           </button>
@@ -264,7 +277,7 @@ interface BedsGridToolbarProps {
   setGridCustomerFilter: (f: string) => void
   onlyEmpty: boolean
   setOnlyEmpty: (o: boolean) => void
-  users: any[]
+  users: Array<{ id: string; name?: string | null; username: string; email?: string }>
   handleBulkWatering: () => void
   handleBulkFertilizing: () => void
 }
@@ -328,7 +341,7 @@ function BedsGridToolbar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tất cả chủ sở hữu</SelectItem>
-            {users.map((u: any) => (
+            {users.map((u) => (
               <SelectItem key={u.id} value={u.id}>
                 {u.name || u.username}
               </SelectItem>
@@ -532,7 +545,7 @@ function BedsGridCanvas({
                       }
                     }}
                     style={{ opacity: isVisible ? 1 : 0.15 }}
-                    className={`w-12 h-12 rounded-lg border flex flex-col items-center justify-center relative cursor-pointer select-none transition-all grid-cell-btn ${
+                    className={`w-12 h-12 rounded-lg border flex flex-col items-center justify-center relative cursor-pointer select-none transition-[color,background-color,border-color,transform,box-shadow] grid-cell-btn ${
                       isSelected
                         ? "bg-emerald-600 border-white dark:border-slate-950 ring-2 ring-emerald-500/50 shadow-md scale-105 text-white"
                         : loc.status === "planted"
@@ -649,7 +662,7 @@ function BedsGridCanvas({
   )
 }
 
-function BedsGridTab({ tableData }: { tableData: any }) {
+function BedsGridTab({ tableData }: { tableData: TableData }) {
   return (
     <div className="flex-1 flex flex-col overflow-hidden space-y-4">
       <BedsGridToolbar
@@ -698,10 +711,13 @@ function BedsGridTab({ tableData }: { tableData: any }) {
   )
 }
 
-function BedsTreesTab({ tableData }: { tableData: any }) {
+function BedsTreesTab({ tableData }: { tableData: TableData }) {
   const { trees, activeBed, getOwnerName } = tableData
+  if (!activeBed) return null
 
-  const bedTrees = trees.filter((t: Tree) => t.bedCode === activeBed.code)
+  const bedTrees = trees.filter(
+    (t: Tree) => t.bedCode === activeBed.code
+  )
 
   return (
     <div className="flex-1 bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-xxs">
@@ -767,7 +783,7 @@ function BedsTreesTab({ tableData }: { tableData: any }) {
                     : "N/A"}
                 </TableCell>
                 <TableCell className="text-right">
-                  {getHealthBadge(tree.healthStatus)}
+                  {getHealthBadge(tree.healthStatus || "healthy")}
                 </TableCell>
               </TableRow>
             ))
@@ -778,7 +794,7 @@ function BedsTreesTab({ tableData }: { tableData: any }) {
   )
 }
 
-function BedsOverviewTab({ tableData }: { tableData: any }) {
+function BedsOverviewTab({ tableData }: { tableData: TableData }) {
   const {
     activeBed,
     totalGridCells,
@@ -787,6 +803,8 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
     sickCount,
     deadCount,
   } = tableData
+
+  if (!activeBed) return null
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -806,7 +824,7 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
           <div className="flex flex-col gap-1 border-b pb-2 border-slate-50">
             <span className="text-slate-400">Khu vực vườn:</span>
             <span className="font-bold text-slate-700 dark:text-slate-350">
-              {activeBed.gardenCode}
+              {activeBed.gardenCode || activeBed.garden?.code || "-"}
             </span>
           </div>
           <div className="flex flex-col gap-1 border-b pb-2 border-slate-50">
@@ -818,7 +836,7 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
           <div className="flex flex-col gap-1 border-b pb-2 border-slate-50">
             <span className="text-slate-400">Diện tích quy hoạch:</span>
             <span className="font-bold text-slate-700 dark:text-slate-350 font-mono">
-              {(activeBed.width || 2) * (activeBed.length || 10)} m²
+              {Number(activeBed.width || 2) * Number(activeBed.length || 10)} m²
             </span>
           </div>
           <div className="flex flex-col gap-1">
@@ -889,32 +907,23 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
   )
 }
 
-function BedsLogsTab({ tableData }: { tableData: any }) {
+function BedsLogsTab({ tableData }: { tableData: TableData }) {
   const { selectedBedCode } = tableData
-  const [logs, setLogs] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      setLoading(true)
-      try {
-        const res = await fetchApi(
-          `/user/cultivation/care-logs?bedCode=${selectedBedCode}`
-        )
-        const payload = await res.json()
-        if (res.status < 400 && Array.isArray(payload.data)) {
-          setLogs(payload.data)
-        }
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    if (selectedBedCode) {
-      fetchLogs()
-    }
-  }, [selectedBedCode])
+  const { data: response, isLoading: loading } = useApiQuery<
+    CareLog[] | { items: CareLog[] }
+  >(
+    ["care-logs", selectedBedCode],
+    `/user/cultivation/care-logs?bedCode=${selectedBedCode}`,
+    { enabled: Boolean(selectedBedCode) }
+  )
+
+  const rawData = response?.data
+  const logs: CareLog[] = Array.isArray(rawData)
+    ? rawData
+    : Array.isArray((rawData as { items?: CareLog[] })?.items)
+      ? (rawData as { items: CareLog[] }).items
+      : []
 
   return (
     <div className="flex-1 bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-xxs flex flex-col">

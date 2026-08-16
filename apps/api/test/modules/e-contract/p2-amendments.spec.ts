@@ -133,10 +133,15 @@ describe('Phase 5C — Contract Amendment & Renewal Specification Suite', () => 
             }),
         };
 
+        const mockTemplateService = {
+            getTemplate: jest.fn().mockResolvedValue({ contentHtml: '<p>{{TEN_KHACH_HANG}}</p>' }),
+        };
+
         service = new EContractService(
             contractRepo,
             amendmentRepo,
             pdfService,
+            mockTemplateService as any,
             databaseService,
             notificationService,
             configService,

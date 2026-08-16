@@ -1,30 +1,14 @@
 import { Suspense } from "react"
-
-import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
-import { fetchApi } from "@/lib/api"
+import type { AdminUser, LocaleType, PaginationMeta } from "@/types"
+
+import { usersService } from "@/services/users.service"
 import { getDictionary } from "@/lib/get-dictionary"
 import { createTranslator } from "@/lib/i18n"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { UsersTable } from "./_components/users-table"
-
-export const metadata: Metadata = {
-  title: "User Management | Admin",
-  description: "User account list",
-}
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-  status: string
-  isVerified: boolean
-  signUpDate?: string
-  createdAt?: string
-}
 
 interface UsersPageProps {
   params: Promise<{
@@ -36,6 +20,11 @@ interface UsersPageProps {
     search?: string
     status?: string
   }>
+}
+
+export const metadata: Metadata = {
+  title: "Quản lý người dùng | Sâm Ngọc Linh Admin",
+  description: "Quản trị danh sách người dùng, khách hàng và đối tác trong hệ thống",
 }
 
 export default async function UsersPage({
@@ -53,50 +42,35 @@ export default async function UsersPage({
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
 
-  let customers: User[] = []
-  let metadata: any = null
+  let customers: AdminUser[] = []
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("status", status)
-
-    const res = await fetchApi(`/admin/user/list?${queryParams.toString()}`)
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load users"
-    } else {
-      customers = Array.isArray(payload.data) ? payload.data : []
-      metadata = payload.metadata || null
+    const res = await usersService.getUsers({ page, perPage, search, status })
+    if (res.data && Array.isArray(res.data)) {
+      customers = res.data
+      metadata = res.metadata || null
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching users:", e)
-    errorMsg = "Unable to connect to server"
+    errorMsg = message
   }
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {t("users.title")}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          {t("navigation.users")}
         </h1>
-        <p className="text-muted-foreground">{t("users.subtitle")}</p>
+        <p className="text-sm text-muted-foreground">
+          Quản lý tài khoản người dùng, phân quyền và trạng thái hoạt động trong hệ thống
+        </p>
       </div>
 
-      <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
-        <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
-            {t("users.accountList.title")}
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            {t("users.accountList.subtitle")}
-          </p>
-        </div>
-
-        <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
+      <div className="bg-card text-card-foreground border border-border rounded-2xl p-4 sm:p-6 shadow-xs">
+        <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
           <UsersTable
             initialUsers={customers}
             metadata={metadata}

@@ -31,6 +31,8 @@ const MONTH_NAMES = [
 
 const WEEK_DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
+const STATIC_YEARS: number[] = Array.from({ length: 96 }, (_, i) => 2035 - i);
+
 export function Calendar({
   selected,
   onSelect,
@@ -43,12 +45,12 @@ export function Calendar({
   const [viewYear, setViewYear] = React.useState<number>(initialDate.getFullYear());
   const [viewMonth, setViewMonth] = React.useState<number>(initialDate.getMonth());
 
-  React.useEffect(() => {
-    if (selected) {
-      setViewYear(selected.getFullYear());
-      setViewMonth(selected.getMonth());
-    }
-  }, [selected]);
+  const [prevSelected, setPrevSelected] = React.useState(selected);
+  if (selected && selected !== prevSelected) {
+    setPrevSelected(selected);
+    setViewYear(selected.getFullYear());
+    setViewMonth(selected.getMonth());
+  }
 
   const handlePrevMonth = () => {
     if (viewMonth === 0) {
@@ -68,17 +70,10 @@ export function Calendar({
     }
   };
 
-  const years = React.useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    const result: number[] = [];
-    for (let y = currentYear + 5; y >= 1940; y--) {
-      result.push(y);
-    }
-    return result;
-  }, []);
+  const years = STATIC_YEARS;
 
   // Compute days in month
-  const calendarDays = React.useMemo(() => {
+  const calendarDays = (() => {
     const firstDayOfMonth = new Date(viewYear, viewMonth, 1);
     const lastDayOfMonth = new Date(viewYear, viewMonth + 1, 0);
 
@@ -155,7 +150,7 @@ export function Calendar({
     }
 
     return days;
-  }, [viewYear, viewMonth, selected, minDate, maxDate, disabled]);
+  })();
 
   const handleSelectToday = () => {
     const today = new Date();
@@ -176,11 +171,12 @@ export function Calendar({
         <div className="flex items-center gap-1.5">
           <select
             value={viewMonth}
+            aria-label="Chọn tháng"
             onChange={(e) => setViewMonth(Number(e.target.value))}
             className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none"
           >
             {MONTH_NAMES.map((name, idx) => (
-              <option key={idx} value={idx}>
+              <option key={name} value={idx}>
                 {name}
               </option>
             ))}
@@ -188,6 +184,7 @@ export function Calendar({
 
           <select
             value={viewYear}
+            aria-label="Chọn năm"
             onChange={(e) => setViewYear(Number(e.target.value))}
             className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none"
           >
@@ -236,10 +233,10 @@ export function Calendar({
 
       {/* Days Grid */}
       <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((item, idx) => {
+        {calendarDays.map((item) => {
           return (
             <button
-              key={idx}
+              key={item.date.toISOString()}
               type="button"
               disabled={item.isDisabled}
               onClick={() => {
@@ -248,7 +245,7 @@ export function Calendar({
                 }
               }}
               className={cn(
-                'size-8 text-xs font-semibold rounded-xl flex items-center justify-center transition-all cursor-pointer relative',
+                'size-8 text-xs font-semibold rounded-xl flex items-center justify-center transition-colors cursor-pointer relative',
                 !item.isCurrentMonth && 'text-gray-300 dark:text-gray-700 pointer-events-none opacity-40',
                 item.isCurrentMonth && !item.isSelected && !item.isDisabled && 'text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700',
                 item.isToday && !item.isSelected && 'border border-emerald-500 font-bold text-emerald-700 dark:text-emerald-400',

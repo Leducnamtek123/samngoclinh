@@ -222,7 +222,7 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
 
       <StaggerContainer variant="fade-up" stagger={0.12} distance={50} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {latestArticles.slice(0, 4).map((article: any, idx: number) => (
-          <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
+          <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-[box-shadow,transform] duration-300 flex flex-col justify-between hover:-translate-y-1">
             <div>
               <div className="h-52 overflow-hidden bg-gray-100 relative p-3">
                 <Link href={`/news/${article.slug}`}>
@@ -434,24 +434,29 @@ function ContactSection() {
 
 function CtaBanner() {
   return (
-    <section className="bg-[#43a047] py-16 px-4 sm:px-6 lg:px-8 text-center text-white relative overflow-hidden">
-      <div className="max-w-4xl mx-auto space-y-5 relative z-10">
+    <section className="bg-gradient-to-r from-emerald-950 via-primary to-emerald-950 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 text-center text-white relative overflow-hidden border-t border-emerald-800/40">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
         <ScrollReveal variant="fade-up">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-800/60 border border-emerald-600/50 text-emerald-300 text-xs font-black uppercase tracking-wider mb-2">
+            Tinh Hoa Dược Liệu Quốc Bảo
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg mt-2">
             Bắt đầu hành trình cùng Sâm Ngọc Linh ngay hôm nay
           </h2>
         </ScrollReveal>
         <ScrollReveal variant="fade-up" delay={0.15}>
-          <p className="text-white/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-emerald-100/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
             Tham gia cùng hàng nghìn khách hàng đã tin tưởng Sâm Ngọc Linh. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
           </p>
         </ScrollReveal>
         <ScrollReveal variant="scale" delay={0.3} scaleFrom={0.92} className="pt-2">
           <Link
             href="/products"
-            className="inline-flex items-center justify-center bg-white text-[#43a047] hover:text-emerald-700 font-semibold px-8 py-3.5 rounded-full shadow-md hover:shadow-lg transition-[color,box-shadow,transform] duration-300 hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
+            className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-8 py-3.5 rounded-full shadow-xl hover:shadow-2xl transition-[color,box-shadow,transform] duration-300 hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base cursor-pointer"
           >
-            <span>Mua sắm ngay</span>
+            <span>Khám phá sản phẩm</span>
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               fill="none" 
