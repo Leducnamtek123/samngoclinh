@@ -6,10 +6,13 @@ import { cartStore } from '@/lib/stores/useCartStore';
 import { useNotificationsList } from '@/hooks/queries/useNotifications';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
 
-export function useUserHeaderMenu(profile: { fullName?: string; email?: string } | null) {
+import { useProfileMe } from '@/hooks/queries/useProfile';
+
+export function useUserHeaderMenu(initialProfile: { fullName?: string; email?: string; name?: string } | null) {
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [cartCount, setCartCount] = useState(() => (typeof window !== 'undefined' ? getCartCount() : 0));
+  const [cartCount, setCartCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -18,9 +21,16 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
   const router = useRouter();
   const pathname = usePathname();
 
-  const fullName = profile?.fullName || 'Khách hàng';
-  const email = profile?.email || '';
-  const initial = fullName.charAt(0).toUpperCase();
+  const { data: dynamicProfile } = useProfileMe((initialProfile as any) || undefined);
+  const effectiveProfile = dynamicProfile || initialProfile;
+
+  const displayName =
+    effectiveProfile?.fullName?.trim() ||
+    (effectiveProfile as any)?.name?.trim() ||
+    effectiveProfile?.email?.split('@')[0] ||
+    'Khách hàng';
+  const email = effectiveProfile?.email || '';
+  const initial = displayName.charAt(0).toUpperCase() || 'U';
 
   const { data: notificationsData } = useNotificationsList(true);
   const unreadNotifCount = Array.isArray(notificationsData)
@@ -28,16 +38,16 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
     : 0;
 
   useEffect(() => {
+    setMounted(true);
     const handleUpdate = () => {
       setCartCount(getCartCount());
     };
 
+    handleUpdate();
+
     window.addEventListener('cart_updated', handleUpdate);
     window.addEventListener('storage', handleUpdate);
     const unsubscribe = cartStore.subscribe(handleUpdate);
-
-    // Initial update in case store updated during mount
-    handleUpdate();
 
     return () => {
       window.removeEventListener('cart_updated', handleUpdate);
@@ -89,13 +99,14 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
     showLangMenu,
     setShowLangMenu,
     cartCount,
+    mounted,
     isNotifOpen,
     setIsNotifOpen,
     selectedOrder,
     setSelectedOrder,
     menuRef,
     locale,
-    fullName,
+    fullName: displayName,
     email,
     initial,
     unreadNotifCount,

@@ -133,7 +133,10 @@ export interface IUserService {
         frontFile?: IFile | null,
         backFile?: IFile | null,
         frontBase64?: string,
-        backBase64?: string
+        backBase64?: string,
+        documentType?: string,
+        idCardNumber?: string,
+        fullName?: string
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>>;
     getIdentityDocumentHistories(
         userId: string

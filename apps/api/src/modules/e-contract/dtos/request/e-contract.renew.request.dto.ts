@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 
 export class EContractRenewRequestDto {
     @ApiProperty({
@@ -11,4 +11,21 @@ export class EContractRenewRequestDto {
     @IsInt()
     @Min(1)
     months: number;
+
+    @ApiPropertyOptional({
+        example: 'data:image/png;base64,...',
+        description: 'Optional signature data to sign amendment immediately',
+    })
+    @IsOptional()
+    @IsString()
+    signatureData?: string;
+
+    @ApiPropertyOptional({
+        example: 1500000,
+        description: 'Optional renewal care service fee',
+    })
+    @IsOptional()
+    @IsInt()
+    @Min(0)
+    amendmentValue?: number;
 }

@@ -56,16 +56,16 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({ activeTab }) => {
   };
 
   return (
-    <div className="mb-6 bg-white p-5 sm:p-6 rounded-2xl border border-gray-100/80 shadow-xs flex flex-col gap-1">
-      <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 mb-1">
+    <div className="mb-6 px-1 flex flex-col gap-1">
+      <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-400">
         <span>Tài khoản</span>
-        <span className="text-gray-300">/</span>
-        <span className="text-gray-600 capitalize">{currentInfo.title}</span>
+        <span className="text-gray-300 dark:text-gray-700">/</span>
+        <span className="text-gray-600 dark:text-gray-400 capitalize">{currentInfo.title}</span>
       </div>
-      <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
         {currentInfo.title}
       </h1>
-      <p className="text-xs sm:text-sm text-gray-500 font-normal">
+      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-normal">
         {currentInfo.subtitle}
       </p>
     </div>

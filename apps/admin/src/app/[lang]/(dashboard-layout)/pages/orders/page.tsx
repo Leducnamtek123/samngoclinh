@@ -24,6 +24,11 @@ interface OrdersPageProps {
   }>
 }
 
+export const metadata: Metadata = {
+  title: "Quản lý đơn hàng | Sâm Ngọc Linh Admin",
+  description: "Quản lý và xử lý đơn hàng cây sâm, gói dịch vụ và sản phẩm thương mại",
+}
+
 export default async function OrdersPage({
   params,
   searchParams,
@@ -56,35 +61,28 @@ export default async function OrdersPage({
     const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to fetch orders"
+      errorMsg = payload?.message || "Không thể tải danh sách đơn hàng"
     } else {
       orders = Array.isArray(payload.data) ? payload.data : []
       metadata = payload.metadata || null
     }
   } catch (e) {
     console.error("Error fetching orders:", e)
-    errorMsg = "Unable to connect to server"
+    errorMsg = "Không thể kết nối đến máy chủ API"
   }
 
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
           {t("navigation.orders")}
         </h1>
-        <p className="text-muted-foreground">{t("common.status.all")}</p>
+        <p className="text-sm text-muted-foreground">
+          Quản lý, tra cứu và xử lý toàn bộ đơn hàng cây giống, gói chăm sóc và sản phẩm thương mại
+        </p>
       </div>
 
-      <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
-        <div className="mb-4">
-          <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
-            {t("navigation.orders")}
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            {t("common.status.all")}
-          </p>
-        </div>
-
+      <div className="bg-card text-card-foreground border border-border rounded-2xl p-4 sm:p-6 shadow-xs">
         <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
           <OrdersTable
             initialOrders={orders}

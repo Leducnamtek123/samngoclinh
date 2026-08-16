@@ -11,14 +11,14 @@ export class ContentArticleResponseDto {
 
     @ApiProperty({
         required: true,
-        example: 'bao-chi-noi-ve-iwe-farm',
+        example: 'bao-chi-noi-ve-sam-ngoc-linh',
     })
     @Expose()
     slug: string;
 
     @ApiProperty({
         required: true,
-        example: 'Báo chí nói gì về iWE FARM',
+        example: 'Báo chí nói gì về Sâm Ngọc Linh',
     })
     @Expose()
     title: string;
@@ -53,7 +53,7 @@ export class ContentArticleResponseDto {
 
     @ApiProperty({
         required: false,
-        example: 'iWE FARM',
+        example: 'Sâm Ngọc Linh',
     })
     @Expose()
     author?: string;

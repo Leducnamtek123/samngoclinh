@@ -949,21 +949,27 @@ export class UserRepository {
 
     async saveIdentityDocument(
         userId: string,
-        { frontImageUrl, backImageUrl }: IUserIdentityDocumentSave
+        { frontImageUrl, backImageUrl, documentType, idCardNumber, fullName }: IUserIdentityDocumentSave
     ): Promise<UserIdentityDocument> {
         const saved = await this.databaseService.userIdentityDocument.upsert({
             where: { userId },
             create: {
                 userId,
+                documentType: documentType || 'cccd',
+                idCardNumber: idCardNumber ?? null,
+                fullName: fullName ?? null,
                 frontImageUrl,
-                backImageUrl,
+                backImageUrl: backImageUrl ?? null,
                 status: 'PENDING',
                 rejectionReason: null,
                 createdBy: userId,
             },
             update: {
+                documentType: documentType || 'cccd',
+                idCardNumber: idCardNumber ?? null,
+                fullName: fullName ?? null,
                 frontImageUrl,
-                backImageUrl,
+                backImageUrl: backImageUrl ?? null,
                 status: 'PENDING',
                 rejectionReason: null,
                 reviewedAt: null,
@@ -976,8 +982,11 @@ export class UserRepository {
         await this.databaseService.userIdentityHistory.create({
             data: {
                 userId,
+                documentType: documentType || 'cccd',
+                idCardNumber: idCardNumber ?? null,
+                fullName: fullName ?? null,
                 frontImageUrl,
-                backImageUrl,
+                backImageUrl: backImageUrl ?? null,
                 status: 'PENDING',
             },
         });
@@ -1008,7 +1017,10 @@ export class UserRepository {
             return {
                 id: d.id,
                 userId: d.userId,
-                fullName: u?.name || u?.email,
+                fullName: d.fullName || u?.name || u?.email,
+                idType: d.documentType || 'cccd',
+                documentType: d.documentType || 'cccd',
+                idNumber: d.idCardNumber,
                 idFrontUrl: d.frontImageUrl,
                 idBackUrl: d.backImageUrl,
                 status: d.status || (u?.isVerified ? 'APPROVED' : 'PENDING'),
@@ -1595,7 +1607,7 @@ export class UserRepository {
         // @note number lưu full digits (kèm country code) để findOneWithRoleByEmail(endsWith) khớp lần đăng nhập sau
         const number = phoneNumber.replace(/[^0-9]/g, '');
         // @note email bắt buộc ở schema; user đăng ký bằng SĐT dùng email placeholder, đổi được ở profile sau
-        const placeholderEmail = `${number}@phone.iwefarm.local`;
+        const placeholderEmail = `${number}@phone.samngoclinh.local`;
 
         const termPolicies = await this.databaseService.termPolicy.findMany({
             where: {

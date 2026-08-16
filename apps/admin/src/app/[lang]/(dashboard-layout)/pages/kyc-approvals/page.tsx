@@ -187,6 +187,7 @@ export default function KycApprovalsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{dict.columns.user}</TableHead>
+                      <TableHead>{dict.columns.documentType || (lang === 'en' ? 'Document Type' : 'Loại giấy tờ')}</TableHead>
                       <TableHead>{dict.columns.idCardNumber}</TableHead>
                       <TableHead>{dict.columns.submitDate}</TableHead>
                       <TableHead>{dict.columns.status}</TableHead>
@@ -194,59 +195,77 @@ export default function KycApprovalsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {kycList.map((kyc) => (
-                      <TableRow key={kyc.id}>
-                        <TableCell className="font-medium">
-                          {kyc.fullName ||
-                            kyc.user?.name ||
-                            kyc.user?.email ||
-                            kyc.userId}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {kyc.idNumber || "—"}
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {kyc.submittedAt || kyc.createdAt
-                            ? new Date(
-                                kyc.submittedAt || kyc.createdAt!
-                              ).toLocaleDateString(lang === "en" ? "en-US" : "vi-VN")
-                            : "—"}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              kyc.status === "APPROVED" ? "default" : "outline"
-                            }
-                            className={
-                              kyc.status === "APPROVED"
-                                ? "bg-emerald-600 text-white font-bold"
+                    {kycList.map((kyc) => {
+                      const docType = kyc.idType || (kyc as any).documentType || "cccd";
+                      return (
+                        <TableRow key={kyc.id}>
+                          <TableCell className="font-medium">
+                            {kyc.fullName ||
+                              kyc.user?.name ||
+                              kyc.user?.email ||
+                              kyc.userId}
+                          </TableCell>
+                          <TableCell>
+                            {docType === "passport" ? (
+                              <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold text-[11px]">
+                                {lang === "en" ? "Passport" : "Hộ chiếu"}
+                              </Badge>
+                            ) : docType === "driver_license" ? (
+                              <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200 font-bold text-[11px]">
+                                {lang === "en" ? "Driver's License" : "Bằng lái xe"}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px]">
+                                {lang === "en" ? "Citizen ID" : "CCCD"}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs font-semibold">
+                            {kyc.idNumber || "—"}
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {kyc.submittedAt || kyc.createdAt
+                              ? new Date(
+                                  kyc.submittedAt || kyc.createdAt!
+                                ).toLocaleDateString(lang === "en" ? "en-US" : "vi-VN")
+                              : "—"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                kyc.status === "APPROVED" ? "default" : "outline"
+                              }
+                              className={
+                                kyc.status === "APPROVED"
+                                  ? "bg-emerald-600 text-white font-bold"
+                                  : kyc.status === "REJECTED"
+                                  ? "bg-rose-100 text-rose-800 border-rose-300 font-bold"
+                                  : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
+                              }
+                            >
+                              {kyc.status === "APPROVED"
+                                ? dict.status.approved
                                 : kyc.status === "REJECTED"
-                                ? "bg-rose-100 text-rose-800 border-rose-300 font-bold"
-                                : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
-                            }
-                          >
-                            {kyc.status === "APPROVED"
-                              ? dict.status.approved
-                              : kyc.status === "REJECTED"
-                              ? dict.status.rejected
-                              : dict.status.pending}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 font-bold"
-                            onClick={() => {
-                              setSelectedKyc(kyc)
-                              setShowRejectForm(false)
-                            }}
-                          >
-                            <Eye className="w-4 h-4" /> {dict.actions.review}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                                ? dict.status.rejected
+                                : dict.status.pending}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 font-bold cursor-pointer"
+                              onClick={() => {
+                                setSelectedKyc(kyc)
+                                setShowRejectForm(false)
+                              }}
+                            >
+                              <Eye className="w-4 h-4" /> {dict.actions.review}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
                 <Pagination
@@ -273,16 +292,26 @@ export default function KycApprovalsPage() {
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 pt-2">
-                <div className="grid grid-cols-2 gap-4 text-sm border-b pb-4">
+                <div className="grid grid-cols-3 gap-3 text-sm border-b pb-4">
                   <div>
-                    <span className="text-muted-foreground">{dict.modal.fullName}</span>
-                    <p className="font-semibold">
+                    <span className="text-muted-foreground text-xs block">{dict.modal.fullName}</span>
+                    <p className="font-semibold text-sm">
                       {selectedKyc.fullName || selectedKyc.user?.name || "—"}
                     </p>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">{dict.modal.idNumber}</span>
-                    <p className="font-semibold font-mono">
+                    <span className="text-muted-foreground text-xs block">{dict.modal.documentType || (lang === 'en' ? 'Document Type:' : 'Loại giấy tờ:')}</span>
+                    <p className="font-semibold text-sm">
+                      {(selectedKyc.idType || (selectedKyc as any).documentType) === "passport"
+                        ? (lang === "en" ? "Passport" : "Hộ chiếu")
+                        : (selectedKyc.idType || (selectedKyc as any).documentType) === "driver_license"
+                        ? (lang === "en" ? "Driver's License" : "Bằng lái xe")
+                        : (lang === "en" ? "Citizen ID (CCCD)" : "Căn cước công dân")}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-xs block">{dict.modal.idNumber}</span>
+                    <p className="font-semibold font-mono text-sm">
                       {selectedKyc.idNumber || "—"}
                     </p>
                   </div>
@@ -325,7 +354,9 @@ export default function KycApprovalsPage() {
                       />
                     ) : (
                       <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                        {lang === "en" ? "No photo" : "Chưa có ảnh"}
+                        {(selectedKyc.idType || (selectedKyc as any).documentType) === "passport"
+                          ? (lang === "en" ? "Not applicable" : "Không bắt buộc (Hộ chiếu)")
+                          : (lang === "en" ? "No photo" : "Chưa có ảnh")}
                       </div>
                     )}
                   </div>

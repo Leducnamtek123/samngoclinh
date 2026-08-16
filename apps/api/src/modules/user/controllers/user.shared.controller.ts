@@ -118,7 +118,7 @@ export class UserSharedController {
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
-    @Get('/profile')
+    @Get(['/profile', '/profile/me'])
     async profile(
         @AuthJwtPayload('userId')
         userId: string
@@ -311,14 +311,25 @@ export class UserSharedController {
         @UploadedFiles()
         files?: { front?: IFile[]; back?: IFile[] },
         @Body()
-        body?: { front?: string; back?: string; frontBase64?: string; backBase64?: string }
+        body?: {
+            front?: string;
+            back?: string;
+            frontBase64?: string;
+            backBase64?: string;
+            documentType?: string;
+            idCardNumber?: string;
+            fullName?: string;
+        }
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
         return this.userService.saveIdentityDocument(
             userId,
             files?.front?.[0] ?? null,
             files?.back?.[0] ?? null,
             body?.frontBase64 || body?.front,
-            body?.backBase64 || body?.back
+            body?.backBase64 || body?.back,
+            body?.documentType || 'cccd',
+            body?.idCardNumber,
+            body?.fullName
         );
     }
 

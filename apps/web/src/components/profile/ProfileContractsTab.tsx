@@ -2,6 +2,7 @@ import { Link } from '@/lib/I18nNavigation';
 import { Button, Badge } from '@/components/ui';
 import { EmptyState, LoadingState } from '@/components/common';
 import { FileText } from 'lucide-react';
+import { DigitalSignatureCard } from './DigitalSignatureCard';
 import type { EContractData } from '@/types';
 
 type ProfileContractsTabProps = {
@@ -16,9 +17,9 @@ export const ProfileContractsTab = ({
   onOpenContractModal,
 }: ProfileContractsTabProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-bold text-gray-900">Hợp đồng điện tử</h3>
+        <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100">Hợp đồng điện tử</h3>
         <p className="text-xs text-gray-400 font-medium">Quản lý và thực hiện ký số cho các hợp đồng hợp tác đầu tư sâm</p>
       </div>
 
@@ -49,11 +50,11 @@ export const ProfileContractsTab = ({
             return (
               <div
                 key={contract.id}
-                className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-shadow duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-5 hover:shadow-md transition-shadow duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-extrabold text-slate-900 text-sm">
+                    <span className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">
                       {contract.title || `Hợp đồng #${contract.code || contract.id.slice(0, 8)}`}
                     </span>
                     {isSigned ? (
@@ -66,12 +67,12 @@ export const ProfileContractsTab = ({
                       </Badge>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-medium">
-                    <span>Mã: <strong className="text-slate-700">{contract.code || contract.id.slice(0, 8)}</strong></span>
-                    <span>Ngày tạo: <strong className="text-slate-700">{createdAtStr}</strong></span>
-                    <span>Hiệu lực đến: <strong className="text-slate-700">{expiredAtStr}</strong></span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <span>Mã: <strong className="text-slate-700 dark:text-slate-200">{contract.code || contract.id.slice(0, 8)}</strong></span>
+                    <span>Ngày tạo: <strong className="text-slate-700 dark:text-slate-200">{createdAtStr}</strong></span>
+                    <span>Hiệu lực đến: <strong className="text-slate-700 dark:text-slate-200">{expiredAtStr}</strong></span>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium pt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium pt-0.5">
                     Giá trị hợp đồng: <strong className="text-primary font-bold text-sm">{(Number(contractVal) || 0).toLocaleString('vi-VN')} VNĐ</strong>
                   </p>
                 </div>
@@ -91,6 +92,11 @@ export const ProfileContractsTab = ({
           })}
         </div>
       )}
+
+      {/* Digital Signature Management Section */}
+      <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+        <DigitalSignatureCard />
+      </div>
     </div>
   );
 };

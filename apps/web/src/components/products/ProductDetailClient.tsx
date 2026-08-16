@@ -14,11 +14,12 @@ type ProductDetailClientProps = {
   id: string;
   locale: string;
   isLoggedIn?: boolean;
+  initialData?: any;
 };
 
-export const ProductDetailClient = ({ id, locale, isLoggedIn }: ProductDetailClientProps) => {
+export const ProductDetailClient = ({ id, locale, isLoggedIn, initialData }: ProductDetailClientProps) => {
   const t = useTranslations('productDetail');
-  const { data: product, isLoading, isError } = useCatalogShopItem(id);
+  const { data: product, isLoading, isError } = useCatalogShopItem(id, initialData);
   const { data: allShopItems } = useCatalogShopItems();
 
   const relatedProducts = Array.isArray(allShopItems)
@@ -74,6 +75,9 @@ export const ProductDetailClient = ({ id, locale, isLoggedIn }: ProductDetailCli
       quantity
     );
     toast.success(t('addedToCartToast', { quantity, name: item.name }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('open_mini_cart'));
+    }
   };
 
   const handleBuyNow = (item: ProductItem, quantity: number) => {

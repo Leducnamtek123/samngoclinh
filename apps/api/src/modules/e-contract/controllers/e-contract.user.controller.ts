@@ -25,7 +25,7 @@ import { IResponseReturn } from '@common/response/interfaces/response.interface'
 @ApiTags('modules.user.eContract')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/contracts',
+    path: ['/contracts', '/user/contracts', '/e-contract'],
 })
 export class EContractUserController {
     constructor(private readonly eContractService: EContractService) {}
@@ -84,8 +84,54 @@ export class EContractUserController {
     async renewMyContract(
         @Param('id') id: string,
         @AuthJwtPayload('userId') userId: string,
-        @Body() body: EContractRenewRequestDto
-    ): Promise<IResponseReturn<EContract>> {
-        return this.eContractService.renewContract(id, userId, body);
+        @Body() body: EContractRenewRequestDto,
+        @Req() req: Request
+    ): Promise<IResponseReturn<any>> {
+        const clientIp = getClientIp(req) ?? undefined;
+        return this.eContractService.renewContract(id, userId, body, clientIp);
+    }
+
+    @Response('eContract.getAmendments')
+    @RoleProtected(EnumRoleType.user)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/:id/amendments')
+    async listMyContractAmendments(
+        @Param('id') id: string,
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<any>> {
+        // Validate user owns contract
+        await this.eContractService.getContract(id, userId);
+        return this.eContractService.getAmendmentsByContractId(id);
+    }
+
+    @Response('eContract.signAmendment')
+    @RoleProtected(EnumRoleType.user)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/amendments/:amendmentId/sign')
+    async signMyContractAmendment(
+        @Param('amendmentId') amendmentId: string,
+        @AuthJwtPayload('userId') userId: string,
+        @Body() body: any,
+        @Req() req: Request
+    ): Promise<IResponseReturn<any>> {
+        const clientIp = getClientIp(req) ?? undefined;
+        return this.eContractService.signAmendment(amendmentId, userId, body, clientIp);
+    }
+
+    @Response('eContract.cancelAmendment')
+    @RoleProtected(EnumRoleType.user)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/amendments/:amendmentId/cancel')
+    async cancelMyContractAmendment(
+        @Param('amendmentId') amendmentId: string,
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<any>> {
+        return this.eContractService.cancelAmendment(amendmentId, userId);
     }
 }

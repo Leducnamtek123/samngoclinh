@@ -54,7 +54,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
       isDefault: addresses.length === 0,
     };
     try {
-      await fetchApiClient('/v1/shared/user/address/add', {
+      const res = await fetchApiClient('/v1/shared/user/address/add', {
         method: 'POST',
         body: JSON.stringify({
           detail: data.shippingAddress,
@@ -63,6 +63,9 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
           isDefault: addresses.length === 0,
         }),
       });
+      if (res?.data?.id) {
+        newAddr.id = res.data.id;
+      }
     } catch {}
     const updated = [...addresses, newAddr];
     setAddresses(updated);

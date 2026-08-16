@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/lib/I18nNavigation';
+import { MiniCartDrawer } from '@/components/cart/MiniCartDrawer';
 
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;
@@ -123,36 +124,94 @@ export const BaseTemplate = (props: {
       {/* Footer */}
       <footer className="w-full bg-primary text-gray-300 border-t border-gray-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            <div className="sm:col-span-2 space-y-4 sm:space-y-6">
-              <span className="font-bold text-xl sm:text-2xl text-white tracking-wider font-display-lg block">
-                Rượu Sâm Ngọc Linh
-              </span>
-              <p className="text-xs sm:text-sm text-gray-400 max-w-sm leading-relaxed">
-                © {new Date().getFullYear()} Rượu Sâm Ngọc Linh. Nền tảng số hóa và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-10">
+            {/* Cột 1: Thông tin thương hiệu & Logo Bộ Công Thương */}
+            <div className="sm:col-span-2 lg:col-span-2 space-y-4 sm:space-y-5">
+              <div className="flex items-center gap-2.5">
+                <Image
+                  src="/assets/images/logo_ruou_sam.png?v=2"
+                  alt="Rượu Sâm Ngọc Linh Logo"
+                  width={36}
+                  height={36}
+                  unoptimized
+                  className="w-9 h-9 object-contain"
+                />
+                <span className="font-bold text-xl sm:text-2xl text-white tracking-wider font-display-lg block">
+                  Rượu Sâm Ngọc Linh
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-300/90 max-w-md leading-relaxed">
+                © {new Date().getFullYear()} Công ty Cổ phần Sâm Ngọc Linh. Nền tảng số hóa, chuẩn hóa nguồn gen và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
               </p>
-              <div className="flex gap-4 text-secondary">
-                <span className="text-xs text-gray-500 leading-relaxed">Trụ sở: 123 Đường Nam Trà My, Tỉnh Quảng Nam, Việt Nam. Hotline: 0847 234 234</span>
+              <div className="space-y-1.5 text-xs sm:text-sm text-gray-400">
+                <p>📍 Trụ sở: Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam</p>
+                <p>📞 Hotline CSKH: <strong className="text-secondary font-bold">0967 234 234</strong> (24/7)</p>
+                <p>✉️ Email: <strong className="text-white font-medium">hotro@samngoclinh.vn</strong></p>
+              </div>
+
+              {/* Logo Đã thông báo Bộ Công Thương */}
+              <div className="pt-2">
+                <a
+                  href="http://online.gov.vn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block transition-transform hover:scale-105"
+                  title="Website Thương mại điện tử đã thông báo với Bộ Công Thương"
+                >
+                  <Image
+                    src="/assets/images/logo-da-thong-bao-bo-cong-thuong-mau-xanh.png"
+                    alt="Đã thông báo Bộ Công Thương"
+                    width={160}
+                    height={60}
+                    className="h-12 w-auto object-contain drop-shadow-sm"
+                  />
+                </a>
               </div>
             </div>
+
+            {/* Cột 2: Sản phẩm */}
             <div className="space-y-3 sm:space-y-4">
-              <h5 className="text-white font-bold text-sm">Sản phẩm</h5>
+              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
+                Sản phẩm
+              </h5>
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/products">Vườn kỹ thuật số</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/ginseng">Gói chăm sóc</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/ginseng">Gói cây giống &amp; Vườn sâm</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/products">Cửa hàng Rượu &amp; Chế phẩm</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh">Hợp đồng điện tử</Link></li>
               </ul>
             </div>
+
+            {/* Cột 3: Chính sách và Điều khoản */}
             <div className="space-y-3 sm:space-y-4">
-              <h5 className="text-white font-bold text-sm">Hỗ trợ</h5>
+              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
+                Chính sách &amp; Điều khoản
+              </h5>
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/about">Liên hệ</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/news">Chính sách bảo mật</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/news">Điều khoản sử dụng</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms/privacy-policy">Chính sách bảo mật</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms/shipping-policy">Chính sách vận chuyển</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms/inspection-policy">Chính sách kiểm hàng</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms/payment-policy">Chính sách thanh toán</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms/return-policy">Chính sách đổi trả</Link></li>
+              </ul>
+            </div>
+
+            {/* Cột 4: Hỗ trợ & Về chúng tôi */}
+            <div className="space-y-3 sm:space-y-4">
+              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
+                Hỗ trợ
+              </h5>
+              <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
+                <li><Link className="hover:text-secondary transition-colors" href="/about">Liên hệ &amp; Giới thiệu</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/news">Tin tức &amp; Hoạt động</Link></li>
+                <li><Link className="hover:text-secondary transition-colors" href="/terms">Quy chế hoạt động</Link></li>
               </ul>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Slide-over Mini Cart Drawer */}
+      <MiniCartDrawer />
     </div>
   );
 };

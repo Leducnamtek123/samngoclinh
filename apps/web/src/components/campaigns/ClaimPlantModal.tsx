@@ -235,9 +235,22 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
 
               <Accordion type="single" collapsible className="pt-2 border-t border-border">
                 <AccordionItem value="terms">
-                  <AccordionTrigger>Điều khoản sử dụng</AccordionTrigger>
-                  <AccordionContent>
-                    Điều khoản sử dụng áp dụng cho tất cả tài khoản đăng ký nhận cây ưu đãi và sử dụng dịch vụ chăm sóc tại vườn Sâm Ngọc Linh Kon Tum.
+                  <AccordionTrigger>Điều khoản sử dụng – Sâm Ngọc Linh</AccordionTrigger>
+                  <AccordionContent className="space-y-2 text-xs">
+                    <p>
+                      Điều khoản sử dụng áp dụng cho tất cả tài khoản đăng ký nhận cây ưu đãi và sử dụng dịch vụ chăm sóc tại vườn Sâm Ngọc Linh.
+                    </p>
+                    <div className="mt-1">
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-primary hover:underline font-bold transition-colors"
+                      >
+                        <span>Xem toàn văn 13 Điều khoản sử dụng</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 

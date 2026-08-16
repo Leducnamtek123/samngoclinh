@@ -680,8 +680,9 @@ model CultivationTree {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  bed       CultivationBed? @relation("BedTrees", fields: [bedCode], references: [code], onDelete: SetNull)
-  ownerUser User?           @relation("UserTrees", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  bed           CultivationBed? @relation("BedTrees", fields: [bedCode], references: [code], onDelete: SetNull)
+  ownerUser     User?           @relation("UserTrees", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  contractItems EContractItem[] @relation("TreeContractItems")
 
   @@unique(fields: [code])
   @@index(fields: [status, ageYear, ownerUserId])
@@ -773,6 +774,7 @@ model Order {
 
   user       User?       @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
   orderItems OrderItem[] @relation("OrderItems")
+  contract   EContract?  @relation("OrderContract")
 
   @@unique(fields: [code])
   @@index(fields: [userId, status, createdAt(sort: Desc)])
@@ -803,8 +805,9 @@ model OrderItem {
 model UserIdentityDocument {
   id              String    @id @default(uuid())
   userId          String    @unique
+  documentType    String    @default("cccd") // cccd, driver_license, passport
   frontImageUrl   String
-  backImageUrl    String
+  backImageUrl    String?
   status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
   rejectionReason String?
   idCardNumber    String?
@@ -823,8 +826,9 @@ model UserIdentityDocument {
 model UserIdentityHistory {
   id              String    @id @default(uuid())
   userId          String
+  documentType    String    @default("cccd") // cccd, driver_license, passport
   frontImageUrl   String
-  backImageUrl    String
+  backImageUrl    String?
   status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
   rejectionReason String?
   idCardNumber    String?
@@ -916,9 +920,10 @@ model GardenBooking {
 }
 
 model EContract {
-  id             String    @id @default(uuid())
+  id             String          @id @default(uuid())
   code           String
   userId         String
+  orderId        String?         @unique
   treeCode       String?
   title          String
   content        String
@@ -926,23 +931,80 @@ model EContract {
   signedAt       DateTime?
   expiredAt      DateTime
   signatureUrl   String?
-  contractValue  Int       @default(0)
-  paymentStatus  String    @default("unpaid")
-  isReminderSent Boolean   @default(false)
+  contractValue  Int             @default(0)
+  paymentStatus  String          @default("unpaid")
+  isReminderSent Boolean         @default(false)
   reminderSentAt DateTime?
   metadata       Json?
-  contractType   String    @default("purchase")
-  partyA         String    @default("Sâm Ngọc Linh Farm")
+  contractType   String          @default("purchase")
+  partyA         String          @default("Sâm Ngọc Linh Farm")
   partyB         String?
   pdfUrl         String?
   terms          String?
 
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  order        Order?              @relation("OrderContract", fields: [orderId], references: [id], onDelete: SetNull)
+  items        EContractItem[]     @relation("ContractItems")
+  amendments   ContractAmendment[] @relation("ContractAmendments")
 
   @@unique(fields: [code])
   @@index(fields: [userId, status])
   @@map("EContracts")
+}
+
+model EContractItem {
+  id            String   @id @default(uuid())
+  contractId    String
+  treeId        String
+  treeCode      String
+  treeName      String
+  ageYearAtSign Int
+  gardenCode    String?
+  bedCode       String?
+  unitPrice     Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  contract      EContract       @relation("ContractItems", fields: [contractId], references: [id], onDelete: Cascade)
+  tree          CultivationTree @relation("TreeContractItems", fields: [treeId], references: [id], onDelete: Restrict)
+
+  @@unique(fields: [contractId, treeId])
+  @@index(fields: [contractId])
+  @@index(fields: [treeId])
+  @@index(fields: [treeCode])
+  @@map("EContractItems")
+}
+
+model ContractAmendment {
+  id                String    @id @default(uuid())
+  contractId        String
+  amendmentNumber   Int
+  code              String    @unique
+  type              String    @default("extension") // extension, terms_change, tree_relocation
+  title             String
+  content           String
+  
+  previousExpiredAt DateTime
+  newExpiredAt      DateTime
+  extendedMonths    Int
+  amendmentValue    Int       @default(0)
+  
+  status            String    @default("pending") // pending, signed, cancelled
+  signedAt          DateTime?
+  signatureUrl      String?
+  pdfUrl            String?
+  documentHash      String?
+  metadata          Json?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  contract          EContract @relation("ContractAmendments", fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, amendmentNumber])
+  @@index([contractId, status])
+  @@map("ContractAmendments")
 }
 
 model CarePackage {

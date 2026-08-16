@@ -56,12 +56,11 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="security"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel>Security Notifications</FormLabel>
-                <FormDescription>
-                  Set preferences for alerts related to account security, such
-                  as login attempts and changes.
+                <FormLabel className="text-sm font-bold text-foreground">Cảnh báo Bảo mật & Đăng nhập</FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Nhận thông báo khi có đăng nhập từ thiết bị lạ hoặc thay đổi mật khẩu quản trị.
                 </FormDescription>
               </div>
               <FormControl>
@@ -74,12 +73,11 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="communication"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel>Communication Notifications</FormLabel>
-                <FormDescription>
-                  Manage notifications for general communications, including
-                  messages and updates.
+                <FormLabel className="text-sm font-bold text-foreground">Thông báo Hoạt động Vườn & Đơn hàng</FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Nhận cập nhật về trạng thái đơn hàng mua sâm, hợp đồng và tiến độ chăm sóc cây.
                 </FormDescription>
               </div>
               <FormControl>
@@ -92,12 +90,11 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="meetups"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2">
               <div>
-                <FormLabel>Meetups Notifications</FormLabel>
-                <FormDescription>
-                  Customize notifications for upcoming meetups, events, and
-                  related activities.
+                <FormLabel className="text-sm font-bold text-foreground">Bảo trì Hệ thống & Sự kiện Mở bán</FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Nhận thông báo lịch bảo trì máy chủ và các sự kiện mở bán luống sâm mới.
                 </FormDescription>
               </div>
               <FormControl>
@@ -110,9 +107,9 @@ export function NotificationPreferencesForm() {
         <ButtonLoading
           isLoading={isSubmitting}
           disabled={isDisabled}
-          className="mt-2 w-fit"
+          className="mt-4 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
         >
-          Save
+          Lưu thay đổi
         </ButtonLoading>
       </form>
     </Form>
@@ -131,9 +128,9 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Change</Button>
+        <Button variant="outline" size="sm" className="text-xs">Thay đổi</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <DropdownMenuCheckboxItem
           checked={field.value.email}
           onCheckedChange={() =>
@@ -162,7 +159,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Browser
+          Trình duyệt (Push)
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={field.value.sms}
@@ -177,7 +174,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          SMS
+          Tin nhắn SMS
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

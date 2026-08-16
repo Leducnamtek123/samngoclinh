@@ -17,7 +17,17 @@ export const metadata: Metadata = {
 
 export default function EcommercePage() {
   return (
-    <section className="container grid gap-4 p-4 md:grid-cols-2">
+    <section className="container grid gap-6 p-4 md:p-6 mx-auto md:grid-cols-2">
+      <div className="col-span-full flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-emerald-950 dark:text-emerald-50">
+            Báo cáo Bán hàng & Doanh thu
+          </h1>
+          <p className="text-muted-foreground">
+            Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng, sâm củ và hợp đồng ủy quyền canh tác.
+          </p>
+        </div>
+      </div>
       <Overview />
       <ChurnRate />
       <RevenueBySource />

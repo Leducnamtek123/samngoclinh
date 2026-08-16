@@ -25,30 +25,35 @@
     "viewOrderDetails": "Xem chi tiết"
   },
   "addressSelector": {
-    "selectDeliveryAddress": "CHỌN ĐỊA CHỈ GIAO HÀNG",
-    "change": "Thay đổi",
-    "addAddress": "Thêm địa chỉ",
-    "noAddressSaved": "Chưa có địa chỉ nhận hàng nào được lưu.",
-    "pleaseAddAddress": "Vui lòng thêm địa chỉ mới để tiếp tục."
+    "title": "ĐỊA CHỈ NHẬN HÀNG",
+    "addNewAddress": "+ Thêm địa chỉ mới",
+    "addAddress": "+ Thêm địa chỉ mới",
+    "defaultBadge": "Mặc định",
+    "emptyState": {
+      "description": "Bạn chưa có địa chỉ nhận hàng nào. Vui lòng bấm \"+ Thêm địa chỉ mới\".",
+      "addAddress": "Thêm địa chỉ"
+    }
   },
   "addAddressModal": {
-    "title": "Thêm Địa Chỉ Nhận Hàng Mới",
-    "recipientLabel": "Tên người nhận *",
-    "recipientPlaceholder": "Nhập họ và tên người nhận",
-    "phoneLabel": "Số điện thoại *",
-    "phonePlaceholder": "Nhập số điện thoại (ví dụ: 0912345678)",
-    "addressLabel": "Địa chỉ chi tiết (Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành) *",
-    "addressPlaceholder": "Nhập số nhà, tên đường...",
-    "defaultCheckbox": "Đặt làm địa chỉ giao hàng mặc định",
+    "title": "Thêm địa chỉ nhận hàng",
+    "subtitle": "Chọn địa chỉ nhận hàng trên bản đồ hoặc nhập thủ công",
+    "recipientNameLabel": "Họ và tên người nhận",
+    "recipientNamePlaceholder": "Nhập tên người nhận hàng...",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại...",
+    "addressLabel": "Địa chỉ chi tiết",
+    "addressPlaceholder": "Nhập số nhà, tên đường hoặc chọn trên bản đồ...",
     "cancel": "Hủy bỏ",
-    "save": "Lưu địa chỉ"
+    "saveAndUse": "Lưu & Sử dụng địa chỉ này",
+    "savedSuccess": "Đã lưu địa chỉ nhận hàng thành công!"
   },
   "changeAddressModal": {
-    "title": "Chọn Địa Chỉ Nhận Hàng",
-    "closeAriaLabel": "Đóng cửa sổ chọn địa chỉ",
+    "title": "Sổ địa chỉ nhận hàng",
+    "subtitle": "Chọn địa chỉ bạn muốn sử dụng cho đơn hàng này",
+    "defaultRecipient": "Người nhận",
     "defaultBadge": "Mặc định",
-    "addAddressBtn": "Thêm Địa Chỉ Mới",
-    "confirmSelect": "Xác Nhận Chọn"
+    "addNewAddress": "Thêm địa chỉ mới",
+    "close": "Đóng"
   },
   "kyc": {
     "title": "Xác minh danh tính (eKYC)",

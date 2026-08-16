@@ -18,7 +18,17 @@ export const metadata: Metadata = {
 
 export default function CRMPage() {
   return (
-    <section className="container grid gap-4 p-4 md:grid-cols-2">
+    <section className="container grid gap-6 p-4 md:p-6 mx-auto md:grid-cols-2">
+      <div className="col-span-full flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-emerald-950 dark:text-emerald-50">
+            Quản trị Khách hàng & Quan hệ Nhà đầu tư (CRM)
+          </h1>
+          <p className="text-muted-foreground">
+            Theo dõi hành trình khách hàng VIP, tỷ lệ chuyển đổi nhà đầu tư và chăm sóc các chủ sở hữu luống sâm.
+          </p>
+        </div>
+      </div>
       <Overview />
       <div className="col-span-full grid gap-4 md:grid-cols-4">
         <SalesTrend />

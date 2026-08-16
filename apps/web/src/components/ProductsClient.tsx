@@ -49,6 +49,9 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
       category: item.category || 'Sản phẩm',
     });
     toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('open_mini_cart'));
+    }
   };
 
   const handleBuyItem = (e: React.MouseEvent, item: any) => {

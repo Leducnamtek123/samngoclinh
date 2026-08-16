@@ -136,13 +136,13 @@ const compactFormatterVi = new Intl.NumberFormat("vi-VN", {
 
 export function formatCurrency(
   value: number,
-  locales: LocaleType = "en",
-  currency: string = "USD"
+  locales: LocaleType = "vi",
+  currency: string = "VND"
 ) {
-  if (locales === "vi" || currency === "VND") {
-    return vndFormatterVi.format(value)
+  if (locales === "en" && currency === "USD") {
+    return usdFormatterEn.format(value)
   }
-  return usdFormatterEn.format(value)
+  return vndFormatterVi.format(value)
 }
 
 export function formatPercent(value: number, locales: LocaleType = "en") {

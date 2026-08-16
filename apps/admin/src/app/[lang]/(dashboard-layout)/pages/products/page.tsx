@@ -8,8 +8,8 @@ import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ShopItemsTable } from "./category/_components/shop-items-table"
 
 export const metadata: Metadata = {
-  title: "Commercial Product Management | Sâm Ngọc Linh Admin",
-  description: "Manage processed commercial products and agricultural supplies",
+  title: "Quản lý sản phẩm thương mại | Sâm Ngọc Linh Admin",
+  description: "Quản lý danh sách các sản phẩm rượu sâm và chế phẩm thương mại",
 }
 
 interface ShopItem {
@@ -62,7 +62,7 @@ export default async function ProductsPage({
     )
     const payload = await res.json()
     if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load shop items"
+      errorMsg = payload?.message || "Không thể tải danh sách sản phẩm"
     } else {
       shopItems = Array.isArray(payload.data)
         ? payload.data
@@ -71,7 +71,7 @@ export default async function ProductsPage({
     }
   } catch (e) {
     console.error("Error fetching shop items:", e)
-    errorMsg = "Unable to connect to server"
+    errorMsg = "Không thể kết nối đến máy chủ API"
   }
 
   return (

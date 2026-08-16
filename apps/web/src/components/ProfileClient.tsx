@@ -19,6 +19,7 @@ import { ProfileContractsTab } from './profile/ProfileContractsTab';
 import { ProfileSettingsTab } from './profile/ProfileSettingsTab';
 import { ProfileChangePasswordTab } from './profile/ProfileChangePasswordTab';
 import { ProfileAddressTab } from './profile/ProfileAddressTab';
+import { ProfileReferralTab } from './profile/ProfileReferralTab';
 import { VerifyEmailModal } from './profile/VerifyEmailModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -222,9 +223,20 @@ export const ProfileClient = ({
             />
           )}
 
-          {tabs === 'settings' && <ProfileSettingsTab />}
+          {(tabs === 'password' || tabs === 'change-password') && (
+            <ProfileChangePasswordTab locale={locale} />
+          )}
 
-          {tabs === 'password' && <ProfileChangePasswordTab />}
+          {(tabs === 'settings' || tabs === 'pin') && (
+            <ProfileSettingsTab locale={locale} />
+          )}
+
+          {tabs === 'referral' && (
+            <ProfileReferralTab
+              referralCode={referralCode}
+              onCopyText={handleCopyText}
+            />
+          )}
         </div>
       </AccountLayout>
 

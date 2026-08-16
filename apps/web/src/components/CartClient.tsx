@@ -14,10 +14,12 @@ export const CartClient = ({ locale }: { locale: string }) => {
   const t = useTranslations('cart');
   const router = useRouter();
 
-  const [items, setItems] = useState<CartItem[]>(() => (typeof window !== 'undefined' ? getCartItems() : []));
+  const [items, setItems] = useState<CartItem[]>([]);
   const { data: profile } = useProfileMe();
 
   useEffect(() => {
+    setItems(getCartItems());
+
     const handleCartUpdate = () => {
       setItems(getCartItems());
     };

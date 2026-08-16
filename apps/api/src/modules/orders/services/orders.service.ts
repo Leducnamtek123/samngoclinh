@@ -908,6 +908,15 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                     }[];
 
                     let totalPlantsPurchased = 0;
+                    const allocatedTrees: Array<{
+                        id: string;
+                        code: string;
+                        name: string;
+                        ageYear: number;
+                        gardenCode?: string | null;
+                        bedCode?: string | null;
+                        unitPrice: number;
+                    }> = [];
 
                     for (const item of orderItems) {
                         // Check if standard plant catalog product
@@ -928,14 +937,24 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                     ageYear: ageYear,
                                     status: 'active',
                                 },
+                                include: { bed: true },
                                 take: item.quantity,
                             });
 
                             let assignedCount = 0;
                             for (const tree of providerTrees) {
-                                await tx.cultivationTree.update({
+                                const updatedTree = await tx.cultivationTree.update({
                                     where: { id: tree.id },
                                     data: { ownerUserId: order.userId },
+                                });
+                                allocatedTrees.push({
+                                    id: updatedTree.id,
+                                    code: updatedTree.code,
+                                    name: updatedTree.name || item.name,
+                                    ageYear: updatedTree.ageYear,
+                                    gardenCode: tree.bed?.gardenCode || null,
+                                    bedCode: updatedTree.bedCode || null,
+                                    unitPrice: item.price || 0,
                                 });
                                 assignedCount++;
                             }
@@ -944,7 +963,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                             const remaining = item.quantity - assignedCount;
                             for (let i = 0; i < remaining; i++) {
                                 const treeCode = 'tree-' + Math.random().toString(36).substring(2, 11);
-                                await tx.cultivationTree.create({
+                                const newTree = await tx.cultivationTree.create({
                                     data: {
                                         code: treeCode,
                                         ownerUserId: order.userId,
@@ -952,8 +971,18 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                         ageYear: ageYear,
                                         quantity: 1,
                                         status: 'active',
+                                        priceBought: item.price || 0,
                                         metadata: { source: 'purchase', orderCode: order.code } as Prisma.InputJsonValue,
                                     },
+                                });
+                                allocatedTrees.push({
+                                    id: newTree.id,
+                                    code: newTree.code,
+                                    name: newTree.name,
+                                    ageYear: newTree.ageYear,
+                                    gardenCode: null,
+                                    bedCode: null,
+                                    unitPrice: item.price || 0,
                                 });
                             }
                         }
@@ -1006,6 +1035,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                 data: {
                                     code: contractCode,
                                     userId: order.userId,
+                                    orderId: order.id,
                                     title: `Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh #${order.code}`,
                                     content: `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`,
                                     status: 'pending',
@@ -1021,6 +1051,17 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                         totalPlants: totalPlantsPurchased,
                                         createdAt: new Date().toISOString(),
                                     } as Prisma.InputJsonValue,
+                                    items: {
+                                        create: allocatedTrees.map(t => ({
+                                            treeId: t.id,
+                                            treeCode: t.code,
+                                            treeName: t.name,
+                                            ageYearAtSign: t.ageYear,
+                                            gardenCode: t.gardenCode || null,
+                                            bedCode: t.bedCode || null,
+                                            unitPrice: t.unitPrice || 0,
+                                        })),
+                                    },
                                 },
                             });
                         }
@@ -1099,7 +1140,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                 if (customerEmail && this.notificationSmtpService?.isInitialized()) {
                     const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
                     const customerName = order.customerName || userAcc?.name || 'Quý khách';
-                    const sender = this.configService.get<string>('smtp.from') || 'noreply@wefarm.com.vn';
+                    const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
 
                     // 1. Send Order Success Email
                     await this.notificationSmtpService.send({
@@ -1113,7 +1154,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                             vatAmount: Number((order.metadata as any)?.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN'),
                             totalAmount: Number(order.total || 0).toLocaleString('vi-VN'),
                             orderUrl: `${webUrl}/profile?tab=orders`,
-                            supportEmail: this.configService.get<string>('email.support') || 'admin@wefarm.com.vn',
+                            supportEmail: this.configService.get<string>('email.support') || 'admin@samngoclinh.vn',
                         },
                         recipients: [customerEmail],
                     });

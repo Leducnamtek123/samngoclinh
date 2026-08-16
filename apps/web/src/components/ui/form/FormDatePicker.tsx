@@ -1,34 +1,67 @@
 'use client';
 
-import { FieldPath, FieldValues } from 'react-hook-form';
-import { Calendar } from 'lucide-react';
-import { FormInput, FormInputProps } from './FormInput';
+import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
+import { DatePicker } from '../date-picker';
+import { FormItem, FormDescription, FormMessage } from './Form';
 
 export interface FormDatePickerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<FormInputProps<TFieldValues, TName>, 'type' | 'prefixIcon'> {
-  showIcon?: boolean;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+  control: Control<TFieldValues>;
+  name: TName;
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  description?: string;
+  className?: string;
+  minDate?: Date;
+  maxDate?: Date;
 }
 
 export function FormDatePicker<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
-  showIcon = true,
+  label,
   placeholder,
-  ...props
+  required,
+  disabled,
+  description,
+  className,
+  minDate,
+  maxDate,
 }: FormDatePickerProps<TFieldValues, TName>) {
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    name,
+    control,
+  });
+
   return (
-    <FormInput
-      control={control}
-      name={name}
-      type="date"
-      placeholder={placeholder}
-      prefixIcon={showIcon ? <Calendar className="w-4 h-4 text-emerald-700" /> : undefined}
-      {...props}
-    />
+    <FormItem className="space-y-1.5">
+      {label && (
+        <label className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
+      <DatePicker
+        value={field.value}
+        onChange={field.onChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        error={!!error}
+        minDate={minDate}
+        maxDate={maxDate}
+        className={className}
+      />
+      {description && !error && <FormDescription>{description}</FormDescription>}
+      <FormMessage error={error} />
+    </FormItem>
   );
 }

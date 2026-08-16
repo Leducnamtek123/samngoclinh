@@ -6,10 +6,10 @@ export function useProfileMe(initialData?: UserProfile) {
   return useQuery<UserProfile | null>({
     queryKey: ['profile', 'me'],
     queryFn: () =>
-      fetchApiClient('/user/profile/me')
-        .then((res) => (res?.data !== undefined ? res.data : null))
+      fetchApiClient('/v1/shared/user/profile')
+        .then((res) => (res?.data !== undefined ? res.data : res || null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
     retry: false,
   });
 }
@@ -18,10 +18,10 @@ export function useProfileBusiness(initialData?: UserBusiness) {
   return useQuery<UserBusiness | null>({
     queryKey: ['profile', 'business'],
     queryFn: () =>
-      fetchApiClient('/user/profile/business')
+      fetchApiClient('/v1/shared/user/profile')
         .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
     retry: false,
   });
 }

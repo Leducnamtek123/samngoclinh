@@ -40,7 +40,7 @@ export class ContentRepository {
             image: item.coverImage || undefined,
             author:
                 (item.metadata as { authorName?: string } | null)
-                    ?.authorName || 'iWE FARM',
+                    ?.authorName || 'Sâm Ngọc Linh',
         }));
     }
 

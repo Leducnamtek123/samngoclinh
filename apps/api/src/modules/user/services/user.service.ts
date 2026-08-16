@@ -657,31 +657,44 @@ export class UserService implements IUserService {
         frontFile?: IFile | null,
         backFile?: IFile | null,
         frontBase64?: string,
-        backBase64?: string
+        backBase64?: string,
+        documentType = 'cccd',
+        idCardNumber?: string,
+        fullName?: string
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
         let frontImageUrl = '';
         let backImageUrl = '';
 
-        if (frontFile && backFile) {
+        const isPassport = documentType === 'passport';
+
+        if (frontFile) {
             frontImageUrl = await this.fileService.uploadFile(
                 frontFile,
                 'identity'
             );
-            backImageUrl = await this.fileService.uploadFile(
-                backFile,
-                'identity'
-            );
-        } else if (frontBase64 && backBase64) {
+            if (backFile) {
+                backImageUrl = await this.fileService.uploadFile(
+                    backFile,
+                    'identity'
+                );
+            }
+        } else if (frontBase64) {
             frontImageUrl = await this.fileService.uploadBase64(
                 frontBase64,
                 'identity'
             );
-            backImageUrl = await this.fileService.uploadBase64(
-                backBase64,
-                'identity'
-            );
+            if (backBase64) {
+                backImageUrl = await this.fileService.uploadBase64(
+                    backBase64,
+                    'identity'
+                );
+            }
         } else {
-            throw new RequestParamRequiredException('front & back images required');
+            throw new RequestParamRequiredException('front image is required');
+        }
+
+        if (!isPassport && !backImageUrl && !backFile && !backBase64) {
+            throw new RequestParamRequiredException('back image is required for this document type');
         }
 
         try {
@@ -689,7 +702,10 @@ export class UserService implements IUserService {
                 userId,
                 {
                     frontImageUrl,
-                    backImageUrl,
+                    backImageUrl: backImageUrl || null,
+                    documentType,
+                    idCardNumber: idCardNumber || null,
+                    fullName: fullName || null,
                 }
             );
 
@@ -1349,7 +1365,7 @@ export class UserService implements IUserService {
             throw new UserNotFoundException();
         } else if (user.isVerified) {
             throw new UserEmailAlreadyVerifiedException();
-        } else if (!user.email || user.email.endsWith('@phone.iwefarm.local')) {
+        } else if (!user.email || user.email.endsWith('@phone.samngoclinh.local') || user.email.endsWith('@phone.iwefarm.local')) {
             throw new UserNotFoundException();
         }
 
@@ -1444,6 +1460,7 @@ export class UserService implements IUserService {
             !user ||
             user.status !== EnumUserStatus.active ||
             !user.email ||
+            user.email.endsWith('@phone.samngoclinh.local') ||
             user.email.endsWith('@phone.iwefarm.local')
         ) {
             return;

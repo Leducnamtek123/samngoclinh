@@ -1,21 +1,91 @@
-<html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Welcome {{username}},</p>
-<br/>
-<p>Sign up successful.</p>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chào Mừng Thành Viên Mới - Rượu Sâm Ngọc Linh</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .content-padding { padding: 20px 16px !important; }
+      .header-padding { padding: 24px 16px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table class="container" width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+          
+          <!-- Master Header -->
+          <tr>
+            <td class="header-padding" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); padding: 36px 32px; text-align: center; border-bottom: 3px solid #b45309;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <span style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #fef08a; text-transform: uppercase; margin-bottom: 6px;">Chào Mừng Thành Viên Mới</span>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; color: #ffffff; text-transform: uppercase;">
+                      RƯỢU SÂM NGỌC LINH
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Content Body -->
+          <tr>
+            <td class="content-padding" style="padding: 36px 32px; text-align: center;">
+              <h2 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
+                Kính chào Quý khách {{name}},
+              </h2>
+              <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.7; color: #475569;">
+                Chào mừng Quý khách chính thức gia nhập cộng đồng những người trân quý quốc bảo Sâm Ngọc Linh. Tại đây, Quý khách có thể trải nghiệm các dòng rượu sâm thượng hạng, sở hữu và theo dõi quá trình sinh trưởng của cây sâm ngọc linh thực tế từ vườn bảo tồn.
+              </p>
+
+              <!-- Highlights Card -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 28px; text-align: left;">
+                <tr>
+                  <td style="padding: 16px 20px;">
+                    <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #064e3b;">Đặc quyền tài khoản thành viên:</p>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #475569; line-height: 1.6;">
+                      <li>Sở hữu và giám sát cây sâm thật từ đại ngàn Kon Tum & Quảng Nam.</li>
+                      <li>Tích lũy Điểm Sâm thưởng và thăng hạng thành viên VIP.</li>
+                      <li>Ký hợp đồng pháp lý bảo đảm nguồn gốc chuẩn 100%.</li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action CTA Button -->
+              <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                <tr>
+                  <td align="center" style="background-color: #064e3b; border-radius: 10px; box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);">
+                    <a href="{{login_url}}" target="_blank" style="display: inline-block; padding: 14px 36px; font-size: 14px; font-weight: 800; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;">
+                      Bắt Đầu Khám Phá Ngay
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Master Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 28px 32px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0 0 6px 0; font-weight: 600; color: #334155;">
+                CÔNG TY CỔ PHẦN NÔNG NGHIỆP CÔNG NGHỆ CAO SÂM NGỌC LINH
+              </p>
+              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+                Hotline hỗ trợ: 0967 234 234 &bull; Email: hotro@samngoclinh.vn &bull; Website: samngoclinh.vn
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
-  </tbody>
-</table>
-<br/>
-<p>By: {{homeName}}.</p>
+  </table>
 </body>
 </html>

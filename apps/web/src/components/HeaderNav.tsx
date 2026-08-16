@@ -89,9 +89,9 @@ export const HeaderNav = () => {
       {/* Trồng sâm */}
       <li className="flex items-center">
         <Link
-          href="/products"
+          href="/ginseng"
           className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
-            isActive('/products')
+            isActive('/ginseng')
               ? 'text-emerald-800 font-bold'
               : 'text-gray-600 hover:text-emerald-800'
           }`}
@@ -103,9 +103,9 @@ export const HeaderNav = () => {
       {/* Cửa hàng */}
       <li className="flex items-center">
         <Link
-          href="/ginseng"
+          href="/products"
           className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
-            isActive('/ginseng')
+            isActive('/products')
               ? 'text-emerald-800 font-bold'
               : 'text-gray-600 hover:text-emerald-800'
           }`}

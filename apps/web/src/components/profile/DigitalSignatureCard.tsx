@@ -180,7 +180,7 @@ export const DigitalSignatureCard: React.FC = () => {
           <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">Chữ ký điện tử</h3>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
-          Chữ ký của bạn sẽ được chèn vào ô Đại diện Bên A trên hợp đồng của những đơn hàng do bạn phụ trách.
+          Chữ ký điện tử sẽ được tự động điền vào mục Bên B (Bên Mua & Sở Hữu) khi bạn ký kết các hợp đồng mua bán hoặc ủy quyền chăm sóc sâm.
         </p>
       </div>
 

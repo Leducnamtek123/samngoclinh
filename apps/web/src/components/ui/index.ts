@@ -11,4 +11,7 @@ export * from './switch';
 export * from './tabs';
 export * from './textarea';
 export * from './Toaster';
+export * from './popover';
+export * from './calendar';
+export * from './date-picker';
 export * from './form';

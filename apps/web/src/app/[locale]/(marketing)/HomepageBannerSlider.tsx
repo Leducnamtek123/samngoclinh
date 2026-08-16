@@ -14,7 +14,23 @@ export function HomepageBannerSlider({ images = [] }: HomepageBannerSliderProps)
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const safeImages = Array.isArray(images) ? images : [];
+  const cleanBannerImage = (img?: string) => {
+    if (!img || img.includes('banner_bg') || img.trim() === '') {
+      return '/images/banners/homepage_banner_1.png';
+    }
+    return img;
+  };
+
+  const safeImages = (Array.isArray(images) && images.length > 0
+    ? images
+    : [
+        '/images/banners/homepage_banner_1.png',
+        '/images/banners/homepage_banner_2.png',
+        '/images/banners/homepage_banner_3.png',
+        '/images/banners/homepage_banner_4.png',
+        '/images/banners/homepage_banner_5.png',
+      ]
+  ).map(cleanBannerImage);
 
   useEffect(() => {
     if (safeImages.length <= 1) return;

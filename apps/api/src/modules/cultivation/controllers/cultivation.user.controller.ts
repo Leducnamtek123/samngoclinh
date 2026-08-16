@@ -34,7 +34,7 @@ import { ICultivationBedDetail, ICultivationTreeDetail } from '@modules/cultivat
 @ApiTags('modules.user.cultivation')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/cultivation',
+    path: ['/cultivation', '/user/cultivation'],
 })
 export class CultivationUserController {
     constructor(private readonly cultivationService: CultivationService) {}
