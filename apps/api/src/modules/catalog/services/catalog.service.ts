@@ -43,9 +43,10 @@ export class CatalogService {
             Prisma.CatalogPlantSelect,
             Prisma.CatalogPlantWhereInput
         >,
-        status?: Record<string, IPaginationEqual>
+        status?: Record<string, IPaginationEqual>,
+        ageYear?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<CatalogPlant>> {
-        return this.catalogRepository.listPlantsPaginated(pagination, status);
+        return this.catalogRepository.listPlantsPaginated(pagination, status, ageYear);
     }
 
     async listShopItemsPaginated(

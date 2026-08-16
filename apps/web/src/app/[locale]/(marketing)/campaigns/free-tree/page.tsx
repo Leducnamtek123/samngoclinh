@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
 import { cookies } from 'next/headers';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { FreeTreeOfferGrid } from '@/components/campaigns/FreeTreeOfferGrid';

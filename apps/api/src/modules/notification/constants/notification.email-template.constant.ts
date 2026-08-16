@@ -59,4 +59,16 @@ export const NotificationEmailTemplate: Record<
         subject: 'Publish Term Policy',
         file: 'notification.publish-term-policy.template.hbs',
     },
+    [EnumNotificationProcess.orderSuccess]: {
+        subject: 'Xác Nhận Đơn Hàng & Thanh Toán Thành Công - Rượu Sâm Ngọc Linh',
+        file: 'notification.order-success.template.hbs',
+    },
+    [EnumNotificationProcess.contractCreated]: {
+        subject: 'Thông Báo Khởi Tạo Hợp Đồng Điện Tử - Sâm Ngọc Linh',
+        file: 'notification.contract-created.template.hbs',
+    },
+    [EnumNotificationProcess.contractSigned]: {
+        subject: 'Xác Nhận Ký Kết Hợp Đồng Điện Tử Thành Công - Sâm Ngọc Linh',
+        file: 'notification.contract-signed.template.hbs',
+    },
 };

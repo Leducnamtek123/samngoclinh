@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { IFileService } from '@common/file/interfaces/file.service.interface';
 import {
     IFile,
@@ -17,10 +18,37 @@ import {
 import Mime from 'mime';
 import Papa from 'papaparse';
 import { dirname, join } from 'path';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 
 @Injectable()
 export class FileService implements IFileService {
-    constructor(private readonly helperService: HelperService) {}
+    private readonly logger = new Logger(FileService.name);
+    private isCloudinaryReady = false;
+
+    constructor(
+        private readonly helperService: HelperService,
+        private readonly configService: ConfigService
+    ) {
+        this.initCloudinary();
+    }
+
+    private initCloudinary(): void {
+        const cloudName = this.configService.get<string>('CLOUDINARY_CLOUD_NAME') || this.configService.get<string>('cloudinary.cloudName');
+        const apiKey = this.configService.get<string>('CLOUDINARY_API_KEY') || this.configService.get<string>('cloudinary.apiKey');
+        const apiSecret = this.configService.get<string>('CLOUDINARY_API_SECRET') || this.configService.get<string>('cloudinary.apiSecret');
+
+        if (cloudName && apiKey && apiSecret) {
+            cloudinary.config({
+                cloud_name: cloudName,
+                api_key: apiKey,
+                api_secret: apiSecret,
+            });
+            this.isCloudinaryReady = true;
+            this.logger.log(`Cloudinary initialized successfully for cloud: ${cloudName}`);
+        } else {
+            this.logger.warn('Cloudinary credentials missing, defaulting to local storage.');
+        }
+    }
 
     writeCsv<T = Record<string, string | number | Date>>(rows: T[]): string {
         return Papa.unparse(rows, {
@@ -76,8 +104,95 @@ export class FileService implements IFileService {
     }
 
     /**
-     * Lưu file upload (multipart) vào thư mục local `uploads/<subdir>` và trả về URL tương đối
-     * (`/uploads/<subdir>/<file>`), phục vụ tĩnh qua prefix `/uploads`.
+     * Tải tệp lên Cloudinary theo thư mục `samngoclinh/<folder>`.
+     * Tự động fallback về lưu cục bộ `/uploads/<folder>/<filename>` nếu Cloudinary chưa cấu hình hoặc lỗi.
+     */
+    async uploadFile(file: IFile, folder = 'general'): Promise<string> {
+        if (this.isCloudinaryReady) {
+            try {
+                const targetFolder = `samngoclinh/${folder.replace(/^\/+|\/+$/g, '')}`;
+                const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        {
+                            folder: targetFolder,
+                            resource_type: 'auto',
+                        },
+                        (error, res) => {
+                            if (res) resolve(res);
+                            else reject(error);
+                        }
+                    );
+                    uploadStream.end(file.buffer);
+                });
+
+                return result.secure_url;
+            } catch (err) {
+                this.logger.error(`Cloudinary upload failed for folder ${folder}, falling back to local:`, err);
+            }
+        }
+
+        return this.saveFileToLocal(file, folder);
+    }
+
+    /**
+     * Tải chuỗi ảnh Base64 lên Cloudinary theo thư mục `samngoclinh/<folder>`.
+     * Tự động fallback về lưu cục bộ `/uploads/<folder>/<filename>` nếu lỗi.
+     */
+    async uploadBase64(base64Data: string, folder = 'general'): Promise<string> {
+        if (this.isCloudinaryReady) {
+            try {
+                const targetFolder = `samngoclinh/${folder.replace(/^\/+|\/+$/g, '')}`;
+                const result = await cloudinary.uploader.upload(base64Data, {
+                    folder: targetFolder,
+                    resource_type: 'auto',
+                });
+
+                return result.secure_url;
+            } catch (err) {
+                this.logger.error(`Cloudinary uploadBase64 failed for folder ${folder}, falling back to local:`, err);
+            }
+        }
+
+        return this.saveBase64ToLocal(base64Data, folder);
+    }
+
+    /**
+     * Tải Buffer lên Cloudinary.
+     */
+    async uploadBuffer(buffer: Buffer, folder = 'general', filename?: string): Promise<string> {
+        if (this.isCloudinaryReady) {
+            try {
+                const targetFolder = `samngoclinh/${folder.replace(/^\/+|\/+$/g, '')}`;
+                const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+                    const uploadStream = cloudinary.uploader.upload_stream(
+                        {
+                            folder: targetFolder,
+                            public_id: filename ? filename.replace(/\.[^/.]+$/, '') : undefined,
+                            resource_type: 'auto',
+                        },
+                        (error, res) => {
+                            if (res) resolve(res);
+                            else reject(error);
+                        }
+                    );
+                    uploadStream.end(buffer);
+                });
+
+                return result.secure_url;
+            } catch (err) {
+                this.logger.error(`Cloudinary uploadBuffer failed, fallback to local:`, err);
+            }
+        }
+
+        const ext = filename ? this.extractExtensionFromFilename(filename) : 'png';
+        const randomName = `${this.helperService.randomString(16)}.${ext}`;
+        const key = `${folder}/${randomName}`;
+        this.saveBufferToKey(buffer, key);
+        return `/uploads/${key}`;
+    }
+
+    /**
+     * Lưu file upload (multipart) vào thư mục local `uploads/<subdir>` và trả về URL tương đối.
      */
     saveFileToLocal(file: IFile, subdir: string): string {
         const extension =
@@ -94,8 +209,7 @@ export class FileService implements IFileService {
     }
 
     /**
-     * Lưu chuỗi ảnh Base64 (data:image/png;base64,...) vào thư mục local `uploads/<subdir>`
-     * và trả về URL tương đối (`/uploads/<subdir>/<filename>`).
+     * Lưu chuỗi ảnh Base64 vào thư mục local `uploads/<subdir>` và trả về URL tương đối.
      */
     saveBase64ToLocal(base64Data: string, subdir: string): string {
         const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
@@ -141,7 +255,6 @@ export class FileService implements IFileService {
         return readFileSync(join(process.cwd(), 'uploads', key));
     }
 
-    /** Di chuyển từng file (theo key) sang thư mục đích, giữ nguyên tên; trả descriptor mới. */
     moveLocalToDir(items: { key: string }[], toDir: string): ILocalStorage[] {
         return items.map(item => {
             const filename = this.extractFilenameFromPath(item.key);

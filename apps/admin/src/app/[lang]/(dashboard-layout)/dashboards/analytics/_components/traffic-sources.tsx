@@ -1,3 +1,5 @@
+import type { AnalyticsDashboardStats } from "../types"
+
 import { trafficSourcesData } from "../_data/traffic-sources"
 
 import {
@@ -7,7 +9,7 @@ import {
 import { TrafficSourcesChart } from "./traffic-sources-chart"
 import { TrafficSourcesTable } from "./traffic-sources-table"
 
-export function TrafficSources({ stats }: { stats: any }) {
+export function TrafficSources({ stats }: { stats?: AnalyticsDashboardStats }) {
   const sources = stats?.trafficSources || trafficSourcesData.sources
 
   return (

@@ -291,7 +291,7 @@ export class UserAdminController {
 
     @Response('user.kycList')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/kyc-list')
@@ -301,21 +301,30 @@ export class UserAdminController {
 
     @Response('user.approveKyc')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/approve')
-    async approveKyc(@Param('id') id: string) {
-        return this.userService.approveIdentityVerificationAdmin(id);
+    @Put('/kyc/:id/approve')
+    async approveKyc(
+        @Param('id', RequestRequiredPipe) id: string,
+        @AuthJwtPayload('userId') adminId: string
+    ) {
+        return this.userService.approveIdentityVerificationAdmin(id, adminId);
     }
 
     @Response('user.rejectKyc')
     @RoleProtected(EnumRoleType.admin)
-    @UserProtected(false)
+    @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Post('/kyc/:id/reject')
-    async rejectKyc(@Param('id') id: string) {
-        return this.userService.rejectIdentityVerificationAdmin(id);
+    @Put('/kyc/:id/reject')
+    async rejectKyc(
+        @Param('id', RequestRequiredPipe) id: string,
+        @AuthJwtPayload('userId') adminId: string,
+        @Body() body?: { reason?: string }
+    ) {
+        return this.userService.rejectIdentityVerificationAdmin(id, adminId, body?.reason);
     }
 }

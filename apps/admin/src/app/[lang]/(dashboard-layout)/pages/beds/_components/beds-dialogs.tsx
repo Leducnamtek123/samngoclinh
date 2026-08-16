@@ -370,7 +370,7 @@ export function BedsOtherDialogs({
         isOpen={confirmState.isOpen}
         title={confirmState.title}
         description={confirmState.description}
-        loading={confirmState.loading}
+        isLoading={confirmState.loading}
         onConfirm={confirmState.action}
         onClose={() =>
           setConfirmState({

@@ -1,0 +1,29 @@
+{
+  "products": {
+    "title": "Product List & Ginseng Packages",
+    "subtitle": "Discover authentic origin Ngoc Linh ginseng plants and premium liquor lines",
+    "all": "All",
+    "plants": "Ginseng Plants",
+    "liquor": "Ginseng Liquor",
+    "package": "Care Packages",
+    "buyNow": "Buy Now",
+    "addToCart": "Add to Cart",
+    "details": "View Details",
+    "price": "Price",
+    "age": "Age",
+    "years": "years",
+    "origin": "Origin",
+    "originLocation": "Dak To - Tu Mo Rong, Quang Nam"
+  },
+  "productDetail": {
+    "notFoundTitle": "Product Not Found",
+    "notFoundDesc": "This product may no longer be available or the URL is incorrect.",
+    "backToProducts": "Back to Product List",
+    "home": "Home",
+    "products": "Products",
+    "relatedProducts": "Related Products",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCartToast": "Added {quantity} \"{name}\" to cart!"
+  }
+}

@@ -1,15 +1,12 @@
-import {
+import { useMutation } from "@tanstack/react-query"
+
+import type { ApiResponse } from "@/lib/api-client"
+import type {
   UseMutationOptions,
   UseMutationResult,
-  useMutation,
 } from "@tanstack/react-query"
 
-import {
-  ApiResponse,
-  deleteApiData,
-  postApiData,
-  putApiData,
-} from "@/lib/api-client"
+import { deleteApiData, postApiData, putApiData } from "@/lib/api-client"
 
 export type MutationMethod = "POST" | "PUT" | "DELETE"
 

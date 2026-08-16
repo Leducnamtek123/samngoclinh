@@ -21,7 +21,7 @@ export class BackofficeAdminController {
 
     @BackofficeAdminOverviewDoc()
     @Response('backoffice.overview')
-    @RoleProtected(EnumRoleType.admin)
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

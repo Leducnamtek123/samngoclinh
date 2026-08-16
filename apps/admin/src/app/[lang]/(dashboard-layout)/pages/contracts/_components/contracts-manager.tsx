@@ -2,8 +2,10 @@
 
 import { Bell, ChevronLeft, ChevronRight, Plus } from "lucide-react"
 
+import type { EContract, Tree, User } from "./use-contracts-manager"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,41 +38,6 @@ import {
 import { ContractDialog } from "./contract-dialog"
 import { ContractsList } from "./contracts-list"
 import { useContractsManager } from "./use-contracts-manager"
-
-interface EContract {
-  id: string
-  code: string
-  userId: string
-  treeCode?: string
-  title: string
-  content: string
-  status: string
-  contractValue: number
-  paymentStatus: string
-  signedAt?: string
-  expiredAt: string
-  signatureUrl?: string
-  isReminderSent: boolean
-  reminderSentAt?: string
-  contractType?: string
-  partyA?: string
-  partyB?: string
-  pdfUrl?: string
-  terms?: string
-}
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-}
-
-interface Tree {
-  id: string
-  code: string
-  name: string
-}
 
 interface ContractsManagerProps {
   initialContracts: EContract[]
@@ -93,6 +61,7 @@ export function ContractsManager({
   metadata,
   errorMsg: initialError,
 }: ContractsManagerProps) {
+  const { t } = useTranslation()
   const {
     filteredContracts,
     successMsg,
@@ -158,10 +127,7 @@ export function ContractsManager({
             getStatusBadge={getStatusBadge}
           />
 
-          <Pagination
-            metadata={metadata}
-            onPageChange={handlePageChange}
-          />
+          <Pagination metadata={metadata} onPageChange={handlePageChange} />
         </CardContent>
       </Card>
 
@@ -290,41 +256,42 @@ function ContractsFilters({
   paymentFilter,
   setPaymentFilter,
 }: ContractsFiltersProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
       <Input
-        placeholder="Tìm mã hợp đồng, tên khách hàng..."
+        placeholder={t("common.actions.search")}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="max-w-[220px]"
       />
       <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
         <SelectTrigger className="w-[130px]">
-          <SelectValue placeholder="Trạng thái" />
+          <SelectValue placeholder={t("users.fields.status")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Mọi trạng thái</SelectItem>
-          <SelectItem value="pending">Chờ ký kết</SelectItem>
-          <SelectItem value="signed">Đã ký</SelectItem>
-          <SelectItem value="expired">Hết hạn</SelectItem>
-          <SelectItem value="terminated">Đã hủy</SelectItem>
+          <SelectItem value="all">{t("common.status.all")}</SelectItem>
+          <SelectItem value="pending">{t("common.status.pending")}</SelectItem>
+          <SelectItem value="signed">{t("common.status.completed")}</SelectItem>
+          <SelectItem value="expired">{t("common.status.expired")}</SelectItem>
+          <SelectItem value="terminated">
+            {t("common.status.cancelled")}
+          </SelectItem>
         </SelectContent>
       </Select>
       <Select value={paymentFilter} onValueChange={setPaymentFilter}>
         <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="Thanh toán" />
+          <SelectValue placeholder={t("common.actions.filter")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Mọi thanh toán</SelectItem>
-          <SelectItem value="unpaid">Chưa thanh toán</SelectItem>
-          <SelectItem value="paid">Đã thanh toán</SelectItem>
+          <SelectItem value="all">{t("common.actions.filterAll")}</SelectItem>
+          <SelectItem value="unpaid">{t("common.status.pending")}</SelectItem>
+          <SelectItem value="paid">{t("common.status.paid")}</SelectItem>
         </SelectContent>
       </Select>
     </div>
   )
 }
-
-
 
 const vndFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",

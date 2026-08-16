@@ -1,6 +1,19 @@
 import Image from 'next/image';
 
-export const ProductImageCollage = ({ item }: { item: any }) => {
+export type ProductImageCollageProps = {
+  item: {
+    name?: string;
+    image?: string;
+    imageUrl?: string;
+    images?: string[];
+  };
+  sizes?: string;
+};
+
+export const ProductImageCollage = ({
+  item,
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw',
+}: ProductImageCollageProps) => {
   const images: string[] = Array.isArray(item?.images) && item.images.length > 0 
     ? item.images.filter(Boolean)
     : item?.image 
@@ -10,6 +23,7 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
         : [];
 
   const count = images.length;
+  const name = item?.name ?? '—';
 
   if (count === 0) {
     return (
@@ -27,9 +41,9 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
       <div className="relative w-full h-full flex items-center justify-center">
         <Image
           src={images[0]!}
-          alt={item.name}
+          alt={name}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          sizes={sizes}
           unoptimized
           className="object-contain rounded-xl transition-transform duration-300 group-hover:scale-105"
         />
@@ -41,10 +55,10 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
     return (
       <div className="w-full h-full grid grid-cols-2 gap-1 rounded-xl overflow-hidden bg-gray-100 p-0.5">
         <div className="h-full w-full relative overflow-hidden rounded-l-lg">
-          <Image src={images[0]!} alt={item.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[0]!} alt={name} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
         <div className="h-full w-full relative overflow-hidden rounded-r-lg">
-          <Image src={images[1]!} alt={`${item.name} 2`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[1]!} alt={`${name} 2`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
       </div>
     );
@@ -54,14 +68,14 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
     return (
       <div className="w-full h-full grid grid-cols-2 gap-1 rounded-xl overflow-hidden bg-gray-100 p-0.5">
         <div className="h-full w-full relative overflow-hidden rounded-l-lg">
-          <Image src={images[0]!} alt={item.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[0]!} alt={name} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
         <div className="grid grid-rows-2 gap-1 h-full w-full">
           <div className="h-full w-full relative overflow-hidden rounded-tr-lg">
-            <Image src={images[1]!} alt={`${item.name} 2`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <Image src={images[1]!} alt={`${name} 2`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           </div>
           <div className="h-full w-full relative overflow-hidden rounded-br-lg">
-            <Image src={images[2]!} alt={`${item.name} 3`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <Image src={images[2]!} alt={`${name} 3`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           </div>
         </div>
       </div>
@@ -72,16 +86,16 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
     return (
       <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-1 rounded-xl overflow-hidden bg-gray-100 p-0.5">
         <div className="h-full w-full relative overflow-hidden rounded-tl-lg">
-          <Image src={images[0]!} alt={item.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[0]!} alt={name} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
         <div className="h-full w-full relative overflow-hidden rounded-tr-lg">
-          <Image src={images[1]!} alt={`${item.name} 2`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[1]!} alt={`${name} 2`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
         <div className="h-full w-full relative overflow-hidden rounded-bl-lg">
-          <Image src={images[2]!} alt={`${item.name} 3`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[2]!} alt={`${name} 3`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
         <div className="h-full w-full relative overflow-hidden rounded-br-lg">
-          <Image src={images[3]!} alt={`${item.name} 4`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <Image src={images[3]!} alt={`${name} 4`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
       </div>
     );
@@ -91,16 +105,16 @@ export const ProductImageCollage = ({ item }: { item: any }) => {
   return (
     <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-1 rounded-xl overflow-hidden bg-gray-100 p-0.5">
       <div className="h-full w-full relative overflow-hidden rounded-tl-lg">
-        <Image src={images[0]!} alt={item.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        <Image src={images[0]!} alt={name} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
       </div>
       <div className="h-full w-full relative overflow-hidden rounded-tr-lg">
-        <Image src={images[1]!} alt={`${item.name} 2`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        <Image src={images[1]!} alt={`${name} 2`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
       </div>
       <div className="h-full w-full relative overflow-hidden rounded-bl-lg">
-        <Image src={images[2]!} alt={`${item.name} 3`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        <Image src={images[2]!} alt={`${name} 3`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
       </div>
       <div className="h-full w-full relative overflow-hidden rounded-br-lg">
-        <Image src={images[3]!} alt={`${item.name} 4`} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        <Image src={images[3]!} alt={`${name} 4`} fill sizes={sizes} unoptimized className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center text-white font-black text-sm tracking-wider">
           +{extraCount}
         </div>

@@ -2,6 +2,8 @@
 
 import React from "react"
 
+import type { Tree, User } from "./use-contracts-manager"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -21,19 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-
-interface User {
-  id: string
-  name?: string
-  username: string
-  email: string
-}
-
-interface Tree {
-  id: string
-  code: string
-  name: string
-}
 
 interface ContractFormData {
   userId: string

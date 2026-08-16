@@ -8,7 +8,7 @@ import {
     VERSION_NEUTRAL,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from '@common/response/decorators/response.decorator';
+import { Response, ResponsePaging } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import {
     AuthJwtAccessProtected,
@@ -16,7 +16,7 @@ import {
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@generated/prisma-client';
+import { EnumRoleType, Prisma } from '@generated/prisma-client';
 import { OrdersService } from '@modules/orders/services/orders.service';
 import {
     OrdersUserCheckoutDoc,
@@ -24,12 +24,14 @@ import {
     OrdersUserListDoc,
     OrdersUserPaymentWebhookDoc,
 } from '@modules/orders/docs/orders.user.doc';
-import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { IResponsePagingReturn, IResponseReturn } from '@common/response/interfaces/response.interface';
 import { OrdersListResponseDto } from '@modules/orders/dtos/response/orders.list.response.dto';
 import { OrdersDetailResponseDto } from '@modules/orders/dtos/response/orders.detail.response.dto';
 import { OrdersPaymentWebhookRequestDto } from '@modules/orders/dtos/request/orders.payment-webhook.request.dto';
 
 import { OrdersUserCheckoutRequestDto } from '@modules/orders/dtos/request/orders.checkout.request.dto';
+import { PaginationOffsetQuery, PaginationQueryFilterEqualString } from '@common/pagination/decorators/pagination.decorator';
+import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
 
 @ApiTags('modules.user.orders')
 @Controller({
@@ -40,21 +42,32 @@ export class OrdersUserController {
     constructor(private readonly ordersService: OrdersService) {}
 
     @OrdersUserListDoc()
-    @Response('orders.list')
+    @ResponsePaging('orders.list')
     @RoleProtected(EnumRoleType.user)
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
     @Get('/')
     async list(
-        @AuthJwtPayload('userId') userId: string
-    ): Promise<IResponseReturn<{ items: OrdersListResponseDto[] }>> {
-        return this.ordersService.list(userId);
+        @AuthJwtPayload('userId') userId: string,
+        @PaginationOffsetQuery({
+            availableSearch: ['code'],
+            availableOrderBy: ['createdAt', 'code', 'total'],
+            defaultPerPage: 10,
+        })
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >,
+        @PaginationQueryFilterEqualString('status')
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<OrdersListResponseDto>> {
+        return this.ordersService.userListPaginated(userId, pagination, status);
     }
 
     @OrdersUserCheckoutDoc()
     @Response('orders.detail')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(EnumRoleType.user, EnumRoleType.admin, EnumRoleType.superAdmin)
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

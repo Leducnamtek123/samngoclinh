@@ -43,25 +43,28 @@ export function FormCheckbox<
   });
 
   const isChecked = Boolean(field.value);
+  const checkboxId = `form-checkbox-${name}`;
 
   return (
     <FormItem name={name} error={error} className={className}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3 py-1">
         <Checkbox
+          id={checkboxId}
           name={field.name}
           checked={isChecked}
           disabled={disabled}
           onCheckedChange={(checked) => field.onChange(checked)}
+          className="shrink-0"
         />
 
-        <div className="space-y-1 leading-none">
+        <div className="space-y-0.5">
           {(label || children) && (
             <label
-              onClick={() => !disabled && field.onChange(!isChecked)}
-              className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer select-none"
+              htmlFor={checkboxId}
+              className="text-xs sm:text-sm font-semibold text-foreground cursor-pointer select-none leading-none"
             >
               {label || children}
-              {required && <span className="text-red-500 ml-1 font-extrabold">*</span>}
+              {required && <span className="text-destructive ml-1 font-extrabold">*</span>}
             </label>
           )}
 

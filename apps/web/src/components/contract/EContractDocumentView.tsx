@@ -17,8 +17,8 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
 
       <div className="space-y-2">
         <p className="font-semibold text-slate-900">BÊN A (BÊN ỦY THÁC / NHÀ ĐẦU TƯ):</p>
-        <p>Họ tên: <span className="font-bold text-slate-900">{contract.userName || contract.user?.name || 'Nhà Đầu Tư'}</span></p>
-        <p>Số CMND/CCCD: <span className="font-bold text-slate-900">{contract.userIdentityNumber || 'Đã xác minh'}</span></p>
+        <p>Họ tên: <span className="font-bold text-slate-900">{contract.userName || contract.user?.name || '—'}</span></p>
+        <p>Số CMND/CCCD: <span className="font-bold text-slate-900">{contract.userIdentityNumber || '—'}</span></p>
       </div>
 
       <div className="space-y-2">

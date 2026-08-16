@@ -22,7 +22,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "db:generate": "pnpm --filter api db:generate"
+    "db:generate": "pnpm --filter @samngoclinh/api db:generate"
   },
   "devDependencies": {
     "turbo": "^2.4.0"

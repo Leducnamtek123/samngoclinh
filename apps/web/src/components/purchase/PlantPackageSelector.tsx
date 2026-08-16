@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+
 type PlantPackageSelectorProps = {
   carePackagesList: any[];
   protectionPackagesList: any[];
@@ -15,12 +18,14 @@ export const PlantPackageSelector = ({
   selectedProtectionId,
   setSelectedProtectionId,
 }: PlantPackageSelectorProps) => {
+  const t = useTranslations('plantPackageSelector');
+
   return (
-    <div className="space-y-5 border-t border-gray-150 pt-5">
+    <div className="space-y-5 border-t border-border pt-5">
       {/* Care Package Selection */}
       <div className="space-y-2">
-        <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
-          Gói Dịch Vụ Chăm Sóc Sâm (Theo Năm) *
+        <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
+          {t('careTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
           {carePackagesList.map((pkg) => {
@@ -29,27 +34,28 @@ export const PlantPackageSelector = ({
             const pkgPrice = Number(pkg.price || 0);
 
             return (
-              <button
+              <Button
                 type="button"
                 key={pkgId}
+                variant="ghost"
                 onClick={() => setSelectedCareId(pkgId)}
-                className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
+                className={`p-3 h-auto rounded-xl border text-left flex-col items-start justify-between transition-colors cursor-pointer whitespace-normal ${
                   isSelected
-                    ? 'border-[#1C3F24] bg-emerald-50/50 ring-2 ring-[#1C3F24]/20 shadow-xs'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 shadow-xs'
+                    : 'border-border hover:border-muted-foreground/30 bg-card'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#1C3F24] bg-[#1C3F24]' : 'border-gray-300'}`}>
-                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-xs text-foreground line-clamp-1">{pkg.name}</span>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-background"></div>}
                   </div>
                 </div>
-                <p className="text-[11px] font-black text-[#1C3F24] mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">/cây</span>
+                <p className="text-[11px] font-black text-primary mt-1">
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perTree')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || 'Chăm sóc hữu cơ'}</span>
-              </button>
+                <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
+              </Button>
             );
           })}
         </div>
@@ -57,8 +63,8 @@ export const PlantPackageSelector = ({
 
       {/* Protection Package Selection */}
       <div className="space-y-2">
-        <span className="text-xs font-bold text-gray-800 uppercase tracking-wider block">
-          Gói Bảo Hiểm & Bảo Vệ Vườn Sâm *
+        <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
+          {t('protectionTitle')}
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {protectionPackagesList.map((pkg) => {
@@ -67,27 +73,28 @@ export const PlantPackageSelector = ({
             const pkgPrice = Number(pkg.price || 0);
 
             return (
-              <button
+              <Button
                 type="button"
                 key={pkgId}
+                variant="ghost"
                 onClick={() => setSelectedProtectionId(pkgId)}
-                className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
+                className={`p-3 h-auto rounded-xl border text-left flex-col items-start justify-between transition-colors cursor-pointer whitespace-normal ${
                   isSelected
-                    ? 'border-[#1C3F24] bg-emerald-50/50 ring-2 ring-[#1C3F24]/20 shadow-xs'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    ? 'border-primary bg-primary/5 ring-2 ring-primary/20 shadow-xs'
+                    : 'border-border hover:border-muted-foreground/30 bg-card'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-gray-900 line-clamp-1">{pkg.name}</span>
-                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#1C3F24] bg-[#1C3F24]' : 'border-gray-300'}`}>
-                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white"></div>}
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-bold text-xs text-foreground line-clamp-1">{pkg.name}</span>
+                  <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${isSelected ? 'border-primary bg-primary' : 'border-border'}`}>
+                    {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-background"></div>}
                   </div>
                 </div>
-                <p className="text-[11px] font-black text-[#1C3F24] mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-gray-400 font-normal">/năm</span>
+                <p className="text-[11px] font-black text-primary mt-1">
+                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perYear')}</span>
                 </p>
-                <span className="text-[9px] text-gray-400 block line-clamp-1 mt-0.5">{pkg.description || 'Bảo hiểm 100% rủi ro thiêu hủy/dịch bệnh'}</span>
-              </button>
+                <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>
+              </Button>
             );
           })}
         </div>

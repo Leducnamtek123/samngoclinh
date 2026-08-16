@@ -90,21 +90,6 @@ export class MigrationBusinessSeed
                         },
                     })
                 ),
-                ...this.data.marketplaceListings.map(item =>
-                    this.databaseService.marketplaceListing.upsert({
-                        where: { code: item.code },
-                        create: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            createdBy: provider.id,
-                        },
-                        update: {
-                            ...item,
-                            metadata: item.metadata as Prisma.InputJsonValue,
-                            updatedBy: provider.id,
-                        },
-                    })
-                ),
                 ...this.data.contentArticles.map(item =>
                     this.databaseService.contentArticle.upsert({
                         where: { slug: item.slug },
@@ -301,7 +286,6 @@ export class MigrationBusinessSeed
                 this.databaseService.cultivationBed.deleteMany({}),
                 this.databaseService.cultivationGarden.deleteMany({}),
                 this.databaseService.contentArticle.deleteMany({}),
-                this.databaseService.marketplaceListing.deleteMany({}),
                 this.databaseService.promotionCampaign.deleteMany({}),
                 this.databaseService.catalogProduct.deleteMany({}),
                 this.databaseService.catalogPlant.deleteMany({}),

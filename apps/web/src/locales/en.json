@@ -13,43 +13,43 @@
     "main_navigation_label": "Main Navigation"
   },
   "Index": {
-    "meta_title": "Ngoc Linh Ginseng Liquor | Digital Value Chain",
-    "meta_description": "First app in Vietnam enabling you to buy, own, care for, and trace genuine Ngoc Linh Ginseng products.",
+    "meta_title": "Ngoc Linh Ginseng Liquor | Digitizing Value Chain",
+    "meta_description": "First app in Vietnam to buy, own, care, and trace genuine Ngoc Linh Ginseng products directly via mobile.",
     "sponsors_title": "Partners",
     "zap_emoji_label": "Lightning"
   },
   "Counter": {
     "meta_title": "Counter",
-    "meta_description": "DB activity example",
-    "security_powered_by": "Security, bot detection and rate limiting powered by"
+    "meta_description": "DB Operation Example",
+    "security_powered_by": "Security, bot detection & rate limiting by"
   },
   "CounterForm": {
-    "presentation": "The counter is stored in the database and incremented by the value provided by you.",
-    "label_increment": "Increment",
+    "presentation": "Counter is stored in database and incremented by provided value.",
+    "label_increment": "Increment by",
     "button_increment": "Increment",
     "error_increment_range": "Value must be between 1 and 3"
   },
   "CurrentCount": {
-    "count": "Count : {count}"
+    "count": "Quantity: {count}"
   },
   "About": {
-    "meta_title": "About",
+    "meta_title": "About Us",
     "meta_description": "About description",
-    "about_paragraph": "Welcome to our about page! We are a passionate and dedicated team in developing software.",
+    "about_paragraph": "Welcome to our about page! We are a passionate team dedicated to software excellence.",
     "translation_powered_by": "Translation powered by"
   },
   "Portfolio": {
     "meta_title": "Portfolio",
-    "meta_description": "Welcome to my portfolio page !",
-    "presentation": "Welcome to our portfolio page! Here you will find a carefully curated collection of products and achievements.",
+    "meta_description": "Welcome to my portfolio!",
+    "presentation": "Welcome to our portfolio page! Here you will find carefully selected projects and achievements.",
     "portfolio_name": "Portfolio {name}",
     "error_reporting_powered_by": "Error reporting powered by"
   },
   "PortfolioSlug": {
     "meta_title": "Portfolio {slug}",
-    "meta_description": "Portfolio {slug} description",
+    "meta_description": "Portfolio description {slug}",
     "header": "Portfolio {slug}",
-    "content": "Designing brand identity and communication collateral for businesses. Synchronized design including logo, flyer, banner, and digital assets.",
+    "content": "Branding & communication media design for enterprises including logo, flyers, banners, and digital assets.",
     "code_review_powered_by": "Code review powered by"
   },
   "SignIn": {
@@ -58,7 +58,7 @@
   },
   "SignUp": {
     "meta_title": "Sign Up",
-    "meta_description": "Create an account quickly through an intuitive process."
+    "meta_description": "Create an account quickly via intuitive sign up process."
   },
   "Dashboard": {
     "hello_message": "Hello {email}!",
@@ -67,9 +67,9 @@
   },
   "DashboardLayout": {
     "meta_title": "Dashboard",
-    "meta_description": "Manage your account from dashboard.",
+    "meta_description": "Manage account from dashboard.",
     "dashboard_link": "Dashboard",
-    "user_profile_link": "Manage Account",
+    "user_profile_link": "Account Management",
     "sign_out": "Sign Out"
   },
   "LocaleSwitcher": {
@@ -77,23 +77,38 @@
   },
   "homepage": {
     "aboutUsBadge": "ABOUT US",
-    "aboutTitle": "Preserving Vietnamese Heritage",
-    "aboutDesc": "Dedicated to preserving and promoting the true value of Ngoc Linh Ginseng – treasure of the highlands – combined with traditional recipes to craft premium products for the community.",
+    "aboutTitle": "Journey Preserving Vietnamese Heritage",
+    "aboutDesc": "Dedicated to preserving the value of Ngoc Linh Ginseng – treasure of the mountains, combining traditional recipes to craft premium liquor.",
     "learnMore": "Learn More",
-    "yearsExperience": "Years of Experience",
+    "yearsExperience": "Years Experience",
     "altitude": "Cultivation Altitude",
     "happyCustomers": "Happy Customers",
     "bottlesSupplied": "Bottles Supplied",
-    "latestNews": "Latest News & Updates",
-    "latestNewsDesc": "Stay updated with the latest events, articles and activities about Ngoc Linh Ginseng",
-    "readMore": "Read More"
+    "latestNews": "Latest News",
+    "latestNewsDesc": "Stay updated with latest news and articles about Ngoc Linh Ginseng",
+    "readMore": "Read More",
+    "featuredProductsBadge": "FEATURED PRODUCTS",
+    "featuredProductsTitle": "Featured Products & Essence of Ngoc Linh Ginseng",
+    "featuredProductsDesc": "Handpicked genuine Ngoc Linh ginseng products from Kon Tum highlands, certified quality and digitally traceable.",
+    "tabAll": "All",
+    "tabPlants": "Ginseng Plants",
+    "tabWine": "Ginseng Liquor",
+    "tabProducts": "Tea & Products",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "viewDetails": "Details",
+    "viewAllProducts": "View All Products",
+    "originKonTum": "Kon Tum 1500m+",
+    "ageYear": "Age: {year} yrs",
+    "stock": "In Stock: {count}",
+    "addedToCart": "Added \"{name}\" to cart!"
   },
   "nav": {
     "home": "Home",
     "promotions": "Promotions",
-    "planting": "Plant Ginseng",
+    "planting": "Planting",
     "shop": "Shop",
-    "info": "News & Info",
+    "info": "Information",
     "all": "All",
     "about": "About Us",
     "cart": "Cart",
@@ -105,18 +120,18 @@
   "categories": {
     "news": "News",
     "event": "Events",
-    "guide": "App Guide",
-    "faq": "Knowledge"
+    "guide": "User Guide",
+    "faq": "Knowledge Base"
   },
   "products": {
-    "title": "Products & Ginseng Packages",
-    "subtitle": "Discover verified Ngoc Linh ginseng plants and premium ginseng liquor",
+    "title": "Product List & Ginseng Packages",
+    "subtitle": "Discover authentic origin Ngoc Linh ginseng plants and premium liquor lines",
     "all": "All",
     "plants": "Ginseng Plants",
     "liquor": "Ginseng Liquor",
     "package": "Care Packages",
     "buyNow": "Buy Now",
-    "addToCart": "Add To Cart",
+    "addToCart": "Add to Cart",
     "details": "View Details",
     "price": "Price",
     "age": "Age",
@@ -124,54 +139,70 @@
     "origin": "Origin",
     "originLocation": "Dak To - Tu Mo Rong, Quang Nam"
   },
+  "productDetail": {
+    "notFoundTitle": "Product Not Found",
+    "notFoundDesc": "This product may no longer be available or the URL is incorrect.",
+    "backToProducts": "Back to Product List",
+    "home": "Home",
+    "products": "Products",
+    "relatedProducts": "Related Products",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "addedToCartToast": "Added {quantity} \"{name}\" to cart!"
+  },
+  "errorState": {
+    "title": "An error occurred",
+    "description": "Unable to load data. Please try again later.",
+    "retry": "Try again"
+  },
   "cart": {
     "title": "Your Shopping Cart",
     "empty": "Your cart is currently empty",
-    "checkout": "Checkout",
+    "checkout": "Order Checkout",
     "total": "Total",
     "subtotal": "Subtotal",
-    "shipping": "Shipping",
+    "shipping": "Shipping Fee",
     "free": "Free",
     "quantity": "Quantity",
     "product": "Product",
-    "payWithSePay": "VietQR Payment (SePay)",
+    "payWithSePay": "Online Payment",
     "confirmOrder": "Confirm Order",
     "step1": "1. Cart",
     "step2": "2. Confirm",
-    "step3": "3. VietQR Pay",
+    "step3": "3. Payment",
     "step4": "4. Complete",
     "recipientName": "Recipient Name",
     "phoneNumber": "Phone Number",
-    "deliveryAddress": "Shipping Address",
+    "deliveryAddress": "Delivery Address",
     "orderNote": "Order Note",
     "transferContent": "Transfer Content",
     "accountNumber": "Account Number",
     "accountHolder": "Account Holder",
-    "bankName": "Bank Name",
+    "bankName": "Bank",
     "copy": "Copy",
     "copied": "Copied!",
     "orderCompletedTitle": "Order Placed Successfully!",
-    "orderCompletedDesc": "Thank you for choosing Ngoc Linh Ginseng. Your order is now being processed.",
+    "orderCompletedDesc": "Thank you for trusting Ngoc Linh Ginseng. Your order is being processed.",
     "backHome": "Back to Home",
     "messages": {
       "addedToCart": "Added \"{name}\" to cart!",
-      "fillRecipientInfo": "Please fill in full name, phone number, and delivery address!"
+      "fillRecipientInfo": "Please fill in Recipient Name, Phone, and Address!"
     }
   },
   "profile": {
     "title": "Account Management",
-    "myTrees": "My Ginseng Trees",
+    "myTrees": "My Garden Trees",
     "myOrders": "Order History",
-    "ekyc": "eKYC Identity",
+    "ekyc": "eKYC Verification",
     "verified": "Verified",
     "unverified": "Unverified",
     "verifyNow": "Verify Now",
-    "treeCode": "Plant Code",
-    "age": "Plant Age",
-    "garden": "Cultivation Garden",
-    "bed": "Ginseng Bed",
-    "noTrees": "You do not own any ginseng trees yet.",
-    "noOrders": "No order history found."
+    "treeCode": "Tree Code",
+    "age": "Age",
+    "garden": "Garden",
+    "bed": "Bed",
+    "noTrees": "You don't own any ginseng trees yet.",
+    "noOrders": "No order history yet."
   },
   "notifications": {
     "title": "System Notifications",
@@ -189,5 +220,170 @@
     "date": "Date",
     "action": "Action",
     "verified": "Certified Genuine Ngoc Linh Ginseng"
+  },
+  "addressSelector": {
+    "title": "DELIVERY ADDRESS (REQUIRED FOR PHYSICAL PRODUCTS)",
+    "addNewAddress": "+ Add New Address",
+    "addAddress": "+ Add New Address",
+    "defaultBadge": "Default",
+    "emptyState": {
+      "description": "You don't have any delivery address yet. Please click \"+ Add New Address\".",
+      "addAddress": "Add Address"
+    }
+  },
+  "plantPackageSelector": {
+    "careTitle": "1. GINSENG CARE PACKAGE *",
+    "protectionTitle": "2. PLANT PROTECTION & INSURANCE PACKAGE *",
+    "perTree": "/plant/year",
+    "perYear": "/year",
+    "defaultCareDesc": "Standard organic farm care",
+    "defaultProtectionDesc": "100% comprehensive risk insurance"
+  },
+  "addAddressModal": {
+    "title": "Add Shipping Address",
+    "subtitle": "GPS location or select on OpenStreetMap",
+    "recipientNameLabel": "Recipient Name",
+    "recipientNamePlaceholder": "Enter recipient name...",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter phone number...",
+    "addressLabel": "Detailed Address (House number, Street...)",
+    "addressPlaceholder": "Enter or locate address...",
+    "cancel": "Cancel",
+    "saveAndUse": "Save & Use This Address",
+    "savedSuccess": "Saved new address to Address Book!"
+  },
+  "changeAddressModal": {
+    "title": "Shipping Address Book",
+    "subtitle": "Select the address you want to use for this order",
+    "defaultRecipient": "Recipient",
+    "defaultBadge": "Default",
+    "addNewAddress": "Add New Address",
+    "close": "Close"
+  },
+  "cartStepShipping": {
+    "deliveryMethodTitle": "DELIVERY METHOD",
+    "deliveryShipping": "Doorstep Delivery",
+    "deliveryShippingDesc": "Home delivery via express shipping service",
+    "deliveryPickup": "Pickup at Store / Garden",
+    "deliveryPickupDesc": "Pick up directly at store / Ngoc Linh ginseng garden",
+    "free": "Free",
+    "changeAddress": "Change Address",
+    "addNewAddress": "Add New Address",
+    "defaultBadge": "Default",
+    "addressDetailLabel": "Shipping Address (House number, Street...)",
+    "pickupAddressTitle": "Store / Ngoc Linh Ginseng Garden Address:",
+    "pickupLocation": "Receiving Station & Nam Tra My Ngoc Linh Ginseng Garden, Quang Nam",
+    "pickupHotline": "Pickup Support Hotline: 090 123 4567",
+    "orderNotesLabel": "ORDER NOTES",
+    "orderNotesPlaceholder": "Enter notes for your order (optional)...",
+    "orderSummaryTitle": "ORDER CONFIRMATION",
+    "subtotal": "Subtotal",
+    "shippingFee": "Shipping Fee",
+    "totalPayment": "Total Payment",
+    "continueToPayment": "Continue to Payment",
+    "backToCart": "Back to Cart"
+  },
+  "quickPurchase": {
+    "badgePlant": "Ngoc Linh Ginseng Planting",
+    "badgeProduct": "Commercial Product",
+    "headerBadgePlant": "Ngoc Linh Ginseng Planting",
+    "headerBadgeProduct": "Commercial Product",
+    "headerTitle": "Order & Care Registration",
+    "modalTitle": "Order & Care Registration",
+    "closeAriaLabel": "Close quick purchase modal",
+    "perTree": "/plant",
+    "availableStock": "In stock: {count} items",
+    "stockAvailable": "In stock: {count} items",
+    "quantityLabel": "Purchase Quantity *",
+    "decreaseAriaLabel": "Decrease quantity",
+    "increaseAriaLabel": "Increase quantity",
+    "quantityAriaLabel": "Purchase quantity",
+    "maxLimitNote": "Maximum {count} items per purchase",
+    "agreeTermsText": "I agree to sign the care authorization contract and accept terms.",
+    "careTermsTitle": "View Rules & Permanent Care Benefits",
+    "careTermsItem1": "• Ginseng plants are cultivated under organic standards at Tra Linh farm.",
+    "careTermsItem2": "• Growth logs and real photos updated every 15 days.",
+    "careTermsItem3": "• Support harvesting or converting to finished ginseng liquor upon maturity.",
+    "contractSampleTitle": "Sample eContract Investment Agreement (Preview)",
+    "contractSampleLine1": "SOCIALIST REPUBLIC OF VIETNAM - Independence - Freedom - Happiness",
+    "contractSampleLine2": "DIGITAL AGRICULTURAL GINSENG CARE AUTHORIZATION CONTRACT",
+    "contractSampleLine3": "Party A (Authorizer): Customer registered on Ngoc Linh Ginseng platform.",
+    "contractSampleLine4": "Party B (Authorized Party): Ngoc Linh Digital Agriculture JSC.",
+    "contractSampleLine5": "Content: Party B is responsible for planting, protecting, and reporting cultivation logs.",
+    "breakdownTitle": "ORDER PAYMENT BREAKDOWN",
+    "plantPriceLabel": "Ginseng price ({quantity} items x {price} VND):",
+    "vatTreeLabel": "Ginseng VAT (5%):",
+    "careFeeLabel": "Care fee ({name}):",
+    "vatCareLabel": "Care Fee VAT (10%):",
+    "protectionFeeLabel": "Insurance fee ({name}):",
+    "vatProtectionLabel": "Insurance Fee VAT (10%):",
+    "subtotalLabel": "Subtotal ({quantity} items):",
+    "vatProduct8Label": "Product VAT (8%):",
+    "grandTotalLabel": "GRAND TOTAL PAYMENT:",
+    "defaultPackage": "Standard Package",
+    "cancel": "Cancel",
+    "submitInitializing": "Initializing...",
+    "submitConfirm": "Confirm & Pay",
+    "toastAddressAdded": "Added new shipping address!",
+    "toastLoginRequired": "Please sign in to place order!",
+    "toastAgreeTermsRequired": "Please agree to terms & contract!",
+    "toastAddressRequired": "Please select or add delivery address!",
+    "toastOrderCreated": "Order created successfully!",
+    "toastPaymentOpening": "Opening payment gateway..."
+  },
+  "validation": {
+    "phone": {
+      "required": "Please enter phone number",
+      "invalid": "Invalid phone number (e.g. 0912345678)"
+    },
+    "email": {
+      "required": "Please enter email address",
+      "invalid": "Invalid email address"
+    },
+    "password": {
+      "min": "Password must be at least 6 characters",
+      "oldRequired": "Please enter current password",
+      "confirmRequired": "Please confirm password",
+      "confirmNewRequired": "Please confirm new password",
+      "mismatch": "Passwords do not match"
+    },
+    "shippingAddress": {
+      "recipientMin": "Full name must be at least 2 characters",
+      "recipientMax": "Full name cannot exceed 100 characters",
+      "addressMin": "Shipping address must be at least 5 characters",
+      "addressMax": "Address cannot exceed 255 characters"
+    },
+    "signUp": {
+      "fullNameMin": "Full name must be at least 2 characters",
+      "fullNameMax": "Full name cannot exceed 100 characters",
+      "agreeTerms": "You must agree to terms of service"
+    },
+    "otp": {
+      "length": "OTP code must be exactly 6 digits"
+    },
+    "profileInfo": {
+      "fullNameMin": "Full name must be at least 2 characters",
+      "fullNameMax": "Full name cannot exceed 100 characters",
+      "genderRequired": "Please select gender",
+      "birthDateRequired": "Please select birth date"
+    }
+  },
+  "confirmModal": {
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "mapLocationPicker": {
+    "title": "Select Address on Map",
+    "badge": "OpenStreetMap Free",
+    "subtitle": "Click on map or drag pin to select accurate delivery address",
+    "searchPlaceholder": "Enter house number, street, ward, district...",
+    "searchButton": "Find Address",
+    "gpsButton": "GPS Locate",
+    "loadingMap": "Loading OpenStreetMap...",
+    "pinnedTitle": "Pinned location on map:",
+    "updatingAddress": "Updating address...",
+    "selectPlaceholder": "Please select a location on map...",
+    "cancel": "Cancel",
+    "confirm": "Confirm This Address"
   }
 }

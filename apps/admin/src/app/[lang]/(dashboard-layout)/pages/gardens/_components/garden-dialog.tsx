@@ -1,5 +1,14 @@
 "use client"
 
+import { useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+
+import type { GardenFormValues } from "@/schemas/garden-schema"
+
+import { gardenFormSchema } from "@/schemas/garden-schema"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -9,27 +18,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 interface GardenDialogProps {
   isOpen: boolean
   onClose: () => void
   mode: "create" | "edit"
-  formData: {
-    name: string
-    location: string
-    description: string
-    area: string
-    latitude: string
-    longitude: string
-    managerName: string
-    managerPhone: string
-    establishedAt: string
-    maxBeds: string
-  }
-  onChange: (updater: (prev: any) => any) => void
-  onSubmit: (e: React.FormEvent) => void
+  formData: GardenFormValues
+  onSubmit: (values: GardenFormValues) => void
   loading: boolean
   error: string
 }
@@ -39,200 +43,164 @@ export function GardenDialog({
   onClose,
   mode,
   formData,
-  onChange,
   onSubmit,
   loading,
   error,
 }: GardenDialogProps) {
+  const { t } = useTranslation()
+
+  const form = useForm<GardenFormValues>({
+    resolver: zodResolver(gardenFormSchema),
+    defaultValues: formData,
+  })
+
+  useEffect(() => {
+    if (isOpen) {
+      form.reset(formData)
+    }
+  }, [isOpen, formData, form])
+
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[625px] overflow-y-auto max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>
-            {mode === "create" ? "Thêm khu vườn mới" : "Chỉnh sửa khu vườn"}
-          </DialogTitle>
-          <DialogDescription>
-            Điền các thông tin của khu vườn dưới đây. Nhấn Lưu khi hoàn tất.
-          </DialogDescription>
-        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <DialogHeader>
+              <DialogTitle>
+                {mode === "create" ? "Thêm khu vườn mới" : "Chỉnh sửa khu vườn"}
+              </DialogTitle>
+              <DialogDescription>
+                Điền các thông tin của khu vườn dưới đây. Nhấn Lưu khi hoàn tất.
+              </DialogDescription>
+            </DialogHeader>
 
-        {error && (
-          <div className="bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-xs font-medium border border-red-200/50 dark:border-red-900/30">
-            {error}
-          </div>
-        )}
+            {error && (
+              <div className="p-3 bg-destructive/15 text-destructive rounded-md text-xs font-medium">
+                {error}
+              </div>
+            )}
 
-        <form onSubmit={onSubmit}>
-          <div className="grid grid-cols-2 gap-4 py-4">
-            <div className="grid gap-2 col-span-2">
-              <Label htmlFor="garden-name">
-                Tên khu vườn <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="garden-name"
-                value={formData.name}
-                onChange={(e) =>
-                  onChange((prev: any) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="Nhập tên vườn, ví dụ: Vườn Sâm Số 1"
-                required
+            <div className="grid grid-cols-2 gap-4 py-2">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Tên khu vườn *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Tên vườn sâm..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-location">Vị trí địa lý</Label>
-              <Input
-                id="garden-location"
-                value={formData.location}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    location: e.target.value,
-                  }))
-                }
-                placeholder="Kon Tum, Quảng Nam..."
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-area">Diện tích (m²)</Label>
-              <Input
-                id="garden-area"
-                type="number"
-                step="any"
-                value={formData.area}
-                onChange={(e) =>
-                  onChange((prev: any) => ({ ...prev, area: e.target.value }))
-                }
-                placeholder="Ví dụ: 500"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-latitude">Vĩ độ (Latitude)</Label>
-              <Input
-                id="garden-latitude"
-                type="number"
-                step="any"
-                value={formData.latitude}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    latitude: e.target.value,
-                  }))
-                }
-                placeholder="Ví dụ: 14.1234"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-longitude">Kinh độ (Longitude)</Label>
-              <Input
-                id="garden-longitude"
-                type="number"
-                step="any"
-                value={formData.longitude}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    longitude: e.target.value,
-                  }))
-                }
-                placeholder="Ví dụ: 107.5678"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-manager-name">Tên quản lý vườn</Label>
-              <Input
-                id="garden-manager-name"
-                value={formData.managerName}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    managerName: e.target.value,
-                  }))
-                }
-                placeholder="Ví dụ: Nguyễn Văn A"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-manager-phone">SĐT quản lý vườn</Label>
-              <Input
-                id="garden-manager-phone"
-                value={formData.managerPhone}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    managerPhone: e.target.value,
-                  }))
-                }
-                placeholder="Ví dụ: 0987654321"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-established">Ngày thành lập</Label>
-              <Input
-                id="garden-established"
-                type="date"
-                value={formData.establishedAt}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    establishedAt: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="garden-max-beds">Số luống tối đa</Label>
-              <Input
-                id="garden-max-beds"
-                type="number"
-                value={formData.maxBeds}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    maxBeds: e.target.value,
-                  }))
-                }
-                placeholder="Ví dụ: 100"
-              />
-            </div>
-            <div className="grid gap-2 col-span-2">
-              <Label htmlFor="garden-description">Mô tả chi tiết</Label>
-              <Input
-                id="garden-description"
-                value={formData.description}
-                onChange={(e) =>
-                  onChange((prev: any) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Nhập mô tả về đất, khí hậu, các giống sâm..."
-              />
-            </div>
-          </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Hủy
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              {loading ? "Đang lưu..." : "Lưu thay đổi"}
-            </Button>
-          </DialogFooter>
-        </form>
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Vị trí địa lý</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Kon Tum, Quảng Nam..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="area"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Diện tích (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="500" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="managerName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tên quản lý vườn</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nguyễn Văn A" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="managerPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>SĐT quản lý vườn</FormLabel>
+                    <FormControl>
+                      <Input placeholder="0987654321" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="maxBeds"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số luống tối đa</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="100" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Mô tả chi tiết</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Mô tả về khu vườn..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={loading}
+              >
+                {t("common.actions.cancel")}
+              </Button>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                {loading
+                  ? t("common.status.pending")
+                  : t("common.actions.save")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

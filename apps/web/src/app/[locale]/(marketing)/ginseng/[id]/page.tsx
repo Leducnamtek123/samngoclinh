@@ -1,5 +1,5 @@
 import { GinsengDetailClient } from '@/components/ginseng/GinsengDetailClient';
-import { getUserSessionToken } from '@/libs/Api';
+import { getUserSessionToken } from '@/lib/Api';
 
 type PageProps = {
   params: Promise<{

@@ -8,11 +8,7 @@ import type {
   ComponentType,
   ReactNode,
 } from "react"
-import type {
-  LegendProps,
-  ResponsiveContainerProps,
-  TooltipProps,
-} from "recharts"
+import type { LegendProps, TooltipProps } from "recharts"
 
 import { cn } from "@/lib/utils"
 
@@ -207,6 +203,18 @@ export function ChartTooltipContent({
 
   const nestLabel = payload.length === 1 && indicator !== "dot"
 
+  const tooltipLabel = (
+    <ChartTooltipLabel
+      hideLabel={hideLabel}
+      payload={payload}
+      labelKey={labelKey}
+      config={config}
+      label={label}
+      labelFormatter={labelFormatter}
+      labelClassName={labelClassName}
+    />
+  )
+
   return (
     <div
       className={cn(
@@ -214,17 +222,7 @@ export function ChartTooltipContent({
         className
       )}
     >
-      {!nestLabel ? (
-        <ChartTooltipLabel
-          hideLabel={hideLabel}
-          payload={payload}
-          labelKey={labelKey}
-          config={config}
-          label={label}
-          labelFormatter={labelFormatter}
-          labelClassName={labelClassName}
-        />
-      ) : null}
+      {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
           const key = `${nameKey || item.name || item.dataKey || "value"}`
@@ -308,7 +306,7 @@ type ChartLegendContentProps = ComponentProps<"div"> &
     nameKey?: string
   }
 
-function ChartLegendContent({
+export function ChartLegendContent({
   className,
   hideIcon = false,
   payload,

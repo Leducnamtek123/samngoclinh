@@ -25,9 +25,15 @@ export default async function ProfileInfoPage() {
         const profile = payload.data
         const fullName = (profile.name || profile.username || "").trim()
         const nameParts = fullName ? fullName.split(/\s+/) : []
-        const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0] || ""
-        const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
-        const defaultAddr = profile.addresses?.find((a: any) => a.isDefault) || profile.addresses?.[0]
+        const firstName =
+          nameParts.length > 1
+            ? nameParts.slice(0, -1).join(" ")
+            : nameParts[0] || ""
+        const lastName =
+          nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
+        const defaultAddr =
+          profile.addresses?.find((a: any) => a.isDefault) ||
+          profile.addresses?.[0]
 
         user = {
           id: profile.id || "",
@@ -36,7 +42,8 @@ export default async function ProfileInfoPage() {
           lastName,
           email: profile.email || "",
           username: profile.username || "",
-          phoneNumber: profile.mobileNumbers?.[0]?.number || profile.phone || "",
+          phoneNumber:
+            profile.mobileNumbers?.[0]?.number || profile.phone || "",
           avatar: profile.photo?.url || profile.avatar || "",
           role: profile.role?.name || profile.role || "",
           country: profile.country?.name || "",

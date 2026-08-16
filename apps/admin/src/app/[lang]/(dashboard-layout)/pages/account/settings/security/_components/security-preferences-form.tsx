@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form"
 
 interface SecurityPreferencesFormProps extends ComponentProps<"form"> {
-  user: UserType
+  user?: UserType
 }
 
 export function SecurityPreferencesForm({
@@ -29,8 +29,8 @@ export function SecurityPreferencesForm({
   const form = useForm<SecurityPreferencesFormType>({
     resolver: zodResolver(SecurityPreferencesSchema),
     defaultValues: {
-      twoFactorAuth: user.twoFactorAuth,
-      loginAlerts: user.loginAlerts,
+      twoFactorAuth: user?.twoFactorAuth,
+      loginAlerts: user?.loginAlerts,
     },
   })
 

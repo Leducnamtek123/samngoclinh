@@ -1,0 +1,47 @@
+{
+  "RootLayout": {
+    "home_link": "Trang chủ",
+    "about_link": "Giới thiệu",
+    "counter_link": "Đếm số",
+    "portfolio_link": "Hồ sơ",
+    "sign_in_link": "Đăng nhập",
+    "sign_up_link": "Đăng ký"
+  },
+  "BaseTemplate": {
+    "description": "Rượu Sâm Ngọc Linh",
+    "footer_text": "© {year} {name}.",
+    "main_navigation_label": "Điều hướng chính"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "promotions": "Khuyến mãi",
+    "planting": "Trồng sâm",
+    "shop": "Cửa hàng",
+    "info": "Thông tin",
+    "all": "Tất cả",
+    "about": "Giới thiệu",
+    "cart": "Giỏ hàng",
+    "profile": "Tài khoản",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "signOut": "Đăng xuất"
+  },
+  "categories": {
+    "news": "Tin tức",
+    "event": "Sự kiện",
+    "guide": "Hướng dẫn sử dụng",
+    "faq": "Kiến thức & FAQ"
+  },
+  "LocaleSwitcher": {
+    "change_language": "Đổi ngôn ngữ"
+  },
+  "confirmModal": {
+    "confirm": "Xác nhận",
+    "cancel": "Hủy"
+  },
+  "errorState": {
+    "title": "Đã xảy ra lỗi",
+    "description": "Không thể tải dữ liệu. Vui lòng thử lại sau.",
+    "retry": "Thử lại"
+  }
+}

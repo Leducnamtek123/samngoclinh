@@ -1,0 +1,30 @@
+{
+  "notifications": {
+    "title": "Thông Báo Hệ Thống",
+    "markAllRead": "Đánh dấu tất cả là đã đọc",
+    "noNotifications": "Chưa có thông báo nào.",
+    "unreadCount": "{count} chưa đọc"
+  },
+  "trace": {
+    "title": "Truy Xuất Nguồn Gốc Sâm Ngọc Linh",
+    "subtitle": "Kiểm tra nguồn gốc, lô sản xuất và nhật ký chăm sóc của cây sâm",
+    "searchPlaceholder": "Nhập mã QR hoặc mã cây sâm...",
+    "verifyBtn": "Truy Xuất Nguồn Gốc",
+    "originDetails": "Thông Tin Nguồn Gốc",
+    "treeCode": "Mã Cây Sâm",
+    "gardenLocation": "Vị Trí Nông Trường",
+    "harvestDate": "Ngày Thu Hoạch",
+    "certificate": "Giấy Chứng Nhận Nguồn Gốc",
+    "verifiedBadge": "Chứng Nhận Chính Gốc 100%"
+  },
+  "mapLocationPicker": {
+    "searchPlaceholder": "Tìm kiếm địa chỉ, tên đường, quận huyện...",
+    "searchAriaLabel": "Ô nhập tìm kiếm địa chỉ",
+    "useCurrentLocation": "Sử Dụng Vị Trí Hiện Tại",
+    "selectedLocationTitle": "VỊ TRÍ ĐÃ CHỌN:",
+    "confirmLocationBtn": "Xác Nhận Chọn",
+    "geoNotSupported": "Trình duyệt không hỗ trợ định vị Geolocation.",
+    "geoPermDenied": "Quyền truy cập vị trí bị từ chối.",
+    "geoError": "Không thể lấy vị trí hiện tại."
+  }
+}

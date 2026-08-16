@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
 import { GinsengClient } from '@/components/GinsengClient';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
 
 type ProductsPageProps = {
   params: Promise<{ locale: string }>;

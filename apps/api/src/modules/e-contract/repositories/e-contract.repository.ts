@@ -78,13 +78,14 @@ export class EContractRepository {
         });
     }
 
-    async signContract(id: string, signatureUrl: string, metadata?: Record<string, unknown>): Promise<EContract> {
+    async signContract(id: string, signatureUrl: string, pdfUrl?: string, metadata?: Record<string, unknown>): Promise<EContract> {
         return this.databaseService.eContract.update({
             where: { id },
             data: {
                 status: 'signed',
                 signedAt: new Date(),
                 signatureUrl,
+                pdfUrl: pdfUrl ?? undefined,
                 metadata: metadata as Prisma.InputJsonValue,
             },
         });

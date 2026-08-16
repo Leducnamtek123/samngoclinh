@@ -1,4 +1,5 @@
 import { Cairo, Lato } from "next/font/google"
+import { cookies } from "next/headers"
 import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
@@ -67,26 +68,68 @@ const cairoFont = Cairo({
 
 export default async function RootLayout(props: {
   children: ReactNode
-  params: Promise<{ lang: LocaleType }>
+  params: Promise<{ lang: string }>
 }) {
   const params = await props.params
+  const lang = (params.lang || "vi") as LocaleType
 
   const { children } = props
 
   const session = await getServerSession(authOptions)
-  const direction = i18n.localeDirection[params.lang]
+  const direction = i18n.localeDirection[lang] || "ltr"
+
+  const cookieStore = await cookies()
+  const settingsCookie = cookieStore.get("settings")?.value
+  let initialTheme = "green"
+  let initialRadius = 0.5
+
+  if (settingsCookie) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(settingsCookie))
+      if (parsed.theme) initialTheme = parsed.theme
+      if (parsed.radius !== undefined) initialRadius = parsed.radius
+    } catch (_e) {
+      // Ignore JSON parse errors
+    }
+  }
 
   return (
-    <html lang={params.lang} dir={direction} suppressHydrationWarning>
+    <html lang={lang} dir={direction} suppressHydrationWarning>
       <body
         className={cn(
+          `theme-${initialTheme}`,
+          `radius-${initialRadius}`,
           "[&:lang(en)]:font-lato [&:lang(vi)]:font-lato", // Set font styles based on the language
           "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
           latoFont.variable, // Include Lato font variable
           cairoFont.variable // Include Cairo font variable
         )}
       >
-        <Providers locale={params.lang} direction={direction} session={session}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var match = document.cookie.match(new RegExp('(?:^|; )settings=([^;]*)'));
+                  if (match) {
+                    var settings = JSON.parse(decodeURIComponent(match[1]));
+                    if (settings.theme) {
+                      for (var i = document.body.classList.length - 1; i >= 0; i--) {
+                        var cls = document.body.classList[i];
+                        if (cls.startsWith('theme-') || cls.startsWith('radius-')) {
+                          document.body.classList.remove(cls);
+                        }
+                      }
+                      document.body.classList.add('theme-' + settings.theme);
+                      document.body.classList.add('radius-' + (settings.radius || 0.5));
+                    }
+                  }
+                } catch(e) {}
+              })();
+            `,
+          }}
+        />
+        <Providers locale={lang} direction={direction} session={session}>
           {children}
           <Toaster />
           <Sonner />

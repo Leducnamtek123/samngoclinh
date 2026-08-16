@@ -53,7 +53,7 @@ export function UniqueVisitorsChart({
           axisLine={false}
           tickMargin={8}
           hide
-          tickFormatter={(value) => value.slice(0, 3)}
+          tickFormatter={(value: any) => value.slice(0, 3)}
         />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <Area

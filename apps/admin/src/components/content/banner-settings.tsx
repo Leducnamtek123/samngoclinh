@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent } from "react"
+import type { FormEvent } from "react"
 
 type BannerSettingsProps = {
   homepageBanner1: string

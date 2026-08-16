@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { toast } from "@/hooks/use-toast"
 import { buttonVariants } from "@/components/ui/button-variants"
 import { Form } from "@/components/ui/form"
+import { apiAdminVerifyEmail } from "@/services/auth-admin.service"
 
 export function VerifyEmailForm() {
   const params = useParams()
@@ -52,17 +53,7 @@ export function VerifyEmailForm() {
 
 async function onSubmit(data: VerifyEmailFormType) {
   try {
-    const response = await fetch("/api/auth/verify-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-
-    if (!response.ok) {
-      throw new Error("Failed to send verification email")
-    }
+    await apiAdminVerifyEmail(data)
 
     toast({
       title: "Check your email",

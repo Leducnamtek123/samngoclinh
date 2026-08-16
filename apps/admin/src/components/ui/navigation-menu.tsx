@@ -138,7 +138,7 @@ function NavigationMenuViewport({
   )
 }
 
-function NavigationMenuIndicator({
+export function NavigationMenuIndicator({
   className,
   ...props
 }: ComponentProps<typeof NavigationMenuPrimitive.Indicator>) {

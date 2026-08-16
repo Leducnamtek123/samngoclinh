@@ -25,7 +25,7 @@ export function PopoverTrigger({
   )
 }
 
-function PopoverAnchor({
+export function PopoverAnchor({
   ...props
 }: ComponentProps<typeof PopoverPrimitive.Anchor>) {
   return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />

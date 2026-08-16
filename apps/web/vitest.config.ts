@@ -1,13 +1,11 @@
-import react from '@vitejs/plugin-react';
-import { playwright } from '@vitest/browser-playwright';
+import { fileURLToPath } from 'node:url';
 import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [react()],
   resolve: {
     alias: {
-      '@': new URL('./src', import.meta.url).pathname,
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   test: {
@@ -15,31 +13,8 @@ export default defineConfig({
       include: ['src/**/*'],
       exclude: ['src/**/*.stories.{js,jsx,ts,tsx}'],
     },
-    projects: [
-      {
-        extends: true,
-        test: {
-          name: 'unit',
-          include: ['src/**/*.test.{js,ts}'],
-          exclude: ['src/hooks/**/*.test.ts'],
-          environment: 'node',
-        },
-      },
-      {
-        extends: true,
-        test: {
-          name: 'ui',
-          include: ['**/*.test.tsx', 'src/hooks/**/*.test.ts'],
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            screenshotDirectory: 'vitest-test-results',
-            instances: [{ browser: 'chromium' }],
-          },
-        },
-      },
-    ],
+    environment: 'node',
+    include: ['src/**/*.test.{js,ts}'],
     reporters: [
       'default',
       // conditional reporter

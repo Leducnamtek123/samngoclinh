@@ -1,0 +1,30 @@
+{
+  "title": "Quản lý Cây trồng & Vườn sâm",
+  "subtitle": "Quản lý cây Sâm Ngọc Linh, khu vườn, luống cây và nhật ký phát triển",
+  "addTree": "Thêm cây trồng",
+  "editTree": "Chỉnh sửa cây trồng",
+  "treeDetails": "Chi tiết cây Sâm",
+  "fields": {
+    "code": "Mã cây",
+    "name": "Tên cây",
+    "garden": "Vườn",
+    "bed": "Luống",
+    "plantedDate": "Ngày trồng",
+    "age": "Tuổi cây (năm)",
+    "healthStatus": "Tình trạng sức khỏe",
+    "quantity": "Số lượng",
+    "owner": "Chủ sở hữu",
+    "carePackage": "Gói chăm sóc",
+    "protectionPackage": "Gói bảo vệ",
+    "notes": "Ghi chú",
+    "qrCode": "Mã QR",
+    "status": "Trạng thái"
+  },
+  "careLogs": {
+    "title": "Nhật ký chăm sóc",
+    "addLog": "Thêm nhật ký",
+    "activity": "Hoạt động",
+    "performer": "Người thực hiện",
+    "date": "Ngày thực hiện"
+  }
+}

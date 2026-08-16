@@ -9,6 +9,7 @@ export interface IOrderSummaryItem {
 export interface IOrderDetail {
     id: string;
     code: string;
+    userId: string;
     status: string;
     currency: string;
     subtotal: number;

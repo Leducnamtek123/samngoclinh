@@ -1,16 +1,12 @@
 "use client"
 
 import Image from "next/image"
-import {
-  ImageIcon,
-  Pencil,
-  Trash2,
-} from "lucide-react"
+import { ImageIcon, Pencil, Trash2 } from "lucide-react"
 
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/app-pagination"
 import {
   Table,
   TableBody,
@@ -90,7 +86,7 @@ export function NewsList({
                   {art.coverImage || art.image ? (
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-100">
                       <Image
-                        src={art.coverImage || art.image}
+                        src={(art.coverImage || art.image)!}
                         alt={art.title}
                         fill
                         sizes="48px"
@@ -174,7 +170,11 @@ export function NewsList({
       </Table>
 
       {/* Pagination Controls */}
-      <Pagination metadata={metadata} onPageChange={handlePageChange} className="px-4 pb-4" />
+      <Pagination
+        metadata={metadata}
+        onPageChange={handlePageChange}
+        className="px-4 pb-4"
+      />
     </Card>
   )
 }

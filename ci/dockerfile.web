@@ -23,7 +23,7 @@ ARG NEXT_PUBLIC_LOGGING_LEVEL
 ENV NEXT_PUBLIC_LOGGING_LEVEL=$NEXT_PUBLIC_LOGGING_LEVEL
 
 # Build the web application
-RUN pnpm --filter next-js-boilerplate build:next
+RUN pnpm --filter @samngoclinh/web build:next
 
 WORKDIR /app/apps/web
 

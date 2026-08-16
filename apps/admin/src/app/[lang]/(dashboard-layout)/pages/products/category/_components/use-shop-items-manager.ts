@@ -371,22 +371,28 @@ export function useShopItemsManager({
     }))
   }
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleFormSubmit = async (formValues?: any) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
 
-    const bodyData = {
-      code: dialogState.formData.code,
-      name: dialogState.formData.name,
-      category: dialogState.formData.category,
-      unit: dialogState.formData.unit,
-      price: dialogState.formData.price,
-      stock: dialogState.formData.stock,
-      status: dialogState.formData.status,
-      description: dialogState.formData.description || undefined,
-      images: dialogState.formData.imageUrl
-        ? [dialogState.formData.imageUrl]
-        : [],
+    const submittedValues = formValues || dialogState.formData
+
+    const bodyData: any = {
+      name: submittedValues.name,
+      category: submittedValues.category,
+      unit: submittedValues.unit,
+      price: Number(submittedValues.price) || 0,
+      stock: Number(submittedValues.stock) || 0,
+      status: submittedValues.status,
+      description: submittedValues.description || undefined,
+      images: submittedValues.imageUrl
+        ? [submittedValues.imageUrl]
+        : dialogState.formData.imageUrl
+          ? [dialogState.formData.imageUrl]
+          : [],
+    }
+
+    if (dialogState.mode === "create") {
+      bodyData.code = submittedValues.code
     }
 
     try {

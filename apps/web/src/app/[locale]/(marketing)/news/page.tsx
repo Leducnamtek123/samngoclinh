@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { setRequestLocale } from 'next-intl/server';
-import { fetchApi } from '@/libs/Api';
-import { Link } from '@/libs/I18nNavigation';
+import { fetchApi } from '@/lib/Api';
+import { Link } from '@/lib/I18nNavigation';
 import { NewsSidebar } from '@/components/NewsSidebar';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { Button } from '@/components/ui/button';
 
 type NewsPageProps = {
   params: Promise<{ locale: string }>;
@@ -217,8 +218,10 @@ export default async function NewsPage(props: NewsPageProps) {
                         <span>Trang trước</span>
                       </Link>
                     ) : (
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="sm"
                         disabled
                         className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed opacity-50"
                       >
@@ -226,7 +229,7 @@ export default async function NewsPage(props: NewsPageProps) {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                         </svg>
                         <span>Trang trước</span>
-                      </button>
+                      </Button>
                     )}
 
                     {/* Page Numbers */}
@@ -268,8 +271,10 @@ export default async function NewsPage(props: NewsPageProps) {
                         </svg>
                       </Link>
                     ) : (
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="sm"
                         disabled
                         className="flex items-center gap-1 px-4 py-2 bg-gray-50 border border-gray-100 text-gray-400 rounded-xl text-xs font-bold cursor-not-allowed opacity-50"
                       >
@@ -277,7 +282,7 @@ export default async function NewsPage(props: NewsPageProps) {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                         </svg>
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}

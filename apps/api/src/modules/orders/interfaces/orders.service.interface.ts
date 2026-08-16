@@ -11,6 +11,14 @@ export interface IOrdersService {
     list(
         userId: string
     ): Promise<IResponseReturn<{ items: OrdersListResponseDto[] }>>;
+    userListPaginated(
+        userId: string,
+        pagination: IPaginationQueryOffsetParams<
+            Prisma.OrderSelect,
+            Prisma.OrderWhereInput
+        >,
+        status?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<OrdersListResponseDto>>;
     detail(
         id: string,
         userId: string

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
+import type { TreeFormValues } from "@/schemas/tree-schema"
+
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
@@ -69,7 +71,7 @@ export function useTreesManager({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetchApi("/admin/user/list")
+        const res = await fetchApi("/admin/user/list?page=1&perPage=100")
         const payload = await res.json()
         if (res.status < 400) {
           const list = Array.isArray(payload.data)
@@ -128,11 +130,19 @@ export function useTreesManager({
   }
 
   const getOwnerName = (userId: string | undefined) => {
-    if (!userId) return "System"
+    if (!userId) return "Hệ thống (System)"
     const matched = users.find((u) => u.id === userId)
-    return matched
-      ? `${matched.firstName || ""} ${matched.lastName || ""} (${matched.username || matched.email})`.trim()
-      : userId
+    if (!matched) return userId
+    const fullName = (
+      matched.fullName ||
+      matched.name ||
+      [matched.firstName, matched.lastName].filter(Boolean).join(" ")
+    ).trim()
+    const handleOrEmail = matched.username || matched.email || matched.id
+    if (fullName) {
+      return `${fullName} (${handleOrEmail})`
+    }
+    return handleOrEmail
   }
 
   const [errorMsg, setErrorMsg] = useState(initialError || "")
@@ -255,42 +265,38 @@ export function useTreesManager({
     })
   }
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!dialogState.formData.name.trim()) {
-      setDialogState((prev) => ({ ...prev, error: t("validation.required") }))
-      return
-    }
+  const safeIsoDate = (val?: string) => {
+    if (!val || typeof val !== "string" || val.trim() === "") return undefined
+    const d = new Date(val)
+    return isNaN(d.getTime()) ? undefined : d.toISOString()
+  }
 
+  const handleSave = async (values: TreeFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
     setSuccessMsg("")
 
     try {
       const payload: any = {
-        name: dialogState.formData.name,
-        ageYear: Number(dialogState.formData.ageYear),
-        quantity: Number(dialogState.formData.quantity),
-        healthStatus: dialogState.formData.healthStatus,
-        plantedAt: dialogState.formData.plantedAt
-          ? new Date(dialogState.formData.plantedAt).toISOString()
-          : undefined,
-        lastCareDate: dialogState.formData.lastCareDate
-          ? new Date(dialogState.formData.lastCareDate).toISOString()
-          : undefined,
-        nextCareDate: dialogState.formData.nextCareDate
-          ? new Date(dialogState.formData.nextCareDate).toISOString()
-          : undefined,
-        expectedHarvestAt: dialogState.formData.expectedHarvestAt
-          ? new Date(dialogState.formData.expectedHarvestAt).toISOString()
-          : undefined,
-        priceBought: dialogState.formData.priceBought
-          ? parseInt(dialogState.formData.priceBought)
-          : undefined,
-        ownerUserId: dialogState.formData.ownerUserId || undefined,
-        status: dialogState.formData.status,
+        name: values.name,
+        ageYear: Number(values.ageYear),
+        quantity: Number(values.quantity),
+        healthStatus: values.healthStatus,
+        plantedAt: safeIsoDate(values.plantedAt),
+        lastCareDate: safeIsoDate(values.lastCareDate),
+        nextCareDate: safeIsoDate(values.nextCareDate),
+        expectedHarvestAt: safeIsoDate(values.expectedHarvestAt),
+        priceBought:
+          values.priceBought !== undefined &&
+          values.priceBought !== null &&
+          values.priceBought.trim() !== "" &&
+          !isNaN(Number(values.priceBought))
+            ? Number(values.priceBought)
+            : undefined,
+        ownerUserId: values.ownerUserId || undefined,
+        status: values.status,
       }
-      if (dialogState.formData.bedCode !== "none") {
-        payload.bedCode = dialogState.formData.bedCode
+      if (values.bedCode && values.bedCode !== "none") {
+        payload.bedCode = values.bedCode
       }
 
       if (dialogState.mode === "create") {
@@ -375,7 +381,6 @@ export function useTreesManager({
   }
 
   const handleDelete = (id: string) => {
-    const tree = trees.find((t) => t.id === id)
     setConfirmDialog({
       isOpen: true,
       title: t("common.confirmations.deleteTitle"),

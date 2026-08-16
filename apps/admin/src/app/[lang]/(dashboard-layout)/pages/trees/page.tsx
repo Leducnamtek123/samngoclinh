@@ -21,6 +21,7 @@ interface TreesPageProps {
     perPage?: string
     search?: string
     status?: string
+    ageYear?: string
   }>
 }
 
@@ -30,6 +31,7 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
+  const ageYear = resolvedSearchParams.ageYear || ""
 
   let trees: any[] = []
   let beds: any[] = []
@@ -42,6 +44,7 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
     treeQueryParams.append("perPage", perPage)
     if (search) treeQueryParams.append("search", search)
     if (status && status !== "all") treeQueryParams.append("status", status)
+    if (ageYear && ageYear !== "all") treeQueryParams.append("ageYear", ageYear)
 
     const treesRes = await fetchApi(
       `/admin/cultivation/trees?${treeQueryParams.toString()}`

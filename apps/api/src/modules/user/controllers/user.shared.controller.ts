@@ -64,7 +64,10 @@ import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user
 import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
-import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import {
+    UserIdentityDocumentResponseDto,
+    UserIdentityHistoryResponseDto,
+} from '@modules/user/dtos/user.identity-document.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { UserService } from '@modules/user/services/user.service';
@@ -279,6 +282,18 @@ export class UserSharedController {
         return this.userService.getIdentityDocument(userId);
     }
 
+    @Response('user.getIdentityDocumentHistories')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected(false)
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/identity-document/history')
+    async getIdentityDocumentHistories(
+        @AuthJwtPayload('userId') userId: string
+    ): Promise<IResponseReturn<UserIdentityHistoryResponseDto[]>> {
+        return this.userService.getIdentityDocumentHistories(userId);
+    }
+
     @UserSharedSaveIdentityDocumentDoc()
     @Response('user.saveIdentityDocument')
     @TermPolicyAcceptanceProtected()
@@ -294,12 +309,16 @@ export class UserSharedController {
     async saveIdentityDocument(
         @AuthJwtPayload('userId') userId: string,
         @UploadedFiles()
-        files: { front?: IFile[]; back?: IFile[] }
+        files?: { front?: IFile[]; back?: IFile[] },
+        @Body()
+        body?: { front?: string; back?: string; frontBase64?: string; backBase64?: string }
     ): Promise<IResponseReturn<UserIdentityDocumentResponseDto>> {
         return this.userService.saveIdentityDocument(
             userId,
-            files.front?.[0] ?? null,
-            files.back?.[0] ?? null
+            files?.front?.[0] ?? null,
+            files?.back?.[0] ?? null,
+            body?.frontBase64 || body?.front,
+            body?.backBase64 || body?.back
         );
     }
 

@@ -8,20 +8,20 @@ import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
 
-interface EContract {
+export interface EContract {
   id: string
-  code: string
+  code?: string
   userId: string
   treeCode?: string
-  title: string
-  content: string
+  title?: string
+  content?: string
   status: string
   contractValue: number
   paymentStatus: string
   signedAt?: string
   expiredAt: string
   signatureUrl?: string
-  isReminderSent: boolean
+  isReminderSent?: boolean
   reminderSentAt?: string
   contractType?: string
   partyA?: string
@@ -30,14 +30,15 @@ interface EContract {
   terms?: string
 }
 
-interface User {
+export interface User {
   id: string
   name?: string
-  username: string
-  email: string
+  username?: string
+  email?: string
+  isVerified?: boolean
 }
 
-interface Tree {
+export interface Tree {
   id: string
   code: string
   name: string
@@ -210,8 +211,8 @@ export function useContractsManager({
       formData: {
         userId: contract.userId,
         treeCode: contract.treeCode || "none",
-        title: contract.title,
-        content: contract.content,
+        title: contract.title || "",
+        content: contract.content || "",
         contractValue: contract.contractValue,
         paymentStatus: contract.paymentStatus,
         status: contract.status,

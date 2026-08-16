@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/libs/ApiClient';
+import { fetchApiClient } from '@/lib/ApiClient';
 
 export type EContractSignPayload = {
   contractId: string;
@@ -12,9 +12,9 @@ export function useEContracts(initialData?: any) {
     queryKey: ['contracts', 'list'],
     queryFn: () =>
       fetchApiClient('/user/contracts')
-        .then((res) => res.data || [])
+        .then((res) => res?.data || [])
         .catch(() => []),
-    initialData,
+    initialData: initialData ?? [],
   });
 }
 
@@ -23,7 +23,7 @@ export function useEContractDetail(id: string | null) {
     queryKey: ['contracts', 'detail', id],
     queryFn: () =>
       fetchApiClient(`/user/contracts/${id}`)
-        .then((res) => res.data)
+        .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
     enabled: !!id,
   });
@@ -44,3 +44,21 @@ export function useSignEContract() {
     },
   });
 }
+
+export function useUpdateUserSignature() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (signatureData: string) => {
+      const res = await fetchApiClient('/v1/shared/user/signature', {
+        method: 'PUT',
+        body: JSON.stringify({ signatureData }),
+      });
+      return res.data || res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+    },
+  });
+}
+

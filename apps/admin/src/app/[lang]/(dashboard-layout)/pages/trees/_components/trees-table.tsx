@@ -100,7 +100,7 @@ export function TreesTable({
     handleOpenEdit,
     handleSave,
     handleDelete,
-    handleFormChange,
+    handleFormChange: _handleFormChange,
   } = useTreesManager({ initialTrees, beds, initialError })
 
   if (trees.length === 0 && errorMsg) {
@@ -183,7 +183,6 @@ export function TreesTable({
         </CardContent>
       </Card>
 
-      {/* Create / Edit Dialog */}
       <TreeDialog
         isOpen={dialogState.isOpen}
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}
@@ -191,13 +190,6 @@ export function TreesTable({
         formData={dialogState.formData}
         beds={beds}
         users={users}
-        onChange={handleFormChange}
-        onSelectChange={(field, val) =>
-          setDialogState((prev) => ({
-            ...prev,
-            formData: { ...prev.formData, [field]: val },
-          }))
-        }
         onSubmit={handleSave}
         loading={dialogState.loading}
         error={dialogState.error}

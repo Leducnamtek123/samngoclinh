@@ -1,8 +1,12 @@
 export function sanitizeHtml(html: string): string {
   if (!html) return '';
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/ on\w+="[^"]*"/gi, '')
-    .replace(/ on\w+='[^']*'/gi, '')
-    .replace(/javascript:/gi, '');
+  if (typeof window === 'undefined') {
+    return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  }
+  try {
+    const DOMPurify = require('dompurify');
+    return DOMPurify.sanitize(html);
+  } catch (e) {
+    return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  }
 }

@@ -1,0 +1,7 @@
+{
+  "title": "QR Code Truy xuất nguồn gốc",
+  "subtitle": "Quét và tạo mã QR truy xuất nguồn gốc sản phẩm và cây Sâm",
+  "scanPrompt": "Quét mã QR để kiểm tra nguồn gốc",
+  "generateQr": "Tạo mã QR",
+  "qrDetails": "Thông tin truy xuất"
+}

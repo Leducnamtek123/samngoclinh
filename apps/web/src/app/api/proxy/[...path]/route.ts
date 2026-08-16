@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { fetchApi } from '@/libs/Api';
+import { fetchApi } from '@/lib/Api';
+import { Env } from '@/lib/Env';
+import { API_KEY } from '@/lib/apiKey';
 
 async function refreshTokens(refreshToken: string) {
-  const baseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
-  const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP';
+  const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+  const apiKey = API_KEY;
 
   const res = await fetch(`${baseUrl}/v1/shared/user/refresh`, {
     method: 'POST',
@@ -31,22 +33,38 @@ async function handleProxy(
   const endpoint = `/${pathStr}${searchParams ? `?${searchParams}` : ''}`;
 
   const method = request.method;
-  let body: string | undefined;
+  const rawContentType = request.headers.get('content-type') || '';
+  let body: any;
+  const customHeaders: Record<string, string> = {};
+
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
-    body = await request.text().catch(() => undefined);
+    if (rawContentType.includes('multipart/form-data')) {
+      body = await request.arrayBuffer().catch(() => undefined);
+      if (rawContentType) {
+        customHeaders['Content-Type'] = rawContentType;
+      }
+    } else {
+      body = await request.text().catch(() => undefined);
+      if (rawContentType) {
+        customHeaders['Content-Type'] = rawContentType;
+      } else if (body) {
+        customHeaders['Content-Type'] = 'application/json';
+      }
+    }
   }
 
   try {
     let res = await fetchApi(endpoint, {
       method,
       body,
-      headers: {
-        ...(body ? { 'Content-Type': request.headers.get('Content-Type') || 'application/json' } : {}),
-      },
+      headers: customHeaders,
     });
+
+
 
     const cookieStore = await cookies();
     let newTokens = null;
+    let refreshFailed = false;
 
     // Handle 401 Unauthorized via Refresh Token Rotation
     if (res.status === 401) {
@@ -57,29 +75,40 @@ async function handleProxy(
 
         if (newTokens?.accessToken) {
           // Retry original request with newly issued Access Token
-          const apiKey = process.env.NEXT_PUBLIC_API_KEY || 'local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP';
-          const baseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+          const apiKey = API_KEY;
+          const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
           res = await fetch(`${baseUrl}${endpoint}`, {
             method,
             body,
             headers: {
-              'Content-Type': request.headers.get('Content-Type') || 'application/json',
+              ...customHeaders,
               'x-api-key': apiKey,
               'Authorization': `Bearer ${newTokens.accessToken}`,
             },
           });
+        } else {
+          refreshFailed = true;
         }
       }
     }
 
-    let data: any = {};
-    if (res.ok) {
-      data = await res.json().catch(() => ({}));
+    const contentType = res.headers.get('content-type') || '';
+    let response: NextResponse;
+
+    if (contentType.includes('text/html')) {
+      const htmlText = await res.text();
+      response = new NextResponse(htmlText, {
+        status: res.status,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+      response.headers.delete('x-frame-options');
+      response.headers.delete('content-security-policy');
     } else {
+      let data: any = {};
       data = await res.json().catch(() => ({}));
+      response = NextResponse.json(data, { status: res.status });
     }
-    const response = NextResponse.json(data, { status: res.status });
 
     // If tokens were refreshed, update cookies on response (30 days maxAge)
     if (newTokens?.accessToken) {
@@ -100,8 +129,8 @@ async function handleProxy(
           path: '/',
         });
       }
-    } else if (res.status === 401) {
-      // If refresh failed or invalid credentials, clear expired cookies
+    } else if (refreshFailed) {
+      // ONLY clear cookies if refresh token attempt was made and failed
       response.cookies.delete('user_session');
       response.cookies.delete('user_refresh_token');
     }

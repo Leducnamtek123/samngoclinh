@@ -21,7 +21,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface AccountRecoveryOptionsFormProps extends ComponentProps<"form"> {
-  user: UserType
+  user?: UserType
 }
 
 export function AccountRecoveryOptionsForm({
@@ -30,7 +30,7 @@ export function AccountRecoveryOptionsForm({
   const form = useForm<AccountRecoveryOptionsFormType>({
     resolver: zodResolver(AccountRecoveryOptionsSchema),
     defaultValues: {
-      option: user.accountReoveryOption,
+      option: user?.accountReoveryOption,
     },
   })
 

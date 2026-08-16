@@ -8,5 +8,4 @@ export * from './FormRadioGroup';
 export * from './FormSwitch';
 export * from './FormDatePicker';
 export * from './FormPhoneInput';
-export * from './FormAddressPicker';
 export * from './FormFloatingInput';

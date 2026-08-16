@@ -276,7 +276,9 @@ export default function CareLogsPage() {
                             variant="secondary"
                             className="bg-emerald-100 text-emerald-800 border-emerald-200"
                           >
-                            {log.action || log.activityType || "Chăm sóc định kỳ"}
+                            {log.action ||
+                              log.activityType ||
+                              "Chăm sóc định kỳ"}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -307,7 +309,10 @@ export default function CareLogsPage() {
                     ))}
                   </TableBody>
                 </Table>
-                <Pagination metadata={metadata} onPageChange={(p) => setPage(p)} />
+                <Pagination
+                  metadata={metadata}
+                  onPageChange={(p) => setPage(p)}
+                />
               </>
             )}
           </CardContent>

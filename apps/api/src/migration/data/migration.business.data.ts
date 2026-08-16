@@ -38,16 +38,6 @@ export const migrationBusinessData: Record<
             plantCode: string;
             metadata: Record<string, unknown>;
         }[];
-        marketplaceListings: {
-            code: string;
-            title: string;
-            category: string;
-            price: number;
-            quantity: number;
-            ownerType: string;
-            status: string;
-            metadata: Record<string, unknown>;
-        }[];
         contentArticles: {
             slug: string;
             title: string;
@@ -440,28 +430,6 @@ export const migrationBusinessData: Record<
                 requiredDeposit: true,
                 plantCode: 'plant-1y',
                 metadata: { source: 'iwefarm.com.vn/campaigns/free-tree' },
-            },
-        ],
-        marketplaceListings: [
-            {
-                code: 'listing-plant-3y',
-                title: 'Cây Sâm Ngọc Linh 3 năm',
-                category: 'plant',
-                price: 869355,
-                quantity: 140,
-                ownerType: 'provider',
-                status: 'active',
-                metadata: { source: 'ginseng marketplace' },
-            },
-            {
-                code: 'listing-rice-wine-root',
-                title: 'Rượu Sâm Ngọc Linh nguyên cây - nguyên củ',
-                category: 'product',
-                price: 7000000,
-                quantity: 12,
-                ownerType: 'provider',
-                status: 'active',
-                metadata: { source: 'ginseng marketplace' },
             },
         ],
         contentArticles: [

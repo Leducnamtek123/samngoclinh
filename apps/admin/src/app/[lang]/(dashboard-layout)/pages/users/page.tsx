@@ -1,8 +1,11 @@
 import { Suspense } from "react"
 
+import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
+import { getDictionary } from "@/lib/get-dictionary"
+import { createTranslator } from "@/lib/i18n"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { UsersTable } from "./_components/users-table"
@@ -35,7 +38,15 @@ interface UsersPageProps {
   }>
 }
 
-export default async function UsersPage({ searchParams }: UsersPageProps) {
+export default async function UsersPage({
+  params,
+  searchParams,
+}: UsersPageProps) {
+  const resolvedParams = await params
+  const lang = (resolvedParams?.lang || "vi") as LocaleType
+  const dictionary = await getDictionary(lang)
+  const t = createTranslator(dictionary)
+
   const resolvedSearchParams = await searchParams
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
@@ -69,19 +80,19 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
   return (
     <div className="container p-4 md:p-6 mx-auto space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <p className="text-muted-foreground">
-          Manage system users, roles, and permissions.
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {t("users.title")}
+        </h1>
+        <p className="text-muted-foreground">{t("users.subtitle")}</p>
       </div>
 
       <div className="bg-card text-card-foreground border border-border rounded-2xl p-6 shadow-xs">
         <div className="mb-4">
           <h2 className="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
-            Account List
+            {t("users.accountList.title")}
           </h2>
           <p className="text-xs text-muted-foreground">
-            Display user name, email, status, and registration date.
+            {t("users.accountList.subtitle")}
           </p>
         </div>
 

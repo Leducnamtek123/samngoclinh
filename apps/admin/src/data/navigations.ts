@@ -116,6 +116,30 @@ export const navigationsData: NavigationType[] = [
         href: "/pages/contacts",
         allowedRoles: ["SUPER_ADMIN", "ADMIN"],
       },
+      {
+        title: "System Settings",
+        iconName: "Settings",
+        items: [
+          {
+            title: "Shipping Fee",
+            iconName: "Truck",
+            href: "/pages/settings/shipping",
+            allowedRoles: ["SUPER_ADMIN", "ADMIN"],
+          },
+          {
+            title: "Points Conversion",
+            iconName: "Coins",
+            href: "/pages/settings/points",
+            allowedRoles: ["SUPER_ADMIN", "ADMIN"],
+          },
+          {
+            title: "General Settings",
+            iconName: "Settings",
+            href: "/pages/settings/general",
+            allowedRoles: ["SUPER_ADMIN", "ADMIN"],
+          },
+        ],
+      },
     ],
   },
 ]

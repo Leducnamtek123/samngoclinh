@@ -24,8 +24,6 @@ import { ContentAdminController } from '@modules/content/controllers/content.adm
 import { ContentModule } from '@modules/content/content.module';
 import { OrdersAdminController } from '@modules/orders/controllers/orders.admin.controller';
 import { OrdersModule } from '@modules/orders/orders.module';
-import { MarketplaceAdminController } from '@modules/marketplace/controllers/marketplace.admin.controller';
-import { MarketplaceModule } from '@modules/marketplace/marketplace.module';
 import { ProfileAdminController } from '@modules/profile/controllers/profile.admin.controller';
 import { ProfileModule } from '@modules/profile/profile.module';
 import { WalletAdminController } from '@modules/wallet/controllers/wallet.admin.controller';
@@ -64,7 +62,6 @@ import { Module } from '@nestjs/common';
         CatalogAdminController,
         ContentAdminController,
         OrdersAdminController,
-        MarketplaceAdminController,
         ProfileAdminController,
         WalletAdminController,
         PromotionAdminController,
@@ -86,7 +83,6 @@ import { Module } from '@nestjs/common';
         CatalogModule,
         ContentModule,
         OrdersModule,
-        MarketplaceModule,
         ProfileModule,
         WalletModule,
         PromotionModule,
@@ -97,3 +93,5 @@ import { Module } from '@nestjs/common';
     ],
 })
 export class RoutesAdminModule {}
+
+

@@ -167,6 +167,10 @@ model User {
   deviceOwnerships        DeviceOwnership[]          @relation("DeviceOwnershipUser")
   revokedSessions         Session[]                  @relation("SessionRevokedByUser")
   revokedDeviceOwnerships DeviceOwnership[]          @relation("DeviceOwnershipRevokedByUser")
+  gardens                 CultivationGarden[]        @relation("UserGardens")
+  beds                    CultivationBed[]           @relation("UserBeds")
+  trees                   CultivationTree[]          @relation("UserTrees")
+  orders                  Order[]                    @relation("UserOrders")
 
   @@unique(fields: [username])
   @@unique(fields: [email])
@@ -561,29 +565,6 @@ model PromotionCampaign {
   @@map("PromotionCampaigns")
 }
 
-model MarketplaceListing {
-  id           String @id @default(uuid())
-  code         String
-  title        String
-  category     String
-  price        Int
-  quantity     Int
-  ownerType    String
-  ownerUserId  String?
-  status       String
-  publishedAt  DateTime?
-  metadata     Json?
-
-  createdAt DateTime @default(now())
-  createdBy String?
-  updatedAt DateTime @updatedAt
-  updatedBy String?
-
-  @@unique(fields: [code])
-  @@index(fields: [category, status, price])
-  @@map("MarketplaceListings")
-}
-
 model ContentArticle {
   id          String @id @default(uuid())
   slug        String
@@ -633,6 +614,9 @@ model CultivationGarden {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  ownerUser User?            @relation("UserGardens", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  beds      CultivationBed[] @relation("GardenBeds")
+
   @@unique(fields: [code])
   @@index(fields: [status, ownerUserId])
   @@map("CultivationGardens")
@@ -660,6 +644,10 @@ model CultivationBed {
   createdBy String?
   updatedAt DateTime @updatedAt
   updatedBy String?
+
+  garden    CultivationGarden @relation("GardenBeds", fields: [gardenCode], references: [code], onDelete: Cascade)
+  ownerUser User?             @relation("UserBeds", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  trees     CultivationTree[] @relation("BedTrees")
 
   @@unique(fields: [code])
   @@index(fields: [gardenCode, status, ageYear])
@@ -692,6 +680,9 @@ model CultivationTree {
   createdBy String?
   updatedAt DateTime @updatedAt
   updatedBy String?
+
+  bed       CultivationBed? @relation("BedTrees", fields: [bedCode], references: [code], onDelete: SetNull)
+  ownerUser User?           @relation("UserTrees", fields: [ownerUserId], references: [id], onDelete: SetNull)
 
   @@unique(fields: [code])
   @@index(fields: [status, ageYear, ownerUserId])
@@ -781,16 +772,46 @@ model Order {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  user       User?       @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[] @relation("OrderItems")
+
   @@unique(fields: [code])
   @@index(fields: [userId, status, createdAt(sort: Desc)])
   @@map("Orders")
 }
 
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String?
+  productType String?  @default("product")
+  productName String
+  quantity    Int
+  unitPrice   Int
+  totalPrice  Int
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  order Order @relation("OrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("OrderItems")
+}
+
 model UserIdentityDocument {
-  id            String @id @default(uuid())
-  userId        String @unique
-  frontImageUrl String
-  backImageUrl  String
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  frontImageUrl   String
+  backImageUrl    String
+  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
+  idCardNumber    String?
+  fullName        String?
+  reviewedAt      DateTime?
+  reviewedBy      String?
 
   createdAt DateTime @default(now())
   createdBy String?
@@ -798,6 +819,23 @@ model UserIdentityDocument {
   updatedBy String?
 
   @@map("UserIdentityDocuments")
+}
+
+model UserIdentityHistory {
+  id              String    @id @default(uuid())
+  userId          String
+  frontImageUrl   String
+  backImageUrl    String
+  status          String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  rejectionReason String?
+  idCardNumber    String?
+  fullName        String?
+  reviewedAt      DateTime?
+  reviewedBy      String?
+  createdAt       DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@map("UserIdentityHistories")
 }
 
 model UserSignature {
@@ -1159,3 +1197,133 @@ model Banner {
   @@map("Banners")
 }
 
+model StockReservation {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  productType String   @default("product") // product, plant
+  quantity    Int
+  status      String   @default("active") // active, consumed, released
+  expiresAt   DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt, status])
+  @@index([orderId])
+  @@index([productId, status])
+  @@map("StockReservations")
+}
+
+model StockMovement {
+  id            String   @id @default(uuid())
+  productId     String
+  productType   String   @default("product") // product, plant, tree
+  orderId       String?
+  referenceCode String?
+  type          String   // reserve, deduct, release, po_receipt, adjustment, p2p_transfer
+  quantity      Int
+  balanceBefore Int
+  balanceAfter  Int
+  note          String?
+
+  createdAt     DateTime @default(now())
+  createdBy     String?
+
+  @@index([productId, createdAt(sort: Desc)])
+  @@index([type, createdAt(sort: Desc)])
+  @@map("StockMovements")
+}
+
+model PurchaseOrder {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  supplierName String
+  status       String   @default("draft") // draft, approved, received, cancelled
+  totalAmount  Int      @default(0)
+  items        Json     @default("[]")
+  approvedBy   String?
+  approvedAt   DateTime?
+  note         String?
+
+  createdAt    DateTime @default(now())
+  createdBy    String?
+  updatedAt    DateTime @updatedAt
+
+  @@map("PurchaseOrders")
+}
+
+model GoodsReceipt {
+  id              String   @id @default(uuid())
+  receiptCode     String   @unique
+  purchaseOrderId String
+  receivedAt      DateTime @default(now())
+  items           Json     @default("[]")
+  note            String?
+
+  createdAt       DateTime @default(now())
+  createdBy       String?
+
+  @@map("GoodsReceipts")
+}
+
+model PaymentWebhookLog {
+  id          String   @id @default(uuid())
+  gateway     String   @default("sepay")
+  gatewayRef  String
+  orderCode   String
+  amount      Int
+  status      String
+  payload     Json?
+  processedAt DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+
+  @@unique([gateway, gatewayRef])
+  @@index([orderCode])
+  @@map("PaymentWebhookLogs")
+}
+
+enum EnumGardenStatus {
+  active
+  inactive
+  maintenance
+}
+
+enum EnumBedStatus {
+  active
+  inactive
+  empty
+  full
+}
+
+enum EnumTreeStatus {
+  planted
+  growing
+  available
+  harvested
+  sold
+}
+
+enum EnumTreeHealthStatus {
+  healthy
+  warning
+  sick
+  recovering
+}
+
+enum EnumOrderStatus {
+  pending
+  processing
+  paid
+  shipping
+  completed
+  cancelled
+}
+
+enum EnumPaymentStatus {
+  pending
+  paid
+  refunded
+  failed
+}

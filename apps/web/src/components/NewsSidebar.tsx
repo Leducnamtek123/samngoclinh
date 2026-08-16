@@ -4,7 +4,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
-import { Link } from '@/libs/I18nNavigation';
+import { Link } from '@/lib/I18nNavigation';
 import { Input } from './ui/input';
 import { Checkbox } from './ui/checkbox';
 import { Card, CardContent } from './ui/card';

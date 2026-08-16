@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { SeparatorWithText } from "@/components/ui/separator"
 import { OAuthLinks } from "./oauth-links"
+import { apiAdminRegister } from "@/services/auth-admin.service"
 
 export function RegisterForm() {
   const router = useRouter()
@@ -44,18 +45,12 @@ export function RegisterForm() {
     const { firstName, lastName, username, email, password } = data
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          username,
-          email,
-          password,
-        }),
+      const res = await apiAdminRegister({
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
       })
 
       if (res && res.status >= 400) {

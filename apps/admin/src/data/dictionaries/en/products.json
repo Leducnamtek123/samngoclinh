@@ -1,0 +1,23 @@
+{
+  "title": "Product Management",
+  "subtitle": "Manage products, categories, and service packages",
+  "addProduct": "Add Product",
+  "editProduct": "Edit Product",
+  "categories": "Categories",
+  "addCategory": "Add Category",
+  "fields": {
+    "name": "Product Name",
+    "sku": "SKU",
+    "category": "Category",
+    "price": "Price",
+    "stock": "Stock Quantity",
+    "status": "Status",
+    "description": "Description",
+    "image": "Product Image",
+    "approval": "Approval",
+    "importPrice": "Import Price",
+    "plantedDate": "Planted Date",
+    "age": "Age",
+    "unit": "Unit"
+  }
+}

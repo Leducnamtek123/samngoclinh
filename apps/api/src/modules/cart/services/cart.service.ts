@@ -35,9 +35,14 @@ export class CartService implements ICartService {
         const products = await this.databaseService.catalogProduct.findMany({
             where: { id: { in: productIds } },
         });
+        const plants = await this.databaseService.catalogPlant.findMany({
+            where: { id: { in: productIds } },
+        });
 
         const items = cartItems.map(item => {
-            const product = products.find(p => p.id === item.productId);
+            const product: any =
+                products.find(p => p.id === item.productId) ||
+                plants.find(p => p.id === item.productId);
             if (!product) {
                 return {
                     productId: item.productId,
@@ -58,10 +63,10 @@ export class CartService implements ICartService {
                 price: product.price,
                 quantity: item.quantity,
                 totalPrice: product.price * item.quantity,
-                imageUrl: product.images[0] ?? undefined,
+                imageUrl: product.images?.[0] ?? undefined,
                 stock: product.stock,
-                category: product.category,
-                images: product.images,
+                category: (product as any).category || 'Sâm giống',
+                images: product.images || [],
             };
         });
 
@@ -93,9 +98,24 @@ export class CartService implements ICartService {
         userId: string,
         payload: CartAddItemRequestDto
     ): Promise<IResponseReturn<CartSummaryResponseDto>> {
-        const product = await this.databaseService.catalogProduct.findUnique({
+        let product: any = await this.databaseService.catalogProduct.findUnique({
             where: { id: payload.productId },
         });
+        if (!product) {
+            product = await this.databaseService.catalogPlant.findUnique({
+                where: { id: payload.productId },
+            });
+        }
+        if (!product) {
+            product = await this.databaseService.catalogProduct.findFirst({
+                where: { code: payload.productId },
+            });
+        }
+        if (!product) {
+            product = await this.databaseService.catalogPlant.findFirst({
+                where: { code: payload.productId },
+            });
+        }
 
         if (!product) {
             throw new NotFoundException({
@@ -104,7 +124,8 @@ export class CartService implements ICartService {
             });
         }
 
-        if (product.status !== 'available') {
+        const isAvailable = product.status === 'available' || product.status === 'active';
+        if (!isAvailable) {
             throw new BadRequestException({
                 statusCode: 400,
                 message: 'cart.error.productNotAvailable',
@@ -121,7 +142,7 @@ export class CartService implements ICartService {
 
         const cart = await this.cartRepository.addItemToCart(
             userId,
-            payload.productId,
+            product.id,
             payload.quantity
         );
 
@@ -135,9 +156,14 @@ export class CartService implements ICartService {
         productId: string,
         payload: CartUpdateItemRequestDto
     ): Promise<IResponseReturn<CartSummaryResponseDto>> {
-        const product = await this.databaseService.catalogProduct.findUnique({
+        let product: any = await this.databaseService.catalogProduct.findUnique({
             where: { id: productId },
         });
+        if (!product) {
+            product = await this.databaseService.catalogPlant.findUnique({
+                where: { id: productId },
+            });
+        }
 
         if (!product) {
             throw new NotFoundException({

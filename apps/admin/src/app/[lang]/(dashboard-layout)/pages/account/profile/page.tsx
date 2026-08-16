@@ -28,8 +28,12 @@ export default async function ProfilePage(props: {
         const profile = payload.data
         const fullName = (profile.name || profile.username || "").trim()
         const nameParts = fullName ? fullName.split(/\s+/) : []
-        const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0] || ""
-        const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
+        const firstName =
+          nameParts.length > 1
+            ? nameParts.slice(0, -1).join(" ")
+            : nameParts[0] || ""
+        const lastName =
+          nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
 
         user = {
           id: profile.id || "",
@@ -39,7 +43,8 @@ export default async function ProfilePage(props: {
           email: profile.email || "",
           username: profile.username || "",
           role: profile.role?.name || profile.role || "",
-          phoneNumber: profile.mobileNumbers?.[0]?.number || profile.phone || "",
+          phoneNumber:
+            profile.mobileNumbers?.[0]?.number || profile.phone || "",
           avatar: profile.photo?.url || profile.avatar || "",
         }
       }

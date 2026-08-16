@@ -2,12 +2,14 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { Store, Truck } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,6 +44,7 @@ interface OrderDetail {
   status: string
   currency: string
   subtotal: number
+  vatAmount?: number
   shippingFee: number
   discount: number
   total: number
@@ -68,6 +71,7 @@ function OrderDetailsContent() {
   const locale = params.lang as LocaleType
   const searchParams = useSearchParams()
   const orderId = searchParams.get("id")
+  const { t } = useTranslation()
 
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -172,7 +176,10 @@ function OrderDetailsContent() {
               variant={getStatusBadgeVariant(order.status)}
               className="text-sm font-semibold"
             >
-              {order.status.toUpperCase()}
+              {t(`common.status.${order.status.toLowerCase()}`) ===
+              `common.status.${order.status.toLowerCase()}`
+                ? order.status
+                : t(`common.status.${order.status.toLowerCase()}`)}
             </Badge>
           </div>
           <p className="text-muted-foreground font-mono">
@@ -232,6 +239,27 @@ function OrderProductsCard({
   order: OrderDetail
   itemsList: any[]
 }) {
+  const itemsSubtotal = itemsList.reduce(
+    (sum: number, item: any) =>
+      sum + Number(item.price || 0) * Number(item.quantity || 1),
+    0
+  )
+  const subtotalVal =
+    order.subtotal != null
+      ? Number(order.subtotal)
+      : itemsSubtotal > 0
+        ? itemsSubtotal
+        : Number(order.total || 0)
+  const shippingFeeVal = Number(order.shippingFee || 0)
+  const discountVal = Number(order.discount || 0)
+  const totalVal = Number(order.total || order.subtotal || 0)
+  const vatVal =
+    order.vatAmount != null
+      ? Number(order.vatAmount)
+      : Math.max(0, totalVal - (subtotalVal + shippingFeeVal - discountVal))
+  const vatPercent =
+    vatVal > 0 && subtotalVal > 0 ? Math.round((vatVal / subtotalVal) * 100) : 0
+
   return (
     <Card className="md:col-span-2">
       <CardHeader>
@@ -244,6 +272,7 @@ function OrderProductsCard({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-16">Hình ảnh</TableHead>
               <TableHead>Mã vật phẩm</TableHead>
               <TableHead>Tên sản phẩm</TableHead>
               <TableHead className="text-right">Đơn giá</TableHead>
@@ -252,41 +281,75 @@ function OrderProductsCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {itemsList.map((item: any) => (
-              <TableRow key={item.code || item.id || item.name}>
-                <TableCell className="font-mono text-sm">{item.code || item.productId || "-"}</TableCell>
-                <TableCell className="font-semibold">{item.name || item.productName}</TableCell>
-                <TableCell className="text-right">
-                  {formatVND(item.price)}
-                </TableCell>
-                <TableCell className="text-center">{item.quantity}</TableCell>
-                <TableCell className="text-right font-semibold">
-                  {formatVND(item.price * item.quantity)}
-                </TableCell>
-              </TableRow>
-            ))}
+            {itemsList.map((item: any) => {
+              const imgUrl =
+                Array.isArray(item.images) && item.images.length > 0
+                  ? item.images[0]
+                  : typeof item.images === "string"
+                    ? item.images
+                    : item.image || item.photo || null
+
+              return (
+                <TableRow key={item.code || item.id || item.name}>
+                  <TableCell>
+                    <div className="w-12 h-12 rounded-lg border border-border overflow-hidden bg-muted/50 flex items-center justify-center shrink-0">
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={item.name || "Sản phẩm"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Store className="w-5 h-5 text-muted-foreground/60" />
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">
+                    {item.code || item.productId || "-"}
+                  </TableCell>
+                  <TableCell className="font-semibold">
+                    {item.name || item.productName}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatVND(item.price)}
+                  </TableCell>
+                  <TableCell className="text-center">{item.quantity}</TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatVND(item.price * item.quantity)}
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </CardContent>
       <CardFooter className="flex flex-col items-end gap-2 border-t pt-4 bg-muted/20">
         <div className="flex justify-between w-64 text-sm text-muted-foreground">
           <span>Tạm tính:</span>
-          <span>{formatVND(order.subtotal)}</span>
+          <span>{formatVND(subtotalVal)}</span>
         </div>
         <div className="flex justify-between w-64 text-sm text-muted-foreground">
           <span>Phí vận chuyển:</span>
-          <span>{formatVND(order.shippingFee)}</span>
+          <span>
+            {shippingFeeVal > 0 ? formatVND(shippingFeeVal) : "Miễn phí"}
+          </span>
         </div>
-        {order.discount > 0 && (
+        {vatVal > 0 && (
+          <div className="flex justify-between w-64 text-sm text-amber-700 font-semibold dark:text-amber-400">
+            <span>Thuế VAT{vatPercent > 0 ? ` (${vatPercent}%)` : ""}:</span>
+            <span>+{formatVND(vatVal)}</span>
+          </div>
+        )}
+        {discountVal > 0 && (
           <div className="flex justify-between w-64 text-sm text-destructive font-semibold">
             <span>Khuyến mãi:</span>
-            <span>-{formatVND(order.discount)}</span>
+            <span>-{formatVND(discountVal)}</span>
           </div>
         )}
         <div className="flex justify-between w-64 text-lg font-bold border-t pt-2 mt-2">
           <span>Tổng thanh toán:</span>
           <span className="text-emerald-700 dark:text-emerald-400">
-            {formatVND(order.total)}
+            {formatVND(totalVal)}
           </span>
         </div>
       </CardFooter>
@@ -323,9 +386,29 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
             {email}
           </span>
         </div>
+        <div className="flex flex-col gap-1 border-b pb-2">
+          <span className="text-xs text-muted-foreground">
+            Phương thức nhận hàng:
+          </span>
+          <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+            {order.deliveryType === "pickup" ? (
+              <>
+                <Store className="w-4 h-4" />
+                <span>Nhận tại cửa hàng / Vườn sâm</span>
+              </>
+            ) : (
+              <>
+                <Truck className="w-4 h-4" />
+                <span>Giao hàng tận nơi</span>
+              </>
+            )}
+          </span>
+        </div>
         {order.shippingAddress && (
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted-foreground">Địa chỉ giao hàng:</span>
+            <span className="text-xs text-muted-foreground">
+              Địa chỉ giao hàng:
+            </span>
             <span className="font-medium text-gray-900 dark:text-gray-100">
               {order.shippingAddress}
             </span>
@@ -337,16 +420,34 @@ function CustomerInfoCard({ order }: { order: OrderDetail }) {
 }
 
 function PaymentMethodCard({ order }: { order: OrderDetail }) {
+  const isSepay = (order.paymentMethod || "").toLowerCase().includes("sepay")
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Phương thức thanh toán</CardTitle>
+        <CardTitle className="flex items-center justify-between text-base">
+          <span>Phương thức thanh toán</span>
+          {isSepay && (
+            <Badge
+              variant="outline"
+              className="bg-emerald-50 text-emerald-700 border-emerald-300 font-bold text-xs"
+            >
+              Thanh toán trực tuyến
+            </Badge>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Hình thức:</span>
-          <span className="font-semibold uppercase">
-            {order.paymentMethod || "COD"}
+          <span className="font-semibold">
+            {order.paymentMethod === "bank_transfer" ||
+            order.paymentMethod === "sepay" ||
+            (order.paymentMethod || "").toLowerCase().includes("bank")
+              ? "Chuyển khoản"
+              : order.paymentMethod === "cod"
+                ? "Thanh toán COD"
+                : "Chuyển khoản"}
           </span>
         </div>
         <div className="flex justify-between">
@@ -374,6 +475,20 @@ function PaymentMethodCard({ order }: { order: OrderDetail }) {
                 timeZone: "Asia/Ho_Chi_Minh",
               })}
             </span>
+          </div>
+        )}
+        {isSepay && !order.paidAt && (
+          <div className="p-3 bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-md text-xs space-y-1">
+            <p className="font-semibold text-emerald-800 dark:text-emerald-300">
+              Thanh toán trực tuyến tự động:
+            </p>
+            <p className="text-muted-foreground">
+              Khách hàng có thể chuyển khoản với cú pháp chứa mã đơn{" "}
+              <span className="font-mono font-bold text-emerald-700">
+                {order.code}
+              </span>{" "}
+              để hệ thống tự động xác nhận.
+            </p>
           </div>
         )}
       </CardContent>

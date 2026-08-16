@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { routing } from '@/libs/I18nRouting';
+import { routing } from '@/lib/I18nRouting';
 import { getBaseUrl, getI18nPath } from '@/utils/Helpers';
 
 export default function sitemap(): MetadataRoute.Sitemap {

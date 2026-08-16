@@ -6,7 +6,10 @@ import { UserListResponseDto } from '@modules/user/dtos/response/user.list.respo
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserDto } from '@modules/user/dtos/user.dto';
 import { UserAddressResponseDto } from '@modules/user/dtos/user.address.dto';
-import { UserIdentityDocumentResponseDto } from '@modules/user/dtos/user.identity-document.dto';
+import {
+    UserIdentityDocumentResponseDto,
+    UserIdentityHistoryResponseDto,
+} from '@modules/user/dtos/user.identity-document.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import {
     IUser,
@@ -24,6 +27,7 @@ import {
     User,
     UserAddress,
     UserIdentityDocument,
+    UserIdentityHistory,
 } from '@generated/prisma-client';
 import { ResponseUtil } from '@common/response/utils/response.util';
 import { Duration } from 'luxon';
@@ -192,6 +196,15 @@ export class UserUtil {
         return this.responseUtil.serialize(
             UserIdentityDocumentResponseDto,
             document
+        );
+    }
+
+    mapIdentityHistory(
+        history: UserIdentityHistory
+    ): UserIdentityHistoryResponseDto {
+        return this.responseUtil.serialize(
+            UserIdentityHistoryResponseDto,
+            history
         );
     }
 

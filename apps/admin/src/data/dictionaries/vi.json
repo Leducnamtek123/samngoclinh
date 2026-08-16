@@ -166,6 +166,10 @@
     "banners": "Banners",
     "manageNews": "Tin tức",
     "contactRequests": "Liên hệ",
+    "systemSettings": "Cài đặt hệ thống",
+    "shippingFee": "Phí vận chuyển",
+    "pointsConversion": "Tỷ lệ điểm thưởng",
+    "generalSettings": "Cấu hình chung",
     "cultivation": "Quản lý Vườn & Cây Sâm",
     "business": "Quản lý Bán hàng",
     "system": "Hệ thống & Người dùng",
@@ -189,6 +193,25 @@
       "profile": "Hồ sơ",
       "settings": "Cài đặt",
       "signOut": "Đăng xuất"
+    }
+  },
+  "orders": {
+    "title": "Danh sách đơn hàng",
+    "subtitle": "Quản lý và theo dõi trạng thái đơn hàng trong hệ thống",
+    "tabs": {
+      "all": "Tất cả đơn hàng",
+      "plant": "Sản phẩm tại vườn",
+      "product": "Sâm chế biến"
+    },
+    "filterAge": {
+      "all": "Tất cả số tuổi",
+      "label": "Lọc theo tuổi sâm",
+      "1": "Sâm 1 năm tuổi",
+      "2": "Sâm 2 năm tuổi",
+      "3": "Sâm 3 năm tuổi",
+      "4": "Sâm 4 năm tuổi",
+      "5": "Sâm 5 năm tuổi",
+      "6": "Sâm > 5 năm tuổi"
     }
   },
   "common": {
@@ -218,30 +241,43 @@
       "approve": "Phê duyệt",
       "reject": "Từ chối",
       "scan": "Quét mã QR",
-      "generate": "Tạo mã"
+      "generate": "Tạo mã",
+      "filterAll": "Lọc: Tất cả"
     },
     "status": {
+      "all": "Tất cả trạng thái",
       "active": "Hoạt động",
       "inactive": "Không hoạt động",
-      "pending": "Chờ xử lý",
+      "blocked": "Đã khóa",
+      "pending": "Chờ thanh toán",
+      "paid": "Đã thanh toán",
+      "shipping": "Đang giao hàng",
       "completed": "Hoàn thành",
       "cancelled": "Đã hủy",
+      "failed": "Thất bại",
       "success": "Thành công",
+      "processing": "Đang xử lý",
+      "expired": "Hết hạn",
+      "draft": "Bản nháp",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối",
       "error": "Lỗi",
       "warning": "Cảnh báo",
       "info": "Thông tin",
-      "healthy": "Khoe mạnh",
+      "healthy": "Khỏe mạnh",
       "diseased": "Có bệnh",
       "harvested": "Đã thu hoạch",
-      "approved": "Đã duyệt",
-      "rejected": "Đã từ chối"
+      "justNow": "Vừa xong",
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh"
     },
     "table": {
       "rowsPerPage": "Số hàng mỗi trang",
       "pageOf": "Trang {page} trên {total}",
       "noResults": "Không tìm thấy dữ liệu.",
       "selected": "Đã chọn {count}",
-      "showing": "Hiển thị {start} đến {end} trong tổng số {total} mục"
+      "showing": "Hiển thị {start} đến {end} trong tổng số {total} mục",
+      "total": "tổng số"
     },
     "confirmations": {
       "deleteTitle": "Bạn có chắc chắn?",
@@ -256,9 +292,15 @@
     "addUser": "Thêm người dùng",
     "editUser": "Sửa người dùng",
     "userDetails": "Chi tiết người dùng",
+    "accountList": {
+      "title": "Danh sách tài khoản",
+      "subtitle": "Hiển thị tên người dùng, email, trạng thái và ngày đăng ký."
+    },
     "fields": {
       "fullName": "Họ và tên",
+      "username": "Tên người dùng",
       "email": "Email",
+      "verified": "Đã xác minh",
       "phone": "Số điện thoại",
       "role": "Vai trò",
       "status": "Trạng thái",
@@ -266,6 +308,13 @@
       "lastLogin": "Đăng nhập gần nhất",
       "address": "Địa chỉ",
       "avatar": "Ảnh đại diện"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "blocked": "Đã khóa",
+      "pending": "Chờ xử lý",
+      "verified": "Đã xác minh",
+      "unverified": "Chưa xác minh"
     },
     "roles": {
       "admin": "Quản trị viên",
@@ -289,6 +338,10 @@
       "plantedDate": "Ngày trồng",
       "age": "Tuổi cây (năm)",
       "healthStatus": "Tình trạng sức khỏe",
+      "quantity": "Số lượng",
+      "owner": "Chủ sở hữu",
+      "carePackage": "Gói chăm sóc",
+      "protectionPackage": "Gói bảo vệ",
       "notes": "Ghi chú",
       "qrCode": "Mã QR"
     },
@@ -315,7 +368,27 @@
       "stock": "Số lượng tồn kho",
       "status": "Trạng thái",
       "description": "Mô tả",
-      "image": "Hình ảnh sản phẩm"
+      "image": "Hình ảnh sản phẩm",
+      "approval": "Phê duyệt",
+      "importPrice": "Giá nhập",
+      "plantedDate": "Ngày trồng",
+      "age": "Tuổi",
+      "unit": "Đơn tính"
+    }
+  },
+  "packages": {
+    "title": "Gói Dịch Vụ",
+    "addPackage": "Thêm Gói Dịch Vụ Mới",
+    "editPackage": "Chỉnh Sửa Gói Dịch Vụ",
+    "createSubtitle": "Nhập các thông tin chi tiết cho gói dịch vụ. Nhấn Lưu để hoàn tất.",
+    "fields": {
+      "code": "Mã gói dịch vụ",
+      "name": "Tên gói dịch vụ",
+      "price": "Đơn giá (VND)",
+      "duration": "Thời hạn gói (tháng)",
+      "description": "Mô tả dịch vụ",
+      "status": "Trạng thái hoạt động",
+      "coverage": "Phạm vi bảo vệ / bồi thường"
     }
   },
   "content": {
@@ -374,5 +447,56 @@
     "search": "Tìm kiếm...",
     "noResults": "Không tìm thấy kết quả.",
     "typeCommand": "Nhập lệnh hoặc tìm kiếm..."
+  },
+  "kyc": {
+    "title": "Duyệt Định danh eKYC Khách hàng & Nhà đầu tư",
+    "subtitle": "Đối soát thẻ CCCD/CMND và chữ ký số để cấp quyền giao dịch và ký Hợp đồng điện tử",
+    "requestListTitle": "Danh sách Yêu cầu Duyệt eKYC",
+    "loadingList": "Đang tải danh sách hồ sơ eKYC...",
+    "emptyList": "Chưa có yêu cầu duyệt eKYC nào đang chờ xử lý.",
+    "columns": {
+      "user": "Người dùng",
+      "idCardNumber": "Số CCCD/CMND",
+      "submitDate": "Ngày gửi",
+      "status": "Trạng thái",
+      "actions": "Hành động"
+    },
+    "status": {
+      "approved": "Đã duyệt",
+      "pending": "Chờ duyệt",
+      "rejected": "Từ chối"
+    },
+    "actions": {
+      "review": "Xem & Duyệt",
+      "approve": "Phê duyệt eKYC",
+      "reject": "Từ chối Hồ sơ",
+      "confirmReject": "Xác nhận Từ chối",
+      "cancel": "Hủy"
+    },
+    "modal": {
+      "title": "Chi tiết Hồ sơ eKYC",
+      "fullName": "Họ và tên:",
+      "idNumber": "Số CCCD:",
+      "frontImage": "Ảnh mặt trước CCCD",
+      "backImage": "Ảnh mặt sau CCCD",
+      "digitalSignature": "Chữ ký số cá nhân (Digital Signature)",
+      "noSignature": "Chưa đăng ký chữ ký số",
+      "rejectReasonTitle": "Lý do từ chối hồ sơ eKYC:",
+      "rejectReasonPlaceholder": "Nhập chi tiết lý do từ chối để người dùng khắc phục...",
+      "presets": {
+        "blurry": "Ảnh chụp bị mờ / nhòe, không đọc được số CCCD",
+        "glare": "Ảnh chụp bị lóa sáng / mất góc thẻ",
+        "mismatch": "Họ và tên hoặc ngày sinh không trùng khớp",
+        "expired": "Giấy tờ tùy thân đã hết hạn sử dụng",
+        "notOriginal": "Không phải ảnh chụp bản gốc CCCD/CMND"
+      }
+    },
+    "notifications": {
+      "approveSuccess": "Phê duyệt eKYC thành công",
+      "approveError": "Có lỗi xảy ra khi phê duyệt eKYC",
+      "rejectSuccess": "Đã từ chối hồ sơ eKYC",
+      "rejectError": "Có lỗi xảy ra khi từ chối eKYC",
+      "requireReason": "Vui lòng nhập lý do từ chối"
+    }
   }
 }

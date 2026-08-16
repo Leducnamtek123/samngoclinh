@@ -229,7 +229,7 @@ function ImageHandler({ editor }: { editor: Editor }) {
       <PopoverContent className="w-80 p-3">
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-            {t("common.actions.import", "Upload Image")}
+            {t("common.actions.import")}
           </p>
           <div className="flex items-center gap-2">
             <InputFile onValueChange={handleFileChange} disabled={uploading} />
@@ -292,7 +292,7 @@ function LinkHandler({ editor }: { editor: Editor }) {
       </PopoverTrigger>
       <PopoverContent className="flex flex-col gap-2 w-80 p-3">
         <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          {t("common.actions.add", "Insert Link")}
+          {t("common.actions.add")}
         </p>
         <div className="flex gap-2">
           <Input

@@ -1,0 +1,23 @@
+{
+  "title": "Quản lý Sản phẩm",
+  "subtitle": "Quản lý sản phẩm, danh mục và các gói dịch vụ",
+  "addProduct": "Thêm sản phẩm",
+  "editProduct": "Chỉnh sửa sản phẩm",
+  "categories": "Danh mục sản phẩm",
+  "addCategory": "Thêm danh mục",
+  "fields": {
+    "name": "Tên sản phẩm",
+    "sku": "Mã sản phẩm (SKU)",
+    "category": "Danh mục",
+    "price": "Giá bán",
+    "stock": "Số lượng tồn kho",
+    "status": "Trạng thái",
+    "description": "Mô tả",
+    "image": "Hình ảnh sản phẩm",
+    "approval": "Phê duyệt",
+    "importPrice": "Giá nhập",
+    "plantedDate": "Ngày trồng",
+    "age": "Tuổi",
+    "unit": "Đơn tính"
+  }
+}

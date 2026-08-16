@@ -1,17 +1,15 @@
-import { getSession } from "next-auth/react"
-
 export async function getSessionToken() {
   try {
     const isClient = typeof window !== "undefined"
     if (isClient) {
+      const { getSession } = await import("next-auth/react")
       const session = await getSession()
       return (session?.user as any)?.accessToken || null
     } else {
-      const getServerSessionToken = (globalThis as any).getServerSessionToken
-      if (getServerSessionToken) {
-        return await getServerSessionToken()
-      }
-      return null
+      const { getServerSession } = await import("next-auth")
+      const { authOptions } = await import("@/configs/next-auth")
+      const session = await getServerSession(authOptions)
+      return (session?.user as any)?.accessToken || null
     }
   } catch (error) {
     console.error("Error getting session token:", error)
@@ -41,24 +39,23 @@ const NEUTRAL_PATHS = [
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const token = await getSessionToken()
 
-  let isNeutral = false
-  for (const path of NEUTRAL_PATHS) {
-    if (endpoint.includes(path)) {
-      isNeutral = true
-      break
+  let isNeutral = endpoint.startsWith("/admin")
+  if (!isNeutral) {
+    for (const path of NEUTRAL_PATHS) {
+      if (endpoint.includes(path)) {
+        isNeutral = true
+        break
+      }
     }
   }
 
   const isServer = typeof window === "undefined"
   const apiBaseUrl = isServer
-    ? process.env.INTERNAL_API_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      "http://apis:3000/api"
+    ? process.env.INTERNAL_API_URL || "http://localhost:3000/api"
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`
-  const apiKey =
-    process.env.NEXT_PUBLIC_API_KEY ||
-    "local_fyFGb7ywyM37TqDY8nuhAmGW5:qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP"
+  const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
 
   const headers: HeadersInit = {
     "x-api-key": apiKey,
@@ -86,3 +83,12 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers,
   })
 }
+
+export {
+  apiClient,
+  fetchApiData,
+  postApiData,
+  putApiData,
+  deleteApiData,
+  type ApiResponse,
+} from "./api-client"

@@ -1,6 +1,3 @@
-import { match } from "@formatjs/intl-localematcher"
-import Negotiator from "negotiator"
-
 import type { LocaleType } from "@/types"
 import type { NextRequest } from "next/server"
 
@@ -53,13 +50,20 @@ export function getPreferredLocale(request: NextRequest) {
   return i18n.defaultLocale as LocaleType
 }
 
-export function getNestedValue(obj: any, path: string): any {
+export function getNestedValue(
+  obj: Record<string, unknown> | unknown,
+  path: string
+): unknown {
   if (!obj || !path) return undefined
   const keys = path.split(".")
-  let current = obj
+  let current: unknown = obj
   for (const key of keys) {
-    if (current && typeof current === "object" && key in current) {
-      current = current[key]
+    if (
+      current &&
+      typeof current === "object" &&
+      key in (current as Record<string, unknown>)
+    ) {
+      current = (current as Record<string, unknown>)[key]
     } else {
       return undefined
     }
@@ -67,14 +71,36 @@ export function getNestedValue(obj: any, path: string): any {
   return current
 }
 
+const FALLBACK_TRANSLATIONS: Record<string, string> = {
+  "common.status.justNow": "Vừa xong",
+  "common.status.noImage": "Không có hình ảnh",
+  "common.status.success": "Thành công",
+  "common.status.error": "Lỗi",
+  "common.status.pending": "Chờ thanh toán",
+  "common.status.active": "Đang hoạt động",
+  "common.status.completed": "Hoàn thành",
+  "common.status.cancelled": "Đã hủy",
+  "common.status.all": "Tất cả trạng thái",
+  "common.actions.close": "Đóng",
+  "common.actions.refresh": "Làm mới",
+  "common.actions.confirm": "Xác nhận",
+  "common.actions.cancel": "Hủy",
+  "common.table.noResults": "Không tìm thấy dữ liệu.",
+  "messages.errorOccurred": "Lỗi xảy ra",
+  "messages.networkError": "Lỗi máy chủ nội bộ",
+}
+
 export function translate(
-  dictionary: any,
+  dictionary: Record<string, unknown> | unknown,
   key: string,
   params?: Record<string, string | number>
 ): string {
   let val = getNestedValue(dictionary, key)
+  if (typeof val !== "string" && dictionary && typeof dictionary === "object") {
+    val = (dictionary as Record<string, unknown>)[key]
+  }
   if (typeof val !== "string") {
-    val = dictionary?.[key] || key
+    val = FALLBACK_TRANSLATIONS[key] || key
   }
   if (typeof val !== "string") return String(key)
   if (params) {
@@ -85,7 +111,9 @@ export function translate(
   return val
 }
 
-export function createTranslator(dictionary: any) {
+export function createTranslator(
+  dictionary: Record<string, unknown> | unknown
+) {
   return (key: string, params?: Record<string, string | number>): string =>
     translate(dictionary, key, params)
 }

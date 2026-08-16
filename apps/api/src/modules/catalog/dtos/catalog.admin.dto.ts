@@ -46,6 +46,11 @@ export class CatalogPlantUpdateDto {
     @ApiProperty({ required: false })
     @IsOptional()
     @IsString()
+    code?: string;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
     name?: string;
 
     @ApiProperty({ required: false })
@@ -130,6 +135,11 @@ export class CatalogProductCreateDto {
 }
 
 export class CatalogProductUpdateDto {
+    @ApiProperty({ required: false })
+    @IsOptional()
+    @IsString()
+    code?: string;
+
     @ApiProperty({ required: false })
     @IsOptional()
     @IsString()

@@ -86,7 +86,7 @@ export const PriceRangeSlider = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleMinBlur();
           }}
-          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-[#1C3F24] dark:text-emerald-400 font-bold focus:bg-white"
+          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
         />
         <span className="text-gray-400 font-normal shrink-0">—</span>
         <Input
@@ -101,7 +101,7 @@ export const PriceRangeSlider = ({
           onKeyDown={(e) => {
             if (e.key === 'Enter') handleMaxBlur();
           }}
-          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-[#1C3F24] dark:text-emerald-400 font-bold focus:bg-white"
+          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
         />
       </div>
 
@@ -112,7 +112,7 @@ export const PriceRangeSlider = ({
 
         {/* Active Range Highlight */}
         <div
-          className="absolute h-2 bg-[#1C3F24] dark:bg-emerald-600 rounded-lg pointer-events-none"
+          className="absolute h-2 bg-primary dark:bg-emerald-600 rounded-lg pointer-events-none"
           style={{
             left: `${minPercent}%`,
             width: `${Math.max(0, maxPercent - minPercent)}%`,
@@ -131,7 +131,7 @@ export const PriceRangeSlider = ({
             const value = Math.min(Number(e.target.value), maxPrice - step);
             onMinChange(value);
           }}
-          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-30 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1C3F24] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#1C3F24] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-30 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
         />
 
         {/* Max Thumb Slider */}
@@ -146,7 +146,7 @@ export const PriceRangeSlider = ({
             const value = Math.max(Number(e.target.value), minPrice + step);
             onMaxChange(value);
           }}
-          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-40 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1C3F24] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#1C3F24] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-40 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
         />
       </div>
     </div>

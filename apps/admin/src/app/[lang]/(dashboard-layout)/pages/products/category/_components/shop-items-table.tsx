@@ -121,14 +121,14 @@ export function ShopItemsTable({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">
-            {t("products.categories")}
+            Quản lý Sản phẩm thương mại
           </h1>
-          <p className="text-muted-foreground">{t("products.subtitle")}</p>
+          <p className="text-muted-foreground">
+            Quản lý danh sách các sản phẩm chế biến, đồ uống và vật tư thương
+            mại
+          </p>
         </div>
-        <Button
-          onClick={openCreateDialog}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white"
-        >
+        <Button onClick={openCreateDialog}>
           <Plus className="size-4 mr-2" />
           {t("products.addProduct")}
         </Button>

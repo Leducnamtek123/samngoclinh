@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -51,6 +52,8 @@ export function PackageDialog({
   error,
   activeTab,
 }: PackageDialogProps) {
+  const { t } = useTranslation()
+
   return (
     <Dialog
       open={isOpen}
@@ -63,13 +66,11 @@ export function PackageDialog({
           <DialogHeader>
             <DialogTitle>
               {mode === "create"
-                ? "Thêm gói dịch vụ mới"
-                : "Chỉnh sửa gói dịch vụ"}
+                ? t("packages.addPackage")
+                : t("packages.editPackage")}
             </DialogTitle>
             <DialogDescription>
-              Nhập các thông tin chi tiết cho gói{" "}
-              {activeTab === "care" ? "chăm sóc" : "bảo hiểm/bảo vệ"}. Nhấn Lưu
-              để hoàn tất.
+              {t("packages.createSubtitle")}
             </DialogDescription>
           </DialogHeader>
 
@@ -81,34 +82,33 @@ export function PackageDialog({
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="pkg-code">Mã gói dịch vụ</Label>
+              <Label htmlFor="pkg-code">{t("packages.fields.code")}</Label>
               <Input
                 id="pkg-code"
                 value={formData.code}
                 onChange={(e) =>
                   onChange((prev: any) => ({ ...prev, code: e.target.value }))
                 }
-                placeholder="Ví dụ: CARE_GOLD, PROT_MAX"
+                placeholder="CARE_GOLD, PROT_MAX"
                 disabled={mode === "edit"}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="pkg-name">Tên gói dịch vụ</Label>
+              <Label htmlFor="pkg-name">{t("packages.fields.name")}</Label>
               <Input
                 id="pkg-name"
                 value={formData.name}
                 onChange={(e) =>
                   onChange((prev: any) => ({ ...prev, name: e.target.value }))
                 }
-                placeholder="Ví dụ: Gói Chăm Sóc Vàng"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="pkg-price">Giá tiền (VND)</Label>
+              <Label htmlFor="pkg-price">{t("packages.fields.price")}</Label>
               <Input
                 id="pkg-price"
                 type="number"
@@ -126,7 +126,9 @@ export function PackageDialog({
 
             {activeTab === "care" ? (
               <div className="grid gap-2">
-                <Label htmlFor="pkg-duration">Thời hạn gói (tháng)</Label>
+                <Label htmlFor="pkg-duration">
+                  {t("packages.fields.duration")}
+                </Label>
                 <Input
                   id="pkg-duration"
                   type="number"
@@ -144,7 +146,7 @@ export function PackageDialog({
             ) : (
               <div className="grid gap-2">
                 <Label htmlFor="pkg-coverage">
-                  Phạm vi bảo vệ / bồi thường
+                  {t("packages.fields.coverage")}
                 </Label>
                 <Input
                   id="pkg-coverage"
@@ -155,13 +157,12 @@ export function PackageDialog({
                       coverage: e.target.value,
                     }))
                   }
-                  placeholder="Ví dụ: Bồi thường 100% khi cây chết"
                 />
               </div>
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="pkg-status">Trạng thái hoạt động</Label>
+              <Label htmlFor="pkg-status">{t("packages.fields.status")}</Label>
               <Select
                 value={formData.status}
                 onValueChange={(val) =>
@@ -169,17 +170,23 @@ export function PackageDialog({
                 }
               >
                 <SelectTrigger id="pkg-status">
-                  <SelectValue placeholder="Chọn trạng thái" />
+                  <SelectValue placeholder={t("packages.fields.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Hoạt động (Active)</SelectItem>
-                  <SelectItem value="inactive">Tạm ngưng (Inactive)</SelectItem>
+                  <SelectItem value="active">
+                    {t("common.status.active")}
+                  </SelectItem>
+                  <SelectItem value="inactive">
+                    {t("common.status.inactive")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="pkg-desc">Mô tả dịch vụ</Label>
+              <Label htmlFor="pkg-desc">
+                {t("packages.fields.description")}
+              </Label>
               <Textarea
                 id="pkg-desc"
                 value={formData.description}
@@ -189,7 +196,6 @@ export function PackageDialog({
                     description: e.target.value,
                   }))
                 }
-                placeholder="Mô tả chi tiết quyền lợi dịch vụ..."
                 rows={3}
               />
             </div>
@@ -202,14 +208,16 @@ export function PackageDialog({
               onClick={onClose}
               disabled={loading}
             >
-              Hủy
+              {t("common.actions.cancel")}
             </Button>
             <Button
               type="submit"
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              {loading ? "Đang lưu..." : "Lưu thay đổi"}
+              {loading
+                ? t("common.status.processing")
+                : t("common.actions.save")}
             </Button>
           </DialogFooter>
         </form>

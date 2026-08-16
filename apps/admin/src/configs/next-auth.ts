@@ -107,7 +107,7 @@ export const authOptions: NextAuthOptions = {
         if (credentials.accessToken) {
           try {
             const res = await fetch(
-              `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`,
+              `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/profile`,
               {
                 method: "GET",
                 headers: {
@@ -187,7 +187,7 @@ export const authOptions: NextAuthOptions = {
           const tokenExpiresIn = Number(payload.data.tokens.expiresIn) || 3600
 
           const profileRes = await fetch(
-            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/user/profile/me`,
+            `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/profile`,
             {
               method: "GET",
               headers: {
