@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProfileMe } from '@/hooks/queries/useProfile';
 import { useShippingFee, useCreateOrderMutation } from '@/hooks/queries/useCheckout';
+import { useIdentityVerificationStatus } from '@/hooks/queries/useIdentityVerification';
 import { getCartItems, clearCart, type CartItem } from '@/utils/cart';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
   });
 
   const { data: profile } = useProfileMe();
+  const { data: kycStatusData } = useIdentityVerificationStatus();
   const { data: fetchedShippingFee = 30000 } = useShippingFee();
   const createOrderMutation = useCreateOrderMutation();
 
@@ -44,9 +46,26 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
   const [shippingAddress, setShippingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Legal contract signing state for tree / plant orders
+  const [legalName, setLegalName] = useState('');
+  const [identityNumber, setIdentityNumber] = useState('');
+  const [signatureData, setSignatureData] = useState('');
+  const [isContractAgreed, setIsContractAgreed] = useState(false);
+
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
 
   const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const hasTrees = items.some(
+    (it) =>
+      it.category === 'plant' ||
+      it.category === 'tree' ||
+      it.category === 'package' ||
+      it.name?.toLowerCase().includes('cây sâm') ||
+      it.name?.toLowerCase().includes('gói trồng') ||
+      it.name?.toLowerCase().includes('vườn sâm') ||
+      it.name?.toLowerCase().includes('gói chăm sóc')
+  );
 
   const handleCreateOrder = async (formData?: {
     recipientName?: string;
@@ -85,6 +104,28 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
       return;
     }
 
+    if (hasTrees) {
+      const finalLegalName = (legalName || customerName).trim();
+      const finalIdNum = identityNumber.trim();
+
+      if (!finalLegalName) {
+        toast.error('Vui lòng nhập họ và tên người đứng tên Hợp đồng!');
+        return;
+      }
+      if (!finalIdNum || finalIdNum.length < 9) {
+        toast.error('Vui lòng nhập đúng số Căn cước công dân (CCCD) để kích hoạt hợp đồng!');
+        return;
+      }
+      if (!signatureData) {
+        toast.error('Vui lòng thực hiện ký số điện tử trước khi thanh toán!');
+        return;
+      }
+      if (!isContractAgreed) {
+        toast.error('Vui lòng tích chọn đồng ý với các điều khoản Hợp đồng ủy quyền chăm sóc sâm!');
+        return;
+      }
+    }
+
     try {
       const orderData: any = await createOrderMutation.mutateAsync({
         customerName,
@@ -94,6 +135,17 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
         shippingAddress: finalDeliveryType === 'shipping' ? address : undefined,
         paymentMethod: 'online',
         note: noteVal || undefined,
+        identityNumber: hasTrees ? identityNumber.trim() : undefined,
+        legalName: hasTrees ? (legalName || customerName).trim() : undefined,
+        signatureData: hasTrees ? signatureData : undefined,
+        metadata: hasTrees
+          ? {
+              identityNumber: identityNumber.trim(),
+              legalName: (legalName || customerName).trim(),
+              signatureData,
+              hasSignedContract: true,
+            }
+          : undefined,
         items: items.map((it) => ({ productId: it.id, quantity: it.quantity })),
       });
 
@@ -139,8 +191,18 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
           t={t}
           onSubmit={handleCreateOrder}
           onPrevStep={() => router.push(`/${locale}/cart`)}
+          legalName={legalName}
+          setLegalName={setLegalName}
+          identityNumber={identityNumber}
+          setIdentityNumber={setIdentityNumber}
+          signatureData={signatureData}
+          setSignatureData={setSignatureData}
+          isContractAgreed={isContractAgreed}
+          setIsContractAgreed={setIsContractAgreed}
+          kycStatusData={kycStatusData}
         />
       </div>
     </div>
   );
 }
+

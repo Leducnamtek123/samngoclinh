@@ -59,10 +59,19 @@ export function ContractsManager({
   const [paymentFilter, setPaymentFilter] = useState<string>("all")
   const [isCheckingExpiry, setIsCheckingExpiry] = useState(false)
 
+  React.useEffect(() => {
+    setContracts(initialContracts)
+  }, [initialContracts])
+
   // Real data statistics computation
   const stats = useMemo(() => {
     const total = metadata?.count || contracts.length
-    const pending = contracts.filter((c) => c.status === "pending").length
+    const draft = contracts.filter(
+      (c) => c.status === "draft" || c.status === "pending_issue"
+    ).length
+    const pending = contracts.filter(
+      (c) => c.status === "pending" || c.status === "pending_signature"
+    ).length
     const signed = contracts.filter((c) => c.status === "signed").length
     const now = new Date()
     const in30Days = new Date()
@@ -82,7 +91,7 @@ export function ContractsManager({
       return c.status === "expired" || (exp ? exp < now : false)
     }).length
 
-    return { total, pending, signed, expiringSoon, expired }
+    return { total, draft, pending, signed, expiringSoon, expired }
   }, [contracts, metadata])
 
   // Filtered list on client
@@ -100,7 +109,11 @@ export function ContractsManager({
         c.customerName?.toLowerCase().includes(query)
 
       // Status
-      const matchesStatus = statusFilter === "all" || c.status === statusFilter
+      const matchesStatus =
+        statusFilter === "all" ||
+        c.status === statusFilter ||
+        (statusFilter === "draft" && (c.status === "draft" || c.status === "pending_issue")) ||
+        (statusFilter === "pending" && (c.status === "pending" || c.status === "pending_signature"))
 
       // Source (Order vs Manual)
       const meta = (c.metadata || {}) as Record<string, unknown>
@@ -148,6 +161,22 @@ export function ContractsManager({
       }
     } catch {
       toast.error("Lỗi kết nối máy chủ.")
+    }
+  }
+
+  const handleIssueContract = async (id: string) => {
+    try {
+      const res = await fetchApi(`/admin/contracts/${id}/issue`, {
+        method: "POST",
+      })
+      if (res) {
+        toast.success("Phát hành hợp đồng và gửi thông báo cho khách hàng thành công!")
+        setContracts((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, status: "pending" } : c))
+        )
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Không thể phát hành hợp đồng. Vui lòng thử lại.")
     }
   }
 
@@ -226,6 +255,7 @@ export function ContractsManager({
             users={users}
             lang={lang}
             onDelete={handleDeleteContract}
+            onIssue={handleIssueContract}
           />
 
           {metadata && metadata.totalPage > 1 && (

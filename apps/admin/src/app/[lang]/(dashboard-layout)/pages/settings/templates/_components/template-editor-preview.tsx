@@ -186,12 +186,14 @@ export function TemplateEditorPreview({
                   số
                 </span>
               </div>
-              <div
-                className="border border-slate-200 dark:border-slate-800 rounded-xl p-8 bg-white dark:bg-slate-900 shadow-xs max-h-[600px] overflow-y-auto"
-                dangerouslySetInnerHTML={{
-                  __html: getRenderedPreviewHtml(htmlContent),
-                }}
-              />
+              <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white overflow-hidden shadow-xs">
+                <iframe
+                  title="Xem trước mẫu hợp đồng"
+                  srcDoc={getRenderedPreviewHtml(htmlContent)}
+                  className="w-full h-[600px] border-0 bg-white"
+                  sandbox="allow-same-origin allow-scripts"
+                />
+              </div>
             </div>
           )}
         </CardContent>

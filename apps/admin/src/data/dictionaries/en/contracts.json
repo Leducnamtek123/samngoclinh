@@ -1,0 +1,73 @@
+{
+  "title": "Electronic Contracts Management",
+  "subtitle": "Track, create, verify, and manage electronic ginseng consignment and purchase contracts",
+  "createContract": "Create Contract",
+  "createManual": "Create Contract Manually",
+  "editContract": "Edit Contract",
+  "contractDetails": "Contract Details",
+  "stats": {
+    "total": "Total Contracts",
+    "active": "Active",
+    "pending": "Pending Signature",
+    "expiring": "Expiring Soon (30 days)",
+    "expired": "Expired"
+  },
+  "filters": {
+    "search": "Search by contract code, customer, tree code...",
+    "status": "Contract Status",
+    "allStatus": "All Statuses",
+    "source": "Creation Source",
+    "allSource": "All Sources",
+    "payment": "Payment Status",
+    "allPayment": "All Payments"
+  },
+  "fields": {
+    "code": "Contract Code",
+    "title": "Contract Title",
+    "customer": "Customer (Party B)",
+    "tree": "Associated Ginseng Tree",
+    "totalValue": "Total Value",
+    "effectiveDate": "Effective Date",
+    "expiryDate": "Expiry Date",
+    "signedDate": "Signed Date",
+    "status": "Status",
+    "type": "Contract Type",
+    "source": "Source",
+    "package": "Service Package",
+    "duration": "Duration (Months)",
+    "careFee": "Periodic Care Fee",
+    "paymentStatus": "Payment Status"
+  },
+  "wizard": {
+    "step1": "1. General Information",
+    "step1Desc": "Customer & Contract Type",
+    "step2": "2. Terms & Value",
+    "step2Desc": "Value & Validity Duration",
+    "step3": "3. Content & Preview",
+    "step3Desc": "Drafting & Template Preview",
+    "step4": "4. Issue & Sign",
+    "step4Desc": "Verification & Confirmation"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "PENDING_SIGN": "Pending Sign",
+    "SIGNED": "Signed",
+    "ACTIVE": "Active",
+    "EXPIRED": "Expired",
+    "CANCELLED": "Cancelled",
+    "TERMINATED": "Terminated"
+  },
+  "types": {
+    "CULTIVATION_INVESTMENT": "Purchase & Consignment Care",
+    "CARE_PACKAGE": "Periodic Care Package",
+    "TREE_PURCHASE": "Seedling Purchase",
+    "OTHER": "Other Contract"
+  },
+  "notifications": {
+    "createSuccess": "Contract created successfully!",
+    "createError": "Error creating contract.",
+    "updateSuccess": "Contract updated successfully!",
+    "signSuccess": "Contract signed successfully!",
+    "cancelSuccess": "Contract cancelled."
+  }
+}

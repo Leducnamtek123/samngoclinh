@@ -154,6 +154,19 @@ export class EContractAdminController {
         return this.eContractService.updateContract(id, body);
     }
 
+    @ApiOperation({ summary: 'Phát hành hợp đồng bản nháp và gửi thông báo cho khách hàng ký' })
+    @Response('eContract.issue')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/:id/issue')
+    async issueContract(
+        @Param('id') id: string
+    ): Promise<IResponseReturn<EContract>> {
+        return this.eContractService.issueContract(id);
+    }
+
     @EContractAdminDeleteDoc()
     @Response('eContract.delete')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)

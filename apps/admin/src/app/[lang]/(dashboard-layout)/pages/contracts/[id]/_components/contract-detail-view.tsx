@@ -21,6 +21,7 @@ import { fetchApi } from "@/lib/api"
 import { ContractDetailHeader } from "./contract-detail-header"
 import { ContractDetailMetadata } from "./contract-detail-metadata"
 import { ContractDetailViewer } from "./contract-detail-viewer"
+import { ContractEditDialog } from "./contract-edit-dialog"
 
 import type { AdminUser, EContract } from "@/types"
 
@@ -48,18 +49,25 @@ const formatDateVi = (dateStr?: string | Date) => {
 }
 
 export function ContractDetailView({
-  contract,
+  contract: initialContract,
   user,
   lang,
   errorMsg,
 }: ContractDetailViewProps) {
   const router = useRouter()
+  const [contract, setContract] = useState<EContract | null>(initialContract)
   const [copiedHash, setCopiedHash] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isSendingReminder, setIsSendingReminder] = useState(false)
+  const [isIssuing, setIsIssuing] = useState(false)
   const [templateHtml, setTemplateHtml] = useState<string>("")
   const [isLoadingTemplate, setIsLoadingTemplate] = useState<boolean>(true)
+
+  React.useEffect(() => {
+    setContract(initialContract)
+  }, [initialContract])
 
   React.useEffect(() => {
     async function loadDynamicTemplate() {
@@ -83,43 +91,73 @@ export function ContractDetailView({
     if (!contract) return ""
 
     const contractHtml = contract.contentHtml || contract.content
+    let baseHtml = ""
+
     if (
       contractHtml &&
       (contractHtml.includes("<!DOCTYPE") ||
         contractHtml.includes("<html") ||
-        contractHtml.length > 100)
+        contractHtml.length > 50)
     ) {
-      let content = contractHtml
-      if (contract.signatureUrl) {
-        content = content.replace(
-          /Chờ khách hàng ký|Chờ ký/g,
-          `<img src="${contract.signatureUrl}" alt="Chữ ký khách hàng" style="max-height: 48px; display: inline-block; object-fit: contain;" />`
-        )
-      }
-      return content
+      baseHtml = contractHtml
+    } else if (templateHtml) {
+      baseHtml = templateHtml
     }
 
-    if (!templateHtml) return ""
+    if (!baseHtml) return ""
 
     const contractMeta = (contract.metadata || {}) as Record<string, unknown>
-    const customerName = user?.name || contract.customerName || contract.userName || "Khách hàng"
-    const cccd = user?.identityNumber || user?.cccd || (contractMeta.cccd as string) || "Đã xác thực eKYC"
-    const address = user?.address || (contractMeta.address as string) || "Hải Châu, TP. Đà Nẵng"
-    const phone = user?.mobileNumbers?.[0]?.number || user?.phone || user?.phoneNumber || (contractMeta.phone as string) || "—"
-    const email = user?.email || (contractMeta.email as string) || "—"
-    const contractCode = contract.code || contract.contractCode || contract.contractNumber || "HĐ-SNL/2026/01"
-    const treeCount = String(contract.items?.length || (contractMeta.totalPlants as number) || 1)
+    const customerName =
+      (contractMeta.customerName as string) ||
+      user?.name ||
+      contract.customerName ||
+      (typeof contract.partyB === "string" ? contract.partyB : contract.partyB?.name) ||
+      "Khách hàng"
+    const cccd =
+      (contractMeta.cccd as string) ||
+      user?.identityNumber ||
+      user?.cccd ||
+      "Đã xác thực eKYC"
+    const address =
+      (contractMeta.address as string) ||
+      user?.address ||
+      "Hải Châu, TP. Đà Nẵng"
+    const phone =
+      (contractMeta.phone as string) ||
+      (contractMeta.customerPhone as string) ||
+      user?.mobileNumbers?.[0]?.number ||
+      user?.phone ||
+      "—"
+    const email =
+      (contractMeta.email as string) ||
+      (contractMeta.customerEmail as string) ||
+      user?.email ||
+      "—"
+    const contractCode =
+      contract.code ||
+      contract.contractCode ||
+      contract.contractNumber ||
+      "HĐ-SNL/2026/01"
+    const treeCount = String(
+      contract.items?.length || (contractMeta.totalPlants as number) || 1
+    )
     const treeCountWords = `${treeCount} cây sâm`
-    const totalVal = formatVND(contract.totalValue || contract.contractValue || 0)
+    const totalVal = formatVND(
+      contract.totalValue || contract.contractValue || 0
+    )
     const careFee = contractMeta.careFee
       ? formatVND(contractMeta.careFee as number)
-      : formatVND(Math.round((contract.totalValue || contract.contractValue || 0) * 0.1))
+      : formatVND(
+          Math.round((contract.totalValue || contract.contractValue || 0) * 0.1)
+        )
     const signDate = contract.signedAt
       ? formatDateVi(contract.signedAt)
       : formatDateVi(contract.createdAt || "")
-    const expireDate = formatDateVi(contract.expiresAt || contract.expiredAt || "")
+    const expireDate = formatDateVi(
+      contract.expiresAt || contract.expiredAt || ""
+    )
 
-    let result = templateHtml
+    let result = baseHtml
       .replace(/\{\{TEN_KHACH_HANG\}\}/g, customerName)
       .replace(/\{\{CCCD_MST\}\}/g, cccd)
       .replace(/\{\{DIA_CHI\}\}/g, address)
@@ -134,6 +172,14 @@ export function ContractDetailView({
       .replace(/\{\{PHI_CHAM_SOC_CHU\}\}/g, careFee)
       .replace(/\{\{NGAY_KY\}\}/g, signDate)
       .replace(/\{\{NGAY_HET_HAN\}\}/g, expireDate)
+
+    const templateVars = (contractMeta.templateVariables || {}) as Record<string, string>
+    for (const [key, val] of Object.entries(templateVars)) {
+      if (val) {
+        const regex = new RegExp(`\\{\\{${key}\\}\\}`, "g")
+        result = result.replace(regex, val)
+      }
+    }
 
     if (contract.signatureUrl) {
       result = result.replace(
@@ -202,6 +248,24 @@ export function ContractDetailView({
     }
   }
 
+  const handleIssue = async () => {
+    if (!contract) return
+    setIsIssuing(true)
+    try {
+      const res = await fetchApi(`/admin/contracts/${contract.id}/issue`, { method: "POST" })
+      if (res.status < 400) {
+        toast.success("Phát hành hợp đồng và gửi thông báo cho khách hàng thành công!")
+        setContract({ ...contract, status: "pending" })
+      } else {
+        toast.error("Không thể phát hành hợp đồng.")
+      }
+    } catch {
+      toast.error("Lỗi khi kết nối máy chủ.")
+    } finally {
+      setIsIssuing(false)
+    }
+  }
+
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
@@ -231,6 +295,9 @@ export function ContractDetailView({
         traceUrl={traceUrl}
         pdfDownloadUrl={pdfDownloadUrl}
         isSendingReminder={isSendingReminder}
+        isIssuing={isIssuing}
+        onEditClick={() => setIsEditDialogOpen(true)}
+        onIssue={handleIssue}
         onSendReminder={handleSendReminder}
         onDeleteClick={() => setShowDeleteConfirm(true)}
       />
@@ -260,6 +327,17 @@ export function ContractDetailView({
           />
         </div>
       </div>
+
+      <ContractEditDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        contract={contract}
+        user={user}
+        onSuccess={(updated) => {
+          setContract(updated)
+          router.refresh()
+        }}
+      />
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>

@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   Select,
   SelectContent,
@@ -219,7 +220,11 @@ export function TreeFormFields({
           <FormItem>
             <FormLabel>{t("trees.fields.plantedAt")}</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DatePicker
+                value={field.value}
+                onChangeStr={field.onChange}
+                placeholder={t("trees.placeholders.selectDate")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -233,7 +238,11 @@ export function TreeFormFields({
           <FormItem>
             <FormLabel>{t("trees.fields.lastCareDate")}</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DatePicker
+                value={field.value}
+                onChangeStr={field.onChange}
+                placeholder={t("trees.placeholders.selectDate")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -247,7 +256,11 @@ export function TreeFormFields({
           <FormItem>
             <FormLabel>{t("trees.fields.nextCareDate")}</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DatePicker
+                value={field.value}
+                onChangeStr={field.onChange}
+                placeholder={t("trees.placeholders.selectDate")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -261,7 +274,11 @@ export function TreeFormFields({
           <FormItem className="col-span-2">
             <FormLabel>{t("trees.fields.expectedHarvestAt")}</FormLabel>
             <FormControl>
-              <Input type="date" {...field} />
+              <DatePicker
+                value={field.value}
+                onChangeStr={field.onChange}
+                placeholder={t("trees.placeholders.selectDate")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

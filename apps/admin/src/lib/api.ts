@@ -1,3 +1,4 @@
+import { API_KEY } from "./api-key"
 import type { ApiResponse } from "@/types/common.types"
 
 interface SessionUserWithToken {
@@ -7,10 +8,18 @@ interface SessionUserWithToken {
 
 export async function getSessionToken(): Promise<string | null> {
   try {
-    const { getSession } = await import("next-auth/react")
-    const session = await getSession()
-    const user = session?.user as SessionUserWithToken | undefined
-    return user?.accessToken || null
+    if (typeof window === "undefined") {
+      const { getServerSession } = await import("next-auth")
+      const { authOptions } = await import("@/configs/next-auth")
+      const session = await getServerSession(authOptions)
+      const user = session?.user as SessionUserWithToken | undefined
+      return user?.accessToken || null
+    } else {
+      const { getSession } = await import("next-auth/react")
+      const session = await getSession()
+      const user = session?.user as SessionUserWithToken | undefined
+      return user?.accessToken || null
+    }
   } catch (error) {
     console.error("Error getting session token:", error)
     return null
@@ -55,7 +64,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}): Pro
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`
-  const apiKey = process.env.API_KEY || ""
+  const apiKey = API_KEY
 
   const headersRecord: Record<string, string> = {
     "x-api-key": apiKey,

@@ -47,11 +47,11 @@ export const legalService = {
     if (params?.search) query.append("search", params.search)
     if (params?.status && params.status !== "all") query.append("status", params.status)
 
-    return fetchApiJson<EContract[]>(`/user/e-contract?${query.toString()}`)
+    return fetchApiJson<EContract[]>(`/admin/e-contract/list?${query.toString()}`)
   },
 
   async getContractTemplates(): Promise<ApiResponse<ContractTemplate[]>> {
-    return fetchApiJson<ContractTemplate[]>("/user/e-contract/templates")
+    return fetchApiJson<ContractTemplate[]>("/public/contracts/templates")
   },
 
   // Contacts

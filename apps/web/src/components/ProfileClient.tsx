@@ -60,7 +60,7 @@ export const ProfileClient = ({
   const { data: trees } = useCultivationTrees(initialTrees);
   const { data: kycStatusData, refetch: refetchKycStatus } = useIdentityVerificationStatus();
   const submitKycMutation = useSubmitIdentityVerification();
-  const { data: contractsData } = useEContracts();
+  const { data: contractsData, isLoading: contractsLoading } = useEContracts();
 
   // Custom Hooks
   const { saveInlineProfile } = useProfileUpdate(profile, refetchProfile);
@@ -217,7 +217,7 @@ export const ProfileClient = ({
 
           {tabs === 'contracts' && (
             <ProfileContractsTab
-              contractsLoading={false}
+              contractsLoading={contractsLoading}
               contractsData={Array.isArray(contractsData) ? contractsData : []}
               onOpenContractModal={setSelectedContractId}
             />

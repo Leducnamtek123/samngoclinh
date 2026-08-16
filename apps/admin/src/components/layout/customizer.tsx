@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import {
   AlignStartHorizontal,
@@ -33,10 +33,15 @@ import {
 } from "@/components/ui/sheet"
 
 export function Customizer() {
+  const [mounted, setMounted] = useState(false)
   const { settings, updateSettings, resetSettings } = useSettings()
   const pathname = usePathname()
   const router = useRouter()
   const params = useParams()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const locale = params.lang as LocaleType
   const _direction = i18n.localeDirection[locale]
@@ -60,6 +65,8 @@ export function Customizer() {
     resetSettings()
     router.push(relocalizePathname(pathname, "en"), { scroll: false })
   }, [resetSettings, router, pathname])
+
+  if (!mounted) return null
 
   return (
     <Sheet>

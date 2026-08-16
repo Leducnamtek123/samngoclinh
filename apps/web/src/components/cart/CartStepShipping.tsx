@@ -14,6 +14,8 @@ import {
   shippingAddressSchema,
   type ShippingAddressFormValues,
 } from '@/lib/validation/schemas';
+import { CheckoutContractSigningCard } from '@/components/checkout/CheckoutContractSigningCard';
+import type { IdentityVerificationStatus } from '@/types';
 
 type CartStepShippingProps = {
   items: CartItem[];
@@ -33,6 +35,15 @@ type CartStepShippingProps = {
   t?: (key: string) => string;
   onSubmit: (data?: (ShippingAddressFormValues & { deliveryType?: 'shipping' | 'pickup' }) | FormEvent) => void;
   onPrevStep: () => void;
+  legalName?: string;
+  setLegalName?: (val: string) => void;
+  identityNumber?: string;
+  setIdentityNumber?: (val: string) => void;
+  signatureData?: string;
+  setSignatureData?: (val: string) => void;
+  isContractAgreed?: boolean;
+  setIsContractAgreed?: (val: boolean) => void;
+  kycStatusData?: IdentityVerificationStatus | null;
 };
 
 function DeliveryTypePicker({
@@ -221,6 +232,15 @@ export const CartStepShipping = ({
   loading,
   onSubmit,
   onPrevStep,
+  legalName,
+  setLegalName,
+  identityNumber,
+  setIdentityNumber,
+  signatureData,
+  setSignatureData,
+  isContractAgreed,
+  setIsContractAgreed,
+  kycStatusData,
 }: CartStepShippingProps) => {
   const tShipping = useTranslations('cartStepShipping');
   const { data: profile, refetch: refetchProfile } = useProfileMe();
@@ -300,6 +320,29 @@ export const CartStepShipping = ({
     onSubmit({ ...data, deliveryType });
   };
 
+  const hasTrees = items.some(
+    (it) =>
+      it.category === 'plant' ||
+      it.category === 'tree' ||
+      it.category === 'package' ||
+      it.name?.toLowerCase().includes('cây sâm') ||
+      it.name?.toLowerCase().includes('gói trồng') ||
+      it.name?.toLowerCase().includes('vườn sâm') ||
+      it.name?.toLowerCase().includes('gói chăm sóc')
+  );
+  const totalPlants = items
+    .filter(
+      (it) =>
+        it.category === 'plant' ||
+        it.category === 'tree' ||
+        it.category === 'package' ||
+        it.name?.toLowerCase().includes('cây sâm') ||
+        it.name?.toLowerCase().includes('gói trồng') ||
+        it.name?.toLowerCase().includes('vườn sâm') ||
+        it.name?.toLowerCase().includes('gói chăm sóc')
+    )
+    .reduce((sum, it) => sum + (it.quantity || 1), 0);
+
   const calculatedGrandTotal = totalAmount + (deliveryType === 'shipping' ? shippingFee : 0);
 
   return (
@@ -327,6 +370,23 @@ export const CartStepShipping = ({
           )}
 
           {deliveryType === 'pickup' && <PickupInfoCard tShipping={tShipping} />}
+
+          {hasTrees && (
+            <CheckoutContractSigningCard
+              profile={profile}
+              kycStatusData={kycStatusData}
+              legalName={legalName || recipientName || profile?.fullName || ''}
+              setLegalName={setLegalName || (() => {})}
+              identityNumber={identityNumber || ''}
+              setIdentityNumber={setIdentityNumber || (() => {})}
+              signatureData={signatureData || ''}
+              setSignatureData={setSignatureData || (() => {})}
+              isAgreed={Boolean(isContractAgreed)}
+              setIsAgreed={setIsContractAgreed || (() => {})}
+              totalPlants={totalPlants || 1}
+              totalAmount={totalAmount}
+            />
+          )}
 
           <FormTextarea
             control={form.control}

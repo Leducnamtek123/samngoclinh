@@ -679,22 +679,42 @@ export class UserService implements IUserService {
                 );
             }
         } else if (frontBase64) {
-            frontImageUrl = await this.fileService.uploadBase64(
-                frontBase64,
-                'identity'
-            );
-            if (backBase64) {
-                backImageUrl = await this.fileService.uploadBase64(
-                    backBase64,
+            if (frontBase64.startsWith('data:') || frontBase64.length > 500) {
+                frontImageUrl = await this.fileService.uploadBase64(
+                    frontBase64,
                     'identity'
                 );
+            } else {
+                frontImageUrl = frontBase64;
+            }
+
+            if (backBase64) {
+                if (backBase64.startsWith('data:') || backBase64.length > 500) {
+                    backImageUrl = await this.fileService.uploadBase64(
+                        backBase64,
+                        'identity'
+                    );
+                } else {
+                    backImageUrl = backBase64;
+                }
             }
         } else {
-            throw new RequestParamRequiredException('front image is required');
+            const existingDoc = await this.userRepository.findIdentityDocument(userId);
+            if (existingDoc?.frontImageUrl) {
+                frontImageUrl = existingDoc.frontImageUrl;
+                backImageUrl = existingDoc.backImageUrl || '';
+            } else {
+                throw new RequestParamRequiredException('front image is required');
+            }
         }
 
         if (!isPassport && !backImageUrl && !backFile && !backBase64) {
-            throw new RequestParamRequiredException('back image is required for this document type');
+            const existingDoc = await this.userRepository.findIdentityDocument(userId);
+            if (existingDoc?.backImageUrl) {
+                backImageUrl = existingDoc.backImageUrl;
+            } else {
+                throw new RequestParamRequiredException('back image is required for this document type');
+            }
         }
 
         try {

@@ -159,6 +159,16 @@ export class EContractRepository {
         });
     }
 
+    async updateStatus(id: string, status: string, additionalData?: Prisma.EContractUpdateInput): Promise<EContract> {
+        return this.databaseService.eContract.update({
+            where: { id },
+            data: {
+                status,
+                ...additionalData,
+            },
+        });
+    }
+
     async deleteContract(id: string): Promise<boolean> {
         await this.databaseService.eContract.delete({
             where: { id },

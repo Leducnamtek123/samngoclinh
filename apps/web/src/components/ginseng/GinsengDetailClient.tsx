@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Link } from '@/lib/I18nNavigation';
 import { toast } from 'sonner';
 import { useCatalogPlant, useCatalogPlants } from '@/hooks/queries/useCatalog';
-import { addToCart } from '@/utils/cart';
+import { addToCart, type CartItem } from '@/utils/cart';
 
 type GinsengDetailClientProps = {
   id: string;
@@ -89,17 +89,19 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: Gin
       window.location.href = `/${locale}/sign-in?reason=ginseng`;
       return;
     }
-    addToCart(
-      {
-        id: plant.id || `GINSENG-${plant.name}`,
-        name: plant.name,
-        price: plant.price,
-        image: currentImage,
-        category: 'Cây giống',
-      },
-      quantity
-    );
-    window.location.href = `/${locale}/cart`;
+    const buyItem: CartItem = {
+      id: plant.id || `GINSENG-${plant.name}`,
+      name: plant.name,
+      price: plant.price,
+      image: currentImage,
+      category: 'Cây giống',
+      quantity,
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('checkout_selected_items:v1', JSON.stringify([buyItem]));
+    }
+    window.location.href = `/${locale}/checkout`;
   };
 
   return (

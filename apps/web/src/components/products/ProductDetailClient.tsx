@@ -7,7 +7,7 @@ import { Link } from '@/lib/I18nNavigation';
 import { toast } from 'sonner';
 import { useCatalogShopItem, useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { getProductImage } from '@/utils/productUtils';
-import { addToCart } from '@/utils/cart';
+import { addToCart, type CartItem } from '@/utils/cart';
 import { ProductDetailView } from './ProductDetailView';
 import { ErrorState } from '@/components/common/ErrorState';
 import type { ProductItem } from '@/types';
@@ -88,17 +88,19 @@ export const ProductDetailClient = ({ id, locale, isLoggedIn, initialData }: Pro
       return;
     }
     const currentImage = getProductImage(item, 0) || '/assets/images/logo_ruou_sam.png';
-    addToCart(
-      {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        image: currentImage,
-        category: item.category || 'Sản phẩm',
-      },
-      quantity
-    );
-    window.location.href = `/${locale}/cart`;
+    const buyItem: CartItem = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: currentImage,
+      category: item.category || 'Sản phẩm',
+      quantity,
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('checkout_selected_items:v1', JSON.stringify([buyItem]));
+    }
+    window.location.href = `/${locale}/checkout`;
   };
 
   return (

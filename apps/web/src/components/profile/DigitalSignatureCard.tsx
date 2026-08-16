@@ -1,11 +1,8 @@
-'use client';
-
 import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
-import { fetchApiClient } from '@/lib/ApiClient';
-import { useUpdateUserSignature } from '@/hooks/queries/useEContract';
+import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
 import { toast } from 'sonner';
 
 // Subcomponent: Drawing Canvas Area
@@ -129,28 +126,13 @@ function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: strin
 
 export const DigitalSignatureCard: React.FC = () => {
   const [mode, setMode] = useState<'draw' | 'upload'>('draw');
-  const [savedSignatureUrl, setSavedSignatureUrl] = useState<string | null>(null);
+  const { data: savedSignatureUrl } = useUserSignature();
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
 
-  const updateSignatureMutation = useUpdateUserSignature();
+  const updateSignatureMutation = useSaveUserSignature();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
   const hasDrawnRef = useRef(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchApiClient('/v1/shared/user/signature', { method: 'GET' })
-      .then((res: any) => {
-        if (isMounted && res?.data?.signatureUrl) {
-          setSavedSignatureUrl(res.data.signatureUrl);
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     if (mode !== 'draw') return;
@@ -259,11 +241,8 @@ export const DigitalSignatureCard: React.FC = () => {
     }
 
     try {
-      const res: any = await updateSignatureMutation.mutateAsync(signatureData);
-      if (res?.signatureUrl || res?.data?.signatureUrl) {
-        setSavedSignatureUrl(res?.signatureUrl || res?.data?.signatureUrl);
-        toast.success('Lưu chữ ký điện tử thành công!');
-      }
+      await updateSignatureMutation.mutateAsync(signatureData);
+      toast.success('Lưu chữ ký điện tử thành công!');
     } catch (err: any) {
       toast.error(err?.message || 'Lưu chữ ký thất bại. Vui lòng thử lại.');
     }

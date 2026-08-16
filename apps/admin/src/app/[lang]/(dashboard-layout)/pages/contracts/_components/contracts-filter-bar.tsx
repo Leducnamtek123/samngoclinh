@@ -48,11 +48,12 @@ export function ContractsFilterBar({
       <div className="flex flex-wrap items-center gap-2">
         {/* Status Filter */}
         <Select value={statusFilter} onValueChange={onStatusChange}>
-          <SelectTrigger className="h-9 text-xs w-[140px]">
+          <SelectTrigger className="h-9 text-xs w-[185px]">
             <SelectValue placeholder="Trạng thái" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tất cả trạng thái</SelectItem>
+            <SelectItem value="draft">Bản nháp / Chờ BQL phát hành</SelectItem>
             <SelectItem value="pending">Chờ khách ký</SelectItem>
             <SelectItem value="signed">Đã ký</SelectItem>
             <SelectItem value="expired">Đã hết hạn</SelectItem>

@@ -1,0 +1,73 @@
+{
+  "title": "Quản lý Hợp đồng Điện tử",
+  "subtitle": "Theo dõi, tạo mới, đối soát và kích hoạt các hợp đồng mua bán, ký gửi sâm Ngọc Linh",
+  "createContract": "Tạo hợp đồng mới",
+  "createManual": "Tạo hợp đồng thủ công",
+  "editContract": "Chỉnh sửa hợp đồng",
+  "contractDetails": "Chi tiết hợp đồng",
+  "stats": {
+    "total": "Tổng số hợp đồng",
+    "active": "Đang hiệu lực",
+    "pending": "Chờ ký kết",
+    "expiring": "Sắp hết hạn (30 ngày)",
+    "expired": "Đã hết hạn"
+  },
+  "filters": {
+    "search": "Tìm theo mã HĐ, tên khách hàng, mã cây...",
+    "status": "Trạng thái hợp đồng",
+    "allStatus": "Tất cả trạng thái",
+    "source": "Nguồn phát sinh",
+    "allSource": "Tất cả nguồn",
+    "payment": "Thanh toán",
+    "allPayment": "Tất cả thanh toán"
+  },
+  "fields": {
+    "code": "Mã hợp đồng",
+    "title": "Tiêu đề hợp đồng",
+    "customer": "Khách hàng (Bên B)",
+    "tree": "Cây sâm gắn liền",
+    "totalValue": "Tổng giá trị",
+    "effectiveDate": "Ngày hiệu lực",
+    "expiryDate": "Ngày hết hạn",
+    "signedDate": "Ngày ký",
+    "status": "Trạng thái",
+    "type": "Loại hợp đồng",
+    "source": "Nguồn tạo",
+    "package": "Gói dịch vụ",
+    "duration": "Thời hạn (tháng)",
+    "careFee": "Phí chăm sóc định kỳ",
+    "paymentStatus": "Tình trạng thanh toán"
+  },
+  "wizard": {
+    "step1": "1. Thông tin chung",
+    "step1Desc": "Khách hàng & Loại hợp đồng",
+    "step2": "2. Điều khoản & Giá trị",
+    "step2Desc": "Giá trị & Thời hạn hiệu lực",
+    "step3": "3. Mẫu văn bản & Xem trước",
+    "step3Desc": "Soạn thảo điều khoản",
+    "step4": "4. Phát hành & Ký",
+    "step4Desc": "Kiểm tra & Xác nhận gửi"
+  },
+  "status": {
+    "DRAFT": "Bản nháp",
+    "PENDING_SIGN": "Chờ ký",
+    "SIGNED": "Đã ký",
+    "ACTIVE": "Đang hiệu lực",
+    "EXPIRED": "Đã hết hạn",
+    "CANCELLED": "Đã hủy",
+    "TERMINATED": "Chấm dứt trước hạn"
+  },
+  "types": {
+    "CULTIVATION_INVESTMENT": "Mua bán & Ký gửi chăm sóc",
+    "CARE_PACKAGE": "Gói chăm sóc định kỳ",
+    "TREE_PURCHASE": "Mua cây giống",
+    "OTHER": "Hợp đồng khác"
+  },
+  "notifications": {
+    "createSuccess": "Tạo hợp đồng điện tử thành công!",
+    "createError": "Có lỗi khi tạo hợp đồng.",
+    "updateSuccess": "Cập nhật hợp đồng thành công!",
+    "signSuccess": "Ký hợp đồng thành công!",
+    "cancelSuccess": "Đã hủy hợp đồng."
+  }
+}

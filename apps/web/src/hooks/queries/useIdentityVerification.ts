@@ -72,26 +72,40 @@ export function useSubmitIdentityVerification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: SaveIdentityDocumentPayload) => {
-      if (payload.frontBase64) {
+    mutationFn: (payload: SaveIdentityDocumentPayload | FormData) => {
+      if (typeof FormData !== 'undefined' && payload instanceof FormData) {
+        return fetchApiClient('/v1/shared/user/identity-document', {
+          method: 'PUT',
+          body: payload,
+        });
+      }
+
+      const pay = payload as SaveIdentityDocumentPayload;
+      if (pay.frontBase64) {
         return fetchApiClient('/v1/shared/user/identity-document', {
           method: 'PUT',
           body: JSON.stringify({
-            documentType: payload.documentType || 'cccd',
-            frontBase64: payload.frontBase64,
-            backBase64: payload.backBase64,
-            idCardNumber: payload.idCardNumber,
-            fullName: payload.fullName,
+            documentType: pay.documentType || 'cccd',
+            frontBase64: pay.frontBase64,
+            backBase64: pay.backBase64,
+            idCardNumber: pay.idCardNumber,
+            fullName: pay.fullName,
           }),
         });
       }
 
       const formData = new FormData();
-      if (payload.documentType) formData.append('documentType', payload.documentType);
-      if (payload.front) formData.append('front', payload.front);
-      if (payload.back) formData.append('back', payload.back);
-      if (payload.idCardNumber) formData.append('idCardNumber', payload.idCardNumber);
-      if (payload.fullName) formData.append('fullName', payload.fullName);
+      if (pay.documentType) formData.append('documentType', pay.documentType);
+      if (pay.front) {
+        formData.append('front', pay.front);
+        formData.append('frontImage', pay.front);
+      }
+      if (pay.back) {
+        formData.append('back', pay.back);
+        formData.append('backImage', pay.back);
+      }
+      if (pay.idCardNumber) formData.append('idCardNumber', pay.idCardNumber);
+      if (pay.fullName) formData.append('fullName', pay.fullName);
 
       return fetchApiClient('/v1/shared/user/identity-document', {
         method: 'PUT',

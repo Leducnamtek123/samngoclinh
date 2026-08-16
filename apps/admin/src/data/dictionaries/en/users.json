@@ -23,6 +23,7 @@
   },
   "status": {
     "active": "Active",
+    "inactive": "Inactive",
     "blocked": "Blocked",
     "pending": "Pending",
     "verified": "Verified",

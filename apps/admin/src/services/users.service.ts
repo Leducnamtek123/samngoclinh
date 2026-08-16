@@ -18,14 +18,14 @@ export const usersService = {
     if (params?.status && params.status !== "all") query.append("status", params.status)
     if (params?.roleId && params.roleId !== "all") query.append("roleId", params.roleId)
 
-    return fetchApiJson<AdminUser[]>(`/admin/user?${query.toString()}`)
+    return fetchApiJson<AdminUser[]>(`/admin/user/list?${query.toString()}`)
   },
 
   async getRoles(): Promise<ApiResponse<Role[]>> {
-    return fetchApiJson<Role[]>("/admin/role")
+    return fetchApiJson<Role[]>("/admin/role/list")
   },
 
   async getUserDetail(id: string): Promise<ApiResponse<AdminUser>> {
-    return fetchApiJson<AdminUser>(`/admin/user/${id}`)
+    return fetchApiJson<AdminUser>(`/admin/user/get/${id}`)
   },
 }

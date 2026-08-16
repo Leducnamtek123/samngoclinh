@@ -38,7 +38,11 @@ export const ProfileContractsTab = ({
       ) : (
         <div className="space-y-4">
           {contractsData.map((contract: any) => {
-            const isSigned = (contract.status || '').toLowerCase() === 'signed' || contract.signedAt;
+            const status = (contract.status || '').toLowerCase();
+            const isSigned = status === 'signed' || Boolean(contract.signedAt);
+            const isDraft = status === 'draft' || status === 'pending_issue';
+            const isPendingSign = status === 'pending' || status === 'pending_signature';
+
             const createdAtStr = contract.createdAt
               ? new Date(contract.createdAt).toLocaleDateString('vi-VN')
               : '—';
@@ -59,19 +63,23 @@ export const ProfileContractsTab = ({
                     </span>
                     {isSigned ? (
                       <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-none font-bold text-xs">
-                        ✓ Đã ký kết
+                        ✓ Đã ký & Có hiệu lực
                       </Badge>
-                    ) : (contract.status || '').toLowerCase() === 'expired' ? (
+                    ) : isDraft ? (
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-none font-bold text-xs">
+                        🕒 Đang soạn thảo / Chờ BQL phát hành
+                      </Badge>
+                    ) : status === 'expired' ? (
                       <Badge variant="secondary" className="bg-rose-100 text-rose-800 border-none font-bold text-xs">
                         ⚠️ Đã hết hạn
                       </Badge>
-                    ) : (contract.status || '').toLowerCase() === 'cancelled' ? (
+                    ) : status === 'cancelled' ? (
                       <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-none font-bold text-xs">
                         ✕ Đã hủy
                       </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-none font-bold text-xs animate-pulse">
-                        ✍️ Chờ ký số
+                        ✍️ Chờ bạn ký số
                       </Badge>
                     )}
                   </div>
@@ -88,11 +96,15 @@ export const ProfileContractsTab = ({
                 <div className="flex-shrink-0">
                   <Button
                     type="button"
-                    variant={isSigned ? 'outline' : 'default'}
-                    className={!isSigned ? 'bg-emerald-700 hover:bg-emerald-800 text-white font-bold' : ''}
+                    variant={isPendingSign ? 'default' : 'outline'}
+                    className={isPendingSign ? 'bg-emerald-700 hover:bg-emerald-800 text-white font-bold shadow-xs' : ''}
                     onClick={() => onOpenContractModal(contract.id)}
                   >
-                    {isSigned ? 'Xem chi tiết' : 'Ký điện tử ngay'}
+                    {isSigned
+                      ? 'Xem chi tiết'
+                      : isDraft
+                      ? 'Xem bản nháp'
+                      : 'Ký điện tử ngay'}
                   </Button>
                 </div>
               </div>

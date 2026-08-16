@@ -44,16 +44,20 @@ export default async function ContractsPage({
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
 
-    const res = await fetchApi(`/user/e-contract?${queryParams.toString()}`)
+    const res = await fetchApi(`/admin/contracts?${queryParams.toString()}`)
     const payload = await res.json()
     if (res.status >= 400) {
       errorMsg = payload?.message || "Không thể tải danh sách hợp đồng"
     } else {
-      contracts = Array.isArray(payload.data) ? payload.data : []
-      metadata = payload.metadata || null
+      contracts = Array.isArray(payload.data)
+        ? payload.data
+        : Array.isArray(payload.data?.items)
+        ? payload.data.items
+        : []
+      metadata = payload.metadata || payload.data?.metadata || null
     }
 
-    const usersRes = await fetchApi("/admin/user?perPage=100")
+    const usersRes = await fetchApi("/admin/user/list?perPage=100")
     const usersPayload = await usersRes.json()
     if (usersRes.status < 400) {
       users = Array.isArray(usersPayload.data)

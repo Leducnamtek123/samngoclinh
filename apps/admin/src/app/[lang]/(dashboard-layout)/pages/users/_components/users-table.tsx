@@ -78,12 +78,21 @@ export function UsersTable({
     },
     {
       header: t("users.fields.status"),
-      cell: (user) => (
-        <StatusBadge
-          status={user.status}
-          label={t(`users.status.${user.status.toLowerCase()}`)}
-        />
-      ),
+      cell: (user) => {
+        const rawStatus = (user.status || "active").toLowerCase()
+        const translated = t(`users.status.${rawStatus}`)
+        const displayLabel = translated && !translated.startsWith("users.status.")
+          ? translated
+          : rawStatus === "inactive"
+          ? "Chưa kích hoạt"
+          : rawStatus === "active"
+          ? "Hoạt động"
+          : rawStatus === "blocked"
+          ? "Đã khóa"
+          : rawStatus
+
+        return <StatusBadge status={rawStatus} label={displayLabel} />
+      },
     },
     {
       header: t("users.fields.createdAt"),

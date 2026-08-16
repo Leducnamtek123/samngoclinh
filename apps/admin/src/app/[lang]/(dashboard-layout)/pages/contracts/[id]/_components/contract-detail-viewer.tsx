@@ -33,7 +33,7 @@ export function ContractDetailViewer({
               title="Văn bản hợp đồng"
               srcDoc={renderedContractHtml}
               className="w-full h-[850px] min-h-[600px] border-0 bg-white"
-              sandbox="allow-same-origin"
+              sandbox="allow-same-origin allow-scripts"
             />
           </div>
         )}

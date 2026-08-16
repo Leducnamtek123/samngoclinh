@@ -19,6 +19,7 @@ import {
   ToastCard,
 } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -280,14 +281,12 @@ export function BedFormDialog({
               >
                 Ngày tưới nước cuối
               </Label>
-              <Input
-                id="lastWateredAt"
-                type="date"
+              <DatePicker
                 value={formData.lastWateredAt}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastWateredAt: e.target.value })
+                onChangeStr={(val) =>
+                  setFormData({ ...formData, lastWateredAt: val })
                 }
-                className="text-xs"
+                placeholder="Chọn ngày"
               />
             </div>
 
@@ -298,14 +297,12 @@ export function BedFormDialog({
               >
                 Ngày bón phân cuối
               </Label>
-              <Input
-                id="lastFertilizedAt"
-                type="date"
+              <DatePicker
                 value={formData.lastFertilizedAt}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastFertilizedAt: e.target.value })
+                onChangeStr={(val) =>
+                  setFormData({ ...formData, lastFertilizedAt: val })
                 }
-                className="text-xs"
+                placeholder="Chọn ngày"
               />
             </div>
           </div>

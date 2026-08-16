@@ -841,19 +841,40 @@ export const ProfileKycTab = ({
     }
 
     try {
-      const formData = new FormData();
-      formData.append('documentType', documentType);
-      formData.append('idCardNumber', cleanId);
-      formData.append('fullName', fullName.trim());
+      const payload: any = {
+        documentType,
+        idCardNumber: cleanId,
+        fullName: fullName.trim(),
+        frontBase64: frontImagePreview || undefined,
+        backBase64: backImagePreview || undefined,
+      };
 
-      if (frontFileRef.current) {
-        formData.append('frontImage', frontFileRef.current);
-      }
-      if (backFileRef.current) {
-        formData.append('backImage', backFileRef.current);
-      }
+      if (frontImagePreview?.startsWith('data:') && (!activeOption.isBackRequired || backImagePreview?.startsWith('data:'))) {
+        await submitKycMutation.mutateAsync(payload);
+      } else if (frontFileRef.current || backFileRef.current) {
+        const formData = new FormData();
+        formData.append('documentType', documentType);
+        formData.append('idCardNumber', cleanId);
+        formData.append('fullName', fullName.trim());
 
-      await submitKycMutation.mutateAsync(formData);
+        if (frontFileRef.current) {
+          formData.append('front', frontFileRef.current);
+          formData.append('frontImage', frontFileRef.current);
+        } else if (frontImagePreview) {
+          formData.append('frontBase64', frontImagePreview);
+        }
+
+        if (backFileRef.current) {
+          formData.append('back', backFileRef.current);
+          formData.append('backImage', backFileRef.current);
+        } else if (backImagePreview) {
+          formData.append('backBase64', backImagePreview);
+        }
+
+        await submitKycMutation.mutateAsync(formData);
+      } else {
+        await submitKycMutation.mutateAsync(payload);
+      }
 
       toast.success('Gửi hồ sơ xác thực eKYC thành công! Hệ thống đang tiến hành đối soát.');
       setIsReuploadMode(false);

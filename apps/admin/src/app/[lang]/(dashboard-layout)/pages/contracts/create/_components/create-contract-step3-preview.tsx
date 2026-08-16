@@ -197,7 +197,7 @@ export function CreateContractStep3Preview({
                 title="Xem trước văn bản"
                 srcDoc={renderedPreviewHtml}
                 className="w-full h-[650px] min-h-[500px] border-0 bg-white"
-                sandbox="allow-same-origin"
+                sandbox="allow-same-origin allow-scripts"
               />
             </div>
           </div>

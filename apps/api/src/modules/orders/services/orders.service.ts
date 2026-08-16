@@ -565,6 +565,10 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         pointsRedeemed: pointsToRedeem,
                         vat,
                         customerEmail: dto.customerEmail ?? null,
+                        identityNumber: dto.identityNumber ?? null,
+                        legalName: dto.legalName ?? dto.customerName,
+                        signatureData: dto.signatureData ?? null,
+                        ...(dto.metadata || {}),
                     },
                     orderItems: {
                         create: orderItemsCreate,
@@ -1065,6 +1069,11 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                 this.logger.warn(`Could not load full HTML contract template for order ${order.code}: ${tmplErr?.message}`);
                             }
 
+                            const orderMeta = (order.metadata || {}) as any;
+                            const clientSignature = orderMeta.signatureData || null;
+                            const clientIdentityNo = orderMeta.identityNumber || identityNo;
+                            const isSignedAtCheckout = Boolean(clientSignature);
+
                             await tx.eContract.create({
                                 data: {
                                     code: contractCode,
@@ -1072,18 +1081,23 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                     orderId: order.id,
                                     title: `Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh #${order.code}`,
                                     content: contractContent,
-                                    status: 'pending',
+                                    status: 'draft',
+                                    signedAt: null,
+                                    signatureUrl: clientSignature || null,
                                     contractValue: order.total,
                                     paymentStatus: 'paid',
                                     expiredAt,
                                     contractType: 'purchase_and_care',
                                     partyA: 'Công ty Cổ phần Sâm Ngọc Linh',
-                                    partyB: `${customerName} (SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
+                                    partyB: `${customerName} (CCCD: ${clientIdentityNo}, SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
                                     metadata: {
                                         orderId: order.id,
                                         orderCode: order.code,
                                         totalPlants: totalPlantsPurchased,
                                         createdAt: new Date().toISOString(),
+                                        customerSignature: clientSignature || null,
+                                        checkoutSigned: isSignedAtCheckout,
+                                        identityNumber: clientIdentityNo,
                                     } as Prisma.InputJsonValue,
                                     items: {
                                         create: allocatedTrees.map(t => ({

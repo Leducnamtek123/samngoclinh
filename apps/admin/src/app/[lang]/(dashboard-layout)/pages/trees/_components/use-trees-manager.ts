@@ -49,9 +49,9 @@ export function useTreesManager({
   useEffect(() => {
     async function loadUsers() {
       try {
-        const res = await fetchApi("/admin/user?perPage=100")
-        const payload = await res.json()
-        if (res.status < 400) {
+        const res = await fetchApi("/admin/user/list?perPage=100")
+        if (res.ok) {
+          const payload = await res.json()
           const list = Array.isArray(payload.data)
             ? payload.data
             : payload.data?.items || []

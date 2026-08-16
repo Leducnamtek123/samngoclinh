@@ -23,6 +23,7 @@
   },
   "status": {
     "active": "Hoạt động",
+    "inactive": "Chưa kích hoạt",
     "blocked": "Đã khóa",
     "pending": "Chờ xử lý",
     "verified": "Đã xác minh",

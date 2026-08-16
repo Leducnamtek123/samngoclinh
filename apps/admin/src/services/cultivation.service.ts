@@ -55,6 +55,11 @@ export const cultivationService = {
     if (params?.gardenId && params.gardenId !== "all") query.append("gardenId", params.gardenId)
     if (params?.bedId && params.bedId !== "all") query.append("bedId", params.bedId)
 
+    try {
+      const res = await fetchApiJson<Tree[]>(`/admin/cultivation/trees?${query.toString()}`)
+      if (res?.data) return res
+    } catch {}
+
     return fetchApiJson<Tree[]>(`/user/cultivation/trees/paginated?${query.toString()}`)
   },
 

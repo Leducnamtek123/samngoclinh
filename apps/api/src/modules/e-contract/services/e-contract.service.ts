@@ -248,7 +248,7 @@ export class EContractService implements IEContractService {
             content: contract.content ?? undefined,
             terms: contract.terms ?? undefined,
             signedAt: signedAtIso,
-            expiredAt: contract.expiredAt.toISOString(),
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
             signatureDataUrl: signatureUrl,
             clientIp: clientIp || '127.0.0.1',
             items: (contract as any).items?.map((it: any) => ({
@@ -424,8 +424,8 @@ export class EContractService implements IEContractService {
             contractValue: contract.contractValue,
             content: contract.content ?? undefined,
             terms: contract.terms ?? undefined,
-            signedAt: (contract.signedAt ?? contract.createdAt).toISOString(),
-            expiredAt: contract.expiredAt.toISOString(),
+            signedAt: (contract.signedAt ? (contract.signedAt instanceof Date ? contract.signedAt : new Date(contract.signedAt)) : (contract.createdAt instanceof Date ? contract.createdAt : new Date(contract.createdAt))).toISOString(),
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
             signatureDataUrl: contract.signatureUrl ?? undefined,
             clientIp: ((contract.metadata as Record<string, unknown>)?.signedIp as string) || '127.0.0.1',
         });
@@ -472,9 +472,9 @@ export class EContractService implements IEContractService {
             isEkycVerified: Boolean(meta.ekycVerified ?? userAcc?.isVerified),
             treeCode: contract.treeCode ?? undefined,
             contractValue: contract.contractValue,
-            signedAt: contract.signedAt ? contract.signedAt.toISOString() : undefined,
-            expiredAt: contract.expiredAt.toISOString(),
-            effectiveExpiredAt: effectiveExpiredAt.toISOString(),
+            signedAt: contract.signedAt ? (contract.signedAt instanceof Date ? contract.signedAt.toISOString() : new Date(contract.signedAt).toISOString()) : undefined,
+            expiredAt: contract.expiredAt instanceof Date ? contract.expiredAt.toISOString() : new Date(contract.expiredAt).toISOString(),
+            effectiveExpiredAt: effectiveExpiredAt instanceof Date ? effectiveExpiredAt.toISOString() : new Date(effectiveExpiredAt).toISOString(),
             documentHash: (meta.documentHash as string) || undefined,
             qrUrl: (meta.qrUrl as string) || undefined,
             pdfDownloadUrl: `/api/public/contracts/${contract.code}/pdf`,
@@ -896,7 +896,15 @@ export class EContractService implements IEContractService {
             throw new BadRequestException('Signed contract is immutable and cannot be modified.');
         }
 
-        const updated = await this.eContractRepository.updateContract(id, payload);
+        const mergedMetadata = {
+            ...((existing.metadata as Record<string, unknown>) || {}),
+            ...(payload.metadata || {}),
+        };
+
+        const updated = await this.eContractRepository.updateContract(id, {
+            ...payload,
+            metadata: mergedMetadata,
+        });
         return {
             data: updated,
         };
@@ -979,6 +987,61 @@ export class EContractService implements IEContractService {
                 count: notified.length,
                 notified,
             },
+        };
+    }
+
+    async issueContract(id: string): Promise<IResponseReturn<EContract>> {
+        const contract = await this.eContractRepository.getContractById(id);
+        if (!contract) {
+            throw new NotFoundException('Contract not found');
+        }
+
+        if (contract.status === 'signed') {
+            throw new BadRequestException('Hợp đồng đã được ký kết.');
+        }
+
+        const updated = await this.eContractRepository.updateStatus(id, 'pending');
+
+        await this.logActivity(
+            contract.userId,
+            EnumActivityLogAction.contractCreated,
+            `Hợp đồng điện tử ${contract.code} đã được Ban Quản Trị phát hành và gửi cho khách hàng ký số`,
+            { contractId: contract.id, code: contract.code }
+        );
+
+        const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
+        const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
+
+        const userAcc = await this.databaseService.user.findUnique({
+            where: { id: contract.userId },
+            select: { email: true, name: true },
+        });
+        const userEmail = userAcc?.email || (contract.metadata as any)?.customerEmail;
+        const customerName = userAcc?.name || contract.partyB || 'Quý khách';
+
+        if (userEmail && this.notificationSmtpService?.isInitialized()) {
+            try {
+                await this.notificationSmtpService.send({
+                    templateName: EnumNotificationProcess.contractCreated,
+                    sender,
+                    templateData: {
+                        customerName,
+                        contractCode: contract.code,
+                        partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
+                        partyB: contract.partyB || customerName,
+                        contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN'),
+                        expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
+                        signContractUrl: `${webUrl}/profile?tabs=contracts`,
+                    },
+                    recipients: [userEmail],
+                });
+            } catch (emailErr: any) {
+                this.logger.error(`Failed to send contract issue email for ${contract.code}: ${emailErr?.message}`);
+            }
+        }
+
+        return {
+            data: updated,
         };
     }
 

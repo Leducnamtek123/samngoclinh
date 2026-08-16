@@ -1,6 +1,7 @@
 import axios from "axios"
 import { getSession } from "next-auth/react"
 
+import { API_KEY } from "./api-key"
 import type { AxiosInstance, AxiosRequestConfig } from "axios"
 import type { ApiResponse } from "@/types/common.types"
 
@@ -9,7 +10,7 @@ const apiBaseUrl = isServer
   ? process.env.INTERNAL_API_URL || "http://localhost:3000/api"
   : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
-const apiKey = process.env.API_KEY || ""
+const apiKey = API_KEY
 
 export type { ApiResponse }
 
@@ -31,6 +32,15 @@ apiClient.interceptors.request.use(
     try {
       if (typeof window !== "undefined") {
         const session = await getSession()
+        const user = session?.user as SessionUserWithToken | undefined
+        const token = user?.accessToken
+        if (token && config.headers) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
+      } else {
+        const { getServerSession } = await import("next-auth")
+        const { authOptions } = await import("@/configs/next-auth")
+        const session = await getServerSession(authOptions)
         const user = session?.user as SessionUserWithToken | undefined
         const token = user?.accessToken
         if (token && config.headers) {

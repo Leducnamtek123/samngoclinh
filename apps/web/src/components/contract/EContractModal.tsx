@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck } from 'lucide-react';
+import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EContractSignaturePad } from './EContractSignaturePad';
@@ -136,10 +136,23 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                     </a>
                   </div>
                 </div>
+              ) : (modal.contract?.status || '').toLowerCase() === 'draft' || (modal.contract?.status || '').toLowerCase() === 'pending_issue' ? (
+                <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 rounded-2xl p-5 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold shrink-0">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Bản nháp hợp đồng đang được xử lý</h5>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                      Ban Quản Trị đang rà soát thông tin cây sâm và các điều khoản giao kết. Quý khách sẽ nhận được thông báo ký số ngay khi hợp đồng được phát hành chính thức.
+                    </p>
+                  </div>
+                </div>
               ) : (
                 <EContractSignaturePad
                   signatureType={modal.signatureType}
                   setSignatureType={modal.setSignatureType}
+                  savedSignatureUrl={modal.savedSignatureUrl}
                   typedName={modal.typedName}
                   setTypedName={modal.setTypedName}
                   errorMessage={modal.errorMessage}
@@ -166,18 +179,21 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
             Đóng
           </Button>
 
-          {!modal.isSigned && modal.contract && (
-            <Button
-              type="button"
-              onClick={modal.handleSign}
-              disabled={modal.signMutation.isPending}
-              isLoading={modal.signMutation.isPending}
-              className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary/80 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md h-auto"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Xác nhận ký điện tử</span>
-            </Button>
-          )}
+          {!modal.isSigned &&
+            modal.contract &&
+            (modal.contract.status || '').toLowerCase() !== 'draft' &&
+            (modal.contract.status || '').toLowerCase() !== 'pending_issue' && (
+              <Button
+                type="button"
+                onClick={modal.handleSign}
+                disabled={modal.signMutation.isPending}
+                isLoading={modal.signMutation.isPending}
+                className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary/80 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md h-auto"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Xác nhận ký điện tử</span>
+              </Button>
+            )}
         </div>
       </div>
     </div>

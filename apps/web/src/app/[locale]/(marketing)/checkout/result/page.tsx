@@ -66,6 +66,9 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
 
   let orderStatus: string | null = null;
   let total = 0;
+  let hasContract = false;
+  let contractCode: string | null = null;
+
   if (order) {
     try {
       const res = await fetchApi(`/public/payment/sepay/verify/${order}`);
@@ -73,6 +76,8 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
         const json = await res.json();
         orderStatus = json.data?.status ?? null;
         total = json.data?.total ?? 0;
+        hasContract = Boolean(json.data?.hasContract);
+        contractCode = json.data?.contractCode ?? null;
       }
     } catch (error) {
       console.error('Error verifying payment result:', error);
@@ -120,20 +125,31 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
         ) : null}
 
         {view === VIEWS.success && (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left space-y-2">
-            <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-              <span>📜 Hợp đồng điện tử đã khởi tạo</span>
+          hasContract ? (
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left space-y-2.5">
+              <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                <span>📜 Hợp đồng điện tử đã được ký kết & kích hoạt</span>
+              </div>
+              <p className="text-xs text-emerald-700 leading-relaxed">
+                Hợp đồng ủy quyền chăm sóc & sở hữu cây sâm {contractCode ? `(#${contractCode}) ` : ''}của bạn đã được ký kết tự động bằng chữ ký số và có đầy đủ giá trị pháp lý.
+              </p>
+              <Link
+                className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-emerald-700 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-800"
+                href={`/${locale}/profile?tab=contracts`}
+              >
+                📄 Xem & Quản Lý Hợp Đồng
+              </Link>
             </div>
-            <p className="text-xs text-emerald-700 leading-relaxed">
-              Hợp đồng ủy quyền chăm sóc & sở hữu cây sâm đã được tạo tự động. Quý khách vui lòng thực hiện ký số để kích hoạt bảo trợ.
-            </p>
-            <Link
-              className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
-              href={`/${locale}/profile?tab=contracts`}
-            >
-              ✍️ Ký Hợp Đồng Điện Tử Ngay
-            </Link>
-          </div>
+          ) : (
+            <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-left space-y-1.5">
+              <div className="flex items-center gap-2 text-gray-800 font-bold text-sm">
+                <span>📦 Đơn hàng đang được đóng gói giao hàng</span>
+              </div>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Đơn hàng sản phẩm của bạn đang được chuẩn bị và sẽ sớm được chuyển phát nhanh đến địa chỉ nhận hàng.
+              </p>
+            </div>
+          )
         )}
 
         <div className="space-y-2 pt-2">

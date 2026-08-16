@@ -11,6 +11,8 @@ import {
   FileDown,
   Bell,
   Trash2,
+  Send,
+  FileText,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +28,9 @@ interface ContractDetailHeaderProps {
   traceUrl: string
   pdfDownloadUrl: string
   isSendingReminder: boolean
+  isIssuing?: boolean
+  onEditClick?: () => void
+  onIssue?: () => void
   onSendReminder: () => void
   onDeleteClick: () => void
 }
@@ -39,9 +44,14 @@ export function ContractDetailHeader({
   traceUrl,
   pdfDownloadUrl,
   isSendingReminder,
+  isIssuing,
+  onEditClick,
+  onIssue,
   onSendReminder,
   onDeleteClick,
 }: ContractDetailHeaderProps) {
+  const isDraft = contract.status === "draft" || contract.status === "pending_issue"
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
       <div className="space-y-1">
@@ -58,6 +68,10 @@ export function ContractDetailHeader({
           {isSigned ? (
             <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1 font-semibold px-2.5 py-0.5">
               <CheckCircle2 className="w-3.5 h-3.5" /> Đã ký
+            </Badge>
+          ) : isDraft ? (
+            <Badge className="bg-purple-600 hover:bg-purple-700 text-white gap-1 font-semibold px-2.5 py-0.5">
+              <FileText className="w-3.5 h-3.5" /> Chờ BQL phát hành
             </Badge>
           ) : contract.status === "pending" ? (
             <Badge className="bg-amber-500 hover:bg-amber-600 text-white gap-1 font-semibold px-2.5 py-0.5">
@@ -84,6 +98,28 @@ export function ContractDetailHeader({
 
       {/* Action Buttons based on status */}
       <div className="flex flex-wrap items-center gap-2">
+        {!isSigned && onEditClick && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onEditClick}
+            className="gap-1.5 text-foreground border-border hover:bg-muted font-semibold cursor-pointer shadow-2xs"
+          >
+            <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Chỉnh sửa thông tin & HĐ
+          </Button>
+        )}
+
+        {isDraft && onIssue && (
+          <Button
+            size="sm"
+            onClick={onIssue}
+            disabled={isIssuing}
+            className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs cursor-pointer"
+          >
+            <Send className="w-4 h-4" /> {isIssuing ? "Đang phát hành..." : "Phát hành & Gửi khách ký"}
+          </Button>
+        )}
+
         <a
           href={traceUrl}
           target="_blank"
