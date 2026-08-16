@@ -22,6 +22,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
+import type { UserProfileData } from "../../page"
+
 const activityLogs = [
   {
     id: "log-1",
@@ -87,12 +89,11 @@ const managedGardens = [
   },
 ]
 
-export function ProfileContent({ user }: { user?: any }) {
-  const profileUser = user || {}
-  const name = profileUser.name || "Quản trị viên Hệ thống"
-  const email = profileUser.email || "admin@samngoclinh.com"
-  const phone = profileUser.phoneNumber || "0967 234 234"
-  const role = profileUser.role || "SUPER_ADMIN"
+export function ProfileContent({ user }: { user?: UserProfileData | null }) {
+  const name = user?.name || "Quản trị viên Hệ thống"
+  const email = user?.email || "admin@samngoclinh.com"
+  const phone = user?.phone || "0967 234 234"
+  const role = user?.role || "SUPER_ADMIN"
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6">

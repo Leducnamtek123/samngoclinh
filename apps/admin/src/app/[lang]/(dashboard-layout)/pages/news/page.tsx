@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { Article, PaginationMeta } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -9,21 +10,7 @@ import { NewsManager } from "./_components/news-manager"
 
 export const metadata: Metadata = {
   title: "Quản lý Tin tức | Sâm Ngọc Linh Admin",
-  description:
-    "Quản lý các bài viết tin tức, hướng dẫn và kiến thức cho dự án sâm Ngọc Linh",
-}
-
-interface Article {
-  id: string
-  slug: string
-  title: string
-  category: string
-  summary: string
-  body?: string
-  status: string
-  sortOrder?: number
-  coverImage?: string
-  createdAt: string
+  description: "Quản trị các bài viết, tin tức và hoạt động cộng đồng",
 }
 
 interface NewsPageProps {
@@ -43,10 +30,10 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   const page = resolvedSearchParams.page || "1"
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
-  const status = resolvedSearchParams.status || "" // This maps to category filter on frontend, status on backend
+  const status = resolvedSearchParams.status || ""
 
   let articles: Article[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
@@ -54,7 +41,7 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     queryParams.append("page", page)
     queryParams.append("perPage", perPage)
     if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("category", status) // Use category filtering on the backend
+    if (status && status !== "all") queryParams.append("category", status)
 
     const res = await fetchApi(
       `/public/content/articles?${queryParams.toString()}`
@@ -63,18 +50,19 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     if (res.status >= 400) {
       errorMsg = payload?.message || "Failed to load articles"
     } else {
-      articles = Array.isArray(payload.data)
-        ? payload.data
-        : payload.data?.items || []
+      articles = Array.isArray(payload.data?.items)
+        ? payload.data.items
+        : payload.data || []
       metadata = payload.metadata || null
     }
-  } catch (e) {
-    console.error("Error fetching articles on server:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    console.error("Error fetching articles:", e)
+    errorMsg = message
   }
 
   return (
-    <div className="container p-4 md:p-6 mx-auto space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-6">
       <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <NewsManager
           initialArticles={articles}

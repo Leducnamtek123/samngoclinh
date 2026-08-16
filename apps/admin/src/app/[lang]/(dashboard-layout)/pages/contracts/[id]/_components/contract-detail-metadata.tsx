@@ -6,10 +6,12 @@ import { ContractDetailTermsCard } from "./contract-detail-terms-card"
 import { ContractDetailAmendmentsCard } from "./contract-detail-amendments-card"
 import { ContractDetailVerificationCard } from "./contract-detail-verification-card"
 
+import type { AdminUser, EContract } from "@/types"
+
 interface ContractDetailMetadataProps {
-  contract: any
-  user: any
-  meta: any
+  contract: EContract
+  user: AdminUser | null
+  meta: Record<string, unknown>
   isEkyc: boolean
   isSigned: boolean
   isOrderSource: boolean

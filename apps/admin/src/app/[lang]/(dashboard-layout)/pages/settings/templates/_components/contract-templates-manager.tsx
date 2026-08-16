@@ -25,6 +25,13 @@ export interface ContractTemplateItem {
   availablePlaceholders: { code: string; label: string }[]
 }
 
+export interface TemplateFormState {
+  htmlContent: string
+  version: string
+  title: string
+  description: string
+}
+
 const getRenderedPreviewHtml = (rawHtml: string) => {
   if (!rawHtml)
     return "<div style='font-family:sans-serif;padding:20px;color:#888;text-align:center;'>Chưa có nội dung xem trước</div>"
@@ -53,7 +60,7 @@ export function ContractTemplatesManager() {
     "hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
   )
   const [currentTemplate, setCurrentTemplate] = useState<ContractTemplateItem | null>(null)
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<TemplateFormState>({
     htmlContent: "",
     version: "2.0.0",
     title: "",
@@ -102,7 +109,7 @@ export function ContractTemplatesManager() {
           text: payload.message || "Không thể tải danh sách mẫu.",
         })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error loading templates:", e)
       setStatusMessage({
         type: "error",
@@ -169,7 +176,7 @@ export function ContractTemplatesManager() {
           text: payload.message || "Lỗi khi cập nhật mẫu.",
         })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error saving template:", e)
       setStatusMessage({
         type: "error",

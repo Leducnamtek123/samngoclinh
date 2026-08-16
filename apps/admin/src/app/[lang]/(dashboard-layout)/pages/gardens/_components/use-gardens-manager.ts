@@ -28,7 +28,7 @@ interface Garden {
   managerPhone?: string
   establishedAt?: string
   maxBeds?: number
-  metadata?: any
+  metadata?: Record<string, unknown> | null
 }
 
 interface UseGardensManagerProps {

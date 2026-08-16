@@ -22,10 +22,12 @@ import { ContractDetailHeader } from "./contract-detail-header"
 import { ContractDetailMetadata } from "./contract-detail-metadata"
 import { ContractDetailViewer } from "./contract-detail-viewer"
 
+import type { AdminUser, EContract } from "@/types"
+
 interface ContractDetailViewProps {
-  contract: any
-  user: any
-  lang: string
+  contract: EContract | null
+  user: AdminUser | null
+  lang?: string
   errorMsg?: string
 }
 
@@ -80,8 +82,14 @@ export function ContractDetailView({
   const renderedContractHtml = React.useMemo(() => {
     if (!contract) return ""
 
-    if (contract.content && (contract.content.includes("<!DOCTYPE") || contract.content.includes("<html") || contract.content.length > 100)) {
-      let content = contract.content
+    const contractHtml = contract.contentHtml || contract.content
+    if (
+      contractHtml &&
+      (contractHtml.includes("<!DOCTYPE") ||
+        contractHtml.includes("<html") ||
+        contractHtml.length > 100)
+    ) {
+      let content = contractHtml
       if (contract.signatureUrl) {
         content = content.replace(
           /Chờ khách hàng ký|Chờ ký/g,
@@ -93,21 +101,23 @@ export function ContractDetailView({
 
     if (!templateHtml) return ""
 
-    const contractMeta = (contract.metadata || {}) as Record<string, any>
-    const customerName = user?.name || contract.partyB || "Khách hàng"
-    const cccd = user?.identityNumber || user?.cccd || contractMeta.cccd || "Đã xác thực eKYC"
-    const address = user?.address || contractMeta.address || "Hải Châu, TP. Đà Nẵng"
-    const phone = user?.mobileNumbers?.[0]?.number || user?.phone || contractMeta.phone || "—"
-    const email = user?.email || contractMeta.email || "—"
-    const contractCode = contract.code || "HĐ-SNL/2026/01"
-    const treeCount = String(contract.items?.length || contractMeta.totalPlants || 1)
+    const contractMeta = (contract.metadata || {}) as Record<string, unknown>
+    const customerName = user?.name || contract.customerName || contract.userName || "Khách hàng"
+    const cccd = user?.identityNumber || user?.cccd || (contractMeta.cccd as string) || "Đã xác thực eKYC"
+    const address = user?.address || (contractMeta.address as string) || "Hải Châu, TP. Đà Nẵng"
+    const phone = user?.mobileNumbers?.[0]?.number || user?.phone || user?.phoneNumber || (contractMeta.phone as string) || "—"
+    const email = user?.email || (contractMeta.email as string) || "—"
+    const contractCode = contract.code || contract.contractCode || contract.contractNumber || "HĐ-SNL/2026/01"
+    const treeCount = String(contract.items?.length || (contractMeta.totalPlants as number) || 1)
     const treeCountWords = `${treeCount} cây sâm`
-    const totalVal = formatVND(contract.contractValue || 0)
-    const careFee = contractMeta.careFee ? formatVND(contractMeta.careFee) : formatVND(Math.round((contract.contractValue || 0) * 0.1))
+    const totalVal = formatVND(contract.totalValue || contract.contractValue || 0)
+    const careFee = contractMeta.careFee
+      ? formatVND(contractMeta.careFee as number)
+      : formatVND(Math.round((contract.totalValue || contract.contractValue || 0) * 0.1))
     const signDate = contract.signedAt
       ? formatDateVi(contract.signedAt)
-      : formatDateVi(contract.createdAt)
-    const expireDate = formatDateVi(contract.expiredAt)
+      : formatDateVi(contract.createdAt || "")
+    const expireDate = formatDateVi(contract.expiresAt || contract.expiredAt || "")
 
     let result = templateHtml
       .replace(/\{\{TEN_KHACH_HANG\}\}/g, customerName)
@@ -150,16 +160,24 @@ export function ContractDetailView({
     )
   }
 
-  const meta = (contract.metadata || {}) as Record<string, any>
-  const orderCode = meta.orderCode || (contract.code?.startsWith("CTR-") ? contract.code.replace("CTR-", "ORD-") : null)
-  const isOrderSource = Boolean(meta.orderId || meta.orderCode || contract.contractType === "purchase_and_care")
+  const meta = (contract.metadata || {}) as Record<string, unknown>
+  const contractCode = contract.code || contract.contractCode || contract.contractNumber || ""
+  const orderCode =
+    (meta.orderCode as string) ||
+    (contractCode.startsWith("CTR-") ? contractCode.replace("CTR-", "ORD-") : null)
+  const isOrderSource = Boolean(
+    meta.orderId || meta.orderCode || contract.contractType === "purchase_and_care"
+  )
   const isSigned = contract.status === "signed"
   const isEkyc = Boolean(user?.isVerified || meta.ekycVerified)
-  const documentHash = meta.documentHash || "SHA256:d8a9f4e2b1c78e39021fa4b75c829103e2"
+  const documentHash =
+    (meta.documentHash as string) ||
+    contract.hash ||
+    "SHA256:d8a9f4e2b1c78e39021fa4b75c829103e2"
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
   const webUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
-  const pdfDownloadUrl = `${apiUrl}/public/contracts/${contract.code}/pdf`
-  const traceUrl = `${webUrl}/trace/contract/${contract.code}`
+  const pdfDownloadUrl = `${apiUrl}/public/contracts/${contractCode}/pdf`
+  const traceUrl = `${webUrl}/trace/contract/${contractCode}`
 
   const handleCopyHash = () => {
     navigator.clipboard.writeText(documentHash)
@@ -206,10 +224,10 @@ export function ContractDetailView({
     <div className="space-y-6 pb-12">
       <ContractDetailHeader
         contract={contract}
-        lang={lang}
+        lang={lang || "vi"}
         isSigned={isSigned}
         isOrderSource={isOrderSource}
-        orderCode={orderCode}
+        orderCode={orderCode || undefined}
         traceUrl={traceUrl}
         pdfDownloadUrl={pdfDownloadUrl}
         isSendingReminder={isSendingReminder}
@@ -248,7 +266,7 @@ export function ContractDetailView({
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa hợp đồng này?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này sẽ xóa vĩnh viễn hợp đồng <strong>{contract.code}</strong> khỏi cơ sở dữ liệu. Thao tác này không thể hoàn tác.
+              Hành động này sẽ xóa vĩnh viễn hợp đồng <strong>{contractCode}</strong> khỏi cơ sở dữ liệu. Thao tác này không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

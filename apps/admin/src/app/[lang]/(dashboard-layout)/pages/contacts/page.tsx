@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { ContactRequest, PaginationMeta } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -34,8 +35,8 @@ export default async function ContactsPage({
   const search = resolvedSearchParams.search || ""
   const isRead = resolvedSearchParams.isRead || ""
 
-  let contacts: any[] = []
-  let metadata: any = null
+  let contacts: ContactRequest[] = []
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
@@ -56,22 +57,15 @@ export default async function ContactsPage({
         : payload.data?.items || []
       metadata = payload.metadata || null
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Lỗi khi kết nối máy chủ"
     console.error("Error loading contacts page data:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (
-    <div className="container p-4 md:p-6 mx-auto space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý Liên hệ</h1>
-        <p className="text-muted-foreground">
-          Duyệt danh sách và chi tiết các yêu cầu liên hệ, tin nhắn từ khách
-          hàng gửi về hệ thống.
-        </p>
-      </div>
-
-      <Suspense fallback={<TableSkeleton cols={6} rows={5} />}>
+    <div className="container mx-auto p-4 md:p-6">
+      <Suspense fallback={<TableSkeleton cols={5} rows={5} />}>
         <ContactsTable
           initialContacts={contacts}
           metadata={metadata}

@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchApi } from "@/lib/api"
+import type { AdminUser, Tree } from "@/types"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { CreateContractWizard } from "./_components/create-contract-wizard"
 
@@ -20,8 +21,8 @@ export default async function CreateContractPage({
 }: CreateContractPageProps) {
   const { lang } = await params
 
-  let users: any[] = []
-  let trees: any[] = []
+  let users: AdminUser[] = []
+  let trees: Tree[] = []
 
   try {
     const usersRes = await fetchApi("/admin/user/list?page=1&perPage=500")
@@ -35,7 +36,7 @@ export default async function CreateContractPage({
     if (treesRes.status < 400) {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Error loading create contract page data:", e)
   }
 

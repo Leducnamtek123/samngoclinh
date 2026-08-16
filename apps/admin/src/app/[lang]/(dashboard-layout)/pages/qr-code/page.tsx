@@ -85,7 +85,7 @@ export default function QrCodeTraceabilityPage() {
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<any>(
+  } = useApiQuery<TreeItem[] | { items?: TreeItem[]; data?: TreeItem[] }>(
     ["trees-traceability", page],
     `/admin/cultivation/trees?page=${page}&perPage=${perPage}`
   )
@@ -93,7 +93,9 @@ export default function QrCodeTraceabilityPage() {
   const rawData = response?.data
   const treesList: TreeItem[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || (rawData as any)?.data || []
+    : (rawData as { items?: TreeItem[]; data?: TreeItem[] })?.items ||
+      (rawData as { items?: TreeItem[]; data?: TreeItem[] })?.data ||
+      []
   const metadata = response?.metadata || null
 
   const handleSearch = (e: React.FormEvent) => {

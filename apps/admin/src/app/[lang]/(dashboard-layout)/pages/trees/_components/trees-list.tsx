@@ -3,6 +3,7 @@
 import { Pencil, Trash2 } from "lucide-react"
 
 import type { ColumnDef } from "@/components/shared/data-table"
+import type { PaginationMeta, Tree } from "@/types"
 
 import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
@@ -10,55 +11,35 @@ import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
 
-interface Tree {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  quantity: number
-  status: string
-  bedCode?: string
-  ownerUserId?: string
-  carePackageCode?: string
-  carePackageExpiredAt?: string
-  protectionPackageCode?: string
-  protectionPackageExpiredAt?: string
-  plantedAt?: string
-  healthStatus?: string
-  lastCareDate?: string
-  nextCareDate?: string
-  expectedHarvestAt?: string
-  images?: string[]
-  priceBought?: number
-  metadata?: any
-}
-
 interface TreesListProps {
-  filteredTrees: Tree[]
-  searchQuery: string
-  onClearSearch: () => void
-  onOpenCreate: () => void
+  trees: Tree[]
+  selectedTreeIdsSet?: Set<string>
+  onToggleSelect?: (id: string) => void
+  onToggleAll?: () => void
   onOpenEdit: (tree: Tree) => void
   onDelete: (id: string) => void
-  getOwnerName: (userId: string | undefined) => string
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
-  handlePageChange: (page: number) => void
+  onBulkDelete?: () => void
+  deletingId?: string | null
+  searchVal?: string
+  onClearSearch?: () => void
+  onOpenCreate?: () => void
+  metadata?: PaginationMeta | null
+  onPageChange?: (page: number) => void
 }
 
 export function TreesList({
-  filteredTrees,
+  trees,
+  selectedTreeIdsSet,
+  onToggleSelect,
+  onToggleAll,
   onOpenEdit,
   onDelete,
-  getOwnerName,
+  onBulkDelete,
+  searchVal,
+  onClearSearch,
+  onOpenCreate,
   metadata,
-  handlePageChange,
+  onPageChange,
 }: TreesListProps) {
   const { t } = useTranslation()
 
@@ -72,7 +53,7 @@ export function TreesList({
       header: t("trees.fields.name"),
       cell: (tree) => (
         <span className="font-semibold text-slate-800 dark:text-slate-200">
-          {tree.name}
+          {tree.name || "Cây Sâm Ngọc Linh"}
         </span>
       ),
     },
@@ -80,9 +61,9 @@ export function TreesList({
       header: t("trees.fields.bed"),
       className: "font-mono text-xs",
       cell: (tree) =>
-        tree.bedCode ? (
+        tree.bedCode || tree.bed?.code ? (
           <Badge variant="secondary" className="font-mono text-xs">
-            {tree.bedCode}
+            {tree.bedCode || tree.bed?.code}
           </Badge>
         ) : (
           <span className="text-muted-foreground text-xs">—</span>
@@ -91,24 +72,14 @@ export function TreesList({
     {
       header: t("trees.fields.age"),
       className: "font-medium",
-      cell: (tree) => `${tree.ageYear} y`,
-    },
-    {
-      header: t("trees.fields.quantity"),
-      className: "font-semibold text-slate-700 dark:text-slate-300",
-      cell: (tree) => tree.quantity,
-    },
-    {
-      header: t("trees.fields.owner"),
-      className: "text-xs truncate max-w-[150px]",
-      cell: (tree) => getOwnerName(tree.ownerUserId),
+      cell: (tree) => `${tree.ageYears !== undefined ? tree.ageYears : 1} tuổi`,
     },
     {
       header: t("trees.fields.healthStatus"),
       cell: (tree) => (
         <StatusBadge
-          status={tree.metadata?.healthStatus || "healthy"}
-          label={tree.metadata?.healthStatus || t("common.status.healthy")}
+          status={tree.healthStatus || "healthy"}
+          label={tree.healthStatus || t("common.status.healthy")}
         />
       ),
     },
@@ -118,41 +89,12 @@ export function TreesList({
       cell: (tree) =>
         tree.carePackageCode ? (
           <div className="flex flex-col gap-0.5">
-            <span className="font-semibold text-emerald-700">
+            <Badge
+              variant="outline"
+              className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] w-fit"
+            >
               {tree.carePackageCode}
-            </span>
-            {tree.carePackageExpiredAt && (
-              <span className="text-[10px] text-muted-foreground">
-                Exp:{" "}
-                {new Date(tree.carePackageExpiredAt).toLocaleDateString(
-                  "vi-VN",
-                  { timeZone: "Asia/Ho_Chi_Minh" }
-                )}
-              </span>
-            )}
-          </div>
-        ) : (
-          <span className="text-muted-foreground text-xs">—</span>
-        ),
-    },
-    {
-      header: t("trees.fields.protectionPackage"),
-      className: "text-xs",
-      cell: (tree) =>
-        tree.protectionPackageCode ? (
-          <div className="flex flex-col gap-0.5">
-            <span className="font-semibold text-indigo-700">
-              {tree.protectionPackageCode}
-            </span>
-            {tree.protectionPackageExpiredAt && (
-              <span className="text-[10px] text-muted-foreground">
-                Exp:{" "}
-                {new Date(tree.protectionPackageExpiredAt).toLocaleDateString(
-                  "vi-VN",
-                  { timeZone: "Asia/Ho_Chi_Minh" }
-                )}
-              </span>
-            )}
+            </Badge>
           </div>
         ) : (
           <span className="text-muted-foreground text-xs">—</span>
@@ -160,35 +102,29 @@ export function TreesList({
     },
     {
       header: t("trees.fields.status"),
-      cell: (tree) => {
-        const label =
-          tree.status === "active"
-            ? t("common.status.active")
-            : tree.status === "available"
-              ? t("common.status.available")
-              : tree.status === "harvested"
-                ? t("common.status.harvested")
-                : tree.status
-        return <StatusBadge status={tree.status} label={label} />
-      },
+      cell: (tree) => (
+        <Badge
+          variant="outline"
+          className={
+            tree.status === "active"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+              : "bg-slate-50 text-slate-700 border-slate-200"
+          }
+        >
+          {tree.status === "active" ? t("trees.status.active") : tree.status || "active"}
+        </Badge>
+      ),
     },
-  ]
-
-  return (
-    <DataTable
-      columns={columns}
-      data={filteredTrees}
-      metadata={metadata}
-      onPageChange={handlePageChange}
-      emptyMessage={t("common.table.noResults")}
-      rowActionsHeader={t("common.actions.actions")}
-      rowActions={(tree) => (
-        <div className="flex items-center justify-end gap-2">
+    {
+      header: t("common.table.actions"),
+      className: "text-right",
+      cell: (tree) => (
+        <div className="flex justify-end gap-1">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onOpenEdit(tree)}
-            className="h-8 w-8 text-blue-600 hover:text-blue-700"
+            className="h-8 w-8 text-slate-600 hover:text-slate-900"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -196,12 +132,22 @@ export function TreesList({
             variant="ghost"
             size="icon"
             onClick={() => onDelete(tree.id)}
-            className="h-8 w-8 text-destructive hover:text-destructive/90"
+            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      )}
+      ),
+    },
+  ]
+
+  return (
+    <DataTable
+      data={trees}
+      columns={columns}
+      metadata={metadata}
+      onPageChange={onPageChange}
+      emptyMessage="Không tìm thấy cây sâm nào phù hợp với bộ lọc hiện tại."
     />
   )
 }

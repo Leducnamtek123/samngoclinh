@@ -5,9 +5,11 @@ import { DollarSign } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+import type { EContract } from "@/types"
+
 interface ContractDetailTermsCardProps {
-  contract: any
-  meta: any
+  contract: EContract
+  meta: Record<string, unknown>
   formatVND: (val: number) => string
 }
 
@@ -16,6 +18,10 @@ export function ContractDetailTermsCard({
   meta,
   formatVND,
 }: ContractDetailTermsCardProps) {
+  const paymentStatus = contract.paymentStatus || "unpaid"
+  const expireDateStr = contract.expiresAt || contract.expiredAt
+  const effectiveExpireDateStr = contract.effectiveExpiredAt || contract.expiresAt || contract.expiredAt
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -27,7 +33,7 @@ export function ContractDetailTermsCard({
         <div className="flex justify-between items-center py-1 border-b border-border/40">
           <span className="text-muted-foreground">Giá trị hợp đồng:</span>
           <span className="font-extrabold text-primary text-base">
-            {formatVND(contract.contractValue)}
+            {formatVND(contract.totalValue || contract.contractValue || 0)}
           </span>
         </div>
         <div className="flex justify-between items-center py-1 border-b border-border/40">
@@ -35,36 +41,36 @@ export function ContractDetailTermsCard({
           <Badge
             variant="outline"
             className={
-              contract.paymentStatus === "paid"
+              paymentStatus === "paid"
                 ? "bg-emerald-50 text-emerald-700 border-emerald-300 font-semibold"
                 : "bg-amber-50 text-amber-700 border-amber-300 font-semibold"
             }
           >
-            {contract.paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
+            {paymentStatus === "paid" ? "Đã thanh toán" : "Chưa thanh toán"}
           </Badge>
         </div>
         <div className="flex justify-between items-center py-1 border-b border-border/40">
           <span className="text-muted-foreground">Mã cây sâm:</span>
           <span className="font-mono font-semibold">
-            {contract.treeCode || (meta?.totalPlants ? `${meta.totalPlants} cây sâm (Lô)` : "—")}
+            {contract.treeCode || (contract.treeCodes ? contract.treeCodes.join(", ") : null) || (meta?.totalPlants ? `${meta.totalPlants} cây sâm (Lô)` : "—")}
           </span>
         </div>
         <div className="flex justify-between items-center py-1 border-b border-border/40">
           <span className="text-muted-foreground">Ngày lập:</span>
           <span className="font-medium">
-            {new Date(contract.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+            {contract.createdAt ? new Date(contract.createdAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "—"}
           </span>
         </div>
         <div className="flex justify-between items-center py-1 border-b border-border/40">
           <span className="text-muted-foreground">Thời hạn ban đầu:</span>
           <span className="font-semibold text-slate-700 dark:text-slate-300">
-            {new Date(contract.expiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+            {expireDateStr ? new Date(expireDateStr).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "—"}
           </span>
         </div>
         <div className="flex justify-between items-center py-1">
           <span className="text-muted-foreground">Hiệu lực hiện tại:</span>
           <span className="font-bold text-emerald-600 dark:text-emerald-400">
-            {new Date(contract.effectiveExpiredAt || contract.expiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+            {effectiveExpireDateStr ? new Date(effectiveExpireDateStr).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "—"}
           </span>
         </div>
       </CardContent>

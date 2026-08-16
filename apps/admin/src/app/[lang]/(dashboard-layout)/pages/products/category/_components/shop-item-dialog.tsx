@@ -22,7 +22,7 @@ import {
   DEFAULT_UNITS,
 } from "./shop-item-schema"
 import { ShopItemFormFields } from "./shop-item-form-fields"
-import { ShopItemCropDialog } from "./shop-item-crop-dialog"
+import { ShopItemCropDialog, type Area, type CropState } from "./shop-item-crop-dialog"
 
 export type { ShopItemFormValues }
 
@@ -30,23 +30,16 @@ interface ShopItemDialogProps {
   isOpen: boolean
   onClose: () => void
   mode: "create" | "edit"
-  formData: {
-    code: string
-    name: string
-    category: string
-    unit: string
-    price: number
-    stock: number
-    status: string
-    description: string
-    imageUrl: string
-  }
-  categoryOptions: Array<{ value: string; label: string }>
-  onChange: (
+  formData: ShopItemFormValues
+  categoryOptions: { value: string; label: string }[]
+  onChange?: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void
+  onFormChange?: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void
   onSelectCategory: (val: string) => void
-  onSelectUnit: (val: string) => void
+  onSelectUnit?: (val: string) => void
   onSelectStatus: (val: string) => void
   onImageFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onSubmit: (data: ShopItemFormValues) => void
@@ -55,14 +48,9 @@ interface ShopItemDialogProps {
   uploadingImage: boolean
 
   // Cropper states
-  cropState: {
-    isOpen: boolean
-    imageSrc: string | null
-    crop: { x: number; y: number }
-    zoom: number
-  }
-  onCropStateChange: (updater: (prev: any) => any) => void
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void
+  cropState: CropState
+  onCropStateChange: (updater: (prev: CropState) => CropState) => void
+  onCropComplete: (croppedArea: Area, croppedAreaPixels: Area) => void
   onCropSave: () => void
   onCloseCrop: () => void
 }
@@ -182,7 +170,7 @@ export function ShopItemDialog({
                 dynamicCategoryOptions={dynamicCategoryOptions}
                 unitOptions={unitOptions}
                 onSelectCategory={onSelectCategory}
-                onSelectUnit={onSelectUnit}
+                onSelectUnit={onSelectUnit || (() => {})}
                 onSelectStatus={onSelectStatus}
                 onImageFileChange={onImageFileChange}
               />

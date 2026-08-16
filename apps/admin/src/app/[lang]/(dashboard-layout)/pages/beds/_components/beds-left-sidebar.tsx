@@ -12,7 +12,7 @@ import {
   Trash2,
 } from "lucide-react"
 
-import type { Bed, Garden } from "./use-beds-table"
+import type { Bed, Garden } from "@/types"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -156,17 +156,16 @@ export function BedsLeftSidebar({
         ) : (
           filteredBeds.map((bed) => {
             const isSelected = bed.code === selectedBedCode
-            const percentOccupied = bed.maxTrees
-              ? Math.min(100, Math.round((bed.treeCount / bed.maxTrees) * 100))
+            const treeCount = bed.treeCount || bed.totalTrees || 0
+            const maxTrees = bed.maxTrees || 100
+            const percentOccupied = maxTrees
+              ? Math.min(100, Math.round((treeCount / maxTrees) * 100))
               : 0
 
             const blocks = Array.from({ length: 12 }).map((_, i) => {
-              if (
-                i <
-                Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12 * 0.8)
-              )
+              if (i < Math.round((treeCount / maxTrees) * 12 * 0.8))
                 return "bg-emerald-500"
-              if (i < Math.round((bed.treeCount / (bed.maxTrees || 100)) * 12))
+              if (i < Math.round((treeCount / maxTrees) * 12))
                 return "bg-amber-500"
               return "bg-slate-100 dark:bg-slate-800"
             })

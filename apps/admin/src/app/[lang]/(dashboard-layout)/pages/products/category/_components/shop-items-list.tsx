@@ -21,18 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface ShopItem {
-  id: string
-  code: string
-  name: string
-  price: number
-  unit: string
-  category: string
-  stock?: number
-  status?: string
-  images?: string[]
-  description?: string
-}
+import type { PaginationMeta, ShopItem } from "@/types"
 
 interface ShopItemsListProps {
   filteredItems: ShopItem[]
@@ -41,14 +30,7 @@ interface ShopItemsListProps {
   openCreateDialog: () => void
   openEditDialog: (item: ShopItem) => void
   onDelete: (id: string) => void
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   handlePageChange: (page: number) => void
   formatVND: (price: number) => string
   categoryNameMap: Record<string, string>
@@ -134,7 +116,7 @@ export function ShopItemsList({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {categoryNameMap[item.category] || item.category}
+                    {item.category ? categoryNameMap[item.category] || item.category : "-"}
                   </Badge>
                 </TableCell>
                 <TableCell>{item.unit}</TableCell>

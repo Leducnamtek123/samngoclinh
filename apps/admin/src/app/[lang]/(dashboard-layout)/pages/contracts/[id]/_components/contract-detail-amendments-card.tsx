@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+import type { ContractAmendment, EContract } from "@/types"
+
 interface ContractDetailAmendmentsCardProps {
-  contract: any
+  contract: EContract
   apiUrl: string
   formatVND: (val: number) => string
   formatDateVi: (dateStr?: string | Date) => string
@@ -19,6 +21,8 @@ export function ContractDetailAmendmentsCard({
   formatVND,
   formatDateVi,
 }: ContractDetailAmendmentsCardProps) {
+  const contractCode = contract.code || contract.contractCode || contract.contractNumber || contract.id
+
   return (
     <Card className="border-emerald-200/80 dark:border-emerald-900/60">
       <CardHeader className="pb-3 bg-emerald-50/40 dark:bg-emerald-950/20 rounded-t-xl">
@@ -34,14 +38,14 @@ export function ContractDetailAmendmentsCard({
       <CardContent className="pt-3 space-y-3">
         {contract.amendments && contract.amendments.length > 0 ? (
           <div className="space-y-2.5">
-            {contract.amendments.map((amd: any) => (
+            {contract.amendments.map((amd: ContractAmendment) => (
               <div
-                key={amd.id || amd.code || amd.amendmentNumber || "amd-entry"}
+                key={amd.id || amd.amendmentNumber || "amd-entry"}
                 className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs space-y-1.5"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold font-mono text-emerald-700 dark:text-emerald-400">
-                    {amd.code}
+                    {amd.amendmentNumber || amd.title}
                   </span>
                   <Badge
                     variant="outline"
@@ -59,7 +63,7 @@ export function ContractDetailAmendmentsCard({
                     • Thời hạn:{" "}
                     <span className="font-medium text-slate-900 dark:text-white">
                       {formatDateVi(amd.previousExpiredAt)} &rarr;{" "}
-                      {formatDateVi(amd.newExpiredAt)} (+{amd.extendedMonths} tháng)
+                      {formatDateVi(amd.newExpiredAt)} {amd.extendedMonths ? `(+${amd.extendedMonths} tháng)` : ""}
                     </span>
                   </p>
                   <p>
@@ -68,9 +72,9 @@ export function ContractDetailAmendmentsCard({
                       {formatVND(amd.amendmentValue || 0)}
                     </span>
                   </p>
-                  {amd.signedAt && (
+                  {amd.createdAt && (
                     <p className="text-[11px] text-muted-foreground">
-                      • Ký lúc: {formatDateVi(amd.signedAt)}
+                      • Ngày lập: {formatDateVi(amd.createdAt)}
                     </p>
                   )}
                   {amd.documentHash && (
@@ -82,7 +86,7 @@ export function ContractDetailAmendmentsCard({
                 {amd.status === "signed" && (
                   <div className="pt-1 flex justify-end">
                     <a
-                      href={`${apiUrl}/public/contracts/${contract.code}/amendments/${amd.code}/pdf`}
+                      href={`${apiUrl}/public/contracts/${contractCode}/amendments/${amd.id}/pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

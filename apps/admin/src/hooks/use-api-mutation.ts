@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import type { ApiResponse } from "@/lib/api-client"
+import type { ApiResponse } from "@/types/common.types"
 import type {
   UseMutationOptions,
   UseMutationResult,
@@ -10,18 +10,18 @@ import { deleteApiData, postApiData, putApiData } from "@/lib/api-client"
 
 export type MutationMethod = "POST" | "PUT" | "DELETE"
 
-interface MutationVariables<D = any> {
+interface MutationVariables<D = unknown> {
   endpoint: string
   data?: D
   method?: MutationMethod
 }
 
-export interface ApiMutationOptions<T = any, D = any>
+export interface ApiMutationOptions<T = unknown, D = unknown>
   extends UseMutationOptions<ApiResponse<T>, Error, MutationVariables<D>> {
-  invalidateQueries?: string[]
+  invalidateQueries?: (string | readonly unknown[])[]
 }
 
-export function useApiMutation<T = any, D = any>(
+export function useApiMutation<T = unknown, D = unknown>(
   options?: ApiMutationOptions<T, D>
 ): UseMutationResult<ApiResponse<T>, Error, MutationVariables<D>> {
   const queryClient = useQueryClient()
@@ -39,12 +39,16 @@ export function useApiMutation<T = any, D = any>(
     ...options,
     onSuccess: (data, variables, context) => {
       if (options?.invalidateQueries) {
-        queryClient.invalidateQueries({ queryKey: options.invalidateQueries })
+        options.invalidateQueries.forEach((key) => {
+          const queryKey = Array.isArray(key) ? key : [key]
+          queryClient.invalidateQueries({ queryKey })
+        })
       } else {
         queryClient.invalidateQueries()
       }
       if (options?.onSuccess) {
-        ;(options.onSuccess as any)(data, variables, context)
+        // @ts-expect-error tanstack query v5 callback overload
+        options.onSuccess(data, variables, context)
       }
     },
   })

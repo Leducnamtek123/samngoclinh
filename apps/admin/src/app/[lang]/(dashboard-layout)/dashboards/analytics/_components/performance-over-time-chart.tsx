@@ -42,7 +42,7 @@ export function PerformanceOverTimeChart({
           tickLine={false}
           axisLine={false}
           tickMargin={8}
-          tickFormatter={(value: any) => value.slice(0, 3)}
+          tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <YAxis yAxisId="left" hide />
         <YAxis yAxisId="right" orientation="right" hide />

@@ -3,7 +3,7 @@
 import React from "react"
 import { Sprout } from "lucide-react"
 
-import type { Garden } from "./use-beds-table"
+import type { Bed, Garden } from "@/types"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,17 +28,35 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+export interface BedFormData {
+  gardenCode: string
+  code?: string
+  name: string
+  soilType?: string
+  width?: number | string
+  length?: number | string
+  maxTrees?: number
+  treeCount?: number
+  ageYear?: number
+  description?: string
+  status?: string
+  lastFertilizedAt?: string
+  lastWateredAt?: string
+}
+
+export interface BedDialogState {
+  isOpen: boolean
+  mode: "create" | "edit"
+  selectedBed: Bed | null
+  loading: boolean
+  error: string
+}
+
 interface BedFormDialogProps {
-  dialogState: {
-    isOpen: boolean
-    mode: "create" | "edit"
-    selectedBed: any
-    loading: boolean
-    error: string
-  }
-  setDialogState: (state: any) => void
-  formData: any
-  setFormData: (data: any) => void
+  dialogState: BedDialogState
+  setDialogState: React.Dispatch<React.SetStateAction<BedDialogState>>
+  formData: BedFormData
+  setFormData: React.Dispatch<React.SetStateAction<BedFormData>>
   gardens: Garden[]
   handleSaveBed: (e: React.FormEvent) => void
 }
@@ -55,7 +73,7 @@ export function BedFormDialog({
     <Dialog
       open={dialogState.isOpen}
       onOpenChange={(open) =>
-        setDialogState((prev: any) => ({ ...prev, isOpen: open }))
+        setDialogState((prev) => ({ ...prev, isOpen: open }))
       }
     >
       <DialogContent className="max-w-md">
@@ -315,7 +333,7 @@ export function BedFormDialog({
               type="button"
               variant="outline"
               onClick={() =>
-                setDialogState((prev: any) => ({ ...prev, isOpen: false }))
+                setDialogState((prev) => ({ ...prev, isOpen: false }))
               }
               disabled={dialogState.loading}
             >
@@ -335,15 +353,17 @@ export function BedFormDialog({
   )
 }
 
+export interface BedConfirmState {
+  isOpen: boolean
+  title: string
+  description: string
+  action: () => void
+  loading: boolean
+}
+
 interface BedsOtherDialogsProps {
-  confirmState: {
-    isOpen: boolean
-    title: string
-    description: string
-    action: () => void
-    loading: boolean
-  }
-  setConfirmState: (state: any) => void
+  confirmState: BedConfirmState
+  setConfirmState: React.Dispatch<React.SetStateAction<BedConfirmState>>
   isQrDialogOpen: boolean
   setIsQrDialogOpen: (open: boolean) => void
   qrCodeData: string

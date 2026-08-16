@@ -3,6 +3,8 @@
 import React from "react"
 import type { UseFormReturn } from "react-hook-form"
 import type { TreeFormValues } from "@/schemas/tree-schema"
+import type { AdminUser, Bed } from "@/types"
+
 import {
   FormControl,
   FormField,
@@ -19,17 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export interface Bed {
-  id: string
-  code: string
-  name: string
-}
+export type { Bed }
 
 interface TreeFormFieldsProps {
   form: UseFormReturn<TreeFormValues>
   mode: "create" | "edit"
   beds: Bed[]
-  users: any[]
+  users: AdminUser[] | Array<{ id: string; name?: string | null; username: string; email?: string }>
   t: (key: string) => string
 }
 
@@ -58,12 +56,70 @@ export function TreeFormFields({
 
       <FormField
         control={form.control}
+        name="bedCode"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.bedCode")}</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("trees.placeholders.selectBed")} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="none">
+                  {t("trees.placeholders.noBed")}
+                </SelectItem>
+                {beds.map((b) => (
+                  <SelectItem key={b.id} value={b.code}>
+                    {b.name} ({b.code})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="ownerUserId"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.owner")}</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || ""}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("trees.placeholders.selectOwner")} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {users.map((u) => (
+                  <SelectItem key={u.id} value={u.id}>
+                    {u.name || u.username} ({u.email || u.username})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
         name="ageYear"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("trees.fields.age")}</FormLabel>
+            <FormLabel>{t("trees.fields.ageYear")}</FormLabel>
             <FormControl>
-              <Input type="number" min={0} {...field} />
+              <Input
+                type="number"
+                min="0"
+                placeholder={t("trees.fields.ageYear")}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -75,88 +131,19 @@ export function TreeFormFields({
         name="quantity"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Quantity</FormLabel>
+            <FormLabel>{t("trees.fields.quantity")}</FormLabel>
             <FormControl>
-              <Input type="number" min={1} {...field} />
+              <Input
+                type="number"
+                min="1"
+                placeholder={t("trees.fields.quantity")}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
-      {mode === "create" && (
-        <FormField
-          control={form.control}
-          name="bedCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("trees.fields.bed")}</FormLabel>
-              <Select
-                value={field.value || "none"}
-                onValueChange={field.onChange}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("trees.fields.bed")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="none">— None —</SelectItem>
-                  {beds.map((bed) => (
-                    <SelectItem key={bed.id} value={bed.code}>
-                      {bed.name} ({bed.code})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
-
-      {mode === "edit" && (
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <Select
-                value={field.value || "available"}
-                onValueChange={field.onChange}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("trees.fields.status")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="available">
-                    {t("common.status.available")} (Có sẵn)
-                  </SelectItem>
-                  <SelectItem value="active">
-                    {t("common.status.active")} (Hoạt động)
-                  </SelectItem>
-                  <SelectItem value="growing">
-                    Đang phát triển (Growing)
-                  </SelectItem>
-                  <SelectItem value="planted">
-                    Mới trồng (Planted)
-                  </SelectItem>
-                  <SelectItem value="harvested">
-                    {t("common.status.harvested")} (Đã thu hoạch)
-                  </SelectItem>
-                  <SelectItem value="sold">
-                    Đã bán (Sold)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
 
       <FormField
         control={form.control}
@@ -164,32 +151,62 @@ export function TreeFormFields({
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t("trees.fields.healthStatus")}</FormLabel>
-            <Select
-              value={field.value || "healthy"}
-              onValueChange={field.onChange}
-            >
+            <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue
-                    placeholder={t("trees.fields.healthStatus")}
-                  />
+                  <SelectValue placeholder={t("trees.placeholders.selectHealthStatus")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="healthy">
-                  {t("common.status.healthy")}
-                </SelectItem>
-                <SelectItem value="diseased">
-                  {t("common.status.diseased")}
-                </SelectItem>
-                <SelectItem value="weak">
-                  {t("common.status.warning")}
-                </SelectItem>
-                <SelectItem value="dead">
-                  {t("common.status.error")}
-                </SelectItem>
+                <SelectItem value="Tốt">{t("trees.health.good")}</SelectItem>
+                <SelectItem value="Bình thường">{t("trees.health.normal")}</SelectItem>
+                <SelectItem value="Kém">{t("trees.health.poor")}</SelectItem>
+                <SelectItem value="Cần chăm sóc đặc biệt">{t("trees.health.critical")}</SelectItem>
               </SelectContent>
             </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="status"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.status")}</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={t("trees.placeholders.selectStatus")} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="active">{t("trees.status.active")}</SelectItem>
+                <SelectItem value="harvested">{t("trees.status.harvested")}</SelectItem>
+                <SelectItem value="diseased">{t("trees.status.diseased")}</SelectItem>
+                <SelectItem value="dead">{t("trees.status.dead")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="priceBought"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.priceBought")}</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                min="0"
+                placeholder={t("trees.fields.priceBought")}
+                {...field}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -200,7 +217,35 @@ export function TreeFormFields({
         name="plantedAt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("trees.fields.plantedDate")}</FormLabel>
+            <FormLabel>{t("trees.fields.plantedAt")}</FormLabel>
+            <FormControl>
+              <Input type="date" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="lastCareDate"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.lastCareDate")}</FormLabel>
+            <FormControl>
+              <Input type="date" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="nextCareDate"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{t("trees.fields.nextCareDate")}</FormLabel>
             <FormControl>
               <Input type="date" {...field} />
             </FormControl>
@@ -213,69 +258,11 @@ export function TreeFormFields({
         control={form.control}
         name="expectedHarvestAt"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Expected Harvest</FormLabel>
+          <FormItem className="col-span-2">
+            <FormLabel>{t("trees.fields.expectedHarvestAt")}</FormLabel>
             <FormControl>
               <Input type="date" {...field} />
             </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="priceBought"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t("products.fields.price")} (VND)</FormLabel>
-            <FormControl>
-              <Input type="number" placeholder="5000000" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="ownerUserId"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Owner</FormLabel>
-            <Select
-              value={field.value || "system"}
-              onValueChange={(val) =>
-                field.onChange(val === "system" ? "" : val)
-              }
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select owner" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="system">
-                  System (Hệ thống)
-                </SelectItem>
-                {users.map((u) => {
-                  const fullName = (
-                    u.fullName ||
-                    u.name ||
-                    [u.firstName, u.lastName].filter(Boolean).join(" ")
-                  ).trim()
-                  const handleOrEmail = u.username || u.email || u.id
-                  const displayName = fullName
-                    ? `${fullName} (${handleOrEmail})`
-                    : handleOrEmail
-                  return (
-                    <SelectItem key={u.id} value={u.id}>
-                      {displayName}
-                    </SelectItem>
-                  )
-                })}
-              </SelectContent>
-            </Select>
             <FormMessage />
           </FormItem>
         )}

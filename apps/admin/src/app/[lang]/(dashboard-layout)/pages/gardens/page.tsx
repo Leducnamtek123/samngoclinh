@@ -1,8 +1,9 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { Garden, PaginationMeta } from "@/types"
 
-import { fetchApi } from "@/lib/api"
+import { cultivationService } from "@/services/cultivation.service"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { GardensTable } from "./_components/gardens-table"
@@ -10,28 +11,6 @@ import { GardensTable } from "./_components/gardens-table"
 export const metadata: Metadata = {
   title: "Quản lý khu vườn | Sâm Ngọc Linh Admin",
   description: "Quản lý danh sách các khu vườn trồng sâm",
-}
-
-interface Garden {
-  id: string
-  code: string
-  name: string
-  status: string
-  totalBeds: number
-  activeBeds: number
-  totalTrees: number
-  createdAt: string
-  location?: string
-  description?: string
-  area?: number
-  images?: string[]
-  latitude?: number
-  longitude?: number
-  managerName?: string
-  managerPhone?: string
-  establishedAt?: string
-  maxBeds?: number
-  metadata?: any
 }
 
 interface GardensPageProps {
@@ -52,28 +31,19 @@ export default async function GardensPage({ searchParams }: GardensPageProps) {
   const search = resolvedSearchParams.search || ""
 
   let gardens: Garden[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-
-    const res = await fetchApi(
-      `/user/cultivation/gardens/paginated?${queryParams.toString()}`
-    )
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải danh sách vườn"
-    } else {
-      gardens = Array.isArray(payload.data) ? payload.data : []
-      metadata = payload.metadata || null
+    const res = await cultivationService.getGardens({ page, perPage, search })
+    if (res.data && Array.isArray(res.data)) {
+      gardens = res.data
+      metadata = res.metadata || null
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching gardens:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

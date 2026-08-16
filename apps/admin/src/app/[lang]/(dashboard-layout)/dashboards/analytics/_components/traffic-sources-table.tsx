@@ -33,7 +33,7 @@ export function TrafficSourcesTable({
           <TableRow key={item.name}>
             <TableCell className="w-6" aria-hidden>
               <DynamicIcon
-                name={item.icon}
+                name={(item.icon as any) || "Globe"}
                 style={{ color: item.fill }}
                 className="h-3 w-3 stroke-3"
               />

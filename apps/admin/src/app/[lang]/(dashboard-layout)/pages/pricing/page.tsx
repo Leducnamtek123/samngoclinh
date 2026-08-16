@@ -1,15 +1,14 @@
 import type { PricingPlansType } from "@/components/pricing-plans"
 import type { Metadata } from "next"
+import type { CarePackage, ProtectionPackage } from "@/types"
 
 import { pricingData } from "./_data/pricing"
-
-import { fetchApi } from "@/lib/api"
-
+import { packagesService } from "@/services/packages.service"
 import { Pricing } from "./_components/pricing"
 
 export const metadata: Metadata = {
-  title: "Service Package Pricing | Admin",
-  description: "Manage Ginseng farm care and protection service packages",
+  title: "Bảng giá gói dịch vụ | Sâm Ngọc Linh Admin",
+  description: "Quản lý bảng giá các gói chăm sóc và bảo vệ vườn sâm Ngọc Linh",
 }
 
 export default async function PricingPage() {
@@ -17,76 +16,56 @@ export default async function PricingPage() {
 
   try {
     const [careRes, protRes] = await Promise.all([
-      fetchApi("/admin/packages/care").catch(() => null),
-      fetchApi("/admin/packages/protection").catch(() => null),
+      packagesService.getCarePackages({ perPage: 2 }).catch(() => null),
+      packagesService.getProtectionPackages({ perPage: 1 }).catch(() => null),
     ])
 
     const fetchedPlans: PricingPlansType[] = []
 
-    if (careRes && careRes.ok) {
-      const carePayload = await careRes.json()
-      const careItems = carePayload?.data?.items || carePayload?.data || []
-      if (Array.isArray(careItems) && careItems.length > 0) {
-        careItems.slice(0, 2).forEach((pkg: any, idx: number) => {
-          fetchedPlans.push({
-            title: pkg.name || `Care Package ${idx + 1}`,
-            description:
-              pkg.description || "Periodic Ginseng farm care package",
-            price: pkg.price || (idx === 0 ? 1500000 : 3500000),
-            period: "month",
-            features: pkg.features || [
-              "Automated irrigation & nutrients",
-              "Soil & weather monitoring",
-              "Weekly photo cultivation log",
-            ],
-            isFeatured: idx === 1,
-            href: "/pages/packages",
-            buttonContent: "Manage Package",
-          })
+    if (careRes?.data && Array.isArray(careRes.data) && careRes.data.length > 0) {
+      careRes.data.forEach((pkg: CarePackage, idx: number) => {
+        fetchedPlans.push({
+          title: pkg.name || `Gói chăm sóc ${idx + 1}`,
+          description:
+            pkg.description || "Gói chăm sóc định kỳ vườn Sâm Ngọc Linh",
+          price: pkg.price || (idx === 0 ? 1500000 : 3500000),
+          period: "tháng",
+          features: [
+            "Tưới tiêu & dinh dưỡng tự động",
+            "Giám sát độ ẩm & thổ nhưỡng",
+            "Nhật ký hình ảnh hàng tuần",
+          ],
+          isFeatured: idx === 1,
+          href: "/pages/packages",
+          buttonContent: "Quản lý gói",
         })
-      }
+      })
     }
 
-    if (protRes && protRes.ok) {
-      const protPayload = await protRes.json()
-      const protItems = protPayload?.data?.items || protPayload?.data || []
-      if (Array.isArray(protItems) && protItems.length > 0) {
-        const pkg = protItems[0]
-        fetchedPlans.push({
-          title: pkg.name || "Comprehensive Protection Package",
-          description: pkg.description || "Risk insurance & 24/7 monitoring",
-          price: pkg.price || 5000000,
-          period: "year",
-          features: pkg.features || [
-            "Natural disaster & disease risk insurance",
-            "24/7 AI Camera live monitoring",
-            "On-site agricultural specialist support",
-          ],
-          isFeatured: false,
-          href: "/pages/packages",
-          buttonContent: "Manage Package",
-        })
-      }
+    if (protRes?.data && Array.isArray(protRes.data) && protRes.data.length > 0) {
+      const pkg = protRes.data[0]
+      fetchedPlans.push({
+        title: pkg.name || "Gói bảo hiểm & bảo vệ toàn diện",
+        description: pkg.description || "Bảo hiểm rủi ro thiên tai & giám sát 24/7",
+        price: pkg.price || 5000000,
+        period: "năm",
+        features: [
+          "Bảo hiểm cây giống 100%",
+          "Camera an ninh AI 24/7",
+          "Bác sĩ nông nghiệp thăm khám",
+        ],
+        isFeatured: false,
+        href: "/pages/packages",
+        buttonContent: "Quản lý gói",
+      })
     }
 
     if (fetchedPlans.length > 0) {
       plans = fetchedPlans
     }
-  } catch (err) {
-    console.error("Error fetching pricing packages in admin pricing page:", err)
+  } catch (e: unknown) {
+    console.error("Failed to fetch package pricing from API:", e)
   }
 
-  return (
-    <section className="container grid gap-8 p-4">
-      <div className="mx-auto text-center space-y-1.5">
-        <h2 className="text-3xl font-bold text-emerald-950 dark:text-emerald-50">
-          Ginseng Service Package Pricing
-        </h2>
-        <p className="max-w-prose text-sm text-muted-foreground">
-          Manage system-wide Ginseng care, protection, and cultivation packages.
-        </p>
-      </div>
-      <Pricing data={plans} />
-    </section>
-  )
+  return <Pricing data={plans} />
 }

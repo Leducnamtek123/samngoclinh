@@ -36,27 +36,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface ContactRequest {
-  id: string
-  fullName: string
-  email: string
-  phoneNumber: string
-  subject: string
-  message: string
-  isRead: boolean
-  createdAt: string
-}
+import type { ContactRequest, PaginationMeta } from "@/types"
 
 interface ContactsTableProps {
   initialContacts: ContactRequest[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

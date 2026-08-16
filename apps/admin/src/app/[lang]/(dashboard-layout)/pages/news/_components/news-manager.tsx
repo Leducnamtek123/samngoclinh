@@ -17,37 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import type { Article, PaginationMeta } from "@/types"
 import { NewsDialog } from "./news-dialog"
 import { NewsList } from "./news-list"
 import { useNewsManager } from "./use-news-manager"
 
-interface Article {
-  id: string
-  slug: string
-  title: string
-  category: string
-  summary: string
-  body?: string
-  status: string
-  sortOrder?: number
-  coverImage?: string
-  image?: string
-  metadata?: {
-    authorName?: string
-  }
-  createdAt: string
-}
-
 interface NewsManagerProps {
   initialArticles: Article[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

@@ -15,8 +15,10 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
+import type { EContract } from "@/types"
+
 interface ContractDetailHeaderProps {
-  contract: any
+  contract: EContract
   lang: string
   isSigned: boolean
   isOrderSource: boolean

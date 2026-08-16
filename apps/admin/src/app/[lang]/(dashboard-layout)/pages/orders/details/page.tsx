@@ -233,15 +233,28 @@ function OrderDetailsContent() {
   )
 }
 
+interface OrderProductItem {
+  id?: string
+  code?: string
+  productId?: string
+  name?: string
+  productName?: string
+  price: number
+  quantity: number
+  image?: string
+  photo?: string
+  images?: string[] | string
+}
+
 function OrderProductsCard({
   order,
   itemsList,
 }: {
   order: OrderDetail
-  itemsList: any[]
+  itemsList: OrderProductItem[]
 }) {
   const itemsSubtotal = itemsList.reduce(
-    (sum: number, item: any) =>
+    (sum: number, item: OrderProductItem) =>
       sum + Number(item.price || 0) * Number(item.quantity || 1),
     0
   )
@@ -282,7 +295,7 @@ function OrderProductsCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {itemsList.map((item: any) => {
+            {itemsList.map((item: OrderProductItem) => {
               const imgUrl =
                 Array.isArray(item.images) && item.images.length > 0
                   ? item.images[0]
@@ -291,7 +304,7 @@ function OrderProductsCard({
                     : item.image || item.photo || null
 
               return (
-                <TableRow key={item.code || item.id || item.name}>
+                <TableRow key={item.code || item.id || item.name || Math.random()}>
                   <TableCell>
                     <div className="w-12 h-12 rounded-lg border border-border overflow-hidden bg-muted/50 flex items-center justify-center shrink-0">
                       {imgUrl ? (

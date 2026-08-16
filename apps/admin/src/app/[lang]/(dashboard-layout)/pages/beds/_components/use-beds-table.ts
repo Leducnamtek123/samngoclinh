@@ -8,27 +8,10 @@ import {
   useSearchParams,
 } from "next/navigation"
 
-import type { LocaleType } from "@/types"
+import type { AdminUser, Bed, CareLog, Garden, LocaleType, PaginationMeta, Tree } from "@/types"
+import type { BedFormData } from "./beds-dialogs"
 
 import { fetchApi } from "@/lib/api"
-
-export interface Bed {
-  id: string
-  code: string
-  gardenCode: string
-  name: string
-  ageYear: number
-  treeCount: number
-  status: string
-  createdAt?: string
-  maxTrees?: number
-  width?: number
-  length?: number
-  soilType?: string
-  lastFertilizedAt?: string
-  lastWateredAt?: string
-  description?: string
-}
 
 export interface CultivationBedLocation {
   id: string
@@ -40,32 +23,9 @@ export interface CultivationBedLocation {
   treeCode?: string
 }
 
-export interface Tree {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  quantity: number
-  status: string
-  healthStatus: string // 'healthy', 'sick', 'dead'
-  plantedAt?: string
-  lastCareDate?: string
-  nextCareDate?: string
-  expectedHarvestAt?: string
-  priceBought?: number
-  ownerUserId?: string
-  bedCode?: string
-}
-
-export interface Garden {
-  id: string
-  code: string
-  name: string
-}
-
 export function useBedsTable(
   initialBeds: Bed[],
-  metadata: any,
+  metadata: PaginationMeta | null,
   gardens: Garden[],
   initialError?: string
 ) {
@@ -112,7 +72,7 @@ export function useBedsTable(
   })
 
   // Form state for Bed Create/Edit
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BedFormData>({
     name: "",
     gardenCode: gardens[0]?.code || "",
     ageYear: 1,
@@ -135,7 +95,7 @@ export function useBedsTable(
   >("grid")
   const [locations, setLocations] = useState<CultivationBedLocation[]>([])
   const [trees, setTrees] = useState<Tree[]>([])
-  const [users, setUsers] = useState<any[]>([])
+  const [users, setUsers] = useState<AdminUser[]>([])
   const [loadingGrid, setLoadingGrid] = useState(false)
   const [gridRows, setGridRows] = useState(8)
   const [gridCols, setGridCols] = useState(10)
@@ -151,10 +111,10 @@ export function useBedsTable(
   const [selectedLocationId, setSelectedLocationId] = useState<string | null>(
     null
   )
-  const [selectedTreeDetails, setSelectedTreeDetails] = useState<any | null>(
+  const [selectedTreeDetails, setSelectedTreeDetails] = useState<Tree | null>(
     null
   )
-  const [selectedTreeCareLogs, setSelectedTreeCareLogs] = useState<any[]>([])
+  const [selectedTreeCareLogs, setSelectedTreeCareLogs] = useState<CareLog[]>([])
   const [loadingTreeDetails, setLoadingTreeDetails] = useState(false)
 
   // Zoom & Pan states
@@ -257,10 +217,14 @@ export function useBedsTable(
       )
       const payload = await res.json()
       if (res.status < 400 && payload.data) {
-        const newBeds: any[] = Array.isArray(payload.data) ? payload.data : []
+        const newBeds: Bed[] = Array.isArray(payload.data?.items)
+          ? payload.data.items
+          : Array.isArray(payload.data)
+            ? payload.data
+            : []
         setBeds((prev) => {
-          const existingIds = new Set(prev.map((b: any) => b.id))
-          const filteredNew = newBeds.filter((b: any) => !existingIds.has(b.id))
+          const existingIds = new Set(prev.map((b: Bed) => b.id))
+          const filteredNew = newBeds.filter((b: Bed) => !existingIds.has(b.id))
           return [...prev, ...filteredNew]
         })
         localMetadataRef.current = payload.metadata || null
@@ -375,6 +339,7 @@ export function useBedsTable(
         const detailPayload = await detailRes.json()
 
         setSelectedTreeDetails({
+          id: matchedTree?.id || loc.treeCode,
           code: loc.treeCode,
           name: matchedTree?.name || "Sâm Ngọc Linh",
           ageYear: matchedTree?.ageYear || activeBed?.ageYear || 3,
@@ -881,9 +846,9 @@ export function useBedsTable(
   const openEditDialog = (bed: Bed) => {
     setFormData({
       name: bed.name,
-      gardenCode: bed.gardenCode,
-      ageYear: bed.ageYear,
-      treeCount: bed.treeCount,
+      gardenCode: bed.gardenCode || bed.garden?.code || "",
+      ageYear: bed.ageYear || 1,
+      treeCount: bed.treeCount || bed.totalTrees || 0,
       maxTrees: bed.maxTrees || 100,
       width:
         bed.width !== undefined && bed.width !== null ? String(bed.width) : "",
@@ -917,8 +882,8 @@ export function useBedsTable(
 
     if (searchGridQuery) {
       const q = searchGridQuery.toLowerCase()
-      const treeName = tree?.name.toLowerCase() || ""
-      const treeCode = tree?.code.toLowerCase() || ""
+      const treeName = tree?.name?.toLowerCase() || ""
+      const treeCode = tree?.code?.toLowerCase() || ""
       const owner = getOwnerName(tree?.ownerUserId).toLowerCase()
       if (
         !treeName.includes(q) &&

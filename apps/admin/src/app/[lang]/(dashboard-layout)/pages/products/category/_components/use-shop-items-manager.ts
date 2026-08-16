@@ -7,19 +7,9 @@ import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
 import { useTranslation } from "@/providers/i18n-provider"
-
-interface ShopItem {
-  id: string
-  code: string
-  name: string
-  price: number
-  unit: string
-  category: string
-  stock?: number
-  status?: string
-  images?: string[]
-  description?: string
-}
+import type { ShopItem } from "@/types"
+import type { Area, CropState } from "./shop-item-crop-dialog"
+import type { ShopItemFormValues } from "./shop-item-dialog"
 
 interface UseShopItemsManagerProps {
   initialItems: ShopItem[]
@@ -149,13 +139,7 @@ export function useShopItemsManager({
   })
 
   // Image Cropping States
-  const [cropState, setCropState] = useState<{
-    isOpen: boolean
-    imageSrc: string | null
-    crop: { x: number; y: number }
-    zoom: number
-    croppedAreaPixels: any
-  }>({
+  const [cropState, setCropState] = useState<CropState>({
     isOpen: false,
     imageSrc: null,
     crop: { x: 0, y: 0 },
@@ -304,7 +288,7 @@ export function useShopItemsManager({
     reader.readAsDataURL(file)
   }
 
-  const handleCropComplete = (_croppedArea: any, croppedAreaPixels: any) => {
+  const handleCropComplete = (_croppedArea: Area, croppedAreaPixels: Area) => {
     setCropState((prev) => ({ ...prev, croppedAreaPixels }))
   }
 
@@ -371,12 +355,12 @@ export function useShopItemsManager({
     }))
   }
 
-  const handleFormSubmit = async (formValues?: any) => {
+  const handleFormSubmit = async (formValues?: ShopItemFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
 
     const submittedValues = formValues || dialogState.formData
 
-    const bodyData: any = {
+    const bodyData: Record<string, unknown> = {
       name: submittedValues.name,
       category: submittedValues.category,
       unit: submittedValues.unit,

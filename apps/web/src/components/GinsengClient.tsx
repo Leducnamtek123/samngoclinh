@@ -13,7 +13,6 @@ import { ProductFilterSidebar } from '@/components/products/ProductFilterSidebar
 import { GinsengProductCard } from './ginseng/GinsengProductCard';
 import { ProductDetailModal } from './products/ProductDetailModal';
 import { GinsengBedsGrid } from './ginseng/GinsengBedsGrid';
-import { GinsengCalculator } from './ginseng/GinsengCalculator';
 import { SearchInput } from '@/components/common/SearchInput';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
@@ -132,9 +131,6 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
       <PageBannerSlider banners={banners || []} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        {/* Interactive ROI Calculator */}
-        <GinsengCalculator locale={locale} />
-
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-4">
           <ProductFilterSidebar
             title="Bộ Lọc Sâm"

@@ -26,7 +26,7 @@ interface ShopItemFormFieldsProps {
   form: UseFormReturn<ShopItemFormValues>
   mode: "create" | "edit"
   formData: {
-    imageUrl: string
+    imageUrl?: string
   }
   dynamicCategoryOptions: Array<{ value: string; label: string }>
   unitOptions: Array<{ value: string; label: string }>

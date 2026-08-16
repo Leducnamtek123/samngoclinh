@@ -78,7 +78,7 @@ export function ChurnRateChart({ data }: { data: ChurnRateType["months"] }) {
           tickLine={false}
           axisLine={false}
           tickMargin={10}
-          tickFormatter={(value: any) => value.slice(0, 3)}
+          tickFormatter={(value: string) => value.slice(0, 3)}
         />
         <Bar
           dataKey="totalCustomers"

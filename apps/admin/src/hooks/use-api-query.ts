@@ -1,23 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
 
 import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
+import type { ApiResponse } from "@/types/common.types"
 
 import { fetchApiData } from "@/lib/api-client"
 
-export interface ApiResponse<T = any> {
-  statusCode?: number
-  message?: string
-  data: T
-  metadata?: {
-    page?: number
-    perPage?: number
-    totalPage?: number
-    totalData?: number
-    [key: string]: any
-  }
-}
+export type { ApiResponse }
 
-export function useApiQuery<T = any>(
+export function useApiQuery<T = unknown>(
   key: string | readonly unknown[],
   endpoint: string,
   options?: Omit<UseQueryOptions<ApiResponse<T>, Error>, "queryKey" | "queryFn">

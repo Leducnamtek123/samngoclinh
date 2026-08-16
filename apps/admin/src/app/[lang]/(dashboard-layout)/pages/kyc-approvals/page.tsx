@@ -59,7 +59,7 @@ export default function KycApprovalsPage() {
     isLoading,
     refetch,
     isError,
-  } = useApiQuery<any>(
+  } = useApiQuery<KYCRequest[] | { items?: KYCRequest[]; data?: KYCRequest[] }>(
     ["kyc-approvals", page, perPage],
     `/admin/user/kyc-list?page=${page}&limit=${perPage}`
   )
@@ -69,7 +69,9 @@ export default function KycApprovalsPage() {
   const rawData = response?.data
   const kycList: KYCRequest[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || (rawData as any)?.data || []
+    : (rawData as { items?: KYCRequest[]; data?: KYCRequest[] })?.items ||
+      (rawData as { items?: KYCRequest[]; data?: KYCRequest[] })?.data ||
+      []
   const metadata = response?.metadata || null
 
   const handleApprove = async (id: string) => {
@@ -81,8 +83,9 @@ export default function KycApprovalsPage() {
       toast.success(dict.notifications.approveSuccess)
       setSelectedKyc(null)
       refetch()
-    } catch (error: any) {
-      toast.error(error?.message || dict.notifications.approveError)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : dict.notifications.approveError
+      toast.error(message)
     }
   }
 
@@ -101,8 +104,9 @@ export default function KycApprovalsPage() {
         setShowRejectForm(false)
         setRejectReason("")
         refetch()
-      } catch (error: any) {
-        toast.error(error?.message || dict.notifications.rejectError)
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : dict.notifications.rejectError
+        toast.error(message)
       }
     }
   }

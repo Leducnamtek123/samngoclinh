@@ -1,6 +1,8 @@
 "use client"
 
 import React from "react"
+import type { CarePackage, ProtectionPackage } from "@/types"
+
 import {
   Card,
   CardContent,
@@ -10,7 +12,6 @@ import {
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CarePackagesList, ProtectionPackagesList } from "./packages-list"
-import type { CarePackage, ProtectionPackage } from "./packages-manager"
 
 const vndFormatter = new Intl.NumberFormat("vi-VN", {
   style: "currency",
@@ -28,8 +29,8 @@ interface PackagesTabsProps {
   setSuccessMsg: (msg: string) => void
   carePackages: CarePackage[]
   protectionPackages: ProtectionPackage[]
-  handleOpenEdit: (pkg: any) => void
-  handleDelete: (id: string) => void
+  handleOpenEdit: (pkg: CarePackage | ProtectionPackage) => void
+  handleDelete: (id: string, name: string) => void
   handleOpenCreate: () => void
 }
 
@@ -49,7 +50,7 @@ export function PackagesTabs({
       defaultValue="care"
       value={activeTab}
       onValueChange={(val) => {
-        setActiveTab(val as any)
+        setActiveTab(val as "care" | "protection")
         setErrorMsg("")
         setSuccessMsg("")
       }}
@@ -72,7 +73,10 @@ export function PackagesTabs({
             <CarePackagesList
               packages={carePackages}
               onEdit={handleOpenEdit}
-              onDelete={handleDelete}
+              onDelete={(id) => {
+                const pkg = carePackages.find((p) => p.id === id)
+                handleDelete(id, pkg?.name || "Gói chăm sóc")
+              }}
               onOpenCreate={handleOpenCreate}
               formatVND={formatVND}
             />
@@ -92,7 +96,10 @@ export function PackagesTabs({
             <ProtectionPackagesList
               packages={protectionPackages}
               onEdit={handleOpenEdit}
-              onDelete={handleDelete}
+              onDelete={(id) => {
+                const pkg = protectionPackages.find((p) => p.id === id)
+                handleDelete(id, pkg?.name || "Gói bảo hiểm")
+              }}
               onOpenCreate={handleOpenCreate}
               formatVND={formatVND}
             />

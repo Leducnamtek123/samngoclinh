@@ -13,25 +13,11 @@ import {
   docSoLuongCay,
 } from "./create-contract-wizard-helpers"
 
-interface UserItem {
-  id: string
-  name?: string
-  username?: string
-  email?: string
-  isVerified?: boolean
-  mobileNumbers?: Array<{ number: string }>
-}
-
-interface TreeItem {
-  id: string
-  code: string
-  name: string
-  ageYear?: number
-}
+import type { AdminUser, Tree } from "@/types"
 
 interface UseCreateContractWizardProps {
-  users: UserItem[]
-  trees: TreeItem[]
+  users: AdminUser[]
+  trees: Tree[]
   lang: string
 }
 
@@ -94,15 +80,18 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   const [step3ViewMode, setStep3ViewMode] = useState<"preview" | "editor">("preview")
 
   // Fetch Template HTML via React Query
-  const { data: templateResponse } = useApiQuery<any>(
+  const { data: templateResponse } = useApiQuery<{ contentHtml?: string }>(
     ["contract-template", selectedTemplateSlug],
     `/public/contracts/templates/${selectedTemplateSlug}`,
     { enabled: Boolean(selectedTemplateSlug) }
   )
-  const rawTemplateHtml = templateResponse?.data?.contentHtml || ""
+  const rawTemplateHtml =
+    (templateResponse?.data as { contentHtml?: string })?.contentHtml ||
+    templateResponse?.data?.contentHtml ||
+    ""
 
   // Selected User Object
-  const selectedUser = users.find((u) => u.id === selectedUserId)
+  const selectedUser = users.find((u) => u.id === selectedUserId) || null
 
   const handleUserChange = (userId: string) => {
     setSelectedUserId(userId)

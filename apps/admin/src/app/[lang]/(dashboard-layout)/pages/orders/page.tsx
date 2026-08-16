@@ -1,10 +1,9 @@
 import { Suspense } from "react"
 
-import type { LocaleType } from "@/types"
 import type { Metadata } from "next"
-import type { Order } from "./_components/orders-table"
+import type { LocaleType, Order, PaginationMeta } from "@/types"
 
-import { fetchApi } from "@/lib/api"
+import { ordersService } from "@/services/orders.service"
 import { getDictionary } from "@/lib/get-dictionary"
 import { createTranslator } from "@/lib/i18n"
 
@@ -46,29 +45,25 @@ export default async function OrdersPage({
   const productType = resolvedSearchParams.productType || ""
 
   let orders: Order[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("status", status)
-    if (productType && productType !== "all")
-      queryParams.append("productType", productType)
-
-    const res = await fetchApi(`/admin/orders?${queryParams.toString()}`)
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải danh sách đơn hàng"
-    } else {
-      orders = Array.isArray(payload.data) ? payload.data : []
-      metadata = payload.metadata || null
+    const res = await ordersService.getOrders({
+      page,
+      perPage,
+      search,
+      status,
+      productType,
+    })
+    if (res.data && Array.isArray(res.data)) {
+      orders = res.data
+      metadata = res.metadata || null
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching orders:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

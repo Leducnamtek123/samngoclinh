@@ -28,58 +28,13 @@ import { ContractsStatsCards } from "./contracts-stats-cards"
 import { ContractsFilterBar } from "./contracts-filter-bar"
 import { fetchApi } from "@/lib/api"
 
-export interface EContract {
-  id: string
-  code?: string
-  userId: string
-  treeCode?: string
-  title?: string
-  content?: string
-  status: string
-  contractValue: number
-  paymentStatus: string
-  signedAt?: string
-  expiredAt: string
-  signatureUrl?: string
-  isReminderSent?: boolean
-  reminderSentAt?: string
-  contractType?: string
-  partyA?: string
-  partyB?: string
-  pdfUrl?: string
-  terms?: string
-  createdAt: string
-  updatedAt?: string
-  metadata?: any
-}
-
-export interface User {
-  id: string
-  name?: string
-  username?: string
-  email?: string
-  isVerified?: boolean
-  mobileNumbers?: Array<{ number: string }>
-}
-
-export interface Tree {
-  id: string
-  code: string
-  name: string
-}
+import type { AdminUser, EContract, PaginationMeta, Tree } from "@/types"
 
 interface ContractsManagerProps {
   initialContracts: EContract[]
-  users: User[]
+  users: AdminUser[]
   trees: Tree[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 
@@ -115,13 +70,16 @@ export function ContractsManager({
 
     const expiringSoon = contracts.filter((c) => {
       if (c.status !== "signed") return false
-      const exp = new Date(c.expiredAt)
+      const expDate = c.expiresAt || c.expiredAt
+      if (!expDate) return false
+      const exp = new Date(expDate)
       return exp >= now && exp <= in30Days
     }).length
 
     const expired = contracts.filter((c) => {
-      const exp = new Date(c.expiredAt)
-      return c.status === "expired" || exp < now
+      const expDate = c.expiresAt || c.expiredAt
+      const exp = expDate ? new Date(expDate) : null
+      return c.status === "expired" || (exp ? exp < now : false)
     }).length
 
     return { total, pending, signed, expiringSoon, expired }
@@ -135,14 +93,17 @@ export function ContractsManager({
       const matchesSearch =
         !query ||
         c.code?.toLowerCase().includes(query) ||
+        c.contractCode?.toLowerCase().includes(query) ||
         c.title?.toLowerCase().includes(query) ||
-        c.partyB?.toLowerCase().includes(query)
+        (typeof c.partyB === "string" && c.partyB.toLowerCase().includes(query)) ||
+        (typeof c.partyB === "object" && c.partyB?.name?.toLowerCase().includes(query)) ||
+        c.customerName?.toLowerCase().includes(query)
 
       // Status
       const matchesStatus = statusFilter === "all" || c.status === statusFilter
 
       // Source (Order vs Manual)
-      const meta = (c.metadata || {}) as Record<string, any>
+      const meta = (c.metadata || {}) as Record<string, unknown>
       const isOrder = Boolean(meta.orderId || meta.orderCode || c.contractType === "purchase_and_care")
       const matchesSource =
         sourceFilter === "all" ||

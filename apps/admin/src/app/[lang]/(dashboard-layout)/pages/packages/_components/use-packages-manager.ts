@@ -1,8 +1,10 @@
 "use client"
 
 import React, { useState } from "react"
-import { fetchApi } from "@/lib/api"
-import type { CarePackage, ProtectionPackage } from "./packages-manager"
+import type { CarePackage, ProtectionPackage } from "@/types"
+import type { PackageFormData } from "./package-dialog"
+
+import { packagesService } from "@/services/packages.service"
 
 interface UsePackagesManagerProps {
   initialCarePackages: CarePackage[]
@@ -45,17 +47,9 @@ export function usePackagesManager({
     isOpen: boolean
     loading: boolean
     error: string
-    selectedPackage: any | null
+    selectedPackage: CarePackage | ProtectionPackage | null
     mode: "create" | "edit"
-    formData: {
-      code: string
-      name: string
-      price: number
-      durationMonths: number
-      coverage: string
-      description: string
-      status: string
-    }
+    formData: PackageFormData
   }>({
     isOpen: false,
     loading: false,
@@ -92,7 +86,8 @@ export function usePackagesManager({
     })
   }
 
-  const handleOpenEdit = (pkg: any) => {
+  const handleOpenEdit = (pkg: CarePackage | ProtectionPackage) => {
+    const isCare = activeTab === "care"
     setDialogState({
       isOpen: true,
       loading: false,
@@ -104,162 +99,122 @@ export function usePackagesManager({
         name: pkg.name,
         price: pkg.price,
         durationMonths: pkg.durationMonths || 12,
-        coverage: pkg.coverage || "",
+        coverage: isCare ? "" : (pkg as ProtectionPackage).coveragePercentage ? `${(pkg as ProtectionPackage).coveragePercentage}%` : "",
         description: pkg.description || "",
-        status: pkg.status,
+        status: pkg.status || "active",
       },
     })
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (
-      !dialogState.formData.code.trim() ||
-      !dialogState.formData.name.trim()
-    ) {
+    setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
+    setErrorMsg("")
+    setSuccessMsg("")
+
+    const { formData, mode, selectedPackage } = dialogState
+
+    if (!formData.code || !formData.name || !formData.price) {
       setDialogState((prev) => ({
         ...prev,
-        error: "Mã và tên gói không được để trống",
+        loading: false,
+        error: "Vui lòng điền đầy đủ các thông tin bắt buộc (*)",
       }))
       return
     }
 
-    setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
-    setSuccessMsg("")
-
     try {
-      const endpoint =
-        activeTab === "care"
-          ? "/admin/packages/care"
-          : "/admin/packages/protection"
-      const bodyPayload: any = {
-        code: dialogState.formData.code,
-        name: dialogState.formData.name,
-        price: Number(dialogState.formData.price),
-        description: dialogState.formData.description || undefined,
-        status: dialogState.formData.status,
-      }
-
       if (activeTab === "care") {
-        bodyPayload.durationMonths = Number(dialogState.formData.durationMonths)
+        const bodyPayload: Partial<CarePackage> = {
+          code: formData.code,
+          name: formData.name,
+          price: Number(formData.price),
+          durationMonths: Number(formData.durationMonths),
+          description: formData.description,
+          status: formData.status,
+        }
+
+        if (mode === "create") {
+          const res = await packagesService.createCarePackage(bodyPayload)
+          setCarePackages((prev) => [res.data, ...prev])
+          setSuccessMsg("Tạo gói chăm sóc thành công!")
+        } else if (selectedPackage) {
+          const res = await packagesService.updateCarePackage(selectedPackage.id, bodyPayload)
+          setCarePackages((prev) =>
+            prev.map((item) =>
+              item.id === selectedPackage.id ? res.data : item
+            )
+          )
+          setSuccessMsg("Cập nhật gói chăm sóc thành công!")
+        }
       } else {
-        bodyPayload.coverage = dialogState.formData.coverage || undefined
+        const bodyPayload: Partial<ProtectionPackage> = {
+          code: formData.code,
+          name: formData.name,
+          price: Number(formData.price),
+          durationMonths: Number(formData.durationMonths),
+          description: formData.description,
+          status: formData.status,
+        }
+
+        if (mode === "create") {
+          const res = await packagesService.createProtectionPackage(bodyPayload)
+          setProtectionPackages((prev) => [res.data, ...prev])
+          setSuccessMsg("Tạo gói bảo hiểm thành công!")
+        } else if (selectedPackage) {
+          const res = await packagesService.updateProtectionPackage(selectedPackage.id, bodyPayload)
+          setProtectionPackages((prev) =>
+            prev.map((item) =>
+              item.id === selectedPackage.id ? res.data : item
+            )
+          )
+          setSuccessMsg("Cập nhật gói bảo hiểm thành công!")
+        }
       }
 
-      if (dialogState.mode === "create") {
-        const res = await fetchApi(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyPayload),
-        })
-        const payload = await res.json()
-        if (res.status >= 400) {
-          setDialogState((prev) => ({
-            ...prev,
-            error: payload?.message || "Không thể tạo gói dịch vụ",
-          }))
-        } else {
-          if (activeTab === "care") {
-            setCarePackages((prev) => [payload.data, ...prev])
-          } else {
-            setProtectionPackages((prev) => [payload.data, ...prev])
-          }
-          setSuccessMsg("Tạo gói dịch vụ thành công!")
-          setDialogState((prev) => ({ ...prev, isOpen: false }))
-        }
-      } else if (dialogState.mode === "edit" && dialogState.selectedPackage) {
-        const res = await fetchApi(
-          `${endpoint}/${dialogState.selectedPackage.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(bodyPayload),
-          }
-        )
-        const payload = await res.json()
-        if (res.status >= 400) {
-          setDialogState((prev) => ({
-            ...prev,
-            error: payload?.message || "Không thể cập nhật gói dịch vụ",
-          }))
-        } else {
-          if (activeTab === "care") {
-            setCarePackages((prev) =>
-              prev.map((item) =>
-                item.id === dialogState.selectedPackage!.id
-                  ? payload.data
-                  : item
-              )
-            )
-          } else {
-            setProtectionPackages((prev) =>
-              prev.map((item) =>
-                item.id === dialogState.selectedPackage!.id
-                  ? payload.data
-                  : item
-              )
-            )
-          }
-          setSuccessMsg("Cập nhật gói dịch vụ thành công!")
-          setDialogState((prev) => ({ ...prev, isOpen: false }))
-        }
-      }
-    } catch (err) {
-      console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối máy chủ" }))
+      setDialogState((prev) => ({ ...prev, isOpen: false }))
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Lỗi khi lưu gói dịch vụ"
+      setDialogState((prev) => ({
+        ...prev,
+        error: message,
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
   }
 
-  const handleDelete = (id: string) => {
-    const pkg =
-      activeTab === "care"
-        ? carePackages.find((p) => p.id === id)
-        : protectionPackages.find((p) => p.id === id)
-    setConfirmDialog({
-      isOpen: true,
-      title: "Xóa gói dịch vụ?",
-      description: `Hành động này sẽ xóa vĩnh viễn gói dịch vụ "${pkg?.name || ""}" khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
-      action: () => performDelete(id),
-      loading: false,
-    })
-  }
-
-  const performDelete = async (id: string) => {
+  const performDelete = async (id: string, type: "care" | "protection") => {
     setConfirmDialog((prev) => ({ ...prev, loading: true }))
     setErrorMsg("")
     setSuccessMsg("")
 
     try {
-      const endpoint =
-        activeTab === "care"
-          ? `/admin/packages/care/${id}`
-          : `/admin/packages/protection/${id}`
-      const res = await fetchApi(endpoint, {
-        method: "DELETE",
-      })
-      if (res.status >= 400) {
-        const payload = await res.json()
-        setErrorMsg(payload?.message || "Không thể xóa gói dịch vụ này.")
+      if (type === "care") {
+        await packagesService.deleteCarePackage(id)
+        setCarePackages((prev) => prev.filter((item) => item.id !== id))
+        setSuccessMsg("Đã xóa gói chăm sóc thành công!")
       } else {
-        if (activeTab === "care") {
-          setCarePackages((prev) => prev.filter((item) => item.id !== id))
-        } else {
-          setProtectionPackages((prev) => prev.filter((item) => item.id !== id))
-        }
-        setSuccessMsg("Đã xóa gói dịch vụ thành công!")
+        await packagesService.deleteProtectionPackage(id)
+        setProtectionPackages((prev) => prev.filter((item) => item.id !== id))
+        setSuccessMsg("Đã xóa gói bảo hiểm thành công!")
       }
-    } catch (err) {
-      console.error(err)
-      setErrorMsg("Lỗi hệ thống khi thực hiện xóa.")
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Lỗi kết nối máy chủ"
+      setErrorMsg(message)
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
+  }
+
+  const handleDelete = (id: string, name: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: "Xác nhận xóa gói dịch vụ?",
+      description: `Bạn có chắc chắn muốn xóa "${name}"? Các cây sâm đã đăng ký gói này vẫn tiếp tục duy trì quyền lợi cho đến khi hết hạn.`,
+      action: () => performDelete(id, activeTab),
+      loading: false,
+    })
   }
 
   return {

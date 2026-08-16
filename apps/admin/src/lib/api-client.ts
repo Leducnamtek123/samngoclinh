@@ -2,8 +2,7 @@ import axios from "axios"
 import { getSession } from "next-auth/react"
 
 import type { AxiosInstance, AxiosRequestConfig } from "axios"
-
-
+import type { ApiResponse } from "@/types/common.types"
 
 const isServer = typeof window === "undefined"
 const apiBaseUrl = isServer
@@ -12,12 +11,7 @@ const apiBaseUrl = isServer
 
 const apiKey = process.env.API_KEY || ""
 
-export interface ApiResponse<T = any> {
-  statusCode?: number
-  message?: string
-  data?: T
-  meta?: any
-}
+export type { ApiResponse }
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: apiBaseUrl,
@@ -27,12 +21,18 @@ export const apiClient: AxiosInstance = axios.create({
   },
 })
 
+interface SessionUserWithToken {
+  accessToken?: string
+  [key: string]: unknown
+}
+
 apiClient.interceptors.request.use(
   async (config) => {
     try {
       if (typeof window !== "undefined") {
         const session = await getSession()
-        const token = (session?.user as any)?.accessToken
+        const user = session?.user as SessionUserWithToken | undefined
+        const token = user?.accessToken
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`
         }
@@ -42,14 +42,14 @@ apiClient.interceptors.request.use(
     }
     return config
   },
-  (error) => {
+  (error: unknown) => {
     return Promise.reject(error)
   }
 )
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  (error: { response?: { status?: number } }) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
       console.warn(
         "Unauthorized access detected, redirecting or refreshing session if needed."
@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
   }
 )
 
-export async function fetchApiData<T = any>(
+export async function fetchApiData<T = unknown>(
   url: string,
   config?: AxiosRequestConfig
 ): Promise<T> {
@@ -67,7 +67,7 @@ export async function fetchApiData<T = any>(
   return response.data
 }
 
-export async function postApiData<T = any, D = any>(
+export async function postApiData<T = unknown, D = unknown>(
   url: string,
   data?: D,
   config?: AxiosRequestConfig
@@ -76,7 +76,7 @@ export async function postApiData<T = any, D = any>(
   return response.data
 }
 
-export async function putApiData<T = any, D = any>(
+export async function putApiData<T = unknown, D = unknown>(
   url: string,
   data?: D,
   config?: AxiosRequestConfig
@@ -85,7 +85,7 @@ export async function putApiData<T = any, D = any>(
   return response.data
 }
 
-export async function deleteApiData<T = any>(
+export async function deleteApiData<T = unknown>(
   url: string,
   config?: AxiosRequestConfig
 ): Promise<T> {

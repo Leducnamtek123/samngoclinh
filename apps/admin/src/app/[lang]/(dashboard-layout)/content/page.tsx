@@ -25,19 +25,19 @@ async function getArticles() {
   }
 }
 
-async function getBannerSettings() {
-  const keys = [
-    "homepage_banner_image_1",
-    "homepage_banner_image_2",
-    "homepage_banner_image_3",
-    "homepage_banner_image_4",
-    "homepage_banner_image_5",
-    "about_banner_image",
-    "news_banner_image",
-    "campaigns_banner_image",
-  ]
+type BannerSettingsMap = {
+  homepage_banner_image_1: string
+  homepage_banner_image_2: string
+  homepage_banner_image_3: string
+  homepage_banner_image_4: string
+  homepage_banner_image_5: string
+  about_banner_image: string
+  news_banner_image: string
+  campaigns_banner_image: string
+}
 
-  const defaultImages: Record<string, string> = {
+async function getBannerSettings(): Promise<BannerSettingsMap> {
+  const defaultImages: BannerSettingsMap = {
     homepage_banner_image_1: "/images/banners/homepage_banner_1.png",
     homepage_banner_image_2: "/images/banners/homepage_banner_2.png",
     homepage_banner_image_3: "/images/banners/homepage_banner_3.png",
@@ -48,7 +48,8 @@ async function getBannerSettings() {
     campaigns_banner_image: "/images/banners/campaigns_banner.png",
   }
 
-  const results: Record<string, string> = {}
+  const results = { ...defaultImages }
+  const keys = Object.keys(defaultImages) as (keyof BannerSettingsMap)[]
 
   try {
     await Promise.all(
@@ -59,17 +60,17 @@ async function getBannerSettings() {
           })
           if (res.ok) {
             const json = await res.json()
-            results[key] = json.data?.value || defaultImages[key]
-          } else {
-            results[key] = defaultImages[key]
+            if (json.data?.value) {
+              results[key] = json.data.value
+            }
           }
-        } catch (err) {
-          results[key] = defaultImages[key]
+        } catch {
+          // Keep default
         }
       })
     )
     return results
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching banner settings for admin:", error)
     return defaultImages
   }
@@ -87,7 +88,7 @@ export default async function ContentPage(props: {
     <div className="container py-6 space-y-6">
       <ContentManager
         initialArticles={articles}
-        initialBannerSettings={bannerSettings as any}
+        initialBannerSettings={bannerSettings}
       />
     </div>
   )

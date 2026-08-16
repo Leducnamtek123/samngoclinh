@@ -5,9 +5,11 @@ import { Building2, UserCheck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
+import type { AdminUser, EContract } from "@/types"
+
 interface ContractDetailPartiesCardProps {
-  contract: any
-  user: any
+  contract: EContract
+  user: AdminUser | null
   isEkyc: boolean
 }
 
@@ -40,7 +42,12 @@ export function ContractDetailPartiesCard({
           </span>
           <div className="flex items-center justify-between">
             <span className="font-bold text-slate-900 dark:text-white">
-              {user?.name || contract.partyB || "Khách hàng"}
+              {user?.name ||
+                (typeof contract.partyB === "object"
+                  ? contract.partyB?.name
+                  : contract.partyB) ||
+                contract.customerName ||
+                "Khách hàng"}
             </span>
             {isEkyc ? (
               <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 gap-1 text-[10px]">

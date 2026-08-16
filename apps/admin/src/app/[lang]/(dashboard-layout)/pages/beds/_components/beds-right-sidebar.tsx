@@ -15,7 +15,8 @@ import {
   User,
 } from "lucide-react"
 
-import type { CultivationBedLocation, Tree } from "./use-beds-table"
+import type { CultivationBedLocation } from "./use-beds-table"
+import type { CareLog, Tree } from "@/types"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,8 +28,8 @@ interface BedsRightSidebarProps {
   selectedLocationId: string | null
   locations: CultivationBedLocation[]
   loadingTreeDetails: boolean
-  selectedTreeDetails: any | null
-  selectedTreeCareLogs: any[]
+  selectedTreeDetails: Tree | null
+  selectedTreeCareLogs: CareLog[]
   handleSingleWatering: (loc: CultivationBedLocation) => void
   handleSingleFertilizing: (loc: CultivationBedLocation) => void
   getOwnerName: (userId: string | undefined) => string
@@ -197,9 +198,9 @@ export function BedsRightSidebar({
                         Dự kiến thu hoạch:
                       </span>
                       <span className="font-bold text-emerald-600 font-mono">
-                        {selectedTreeDetails.expectedHarvestAt
+                        {selectedTreeDetails.expectedHarvestAt || selectedTreeDetails.estimatedHarvestDate
                           ? new Date(
-                              selectedTreeDetails.expectedHarvestAt
+                              selectedTreeDetails.expectedHarvestAt || selectedTreeDetails.estimatedHarvestDate || ""
                             ).toLocaleDateString("vi-VN", {
                               timeZone: "Asia/Ho_Chi_Minh",
                             })
@@ -257,7 +258,7 @@ export function BedsRightSidebar({
                       </div>
                     ) : (
                       <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100 dark:before:bg-slate-800">
-                        {selectedTreeCareLogs.map((log: any) => (
+                        {selectedTreeCareLogs.map((log: CareLog) => (
                           <div
                             key={log.id}
                             className="relative pl-5 text-[10px]"

@@ -16,7 +16,7 @@ import {
   ExternalLink,
 } from "lucide-react"
 
-import type { EContract, User } from "./contracts-manager"
+import type { AdminUser, EContract } from "@/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -47,7 +47,7 @@ import {
 
 interface ContractsListProps {
   contracts: EContract[]
-  users: User[]
+  users: AdminUser[]
   lang: string
   onDelete: (id: string) => void
 }
@@ -65,6 +65,7 @@ const getStatusBadge = (status: string) => {
         </Badge>
       )
     case "pending":
+    case "pending_signature":
       return (
         <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 font-semibold gap-1 text-[11px]">
           <Clock className="w-3 h-3" /> Chờ ký
@@ -72,19 +73,19 @@ const getStatusBadge = (status: string) => {
       )
     case "expired":
       return (
-        <Badge variant="destructive" className="gap-1 text-[11px]">
+        <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-semibold gap-1 text-[11px]">
           <AlertTriangle className="w-3 h-3" /> Hết hạn
         </Badge>
       )
     case "cancelled":
       return (
-        <Badge variant="outline" className="text-slate-500 text-[11px]">
+        <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-300 font-semibold gap-1 text-[11px]">
           Đã hủy
         </Badge>
       )
     default:
       return (
-        <Badge variant="secondary" className="text-[11px]">
+        <Badge variant="outline" className="text-slate-600 font-medium text-[11px]">
           {status}
         </Badge>
       )
@@ -93,16 +94,15 @@ const getStatusBadge = (status: string) => {
 
 const getContractTypeLabel = (type?: string) => {
   switch (type) {
+    case "custody":
     case "purchase_and_care":
-      return "Mua bán & Ký gửi"
-    case "purchase":
-      return "Mua bán sâm"
-    case "consignment":
       return "Ký gửi chăm sóc"
-    case "care":
-      return "Gói chăm sóc"
+    case "purchase":
+      return "Mua cây / Sở hữu"
+    case "investment":
+      return "Đầu tư vườn sâm"
     default:
-      return type || "Mua bán"
+      return type || "Hợp đồng ký gửi"
   }
 }
 
@@ -112,20 +112,20 @@ export function ContractsList({
   lang,
   onDelete,
 }: ContractsListProps) {
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs bg-white dark:bg-slate-950">
         <Table>
-          <TableHeader className="bg-slate-50/70 dark:bg-slate-900/40">
+          <TableHeader className="bg-slate-50/75 dark:bg-slate-900/50">
             <TableRow>
-              <TableHead className="w-[180px]">Hợp đồng</TableHead>
+              <TableHead className="w-[180px]">Mã HĐ / Tiêu đề</TableHead>
               <TableHead>Khách hàng</TableHead>
-              <TableHead>Nguồn phát sinh</TableHead>
+              <TableHead>Nguồn phát hành</TableHead>
               <TableHead>Loại hợp đồng</TableHead>
-              <TableHead>Giá trị & Thanh toán</TableHead>
+              <TableHead>Giá trị hợp đồng</TableHead>
               <TableHead>Trạng thái</TableHead>
               <TableHead>Thời hạn</TableHead>
               <TableHead className="text-right">Thao tác</TableHead>
@@ -147,16 +147,17 @@ export function ContractsList({
               contracts.map((contract) => {
                 const userObj = users.find((u) => u.id === contract.userId)
                 const isEkyc = Boolean(userObj?.isVerified)
-                const meta = (contract.metadata || {}) as Record<string, any>
+                const meta = (contract.metadata || {}) as Record<string, unknown>
+                const contractCode = contract.code || contract.contractCode || contract.contractNumber || ""
                 const orderCode =
-                  meta.orderCode ||
-                  (contract.code?.startsWith("CTR-") ? contract.code.replace("CTR-", "ORD-") : null)
+                  (meta.orderCode as string) ||
+                  (contractCode.startsWith("CTR-") ? contractCode.replace("CTR-", "ORD-") : null)
                 const isOrderSource = Boolean(
                   meta.orderId || meta.orderCode || contract.contractType === "purchase_and_care"
                 )
                 const webUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
-                const pdfDownloadUrl = `${apiUrl}/public/contracts/${contract.code}/pdf`
-                const traceUrl = `${webUrl}/trace/contract/${contract.code}`
+                const pdfDownloadUrl = `${apiUrl}/public/contracts/${contractCode}/pdf`
+                const traceUrl = `${webUrl}/trace/contract/${contractCode}`
 
                 return (
                   <TableRow key={contract.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">
@@ -167,7 +168,7 @@ export function ContractsList({
                           href={`/${lang}/pages/contracts/${contract.id}`}
                           className="font-mono text-xs font-bold text-primary hover:underline"
                         >
-                          {contract.code}
+                          {contractCode}
                         </Link>
                         <span className="text-xs font-medium text-slate-800 dark:text-slate-200 line-clamp-1">
                           {contract.title}
@@ -180,7 +181,7 @@ export function ContractsList({
                       <div className="flex flex-col gap-0.5 text-xs">
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-slate-900 dark:text-white">
-                            {userObj?.name || contract.partyB || "Khách hàng"}
+                            {userObj?.name || (typeof contract.partyB === "object" ? contract.partyB?.name : contract.partyB) || contract.customerName || "Khách hàng"}
                           </span>
                           {isEkyc && (
                             <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-200" title="Đã xác thực eKYC CCCD">
@@ -189,7 +190,7 @@ export function ContractsList({
                           )}
                         </div>
                         <span className="text-muted-foreground text-[11px] truncate max-w-[180px]">
-                          {userObj?.email || "—"}
+                          {userObj?.email || contract.customerEmail || "—"}
                         </span>
                       </div>
                     </TableCell>
@@ -230,7 +231,7 @@ export function ContractsList({
                     <TableCell>
                       <div className="flex flex-col gap-0.5">
                         <span className="font-extrabold text-xs text-slate-900 dark:text-white">
-                          {formatVND(contract.contractValue)}
+                          {formatVND(contract.totalValue || contract.contractValue || 0)}
                         </span>
                         <span
                           className={`text-[10px] font-semibold ${
@@ -247,7 +248,7 @@ export function ContractsList({
 
                     {/* Expiration */}
                     <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                      {new Date(contract.expiredAt).toLocaleDateString("vi-VN", {
+                      {new Date(contract.expiresAt || contract.expiredAt || contract.createdAt).toLocaleDateString("vi-VN", {
                         timeZone: "Asia/Ho_Chi_Minh",
                       })}
                     </TableCell>
@@ -269,26 +270,36 @@ export function ContractsList({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-48 text-xs">
                             <DropdownMenuItem asChild>
-                              <a href={pdfDownloadUrl} target="_blank" rel="noopener noreferrer" className="cursor-pointer gap-2">
-                                <FileDown className="w-4 h-4 text-primary" /> Tải bản PDF
+                              <a
+                                href={pdfDownloadUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <FileDown className="w-4 h-4 text-slate-600" />
+                                Tải bản PDF chính thức
                               </a>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <a href={traceUrl} target="_blank" rel="noopener noreferrer" className="cursor-pointer gap-2">
-                                <QrCode className="w-4 h-4 text-emerald-600" /> Tra cứu QR
+                              <a
+                                href={traceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2 cursor-pointer"
+                              >
+                                <QrCode className="w-4 h-4 text-emerald-600" />
+                                Tra cứu QR Code Web
+                                <ExternalLink className="w-3 h-3 ml-auto text-muted-foreground" />
                               </a>
                             </DropdownMenuItem>
-                            {contract.status !== "signed" && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => setDeleteConfirmId(contract.id)}
-                                  className="text-red-600 focus:text-red-700 cursor-pointer gap-2"
-                                >
-                                  <Trash2 className="w-4 h-4" /> Xóa hợp đồng
-                                </DropdownMenuItem>
-                              </>
-                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => setDeleteTargetId(contract.id)}
+                              className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 flex items-center gap-2 cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Xóa hợp đồng
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -301,30 +312,30 @@ export function ContractsList({
         </Table>
       </div>
 
-      {/* Delete Confirmation Alert Dialog */}
+      {/* Delete Confirmation Dialog */}
       <AlertDialog
-        open={Boolean(deleteConfirmId)}
-        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+        open={Boolean(deleteTargetId)}
+        onOpenChange={(open) => !open && setDeleteTargetId(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa hợp đồng này?</AlertDialogTitle>
+            <AlertDialogTitle>Xác nhận xóa hợp đồng?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này sẽ xóa hợp đồng khỏi hệ thống quản lý. Thao tác không thể hoàn tác.
+              Hành động này sẽ xóa hợp đồng khỏi hệ thống quản lý. Bạn có chắc chắn muốn tiếp tục không?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Hủy</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (deleteConfirmId) {
-                  onDelete(deleteConfirmId)
-                  setDeleteConfirmId(null)
+                if (deleteTargetId) {
+                  onDelete(deleteTargetId)
+                  setDeleteTargetId(null)
                 }
               }}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Xóa hợp đồng
+              Xác nhận xóa
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
+import type { AdminUser } from "@/types"
+
 interface CreateContractStep4Props {
   title: string
-  selectedUser: any
+  selectedUser: AdminUser | null
   contractValue: number
   paymentStatus: string
   selectedTreeCode: string

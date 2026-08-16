@@ -2,6 +2,7 @@
 
 import React from "react"
 import Cropper from "react-easy-crop"
+import type { Area } from "react-easy-crop"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,15 +16,20 @@ import {
 import { FormLabel } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
+export type { Area }
+
+export interface CropState {
+  isOpen: boolean
+  imageSrc: string | null
+  crop: { x: number; y: number }
+  zoom: number
+  croppedAreaPixels?: Area | null
+}
+
 interface ShopItemCropDialogProps {
-  cropState: {
-    isOpen: boolean
-    imageSrc: string | null
-    crop: { x: number; y: number }
-    zoom: number
-  }
-  onCropStateChange: (updater: (prev: any) => any) => void
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void
+  cropState: CropState
+  onCropStateChange: (updater: (prev: CropState) => CropState) => void
+  onCropComplete: (croppedArea: Area, croppedAreaPixels: Area) => void
   onCropSave: () => void
   onCloseCrop: () => void
   uploadingImage: boolean
@@ -44,33 +50,34 @@ export function ShopItemCropDialog({
     >
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Cắt ảnh sản phẩm (Tỉ lệ vuông 1:1)</DialogTitle>
+          <DialogTitle>Cắt và căn chỉnh ảnh sản phẩm</DialogTitle>
           <DialogDescription>
-            Kéo thả khung cắt để chọn góc ảnh đại diện đẹp nhất cho sản phẩm
-            thương mại.
+            Kéo thả và chỉnh tỉ lệ để có hình ảnh đại diện vuông đẹp nhất
           </DialogDescription>
         </DialogHeader>
 
-        {cropState.imageSrc && (
-          <div className="relative w-full h-80 bg-muted rounded-md overflow-hidden my-4">
+        <div className="relative w-full h-64 bg-slate-900 rounded-md overflow-hidden my-2">
+          {cropState.imageSrc && (
             <Cropper
               image={cropState.imageSrc}
               crop={cropState.crop}
               zoom={cropState.zoom}
               aspect={1}
-              onCropChange={(c) =>
-                onCropStateChange((prev) => ({ ...prev, crop: c }))
+              onCropChange={(crop) =>
+                onCropStateChange((prev) => ({ ...prev, crop }))
+              }
+              onZoomChange={(zoom) =>
+                onCropStateChange((prev) => ({ ...prev, zoom }))
               }
               onCropComplete={onCropComplete}
-              onZoomChange={(z) =>
-                onCropStateChange((prev) => ({ ...prev, zoom: z }))
-              }
             />
-          </div>
-        )}
+          )}
+        </div>
 
-        <div className="space-y-2">
-          <FormLabel>Độ phóng đại (Zoom)</FormLabel>
+        <div className="space-y-2 py-2">
+          <FormLabel className="text-xs">
+            Phóng to / Thu nhỏ ({cropState.zoom.toFixed(1)}x)
+          </FormLabel>
           <Input
             type="range"
             min={1}
@@ -79,31 +86,38 @@ export function ShopItemCropDialog({
             value={cropState.zoom}
             onChange={(e) => {
               const val = parseFloat(e.target.value)
-              onCropStateChange((prev) => ({ ...prev, zoom: val }))
+              onCropStateChange((prev) => ({
+                ...prev,
+                zoom: val,
+              }))
             }}
-            aria-label="Độ phóng đại (Zoom)"
-            className="w-full"
+            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-700"
           />
         </div>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter className="flex gap-2">
           <Button
             type="button"
             variant="outline"
-            disabled={uploadingImage}
             onClick={onCloseCrop}
+            disabled={uploadingImage}
           >
             Hủy
           </Button>
           <Button
             type="button"
-            disabled={uploadingImage}
             onClick={onCropSave}
+            disabled={uploadingImage}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
-            {uploadingImage && (
-              <Loader2 className="size-4 mr-2 animate-spin" />
+            {uploadingImage ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Đang xử lý...
+              </>
+            ) : (
+              "Lưu & Tải lên"
             )}
-            Cắt & Tải lên Cloudinary
           </Button>
         </DialogFooter>
       </DialogContent>

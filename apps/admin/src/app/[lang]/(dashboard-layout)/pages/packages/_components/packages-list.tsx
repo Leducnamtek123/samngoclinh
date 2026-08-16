@@ -2,6 +2,8 @@
 
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { CarePackage, PaginationMeta, ProtectionPackage } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -16,33 +18,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-interface CarePackage {
-  id: string
-  code: string
-  name: string
-  price: number
-  durationMonths: number
-  description?: string
-  status: string
-}
-
-interface ProtectionPackage {
-  id: string
-  code: string
-  name: string
-  price: number
-  coverage?: string
-  description?: string
-  status: string
-}
-
 interface CarePackagesListProps {
   packages: CarePackage[]
   onEdit: (pkg: CarePackage) => void
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (amount: number) => string
-  metadata?: any
+  metadata?: PaginationMeta | null
   handlePageChange?: (page: number) => void
 }
 
@@ -52,7 +34,7 @@ interface ProtectionPackagesListProps {
   onDelete: (id: string) => void
   onOpenCreate: () => void
   formatVND: (amount: number) => string
-  metadata?: any
+  metadata?: PaginationMeta | null
   handlePageChange?: (page: number) => void
 }
 
@@ -63,89 +45,99 @@ export function CarePackagesList({
   onOpenCreate,
   formatVND,
   metadata,
-  handlePageChange = () => {},
+  handlePageChange,
 }: CarePackagesListProps) {
   const { t } = useTranslation()
 
+  if (packages.length === 0) {
+    return (
+      <EmptyState
+        title="Chưa có gói chăm sóc nào"
+        description="Bấm vào nút bên dưới để tạo cấu hình gói chăm sóc sâm đầu tiên."
+        actionLabel="Thêm gói chăm sóc"
+        onAction={onOpenCreate}
+      />
+    )
+  }
+
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("packages.fields.code")}</TableHead>
-            <TableHead>{t("packages.fields.name")}</TableHead>
-            <TableHead>{t("packages.fields.price")}</TableHead>
-            <TableHead>{t("packages.fields.duration")}</TableHead>
-            <TableHead>{t("packages.fields.description")}</TableHead>
-            <TableHead>{t("packages.fields.status")}</TableHead>
-            <TableHead className="text-right">
-              {t("common.actions.actions")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {packages.length === 0 ? (
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
-                <EmptyState
-                  title={t("common.table.noResults")}
-                  description={t("common.table.noResults")}
-                  actionLabel={t("common.actions.add")}
-                  onAction={onOpenCreate}
-                />
-              </TableCell>
+              <TableHead>Mã gói</TableHead>
+              <TableHead>Tên gói</TableHead>
+              <TableHead>Thời hạn</TableHead>
+              <TableHead>Giá dịch vụ</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead className="text-right">Thao tác</TableHead>
             </TableRow>
-          ) : (
-            packages.map((pkg) => (
+          </TableHeader>
+          <TableBody>
+            {packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono text-xs font-semibold">
+                <TableCell className="font-mono font-medium text-xs">
                   {pkg.code}
                 </TableCell>
-                <TableCell className="font-medium">{pkg.name}</TableCell>
-                <TableCell>{formatVND(pkg.price)}</TableCell>
-                <TableCell>{pkg.durationMonths} tháng</TableCell>
-                <TableCell className="max-w-[200px] truncate text-muted-foreground text-xs">
-                  {pkg.description || "—"}
+                <TableCell>
+                  <div className="font-medium">{pkg.name}</div>
+                  {pkg.description && (
+                    <div className="text-xs text-muted-foreground line-clamp-1">
+                      {pkg.description}
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>{pkg.durationMonths} Tháng</TableCell>
+                <TableCell className="font-semibold text-emerald-600">
+                  {formatVND(pkg.price)}
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      pkg.status.toLowerCase() === "active"
-                        ? "default"
-                        : "secondary"
-                    }
-                  >
-                    {pkg.status.toLowerCase() === "active"
-                      ? t("common.status.active")
-                      : t("common.status.inactive")}
-                  </Badge>
+                  {pkg.status === "active" ? (
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                    >
+                      Hoạt động
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="bg-slate-50 text-slate-700 border-slate-200"
+                    >
+                      Tạm dừng
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
+                  <div className="flex justify-end gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => onEdit(pkg)}
+                      className="h-8 w-8 text-slate-600 hover:text-slate-900"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive hover:bg-destructive/10"
                       onClick={() => onDelete(pkg.id)}
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <Pagination metadata={metadata} onPageChange={handlePageChange} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {metadata && handlePageChange && (
+        <Pagination metadata={metadata} onPageChange={handlePageChange} />
+      )}
     </div>
   )
 }
@@ -157,68 +149,81 @@ export function ProtectionPackagesList({
   onOpenCreate,
   formatVND,
   metadata,
-  handlePageChange = () => {},
+  handlePageChange,
 }: ProtectionPackagesListProps) {
   const { t } = useTranslation()
 
+  if (packages.length === 0) {
+    return (
+      <EmptyState
+        title="Chưa có gói bảo hiểm nào"
+        description="Bấm vào nút bên dưới để tạo cấu hình gói bảo hiểm cây giống đầu tiên."
+        actionLabel="Thêm gói bảo hiểm"
+        onAction={onOpenCreate}
+      />
+    )
+  }
+
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("packages.fields.code")}</TableHead>
-            <TableHead>{t("packages.fields.name")}</TableHead>
-            <TableHead>{t("packages.fields.price")}</TableHead>
-            <TableHead>{t("packages.fields.coverage")}</TableHead>
-            <TableHead>{t("packages.fields.description")}</TableHead>
-            <TableHead>{t("packages.fields.status")}</TableHead>
-            <TableHead className="text-right">
-              {t("common.actions.actions")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {packages.length === 0 ? (
+    <div className="space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={7} className="py-8">
-                <EmptyState
-                  title={t("common.table.noResults")}
-                  description={t("common.table.noResults")}
-                  actionLabel={t("common.actions.add")}
-                  onAction={onOpenCreate}
-                />
-              </TableCell>
+              <TableHead>Mã gói</TableHead>
+              <TableHead>Tên gói</TableHead>
+              <TableHead>Thời hạn</TableHead>
+              <TableHead>Mức bồi thường</TableHead>
+              <TableHead>Giá gói</TableHead>
+              <TableHead>Trạng thái</TableHead>
+              <TableHead className="text-right">Thao tác</TableHead>
             </TableRow>
-          ) : (
-            packages.map((pkg) => (
+          </TableHeader>
+          <TableBody>
+            {packages.map((pkg) => (
               <TableRow key={pkg.id}>
-                <TableCell className="font-mono text-xs font-semibold">
+                <TableCell className="font-mono font-medium text-xs">
                   {pkg.code}
                 </TableCell>
-                <TableCell className="font-semibold text-slate-800 dark:text-slate-200">
-                  {pkg.name}
+                <TableCell>
+                  <div className="font-medium">{pkg.name}</div>
+                  {pkg.description && (
+                    <div className="text-xs text-muted-foreground line-clamp-1">
+                      {pkg.description}
+                    </div>
+                  )}
                 </TableCell>
-                <TableCell className="font-medium text-emerald-600">
+                <TableCell>{pkg.durationMonths} Tháng</TableCell>
+                <TableCell className="font-medium text-blue-600">
+                  {pkg.coveragePercentage ? `${pkg.coveragePercentage}%` : "100% Cây giống"}
+                </TableCell>
+                <TableCell className="font-semibold text-emerald-600">
                   {formatVND(pkg.price)}
                 </TableCell>
-                <TableCell className="text-sm">{pkg.coverage || "—"}</TableCell>
-                <TableCell className="text-sm max-w-[200px] truncate">
-                  {pkg.description || "—"}
-                </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={pkg.status === "active" ? "default" : "outline"}
-                  >
-                    {t(`common.status.${pkg.status.toLowerCase()}`)}
-                  </Badge>
+                  {pkg.status === "active" ? (
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-50 text-emerald-700 border-emerald-200"
+                    >
+                      Hoạt động
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="bg-slate-50 text-slate-700 border-slate-200"
+                    >
+                      Tạm dừng
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
+                  <div className="flex justify-end gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(pkg)}
-                      className="h-8 w-8 text-blue-600"
+                      className="h-8 w-8 text-slate-600 hover:text-slate-900"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -226,23 +231,20 @@ export function ProtectionPackagesList({
                       variant="ghost"
                       size="icon"
                       onClick={() => onDelete(pkg.id)}
-                      className="h-8 w-8 text-destructive"
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-      {handlePageChange && metadata && (
-        <Pagination
-          metadata={metadata}
-          onPageChange={handlePageChange}
-          className="px-4 pb-2"
-        />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {metadata && handlePageChange && (
+        <Pagination metadata={metadata} onPageChange={handlePageChange} />
       )}
     </div>
   )

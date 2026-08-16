@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
 import { TreeFormFields, type Bed } from "./tree-form-fields"
+import type { AdminUser } from "@/types"
 
 export type { Bed }
 
@@ -27,7 +28,7 @@ interface TreeDialogProps {
   mode: "create" | "edit"
   formData: TreeFormValues
   beds: Bed[]
-  users: any[]
+  users: AdminUser[] | Array<{ id: string; name?: string | null; username: string; email?: string }>
   onSubmit: (values: TreeFormValues) => void
   loading: boolean
   error: string

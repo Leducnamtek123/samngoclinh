@@ -1,44 +1,76 @@
-import { BadgePercent, HandCoins, ShoppingBag } from "lucide-react"
+import { BadgePercent, HandCoins, ShoppingBag, TrendingUp } from "lucide-react"
 
-import { overviewData } from "../_data/overview"
+import type { BackofficeOverview } from "@/types"
 
 import {
   DashboardCardActionsDropdown,
   DashboardOverviewCardV2,
 } from "@/components/dashboards/dashboard-card"
 
-export function Overview() {
+interface OverviewProps {
+  stats?: BackofficeOverview | null
+}
+
+export function Overview({ stats }: OverviewProps) {
+  const totalRevenue = stats?.totalRevenue ?? 150000000
+  const totalOrders = stats?.totalOrders ?? 45
+  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
+
+  const totalSalesData = {
+    value: totalRevenue,
+    percentageChange: 0.18,
+    period: "Tháng này",
+  }
+
+  const revenueSummaryData = {
+    value: totalRevenue,
+    percentageChange: 0.15,
+    period: "Toàn bộ",
+  }
+
+  const numberOfOrdersData = {
+    value: totalOrders,
+    percentageChange: 0.12,
+    period: "Tháng này",
+  }
+
+  const avgOrderValueData = {
+    value: avgOrderValue,
+    percentageChange: 0.05,
+    period: "Trung bình",
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-2 md:grid-cols-4">
       <DashboardOverviewCardV2
-        data={overviewData.totalSales}
-        title="Total Sales"
-        period={overviewData.totalSales.period}
+        data={totalSalesData}
+        title="Tổng Doanh Thu"
+        period={totalSalesData.period}
         action={<DashboardCardActionsDropdown />}
         icon={BadgePercent}
         formatStyle="currency"
       />
       <DashboardOverviewCardV2
-        data={overviewData.revenueSummary}
-        title="Revenue Summary"
-        period={overviewData.revenueSummary.period}
+        data={revenueSummaryData}
+        title="Doanh Số Canh Tác & Bán Hàng"
+        period={revenueSummaryData.period}
         action={<DashboardCardActionsDropdown />}
         icon={HandCoins}
         formatStyle="currency"
       />
       <DashboardOverviewCardV2
-        data={overviewData.numberOfOrders}
-        title="Number of Orders"
-        period={overviewData.numberOfOrders.period}
+        data={numberOfOrdersData}
+        title="Số Lượng Đơn Hàng"
+        period={numberOfOrdersData.period}
         action={<DashboardCardActionsDropdown />}
         icon={ShoppingBag}
       />
       <DashboardOverviewCardV2
-        data={overviewData.averageOrderValue}
-        title="Avg. Order Value"
-        period={overviewData.averageOrderValue.period}
+        data={avgOrderValueData}
+        title="Giá Trị Đơn Trung Bình"
+        period={avgOrderValueData.period}
         action={<DashboardCardActionsDropdown />}
-        icon={HandCoins}
+        icon={TrendingUp}
         formatStyle="currency"
       />
     </div>

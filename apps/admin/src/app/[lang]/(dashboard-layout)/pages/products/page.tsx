@@ -1,8 +1,9 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
+import type { PaginationMeta, ShopItem } from "@/types"
 
-import { fetchApi } from "@/lib/api"
+import { catalogService } from "@/services/catalog.service"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ShopItemsTable } from "./category/_components/shop-items-table"
@@ -10,19 +11,6 @@ import { ShopItemsTable } from "./category/_components/shop-items-table"
 export const metadata: Metadata = {
   title: "Quản lý sản phẩm thương mại | Sâm Ngọc Linh Admin",
   description: "Quản lý danh sách các sản phẩm rượu sâm và chế phẩm thương mại",
-}
-
-interface ShopItem {
-  id: string
-  code: string
-  name: string
-  price: number
-  unit: string
-  category: string
-  stock?: number
-  status?: string
-  images?: string[]
-  description?: string
 }
 
 interface ProductsPageProps {
@@ -47,31 +35,19 @@ export default async function ProductsPage({
   const status = resolvedSearchParams.status || ""
 
   let shopItems: ShopItem[] = []
-  let metadata: any = null
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("status", status)
-
-    const res = await fetchApi(
-      `/public/catalog/shop-items?${queryParams.toString()}`
-    )
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải danh sách sản phẩm"
-    } else {
-      shopItems = Array.isArray(payload.data)
-        ? payload.data
-        : payload.data?.items || []
-      metadata = payload.metadata || null
+    const res = await catalogService.getShopItems({ page, perPage, search, status })
+    if (res.data && Array.isArray(res.data)) {
+      shopItems = res.data
+      metadata = res.metadata || null
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching shop items:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

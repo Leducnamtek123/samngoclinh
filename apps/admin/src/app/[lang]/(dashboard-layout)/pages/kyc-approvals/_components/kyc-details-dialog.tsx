@@ -16,7 +16,7 @@ import type { KYCRequest } from "./kyc-table"
 interface KycDetailsDialogProps {
   selectedKyc: KYCRequest | null
   onClose: () => void
-  dict: any
+  dict: Record<string, any>
   lang: string
   showRejectForm: boolean
   setShowRejectForm: (show: boolean) => void
@@ -66,9 +66,9 @@ export function KycDetailsDialog({
             <div>
               <span className="text-muted-foreground text-xs block">{dict.modal.documentType || (lang === 'en' ? 'Document Type:' : 'Loại giấy tờ:')}</span>
               <p className="font-semibold text-sm">
-                {(selectedKyc.idType || (selectedKyc as any).documentType) === "passport"
+                {(selectedKyc.idType || selectedKyc.documentType) === "passport"
                   ? (lang === "en" ? "Passport" : "Hộ chiếu")
-                  : (selectedKyc.idType || (selectedKyc as any).documentType) === "driver_license"
+                  : (selectedKyc.idType || selectedKyc.documentType) === "driver_license"
                   ? (lang === "en" ? "Driver's License" : "Bằng lái xe")
                   : (lang === "en" ? "Citizen ID (CCCD)" : "Căn cước công dân")}
               </p>
@@ -132,9 +132,9 @@ export function KycDetailsDialog({
                 </div>
               ) : (
                 <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                  {(selectedKyc.idType || (selectedKyc as any).documentType) === "passport"
-                    ? (lang === "en" ? "Not applicable" : "Không bắt buộc (Hộ chiếu)")
-                    : (lang === "en" ? "No photo" : "Chưa có ảnh")}
+                  {(selectedKyc.idType || selectedKyc.documentType) === "passport"
+                    ? (lang === "en" ? "Passport Photo" : "Ảnh Hộ Chiếu")
+                    : (lang === "en" ? "Front Side" : "Mặt Trước CCCD")}
                 </div>
               )}
             </div>
@@ -181,7 +181,7 @@ export function KycDetailsDialog({
                   {dict.modal.rejectReasonTitle}
                 </span>
                 <div className="flex flex-wrap gap-1.5 mb-2">
-                  {Object.values(dict.modal.presets).map((preset: any) => (
+                  {Object.values((dict.modal?.presets || {}) as Record<string, string>).map((preset: string) => (
                     <button
                       key={preset}
                       type="button"

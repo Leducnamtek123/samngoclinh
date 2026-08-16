@@ -7,7 +7,7 @@ export interface WizardStep {
   id: number
   title: string
   desc: string
-  icon: any
+  icon?: React.ComponentType<{ className?: string }> | null
 }
 
 interface CreateContractStepperProps {

@@ -217,8 +217,8 @@ function CustomerDetailsContent() {
                   className="capitalize text-sm font-semibold"
                 >
                   {typeof user.role === "object" && user.role
-                    ? (user.role as any).name
-                    : user.role}
+                    ? (user.role as { name?: string; code?: string }).name || (user.role as { name?: string; code?: string }).code || "USER"
+                    : String(user.role || "USER")}
                 </Badge>
               </div>
               <div>

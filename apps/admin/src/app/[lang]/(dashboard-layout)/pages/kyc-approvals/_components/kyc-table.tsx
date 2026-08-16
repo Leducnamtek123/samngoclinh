@@ -25,6 +25,7 @@ export interface KYCRequest {
   }
   idNumber?: string
   idType?: string
+  documentType?: string
   idFrontUrl?: string
   idBackUrl?: string
   selfieUrl?: string
@@ -39,12 +40,14 @@ export interface KYCRequest {
   submittedAt?: string
 }
 
+import type { PaginationMeta } from "@/types"
+
 interface KycTableProps {
   kycList: KYCRequest[]
-  metadata: any
+  metadata: PaginationMeta | null
   onPageChange: (p: number) => void
   onReview: (kyc: KYCRequest) => void
-  dict: any
+  dict: Record<string, any>
   lang: string
   formatDateLocale: (dateStr?: string, lang?: string) => string
 }
@@ -73,7 +76,7 @@ export function KycTable({
         </TableHeader>
         <TableBody>
           {kycList.map((kyc) => {
-            const docType = kyc.idType || (kyc as any).documentType || "cccd"
+            const docType = kyc.idType || kyc.documentType || "cccd"
             return (
               <TableRow key={kyc.id}>
                 <TableCell className="font-medium">

@@ -81,7 +81,7 @@ export default function CareLogsPage() {
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<any>(
+  } = useApiQuery<CareLog[] | { items: CareLog[]; metadata?: import("@/types").PaginationMeta }>(
     ["care-logs", page],
     `/user/cultivation/logs?page=${page}&perPage=${perPage}`
   )
@@ -91,10 +91,10 @@ export default function CareLogsPage() {
   const rawData = response?.data
   const careLogs: CareLog[] = Array.isArray(rawData)
     ? rawData
-    : Array.isArray(rawData?.items)
-      ? rawData.items
+    : Array.isArray((rawData as { items?: CareLog[] })?.items)
+      ? (rawData as { items: CareLog[] }).items
       : []
-  const metadata = response?.metadata || response?.data?.metadata || null
+  const metadata = response?.metadata || (rawData as { metadata?: import("@/types").PaginationMeta })?.metadata || null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -112,8 +112,9 @@ export default function CareLogsPage() {
       toast.success("Nhập nhật ký chăm sóc thành công")
       setIsOpen(false)
       refetch()
-    } catch (error: any) {
-      toast.error(error?.message || "Có lỗi xảy ra khi lưu nhật ký")
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu nhật ký"
+      toast.error(message)
     }
   }
 

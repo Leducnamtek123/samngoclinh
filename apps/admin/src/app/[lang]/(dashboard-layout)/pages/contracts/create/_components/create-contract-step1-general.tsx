@@ -8,11 +8,13 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 
+import type { AdminUser, Tree } from "@/types"
+
 interface CreateContractStep1Props {
-  users: any[]
-  trees: any[]
+  users: AdminUser[]
+  trees: Tree[]
   selectedUserId: string
-  selectedUser: any
+  selectedUser: AdminUser | null
   onUserChange: (userId: string) => void
   title: string
   onTitleChange: (title: string) => void
@@ -158,7 +160,7 @@ export function CreateContractStep1General({
                   <SelectItem value="none">-- Không gắn mã cây cụ thể --</SelectItem>
                   {trees.map((t) => (
                     <SelectItem key={t.id} value={t.code}>
-                      {t.code} - {t.name} {t.ageYear ? `(${t.ageYear} năm tuổi)` : ""}
+                      {t.code} - {t.name || "Cây sâm"} {t.ageYear || t.ageYears ? `(${t.ageYear || t.ageYears} năm tuổi)` : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>

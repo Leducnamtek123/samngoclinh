@@ -1,6 +1,8 @@
 "use client"
 
 import React from "react"
+import type { CarePackage, ProtectionPackage } from "@/types"
+
 import {
   ConfirmationDialog,
   ToastCard,
@@ -10,25 +12,7 @@ import { PackagesHeader } from "./packages-header"
 import { PackagesTabs } from "./packages-tabs"
 import { usePackagesManager } from "./use-packages-manager"
 
-export interface CarePackage {
-  id: string
-  code: string
-  name: string
-  price: number
-  description?: string
-  durationMonths: number
-  status: string
-}
-
-export interface ProtectionPackage {
-  id: string
-  code: string
-  name: string
-  price: number
-  description?: string
-  coverage?: string
-  status: string
-}
+export type { CarePackage, ProtectionPackage }
 
 interface PackagesManagerProps {
   initialCarePackages: CarePackage[]

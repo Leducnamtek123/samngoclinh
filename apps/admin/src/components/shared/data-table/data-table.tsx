@@ -43,7 +43,10 @@ export interface DataTableProps<T> {
 export function DataTable<T>({
   columns,
   data,
-  keyExtractor = (item: any) => item.id || item._id || item.code || String(Math.random()),
+  keyExtractor = (item: T) => {
+    const record = item as unknown as Record<string, unknown>
+    return String(record?.id || record?._id || record?.code || Math.random())
+  },
   loading = false,
   emptyMessage = "Không có dữ liệu.",
   metadata,

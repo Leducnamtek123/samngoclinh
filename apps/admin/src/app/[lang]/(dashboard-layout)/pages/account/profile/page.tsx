@@ -11,11 +11,28 @@ export const metadata: Metadata = {
   description: "Thông tin chi tiết tài khoản quản trị hệ thống Sâm Ngọc Linh",
 }
 
+export interface UserProfileData {
+  id: string
+  name: string
+  firstName: string
+  lastName: string
+  email: string
+  username: string
+  role: string
+  phone: string
+  address: string
+  country: string
+  company: string
+  position: string
+  avatar: string
+  status: string
+}
+
 export default async function ProfilePage(props: {
   params: Promise<{ lang: LocaleType }>
 }) {
   const params = await props.params
-  let user: any = null
+  let user: UserProfileData | null = null
 
   try {
     let res = await fetchApi("/v1/shared/user/profile")
@@ -42,19 +59,23 @@ export default async function ProfilePage(props: {
           lastName,
           email: profile.email || "",
           username: profile.username || "",
-          role: profile.role?.name || profile.role || "",
-          phoneNumber:
-            profile.mobileNumbers?.[0]?.number || profile.phone || "",
+          role: profile.role?.name || (typeof profile.role === "string" ? profile.role : "SUPER_ADMIN"),
+          phone: profile.mobileNumbers?.[0]?.number || profile.phone || "",
+          address: profile.addresses?.[0]?.detail || "Quảng Nam, Việt Nam",
+          country: profile.country?.name || "Việt Nam",
+          company: "Hệ thống Sâm Ngọc Linh",
+          position: "Quản trị viên Cấp cao",
           avatar: profile.photo?.url || profile.avatar || "",
+          status: profile.status || "active",
         }
       }
     }
-  } catch (error) {
-    console.error("Error fetching user profile in profile page:", error)
+  } catch (error: unknown) {
+    console.error("Failed to load user profile:", error)
   }
 
   return (
-    <div className="container px-0">
+    <div className="space-y-6">
       <ProfileHeader locale={params.lang} user={user} />
       <ProfileContent user={user} />
     </div>

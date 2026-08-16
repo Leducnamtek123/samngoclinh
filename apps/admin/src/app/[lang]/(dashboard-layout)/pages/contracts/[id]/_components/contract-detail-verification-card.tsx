@@ -6,9 +6,11 @@ import { ShieldCheck, Check, Copy, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import type { EContract } from "@/types"
+
 interface ContractDetailVerificationCardProps {
-  contract: any
-  meta: any
+  contract: EContract
+  meta: Record<string, unknown>
   isOrderSource: boolean
   isSigned: boolean
   documentHash: string
@@ -86,7 +88,13 @@ export function ContractDetailVerificationCard({
               <div>
                 <h5 className="font-bold text-xs text-slate-900 dark:text-white">Hết hạn hiệu lực pháp lý</h5>
                 <p className="text-[11px] text-muted-foreground">
-                  {new Date(contract.expiredAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}
+                  {contract.expiresAt || contract.expiredAt
+                    ? new Date(
+                        contract.expiresAt || contract.expiredAt || ""
+                      ).toLocaleDateString("vi-VN", {
+                        timeZone: "Asia/Ho_Chi_Minh",
+                      })
+                    : "—"}
                 </p>
               </div>
             </div>
