@@ -1,32 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchApiClient } from '@/lib/ApiClient';
 import { useProfileMe } from '@/hooks/queries/useProfile';
-import { getCartItems, updateCartQuantity, removeFromCart, type CartItem } from '@/utils/cart';
+import { cartStore } from '@/lib/stores/useCartStore';
+import { updateCartQuantity, removeFromCart, type CartItem } from '@/utils/cart';
 import { useTranslations } from 'next-intl';
 import { ShoppingBag, CheckCircle2, CreditCard, PackageCheck } from 'lucide-react';
 import { CartStepProgress } from './cart/CartStepProgress';
 import { CartStepItems } from './cart/CartStepItems';
 
+const emptyCartItems: CartItem[] = [];
+
 export const CartClient = ({ locale }: { locale: string }) => {
   const t = useTranslations('cart');
   const router = useRouter();
 
-  const [items, setItems] = useState<CartItem[]>([]);
+  const items = useSyncExternalStore(cartStore.subscribe, cartStore.getSnapshot, () => emptyCartItems);
   const { data: profile } = useProfileMe();
-
-  useEffect(() => {
-    setItems(getCartItems());
-
-    const handleCartUpdate = () => {
-      setItems(getCartItems());
-    };
-
-    window.addEventListener('cart_updated', handleCartUpdate);
-    return () => window.removeEventListener('cart_updated', handleCartUpdate);
-  }, []);
 
   // Fetch backend cart when profile is loaded
   useEffect(() => {
@@ -42,8 +34,7 @@ export const CartClient = ({ locale }: { locale: string }) => {
               image: it.imageUrl || it.image,
             }));
             if (apiItems.length > 0) {
-              setItems(apiItems);
-              localStorage.setItem('cart_items:v1', JSON.stringify(apiItems));
+              cartStore.setItems(apiItems);
             }
           }
         })
@@ -52,13 +43,11 @@ export const CartClient = ({ locale }: { locale: string }) => {
   }, [profile]);
 
   const handleUpdateQuantity = (id: string, delta: number) => {
-    const next = updateCartQuantity(id, delta);
-    setItems(next);
+    updateCartQuantity(id, delta);
   };
 
   const handleRemoveItem = (id: string) => {
-    const next = removeFromCart(id);
-    setItems(next);
+    removeFromCart(id);
   };
 
   const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);

@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+import { ShoppingCart } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { toast } from 'sonner';
@@ -134,16 +136,19 @@ export const ProductDetailClient = ({ id, locale, isLoggedIn, initialData }: Pro
                 return (
                   <div
                     key={relItem.id}
-                    className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                    className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between"
                   >
                     <Link
                       href={`/${locale}/products/${relItem.id}`}
                       className="block relative w-full h-48 bg-gray-50 dark:bg-slate-800 p-4"
                     >
-                      <img
+                      <Image
                         src={relImg}
                         alt={relItem.name}
-                        className="w-full h-full object-contain"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-contain p-2 hover:scale-105 transition-transform duration-300"
+                        unoptimized
                       />
                     </Link>
 
@@ -164,15 +169,15 @@ export const ProductDetailClient = ({ id, locale, isLoggedIn, initialData }: Pro
                         <button
                           type="button"
                           onClick={() => handleAddToCart(relItem, 1)}
-                          className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 text-gray-700 dark:text-gray-300 text-xs font-bold cursor-pointer"
+                          className="p-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 text-gray-700 dark:text-gray-300 text-xs font-bold cursor-pointer transition-[transform,background-color] active:scale-[0.96]"
                           title={t('addToCart')}
                         >
-                          🛒
+                          <ShoppingCart className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleBuyNow(relItem, 1)}
-                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer text-center"
+                          className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded-lg text-xs font-bold transition-[transform,background-color] active:scale-[0.98] cursor-pointer text-center shadow-xs"
                         >
                           {t('buyNow')}
                         </button>

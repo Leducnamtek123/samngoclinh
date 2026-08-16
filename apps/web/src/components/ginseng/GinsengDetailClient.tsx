@@ -137,7 +137,7 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: Gin
                     type="button"
                     key={imgUrl}
                     onClick={() => setActiveImageIdx(idx)}
-                    className={`w-16 h-16 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-all cursor-pointer relative ${
+                    className={`w-16 h-16 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-[border-color,box-shadow,opacity] cursor-pointer relative ${
                       activeImageIdx === idx ? 'border-primary ring-2 ring-emerald-100' : 'border-gray-200 opacity-70 hover:opacity-100'
                     }`}
                   >
@@ -205,21 +205,23 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: Gin
 
               {/* Quantity selector */}
               <div className="space-y-2 pt-2">
-                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider block">Số lượng cây đăng ký</label>
+                <span className="text-xs font-bold uppercase text-gray-400 tracking-wider block">Số lượng cây đăng ký</span>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-gray-50">
                     <button
                       type="button"
+                      aria-label="Giảm số lượng"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="px-3.5 py-2 text-gray-600 hover:bg-gray-200 font-bold transition-colors"
+                      className="px-3.5 py-2 text-gray-600 hover:bg-gray-200 font-bold transition-colors cursor-pointer"
                     >
                       -
                     </button>
                     <span className="px-4 text-sm font-bold text-gray-900">{quantity}</span>
                     <button
                       type="button"
+                      aria-label="Tăng số lượng"
                       onClick={() => setQuantity(quantity + 1)}
-                      className="px-3.5 py-2 text-gray-600 hover:bg-gray-200 font-bold transition-colors"
+                      className="px-3.5 py-2 text-gray-600 hover:bg-gray-200 font-bold transition-colors cursor-pointer"
                     >
                       +
                     </button>
@@ -261,16 +263,19 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: Gin
                 return (
                   <div
                     key={relPlant.id}
-                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                    className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between"
                   >
                     <Link
                       href={`/${locale}/ginseng/${relPlant.id}`}
                       className="block relative w-full h-48 bg-gray-50 p-4"
                     >
-                      <img
+                      <Image
                         src={relImg}
                         alt={relPlant.name}
-                        className="w-full h-full object-contain"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-contain p-4"
+                        unoptimized
                       />
                     </Link>
 

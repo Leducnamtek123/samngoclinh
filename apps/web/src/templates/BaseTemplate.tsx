@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { MapPin, Phone, Mail } from 'lucide-react';
 import { Link } from '@/lib/I18nNavigation';
 import { MiniCartDrawer } from '@/components/cart/MiniCartDrawer';
 
@@ -143,10 +144,19 @@ export const BaseTemplate = (props: {
               <p className="text-xs sm:text-sm text-gray-300/90 max-w-md leading-relaxed">
                 © {new Date().getFullYear()} Công ty Cổ phần Sâm Ngọc Linh. Nền tảng số hóa, chuẩn hóa nguồn gen và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
               </p>
-              <div className="space-y-1.5 text-xs sm:text-sm text-gray-400">
-                <p>📍 Trụ sở: Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam</p>
-                <p>📞 Hotline CSKH: <strong className="text-secondary font-bold">0967 234 234</strong> (24/7)</p>
-                <p>✉️ Email: <strong className="text-white font-medium">hotro@samngoclinh.vn</strong></p>
+              <div className="space-y-2 text-xs sm:text-sm text-gray-400">
+                <p className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                  <span>Trụ sở: Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-secondary shrink-0" />
+                  <span>Hotline CSKH: <strong className="text-secondary font-bold">0967 234 234</strong> (24/7)</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-secondary shrink-0" />
+                  <span>Email: <strong className="text-white font-medium">hotro@samngoclinh.vn</strong></span>
+                </p>
               </div>
 
               {/* Logo Đã thông báo Bộ Công Thương */}

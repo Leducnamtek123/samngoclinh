@@ -30,6 +30,7 @@ import type {
 } from "./use-beds-table"
 
 import { fetchApi } from "@/lib/api"
+import { useApiQuery } from "@/hooks/use-api-query"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -221,21 +222,21 @@ export function BedsInteractiveGrid({
           <button
             type="button"
             onClick={() => setActiveTab("grid")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "grid" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "grid" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Sơ đồ (Grid)
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("trees")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "trees" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "trees" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Danh sách cây
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("overview")}
-            className={`py-3 text-xs font-bold border-b-2 transition-all ${activeTab === "overview" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
+            className={`py-3 text-xs font-bold border-b-2 transition-colors ${activeTab === "overview" ? "border-emerald-600 text-emerald-600" : "border-transparent text-slate-400 hover:text-slate-700"}`}
           >
             Tổng quan luống
           </button>
@@ -532,7 +533,7 @@ function BedsGridCanvas({
                       }
                     }}
                     style={{ opacity: isVisible ? 1 : 0.15 }}
-                    className={`w-12 h-12 rounded-lg border flex flex-col items-center justify-center relative cursor-pointer select-none transition-all grid-cell-btn ${
+                    className={`w-12 h-12 rounded-lg border flex flex-col items-center justify-center relative cursor-pointer select-none transition-[color,background-color,border-color,transform,box-shadow] grid-cell-btn ${
                       isSelected
                         ? "bg-emerald-600 border-white dark:border-slate-950 ring-2 ring-emerald-500/50 shadow-md scale-105 text-white"
                         : loc.status === "planted"
@@ -891,30 +892,18 @@ function BedsOverviewTab({ tableData }: { tableData: any }) {
 
 function BedsLogsTab({ tableData }: { tableData: any }) {
   const { selectedBedCode } = tableData
-  const [logs, setLogs] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      setLoading(true)
-      try {
-        const res = await fetchApi(
-          `/user/cultivation/care-logs?bedCode=${selectedBedCode}`
-        )
-        const payload = await res.json()
-        if (res.status < 400 && Array.isArray(payload.data)) {
-          setLogs(payload.data)
-        }
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    if (selectedBedCode) {
-      fetchLogs()
-    }
-  }, [selectedBedCode])
+  const { data: response, isLoading: loading } = useApiQuery<any>(
+    ["care-logs", selectedBedCode],
+    `/user/cultivation/care-logs?bedCode=${selectedBedCode}`,
+    { enabled: Boolean(selectedBedCode) }
+  )
+
+  const logs: any[] = Array.isArray(response?.data)
+    ? response.data
+    : Array.isArray(response?.data?.items)
+      ? response.data.items
+      : []
 
   return (
     <div className="flex-1 bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-xxs flex flex-col">

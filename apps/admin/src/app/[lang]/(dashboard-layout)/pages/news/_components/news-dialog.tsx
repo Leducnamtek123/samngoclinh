@@ -216,7 +216,7 @@ export function NewsDialog({
                           onClick={() =>
                             onChange((prev) => ({ ...prev, coverImage: "" }))
                           }
-                          className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white text-[10px] font-bold transition-all"
+                          className="absolute inset-0 bg-black/40 hover:bg-black/60 flex items-center justify-center text-white text-[10px] font-bold transition-colors"
                         >
                           Gỡ bỏ ảnh
                         </button>

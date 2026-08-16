@@ -39,6 +39,12 @@ interface Bed {
   name: string
 }
 
+const safeIsoDate = (val?: string) => {
+  if (!val || typeof val !== "string" || val.trim() === "") return undefined
+  const d = new Date(val)
+  return isNaN(d.getTime()) ? undefined : d.toISOString()
+}
+
 interface UseTreesManagerProps {
   initialTrees: Tree[]
   beds: Bed[]
@@ -263,12 +269,6 @@ export function useTreesManager({
         ownerUserId: tree.ownerUserId || "",
       },
     })
-  }
-
-  const safeIsoDate = (val?: string) => {
-    if (!val || typeof val !== "string" || val.trim() === "") return undefined
-    const d = new Date(val)
-    return isNaN(d.getTime()) ? undefined : d.toISOString()
   }
 
   const handleSave = async (values: TreeFormValues) => {

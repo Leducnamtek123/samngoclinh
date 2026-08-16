@@ -137,10 +137,15 @@ describe('EContractService - Phase 5A P0 Invariants & Immutability Suite', () =>
             deleteAmendment: jest.fn(),
         };
 
+        const mockTemplateService = {
+            getTemplate: jest.fn().mockResolvedValue({ contentHtml: '<p>{{TEN_KHACH_HANG}}</p>' }),
+        };
+
         service = new EContractService(
             repository as unknown as EContractRepository,
             mockAmendmentRepository as any,
             pdfService as unknown as EContractPdfService,
+            mockTemplateService as any,
             databaseService as unknown as DatabaseService,
             notificationService as unknown as NotificationSmtpService,
             configService as unknown as ConfigService,

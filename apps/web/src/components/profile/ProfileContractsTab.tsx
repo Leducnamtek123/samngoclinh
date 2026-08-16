@@ -61,6 +61,14 @@ export const ProfileContractsTab = ({
                       <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-none font-bold text-xs">
                         ✓ Đã ký kết
                       </Badge>
+                    ) : (contract.status || '').toLowerCase() === 'expired' ? (
+                      <Badge variant="secondary" className="bg-rose-100 text-rose-800 border-none font-bold text-xs">
+                        ⚠️ Đã hết hạn
+                      </Badge>
+                    ) : (contract.status || '').toLowerCase() === 'cancelled' ? (
+                      <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-none font-bold text-xs">
+                        ✕ Đã hủy
+                      </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-none font-bold text-xs animate-pulse">
                         ✍️ Chờ ký số

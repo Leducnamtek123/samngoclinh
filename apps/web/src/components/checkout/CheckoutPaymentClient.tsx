@@ -45,7 +45,8 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
 
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
-          toast.success('Đơn hàng đã được thanh toán thành công!');
+          toast.success('Đã thanh toán thành công!');
+          // react-doctor-disable-next-line react-doctor/nextjs-no-client-side-redirect
           router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
           return;
         }
@@ -75,9 +76,8 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
             bankName: '',
           });
         }
-      } finally {
-        if (isMounted) setLoading(false);
       }
+      if (isMounted) setLoading(false);
     }
 
     loadOrder();
@@ -134,9 +134,8 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
       }
     } catch {
       toast.info('Đang xác minh giao dịch với ngân hàng, vui lòng thử lại sau ít phút.');
-    } finally {
-      setIsVerifying(false);
     }
+    setIsVerifying(false);
   };
 
   const handleOpenSepayGateway = () => {

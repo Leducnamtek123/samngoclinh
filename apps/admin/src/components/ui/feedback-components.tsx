@@ -80,7 +80,7 @@ export function InlineAlert({
   return (
     <div
       className={cn(
-        "flex items-start gap-4 p-4 border rounded-xl shadow-sm transition-all duration-300",
+        "flex items-start gap-4 p-4 border rounded-xl shadow-sm transition-colors duration-300",
         currentStyle.wrapper,
         className
       )}
@@ -185,7 +185,7 @@ export function ToastCard({
   return (
     <div
       className={cn(
-        "w-80 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-850 shadow-xl rounded-xl p-4 flex items-start gap-3 backdrop-blur-md transition-all duration-300 hover:scale-[1.01]",
+        "w-80 bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-850 shadow-xl rounded-xl p-4 flex items-start gap-3 backdrop-blur-md transition-[transform,opacity,box-shadow] duration-300 hover:scale-[1.01]",
         currentStyle.bg,
         currentStyle.border,
         className
@@ -664,7 +664,7 @@ export function ErrorState({
         <button
           type="button"
           onClick={onRetry}
-          className="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-2"
+          className="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2"
         >
           <RefreshCw className="h-4 w-4" />
           <span>{t("common.actions.refresh")}</span>
@@ -710,7 +710,7 @@ export function OfflineState({ onReconnect, className }: OfflineStateProps) {
   return (
     <div
       className={cn(
-        "bg-amber-50 border-y md:border border-amber-200/80 p-3.5 px-4 md:rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md text-amber-900 transition-all duration-500 animate-slide-down",
+        "bg-amber-50 border-y md:border border-amber-200/80 p-3.5 px-4 md:rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md text-amber-900 transition-colors duration-500 animate-slide-down",
         className
       )}
     >
@@ -887,7 +887,7 @@ export function ProgressIndicator({
           </div>
           <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
             <div
-              className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
+              className="bg-emerald-600 h-2 rounded-full transition-[width] duration-300"
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />
           </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { ContractToolbar } from '@/components/contract/ContractToolbar';
 import { fetchApi } from '@/lib/Api';
+import DOMPurify from 'isomorphic-dompurify';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -98,17 +99,20 @@ export default async function ContractPage(props: ContractPageProps) {
         />
 
         {/* Legal Paper Document Container */}
-        <article className="legal-document-container bg-white border border-slate-200/90 shadow-xl rounded-3xl p-2 sm:p-4 text-slate-800 leading-relaxed font-sans overflow-hidden">
+        <article className="legal-document-container bg-white border border-slate-200/90 shadow-xl rounded-3xl p-4 sm:p-8 text-slate-800 leading-relaxed font-sans overflow-hidden">
           {renderedHtml ? (
-            <iframe
-              title="Văn bản hợp đồng pháp lý"
-              srcDoc={renderedHtml}
-              className="w-full h-[1150px] min-h-[850px] border-0 rounded-2xl bg-white"
-              sandbox="allow-same-origin"
+            <div
+              className="contract-rendered-content text-sm sm:text-base leading-relaxed"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(renderedHtml, {
+                  ADD_TAGS: ['style'],
+                  ADD_ATTR: ['target', 'style', 'class'],
+                }),
+              }}
             />
           ) : (
-            <div className="p-8 text-center text-slate-500">
-              Đang tải nội dung văn bản hợp đồng...
+            <div className="p-12 text-center text-slate-500 font-medium">
+              Đang tải nội dung văn bản hợp đồng pháp lý...
             </div>
           )}
         </article>

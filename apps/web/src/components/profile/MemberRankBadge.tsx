@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import Image from 'next/image';
 
@@ -57,7 +55,7 @@ const RANK_CONFIGS: Record<MemberRankType, RankConfig> = {
   },
 };
 
-export const normalizeRank = (rawRank?: string): MemberRankType => {
+const normalizeRank = (rawRank?: string): MemberRankType => {
   if (!rawRank) return 'bronze';
   const lower = rawRank.toLowerCase().trim();
   if (lower.includes('vip') || lower.includes('tinh hoa') || lower.includes('elite')) return 'vip';

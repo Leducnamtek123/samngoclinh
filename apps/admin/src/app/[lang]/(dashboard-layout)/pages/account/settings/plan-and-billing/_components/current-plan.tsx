@@ -1,4 +1,4 @@
-import { currentPlanData } from "../../../_data/curremt-plan"
+import { getCurrentPlanData } from "../../../_data/curremt-plan"
 
 import { formatCurrency, formatDate, formatFileSize } from "@/lib/utils"
 
@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress"
 import { DynamicIcon } from "@/components/dynamic-icon"
 
 export function CurrentPlan() {
+  const currentPlanData = getCurrentPlanData()
   return (
     <Card className="w-full">
       <CardHeader>

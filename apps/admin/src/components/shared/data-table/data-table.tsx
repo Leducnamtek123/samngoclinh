@@ -18,6 +18,8 @@ import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 
 export interface ColumnDef<T> {
+  id?: string
+  key?: string
   header: React.ReactNode
   cell: (item: T) => React.ReactNode
   className?: string
@@ -38,12 +40,12 @@ export interface DataTableProps<T> {
   containerClassName?: string
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T>({
   columns,
   data,
-  keyExtractor = (item) => item.id || item.code,
+  keyExtractor = (item: any) => item.id || item._id || item.code || String(Math.random()),
   loading = false,
-  emptyMessage = "No data available",
+  emptyMessage = "Không có dữ liệu.",
   metadata,
   onPageChange,
   toolbarProps,
@@ -66,11 +68,17 @@ export function DataTable<T extends Record<string, any>>({
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
-                {columns.map((col, idx) => (
-                  <TableHead key={idx} className={col.headerClassName || ""}>
-                    {col.header}
-                  </TableHead>
-                ))}
+                {columns.map((col) => {
+                  const colKey =
+                    col.id ||
+                    col.key ||
+                    (typeof col.header === "string" ? col.header : "col-header")
+                  return (
+                    <TableHead key={colKey} className={col.headerClassName || ""}>
+                      {col.header}
+                    </TableHead>
+                  )
+                })}
                 {rowActions && (
                   <TableHead className="text-center">
                     {rowActionsHeader}
@@ -84,11 +92,19 @@ export function DataTable<T extends Record<string, any>>({
                   key={keyExtractor(item)}
                   className="hover:bg-muted/30"
                 >
-                  {columns.map((col, idx) => (
-                    <TableCell key={idx} className={col.className || ""}>
-                      {col.cell(item)}
-                    </TableCell>
-                  ))}
+                  {columns.map((col) => {
+                    const cellKey =
+                      col.id ||
+                      col.key ||
+                      (typeof col.header === "string"
+                        ? `${col.header}`
+                        : "col-cell")
+                    return (
+                      <TableCell key={cellKey} className={col.className || ""}>
+                        {col.cell(item)}
+                      </TableCell>
+                    )
+                  })}
                   {rowActions && (
                     <TableCell className="text-center">
                       {rowActions(item)}

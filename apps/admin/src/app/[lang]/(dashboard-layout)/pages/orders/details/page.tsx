@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useCallback, useEffect, useState } from "react"
+import Image from "next/image"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Store, Truck } from "lucide-react"
 
@@ -294,10 +295,13 @@ function OrderProductsCard({
                   <TableCell>
                     <div className="w-12 h-12 rounded-lg border border-border overflow-hidden bg-muted/50 flex items-center justify-center shrink-0">
                       {imgUrl ? (
-                        <img
+                        <Image
                           src={imgUrl}
                           alt={item.name || "Sản phẩm"}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
+                          unoptimized
                         />
                       ) : (
                         <Store className="w-5 h-5 text-muted-foreground/60" />

@@ -1,0 +1,70 @@
+"use client"
+
+import React from "react"
+import { ContractDetailPartiesCard } from "./contract-detail-parties-card"
+import { ContractDetailTermsCard } from "./contract-detail-terms-card"
+import { ContractDetailAmendmentsCard } from "./contract-detail-amendments-card"
+import { ContractDetailVerificationCard } from "./contract-detail-verification-card"
+
+interface ContractDetailMetadataProps {
+  contract: any
+  user: any
+  meta: any
+  isEkyc: boolean
+  isSigned: boolean
+  isOrderSource: boolean
+  apiUrl: string
+  documentHash: string
+  copiedHash: boolean
+  onCopyHash: () => void
+  formatVND: (val: number) => string
+  formatDateVi: (dateStr?: string | Date) => string
+}
+
+export function ContractDetailMetadata({
+  contract,
+  user,
+  meta,
+  isEkyc,
+  isSigned,
+  isOrderSource,
+  apiUrl,
+  documentHash,
+  copiedHash,
+  onCopyHash,
+  formatVND,
+  formatDateVi,
+}: ContractDetailMetadataProps) {
+  return (
+    <div className="space-y-6">
+      <ContractDetailPartiesCard
+        contract={contract}
+        user={user}
+        isEkyc={isEkyc}
+      />
+
+      <ContractDetailTermsCard
+        contract={contract}
+        meta={meta}
+        formatVND={formatVND}
+      />
+
+      <ContractDetailAmendmentsCard
+        contract={contract}
+        apiUrl={apiUrl}
+        formatVND={formatVND}
+        formatDateVi={formatDateVi}
+      />
+
+      <ContractDetailVerificationCard
+        contract={contract}
+        meta={meta}
+        isOrderSource={isOrderSource}
+        isSigned={isSigned}
+        documentHash={documentHash}
+        copiedHash={copiedHash}
+        onCopyHash={onCopyHash}
+      />
+    </div>
+  )
+}

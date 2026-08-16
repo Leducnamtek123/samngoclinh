@@ -39,6 +39,7 @@ export default async function PortfolioDetail(props: PortfolioDetailPageProps) {
               src="/images/kon_tum_ginseng.png"
               alt="Rượu Sâm Ngọc Linh"
               fill
+              sizes="(max-width: 768px) 100vw, 768px"
               className="object-cover"
               unoptimized
             />

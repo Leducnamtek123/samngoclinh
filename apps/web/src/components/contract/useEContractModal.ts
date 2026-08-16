@@ -116,7 +116,12 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     }
   };
 
-  const isSigned = !!(contract?.status === 'SIGNED' || contract?.signedAt || contract?.userSignatureUrl);
+  const isSigned = !!(
+    contract?.status?.toLowerCase() === 'signed' ||
+    contract?.signedAt ||
+    contract?.signatureUrl ||
+    (contract as any)?.userSignatureUrl
+  );
 
   return {
     contract,

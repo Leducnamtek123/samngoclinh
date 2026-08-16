@@ -1,16 +1,8 @@
 export async function getSessionToken() {
   try {
-    const isClient = typeof window !== "undefined"
-    if (isClient) {
-      const { getSession } = await import("next-auth/react")
-      const session = await getSession()
-      return (session?.user as any)?.accessToken || null
-    } else {
-      const { getServerSession } = await import("next-auth")
-      const { authOptions } = await import("@/configs/next-auth")
-      const session = await getServerSession(authOptions)
-      return (session?.user as any)?.accessToken || null
-    }
+    const { getSession } = await import("next-auth/react")
+    const session = await getSession()
+    return (session?.user as any)?.accessToken || null
   } catch (error) {
     console.error("Error getting session token:", error)
     return null
@@ -55,7 +47,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     : process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
 
   const baseUrl = isNeutral ? apiBaseUrl : `${apiBaseUrl}/v1`
-  const apiKey = process.env.API_KEY || process.env.NEXT_PUBLIC_API_KEY || ""
+  const apiKey = process.env.API_KEY || ""
 
   const headers: HeadersInit = {
     "x-api-key": apiKey,

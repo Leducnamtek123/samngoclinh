@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
 
 const DEFAULT_CENTER = { lat: 10.776889, lng: 106.700806 }; // TP. Hồ Chí Minh
+const emptySubscribe = () => () => {};
 
 type UseMapLocationPickerProps = {
   initialAddress?: string;
@@ -14,19 +15,17 @@ export function useMapLocationPicker({
   onSelectLocation,
   onClose,
 }: UseMapLocationPickerProps) {
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [position, setPosition] = useState(DEFAULT_CENTER);
   const [address, setAddress] = useState(initialAddress);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
   const [customIcon, setCustomIcon] = useState<any>(null);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     if (typeof window !== 'undefined') {
       const L = require('leaflet');
-      import('leaflet/dist/leaflet.css');
 
       const icon = L.divIcon({
         className: 'custom-leaflet-pin-emerald',
@@ -42,6 +41,7 @@ export function useMapLocationPicker({
         iconSize: [36, 36],
         iconAnchor: [18, 36],
       });
+      // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
       setCustomIcon(icon);
     }
   }, []);
@@ -52,15 +52,16 @@ export function useMapLocationPicker({
       const resOsm = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`
       );
-      const dataOsm = await resOsm.json();
-      if (dataOsm?.display_name) {
-        setAddress(dataOsm.display_name);
+      if (resOsm.ok) {
+        const dataOsm = await resOsm.json();
+        if (dataOsm?.display_name) {
+          setAddress(dataOsm.display_name);
+        }
       }
     } catch (e) {
       console.error('Reverse geocoding error:', e);
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, []);
 
   const handlePositionChange = (lat: number, lng: number) => {
@@ -97,7 +98,7 @@ export function useMapLocationPicker({
 
   const handleSearchAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() || isLoading) return;
 
     setIsLoading(true);
     try {
@@ -106,19 +107,22 @@ export function useMapLocationPicker({
           searchQuery
         )}&accept-language=vi&limit=1`
       );
-      const dataOsm = await resOsm.json();
-      if (dataOsm && dataOsm[0]) {
-        const newPos = { lat: parseFloat(dataOsm[0].lat), lng: parseFloat(dataOsm[0].lon) };
-        setPosition(newPos);
-        setAddress(dataOsm[0].display_name);
-      } else {
+      if (!resOsm.ok) {
         toast.error('Không tìm thấy địa chỉ phù hợp.');
+      } else {
+        const dataOsm = await resOsm.json();
+        if (dataOsm && dataOsm[0]) {
+          const newPos = { lat: parseFloat(dataOsm[0].lat), lng: parseFloat(dataOsm[0].lon) };
+          setPosition(newPos);
+          setAddress(dataOsm[0].display_name);
+        } else {
+          toast.error('Không tìm thấy địa chỉ phù hợp.');
+        }
       }
     } catch {
       toast.error('Lỗi khi tìm kiếm địa chỉ.');
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const handleConfirm = () => {

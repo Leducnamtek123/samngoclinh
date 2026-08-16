@@ -62,10 +62,15 @@ async function refreshAccessToken(token: any) {
       },
     })
 
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null)
+      throw errorData || new Error(`Token refresh failed with status ${response.status}`)
+    }
+
     const refreshedTokens = await response.json()
     const tokenData = refreshedTokens.data?.tokens || refreshedTokens.data
 
-    if (!response.ok || !tokenData?.accessToken) {
+    if (!tokenData?.accessToken) {
       throw refreshedTokens
     }
 
@@ -173,9 +178,17 @@ export const authOptions: NextAuthOptions = {
             }
           )
 
+          if (!res.ok) {
+            const errPayload = await res.json().catch(() => null)
+            throw new Error(
+              errPayload?.message ??
+                "Invalid login credentials. Please check your information."
+            )
+          }
+
           const payload = await res.json()
 
-          if (res.status >= 400 || !payload.data?.tokens?.accessToken) {
+          if (!payload.data?.tokens?.accessToken) {
             throw new Error(
               payload?.message ??
                 "Invalid login credentials. Please check your information."
@@ -197,12 +210,15 @@ export const authOptions: NextAuthOptions = {
             }
           )
 
-          const profilePayload = await profileRes.json()
+          let profilePayload: any = null
+          if (profileRes.ok) {
+            profilePayload = await profileRes.json()
+          }
 
-          const userEmail = profilePayload.data?.email || credentials.email
+          const userEmail = profilePayload?.data?.email || credentials.email
           const userRole =
-            profilePayload.data?.role?.name ||
-            profilePayload.data?.role ||
+            profilePayload?.data?.role?.name ||
+            profilePayload?.data?.role ||
             (userEmail?.includes("superadmin")
               ? "SUPER_ADMIN"
               : userEmail?.includes("admin")

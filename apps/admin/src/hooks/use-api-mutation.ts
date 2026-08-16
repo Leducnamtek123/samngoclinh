@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import type { ApiResponse } from "@/lib/api-client"
 import type {
@@ -16,9 +16,16 @@ interface MutationVariables<D = any> {
   method?: MutationMethod
 }
 
+export interface ApiMutationOptions<T = any, D = any>
+  extends UseMutationOptions<ApiResponse<T>, Error, MutationVariables<D>> {
+  invalidateQueries?: string[]
+}
+
 export function useApiMutation<T = any, D = any>(
-  options?: UseMutationOptions<ApiResponse<T>, Error, MutationVariables<D>>
+  options?: ApiMutationOptions<T, D>
 ): UseMutationResult<ApiResponse<T>, Error, MutationVariables<D>> {
+  const queryClient = useQueryClient()
+
   return useMutation<ApiResponse<T>, Error, MutationVariables<D>>({
     mutationFn: async ({ endpoint, data, method = "POST" }) => {
       if (method === "PUT") {
@@ -30,5 +37,15 @@ export function useApiMutation<T = any, D = any>(
       return await postApiData<ApiResponse<T>, D>(endpoint, data)
     },
     ...options,
+    onSuccess: (data, variables, context) => {
+      if (options?.invalidateQueries) {
+        queryClient.invalidateQueries({ queryKey: options.invalidateQueries })
+      } else {
+        queryClient.invalidateQueries()
+      }
+      if (options?.onSuccess) {
+        ;(options.onSuccess as any)(data, variables, context)
+      }
+    },
   })
 }

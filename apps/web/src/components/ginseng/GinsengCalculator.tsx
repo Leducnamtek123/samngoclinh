@@ -67,7 +67,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
           {/* Slider 1: Number of Trees */}
           <div className="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-emerald-700/40 space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+              <label htmlFor="tree-count-slider" className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
                 <Sprout className="w-4 h-4 text-emerald-400" />
                 Số lượng cây giống ủy thác
               </label>
@@ -76,6 +76,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
               </span>
             </div>
             <input
+              id="tree-count-slider"
               type="range"
               min={5}
               max={200}
@@ -94,7 +95,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
           {/* Slider 2: Cultivation Duration */}
           <div className="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-emerald-700/40 space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+              <label htmlFor="cultivation-years-slider" className="text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-emerald-400" />
                 Thời gian ủy quyền nuôi dưỡng
               </label>
@@ -103,6 +104,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
               </span>
             </div>
             <input
+              id="cultivation-years-slider"
               type="range"
               min={3}
               max={7}
@@ -120,9 +122,9 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
 
           {/* Initial Seed Age */}
           <div className="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-emerald-700/40 space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-emerald-300 block">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-300 block">
               Độ tuổi cây giống ban đầu khi trồng
-            </label>
+            </span>
             <div className="grid grid-cols-3 gap-2.5">
               {[
                 { age: 1, label: 'Cây 1 năm tuổi', desc: '350.000 đ/cây' },
@@ -133,7 +135,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
                   type="button"
                   key={item.age}
                   onClick={() => setSeedAge(item.age)}
-                  className={`p-3 rounded-xl text-left border transition-all cursor-pointer ${
+                  className={`p-3 rounded-xl text-left border transition-[color,background-color,border-color,box-shadow] cursor-pointer ${
                     seedAge === item.age
                       ? 'bg-emerald-700 border-emerald-400 text-white shadow-lg'
                       : 'bg-emerald-950/60 border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60'
@@ -200,7 +202,7 @@ export const GinsengCalculator = ({ locale: _locale = 'vi' }: { locale?: string 
 
           <div className="pt-6">
             <Link href="/campaigns/free-tree" className="block w-full">
-              <Button className="w-full py-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-all cursor-pointer">
+              <Button className="w-full py-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2 transition-colors cursor-pointer">
                 <span>Đăng Ký Sở Hữu Luống Sâm Ngay</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>

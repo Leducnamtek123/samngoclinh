@@ -59,7 +59,7 @@ export function ProductDetailView({
                 type="button"
                 key={imgUrl}
                 onClick={() => setActiveImageIdx(idx)}
-                className={`w-14 h-14 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-all cursor-pointer relative ${
+                className={`w-14 h-14 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-[border-color,box-shadow,opacity] cursor-pointer relative ${
                   activeImageIdx === idx
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-gray-200 dark:border-gray-800 opacity-70 hover:opacity-100'
@@ -100,13 +100,13 @@ export function ProductDetailView({
             </p>
           )}
 
-          <div className="text-2xl sm:text-3xl font-black text-primary">
+          <div className="text-2xl sm:text-3xl font-black text-primary font-display">
             {(product.price || 0).toLocaleString('vi-VN')} đ
           </div>
 
           <div className="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-1.5">
             <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">Mô tả sản phẩm</h4>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-normal leading-relaxed">
               {product.description || 'Sản phẩm Sâm Ngọc Linh chuẩn nguồn gốc được kiểm định chất lượng nghiêm ngặt.'}
             </p>
           </div>
@@ -114,22 +114,24 @@ export function ProductDetailView({
           {/* Quantity selector */}
           {showQuantity && (
             <div className="space-y-2 pt-2">
-              <label className="text-xs font-bold uppercase text-gray-400 tracking-wider block">
+              <span className="text-xs font-bold uppercase text-gray-400 tracking-wider block">
                 Số lượng
-              </label>
-              <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-900 w-max">
+              </span>
+              <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-900 w-max shadow-2xs">
                 <button
                   type="button"
+                  aria-label="Giảm số lượng"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3.5 py-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer active:scale-90"
                 >
                   -
                 </button>
-                <span className="px-4 text-sm font-bold text-gray-900 dark:text-gray-100">{quantity}</span>
+                <span className="px-4 text-sm font-bold text-gray-900 dark:text-gray-100 select-none">{quantity}</span>
                 <button
                   type="button"
+                  aria-label="Tăng số lượng"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-3.5 py-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer"
+                  className="px-3.5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer active:scale-90"
                 >
                   +
                 </button>
@@ -145,7 +147,7 @@ export function ProductDetailView({
               type="button"
               variant="outline"
               onClick={() => onAddToCart(product, quantity)}
-              className="flex-1 py-3 text-xs font-bold border-primary text-primary hover:bg-emerald-50 dark:hover:bg-emerald-950 flex items-center justify-center gap-2"
+              className="flex-1 py-3.5 text-xs font-bold border-primary text-primary hover:bg-emerald-50 dark:hover:bg-emerald-950 flex items-center justify-center gap-2 rounded-xl transition-[transform,background-color] active:scale-[0.98] cursor-pointer shadow-2xs"
             >
               <ShoppingCart className="w-4 h-4" />
               <span>Thêm Vào Giỏ Hàng</span>
@@ -157,9 +159,9 @@ export function ProductDetailView({
               type="button"
               variant="emerald"
               onClick={() => onBuyNow(product, quantity)}
-              className="flex-1 py-3 text-xs font-bold shadow-md flex items-center justify-center gap-2"
+              className="flex-1 py-3.5 text-xs font-bold shadow-md hover:shadow-lg flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-white transition-[transform,background-color,box-shadow] active:scale-[0.98] cursor-pointer"
             >
-              <Zap className="w-4 h-4" />
+              <Zap className="w-4 h-4 text-amber-300" />
               <span>Mua Ngay</span>
             </Button>
           )}

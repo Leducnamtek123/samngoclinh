@@ -48,7 +48,7 @@ export function remToPx(rem: number) {
   return rem * rootFontSize
 }
 
-export function isUrl(text: string) {
+function isUrl(text: string) {
   return z.string().url().safeParse(text).success
 }
 
@@ -87,7 +87,7 @@ export function formatFileSize(bytes: number, decimals: number = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
-export function formatFileType(type: string) {
+function formatFileType(type: string) {
   return type.slice(0, type.lastIndexOf("/"))
 }
 
@@ -156,7 +156,7 @@ export function formatDate(value: string | number | Date) {
   return format(value, "PP")
 }
 
-export function formatRelativeDate(value?: string | number | Date) {
+function formatRelativeDate(value?: string | number | Date) {
   if (!value) return "No Date"
 
   const date = new Date(value)
@@ -227,7 +227,7 @@ export function formatDistance(value: string | number | Date) {
     .replace(/\b(over|almost|about)\b/g, "")
 }
 
-export function formatNumberToCompact(
+function formatNumberToCompact(
   value: number = 0,
   locales: LocaleType = "en"
 ) {
@@ -325,7 +325,7 @@ export function getDiscountedPrice(
   }
 }
 
-export function isBeforeToday(date: Date) {
+function isBeforeToday(date: Date) {
   // Get the start of today
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
 

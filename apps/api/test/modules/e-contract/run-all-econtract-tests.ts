@@ -141,10 +141,15 @@ async function runTests() {
         get: (k: string) => (k === 'HOME_URL' ? 'http://localhost:3002' : null),
     };
 
+    const mockTemplateService: any = {
+        getTemplate: async () => ({ contentHtml: '<p>{{TEN_KHACH_HANG}}</p>' }),
+    };
+
     const service = new EContractService(
         mockContractRepo,
         mockAmendmentRepo,
         mockPdfService,
+        mockTemplateService,
         mockDatabaseService,
         mockNotificationService,
         mockConfigService,

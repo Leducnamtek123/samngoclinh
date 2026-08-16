@@ -306,7 +306,7 @@ type ChartLegendContentProps = ComponentProps<"div"> &
     nameKey?: string
   }
 
-export function ChartLegendContent({
+function ChartLegendContent({
   className,
   hideIcon = false,
   payload,

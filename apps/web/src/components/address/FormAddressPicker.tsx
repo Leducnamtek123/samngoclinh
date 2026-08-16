@@ -21,6 +21,7 @@ async function fetchReverseGeocodeAddress(lat: number, lon: number): Promise<str
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=vi`
     );
+    if (!res.ok) return null;
     const data = await res.json();
     return data?.display_name || null;
   } catch {

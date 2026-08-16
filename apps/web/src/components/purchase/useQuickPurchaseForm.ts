@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { toast } from 'sonner';
 import { useProfileMe } from '@/hooks/queries/useProfile';
 import { usePlantPackages, useCreateQuickOrder } from '@/hooks/queries/useQuickPurchase';
@@ -30,11 +30,11 @@ export function useQuickPurchaseForm({
   const { carePackages, protectionPackages } = usePlantPackages();
   const createQuickOrderMutation = useCreateQuickOrder();
 
-  const [selectedCareId, setSelectedCareId] = useState<string>('');
-  const [selectedProtectionId, setSelectedProtectionId] = useState<string>('');
+  const [userSelectedCareId, setUserSelectedCareId] = useState<string | null>(null);
+  const [userSelectedProtectionId, setUserSelectedProtectionId] = useState<string | null>(null);
   const [agreedTerms, setAgreedTerms] = useState(false);
 
-  const [addresses, setAddresses] = useState<any[]>(() => {
+  const [localAddresses, setLocalAddresses] = useState<any[]>(() => {
     try {
       const saved = typeof window !== 'undefined' ? localStorage.getItem('user_addresses:v1') : null;
       return saved ? JSON.parse(saved) : [];
@@ -43,28 +43,34 @@ export function useQuickPurchaseForm({
     }
   });
 
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(() => {
-    try {
-      const saved = typeof window !== 'undefined' ? localStorage.getItem('user_addresses:v1') : null;
-      const list = saved ? JSON.parse(saved) : [];
-      return list.length > 0 ? (list.find((a: any) => a.isDefault) || list[0]).id : null;
-    } catch {
-      return null;
-    }
-  });
+  const profileAddresses = (profile?.addresses && Array.isArray(profile.addresses))
+    ? profile.addresses.map((a: any) => ({
+        id: a.id,
+        name: a.recipient || a.name || profile.fullName || '',
+        recipient: a.recipient || a.name || profile.fullName || '',
+        phone: a.phone || profile.mobileNumber || '',
+        address: a.detail || a.address || '',
+        detail: a.detail || a.address || '',
+        isDefault: !!a.isDefault,
+      }))
+    : [];
+
+  const addresses = Array.from(new Map([...profileAddresses, ...localAddresses].map((a) => [a.id, a])).values());
+
+  const [userSelectedAddressId, setUserSelectedAddressId] = useState<string | null>(null);
+  const defaultAddr = addresses.find((a: any) => a.isDefault) || addresses[0];
+  const selectedAddressId = userSelectedAddressId ?? defaultAddr?.id ?? null;
+  const setSelectedAddressId = (id: string | null) => setUserSelectedAddressId(id);
+
+  const selectedCareId = userSelectedCareId ?? (carePackages[0] as any)?.code ?? carePackages[0]?.id ?? '';
+  const setSelectedCareId = (id: string) => setUserSelectedCareId(id);
+
+  const selectedProtectionId = userSelectedProtectionId ?? (protectionPackages[0] as any)?.code ?? protectionPackages[0]?.id ?? '';
+  const setSelectedProtectionId = (id: string) => setUserSelectedProtectionId(id);
 
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (carePackages.length > 0 && !selectedCareId) {
-      setSelectedCareId((carePackages[0] as any)?.code || carePackages[0]?.id || '');
-    }
-    if (protectionPackages.length > 0 && !selectedProtectionId) {
-      setSelectedProtectionId((protectionPackages[0] as any)?.code || protectionPackages[0]?.id || '');
-    }
-  }, [carePackages, protectionPackages, selectedCareId, selectedProtectionId]);
 
   useEffect(() => {
     const origOverflow = document.body.style.overflow;
@@ -73,27 +79,6 @@ export function useQuickPurchaseForm({
       document.body.style.overflow = origOverflow;
     };
   }, []);
-
-  useEffect(() => {
-    if (profile?.addresses && profile.addresses.length > 0) {
-      const apiAddresses = profile.addresses.map((a: any) => ({
-        id: a.id,
-        name: a.recipient || a.name || profile.fullName || '',
-        recipient: a.recipient || a.name || profile.fullName || '',
-        phone: a.phone || profile.mobileNumber || '',
-        address: a.detail || a.address || '',
-        detail: a.detail || a.address || '',
-        isDefault: !!a.isDefault,
-      }));
-      setAddresses(apiAddresses);
-      if (!selectedAddressId && apiAddresses.length > 0) {
-        const def = apiAddresses.find((a: any) => a.isDefault) || apiAddresses[0];
-        if (def?.id) {
-          setSelectedAddressId(def.id);
-        }
-      }
-    }
-  }, [profile]);
 
   const stockCount = item?.stock ?? 0;
   const unitPrice = item?.price || 0;
@@ -142,9 +127,9 @@ export function useQuickPurchaseForm({
       detail: data.shippingAddress,
       isDefault: addresses.length === 0,
     };
-    const updated = [newAddr, ...addresses];
-    setAddresses(updated);
-    setSelectedAddressId(newAddr.id);
+    const updated = [newAddr, ...localAddresses];
+    setLocalAddresses(updated);
+    setUserSelectedAddressId(newAddr.id);
     if (typeof window !== 'undefined') {
       localStorage.setItem('user_addresses:v1', JSON.stringify(updated));
     }
@@ -152,7 +137,7 @@ export function useQuickPurchaseForm({
     toast.success(t('toastAddressAdded'));
   };
 
-  const handleCheckoutSubmit = async (e: React.FormEvent) => {
+  const handleCheckoutSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!isLoggedIn) {
@@ -188,24 +173,22 @@ export function useQuickPurchaseForm({
         deliveryType,
       });
 
-      const orderData = res?.data || res || {
-        id: `ORD-${Date.now()}`,
-        code: `DH${Math.floor(100000 + Math.random() * 900000)}`,
-        totalAmount: grandTotal,
-      };
+      const orderData = res?.data || res;
+      if (!orderData?.id && !orderData?.code) {
+        toast.error('Máy chủ không trả về thông tin đơn hàng hợp lệ.');
+      } else {
+        toast.success(t('toastOrderCreated'));
+        onClose();
 
-      toast.success(t('toastOrderCreated'));
-      onClose();
-
-      if (onSuccessPayment) {
-        onSuccessPayment(orderData);
+        if (onSuccessPayment) {
+          onSuccessPayment(orderData);
+        }
       }
     } catch (err: any) {
       const serverMsg = err?.response?.data?.message || err?.message || 'Không thể tạo đơn hàng. Vui lòng đăng nhập hoặc thử lại sau!';
       toast.error(typeof serverMsg === 'string' ? serverMsg : 'Không thể tạo đơn hàng. Vui lòng thử lại sau!');
-    } finally {
-      setSubmitting(false);
     }
+    setSubmitting(false);
   };
 
   return {

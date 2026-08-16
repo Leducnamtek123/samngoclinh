@@ -39,7 +39,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
         {slots.map((slot) => (
           <div
             key={slot.id}
-            className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+            className="group bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-xs hover:shadow-2xl hover:-translate-y-1 transition-[box-shadow,transform] duration-300 flex flex-col justify-between"
           >
             {/* Plant Image Container */}
             <div className="relative h-64 bg-slate-100 overflow-hidden">

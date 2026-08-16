@@ -96,7 +96,7 @@ export const ContentManager = ({
         <button
           type="button"
           onClick={() => setActiveTab("articles")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
             activeTab === "articles"
               ? "border-emerald-700 text-emerald-700"
               : "border-transparent text-gray-500 hover:text-gray-900"
@@ -107,7 +107,7 @@ export const ContentManager = ({
         <button
           type="button"
           onClick={() => setActiveTab("banner")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-all ${
+          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
             activeTab === "banner"
               ? "border-emerald-700 text-emerald-700"
               : "border-transparent text-gray-500 hover:text-gray-900"

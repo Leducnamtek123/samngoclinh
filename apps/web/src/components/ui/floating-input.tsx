@@ -76,7 +76,7 @@ export function FloatingInput({
       <label
         htmlFor={inputId}
         className={cn(
-          'absolute left-3 z-10 transition-all duration-200 pointer-events-none select-none px-1.5 rounded bg-white dark:bg-gray-900 flex items-center gap-1.5',
+          'absolute left-3 z-10 transition-[top,transform,font-size,color] duration-200 pointer-events-none select-none px-1.5 rounded bg-white dark:bg-gray-900 flex items-center gap-1.5',
           isFloating
             ? 'top-0 -translate-y-1/2 text-xs font-bold text-gray-700 dark:text-gray-300'
             : 'top-1/2 -translate-y-1/2 text-[13px] font-medium text-gray-400 dark:text-gray-500',
@@ -87,7 +87,7 @@ export function FloatingInput({
         {prefixIcon && (
           <span
             className={cn(
-              'transition-all duration-200 flex items-center justify-center shrink-0',
+              'transition-[width,height,color] duration-200 flex items-center justify-center shrink-0',
               isFloating ? 'w-3.5 h-3.5' : 'w-4 h-4 text-gray-400 dark:text-gray-500'
             )}
           >

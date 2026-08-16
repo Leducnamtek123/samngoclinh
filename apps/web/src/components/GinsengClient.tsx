@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Sprout, LayoutGrid } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
 import { usePublicCultivationBeds } from '@/hooks/queries/useCultivation';
@@ -167,20 +168,22 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                 <button
                   type="button"
                   onClick={() => setViewMode('catalog')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'catalog' ? 'bg-white text-gray-900 shadow-xs' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  🌱 Catalog
+                  <Sprout className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Danh mục sâm</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode('beds')}
-                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                  className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-[color,background-color,box-shadow] flex items-center gap-1.5 cursor-pointer ${
                     viewMode === 'beds' ? 'bg-white text-primary shadow-xs' : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  🏞️ Vườn Luống Farm
+                  <LayoutGrid className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Vườn luống Farm</span>
                 </button>
               </div>
             </div>

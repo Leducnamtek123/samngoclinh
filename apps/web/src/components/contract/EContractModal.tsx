@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/common/LoadingState';
@@ -110,7 +111,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
 
                     {modal.contract.userSignatureUrl && (
                       <div className="border border-slate-200 rounded-lg p-2 bg-white text-center shrink-0">
-                        <img src={modal.contract.userSignatureUrl} alt="Chữ ký" className="h-12 object-contain mx-auto" />
+                        <Image src={modal.contract.userSignatureUrl} alt="Chữ ký" width={120} height={48} unoptimized className="h-12 w-auto object-contain mx-auto" />
                         <span className="text-[10px] text-slate-400 font-semibold block">Chữ ký điện tử</span>
                       </div>
                     )}
@@ -118,7 +119,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
 
                   <div className="flex flex-wrap items-center gap-3 pt-1">
                     <a
-                      href={`http://localhost:3000/api/public/contracts/${modal.contract.code}/pdf`}
+                      href={`/api/proxy/public/contracts/${modal.contract.code}/pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"

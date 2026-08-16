@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProfileMe } from '@/hooks/queries/useProfile';
 import { useShippingFee, useCreateOrderMutation } from '@/hooks/queries/useCheckout';
@@ -11,53 +11,40 @@ import { ShoppingBag, CheckCircle2, CreditCard, PackageCheck } from 'lucide-reac
 import { CartStepProgress } from '@/components/cart/CartStepProgress';
 import { CartStepShipping } from '@/components/cart/CartStepShipping';
 
+const emptyCheckoutSubscribe = () => () => {};
+const useCheckoutMounted = () =>
+  useSyncExternalStore(emptyCheckoutSubscribe, () => true, () => false);
+
 export function CheckoutConfirmClient({ locale }: { locale: string }) {
   const t = useTranslations('cart');
   const router = useRouter();
-
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isClient, setIsClient] = useState(false);
+  const isClient = useCheckoutMounted();
+  const [items] = useState<CartItem[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const savedSelected = localStorage.getItem('checkout_selected_items:v1');
+      if (savedSelected) {
+        const parsed = JSON.parse(savedSelected);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return getCartItems();
+  });
 
   const { data: profile } = useProfileMe();
   const { data: fetchedShippingFee = 30000 } = useShippingFee();
   const createOrderMutation = useCreateOrderMutation();
 
-  const [recipientName, setRecipientName] = useState('');
-  const [recipientPhone, setRecipientPhone] = useState('');
+  const [userRecipientName, setUserRecipientName] = useState<string | null>(null);
+  const [userRecipientPhone, setUserRecipientPhone] = useState<string | null>(null);
+  const recipientName = userRecipientName ?? profile?.fullName ?? '';
+  const setRecipientName = (val: string) => setUserRecipientName(val);
+  const recipientPhone = userRecipientPhone ?? profile?.mobileNumber ?? '';
+  const setRecipientPhone = (val: string) => setUserRecipientPhone(val);
   const [shippingAddress, setShippingAddress] = useState('');
   const [notes, setNotes] = useState('');
 
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
-
-  useEffect(() => {
-    setIsClient(true);
-    let checkoutItems: CartItem[] = [];
-    try {
-      const savedSelected = localStorage.getItem('checkout_selected_items:v1');
-      if (savedSelected) {
-        checkoutItems = JSON.parse(savedSelected);
-      }
-    } catch {}
-
-    if (!checkoutItems || checkoutItems.length === 0) {
-      checkoutItems = getCartItems();
-    }
-
-    if (checkoutItems.length === 0) {
-      router.push(`/${locale}/cart`);
-    } else {
-      setItems(checkoutItems);
-    }
-  }, [locale, router]);
-
-  useEffect(() => {
-    if (profile?.fullName && !recipientName) {
-      setRecipientName(profile.fullName);
-    }
-    if (profile?.mobileNumber && !recipientPhone) {
-      setRecipientPhone(profile.mobileNumber);
-    }
-  }, [profile]);
 
   const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -67,7 +54,7 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
     shippingAddress?: string;
     notes?: string;
     deliveryType?: 'shipping' | 'pickup';
-  } | React.FormEvent) => {
+  } | FormEvent) => {
     if (formData && 'preventDefault' in formData) {
       formData.preventDefault();
     }
@@ -114,7 +101,7 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
 
       clearCart();
       toast.success('Đã tạo đơn hàng thành công! Đang chuyển hướng sang trang thanh toán...');
-      router.push(`/api/proxy/public/payment/sepay/pay/${orderId}`);
+      window.location.assign(`/api/proxy/public/payment/sepay/pay/${orderId}`);
     } catch (err: any) {
       toast.error(err?.message || 'Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin!');
     }

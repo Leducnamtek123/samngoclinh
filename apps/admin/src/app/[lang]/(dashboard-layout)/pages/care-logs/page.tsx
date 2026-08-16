@@ -46,6 +46,22 @@ interface CareLog {
   performedBy?: string
 }
 
+const formatDateTimeVi = (dateStr?: string) => {
+  if (!dateStr) return "—"
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return "—"
+    const day = String(d.getDate()).padStart(2, "0")
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const year = d.getFullYear()
+    const hours = String(d.getHours()).padStart(2, "0")
+    const minutes = String(d.getMinutes()).padStart(2, "0")
+    return `${hours}:${minutes} ${day}/${month}/${year}`
+  } catch {
+    return "—"
+  }
+}
+
 export default function CareLogsPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -82,6 +98,7 @@ export default function CareLogsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (mutation.isPending) return
     try {
       await mutation.mutateAsync({
         endpoint: "/user/cultivation/logs",
@@ -301,9 +318,7 @@ export default function CareLogsPage() {
                           {log.description || log.notes || "—"}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
-                          {log.createdAt
-                            ? new Date(log.createdAt).toLocaleString("vi-VN")
-                            : "—"}
+                          {formatDateTimeVi(log.createdAt)}
                         </TableCell>
                       </TableRow>
                     ))}

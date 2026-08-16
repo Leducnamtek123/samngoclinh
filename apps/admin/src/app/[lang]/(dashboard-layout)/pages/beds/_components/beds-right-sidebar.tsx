@@ -94,7 +94,7 @@ export function BedsRightSidebar({
 
   return (
     <div
-      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-all duration-300 ${
+      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-[width,opacity] duration-300 ${
         rightSidebarOpen
           ? "w-full lg:w-80"
           : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"

@@ -1,16 +1,16 @@
-# Sâm Ngọc Linh (iWE FARM)
+# Sâm Ngọc Linh
 
-Monorepo đa nền tảng cho hệ sinh thái iWE FARM: backend API, trang quản trị, web
+Monorepo đa nền tảng cho hệ sinh thái Sâm Ngọc Linh: backend API, trang quản trị, web
 marketing và ứng dụng di động. Quản lý bằng PNPM workspace + Turborepo.
 
 ## Nền tảng (`apps/`)
 
-| Thư mục | Nền tảng | Stack chính | Cổng dev |
-|---|---|---|---|
-| [`apps/api`](apps/api) | Backend API | NestJS v11, Prisma → PostgreSQL, Redis, BullMQ, JWT ES256/ES512 | 3000 |
-| [`apps/admin`](apps/admin) | Trang quản trị | Next.js (App Router), Prisma | 3003 |
-| [`apps/web`](apps/web) | Web marketing | Next.js (App Router), Drizzle | 3002 |
-| [`apps/mobile`](apps/mobile) | Ứng dụng di động | Expo / React Native (iOS · Android · Web) | Expo |
+| Thư mục                      | Nền tảng         | Stack chính                                                     | Cổng dev |
+| ------------------------------| ------------------| -----------------------------------------------------------------| ----------|
+| [`apps/api`](apps/api)       | Backend API      | NestJS v11, Prisma → PostgreSQL, Redis, BullMQ, JWT ES256/ES512 | 3000     |
+| [`apps/admin`](apps/admin)   | Trang quản trị   | Next.js (App Router), Prisma                                    | 3003     |
+| [`apps/web`](apps/web)       | Web marketing    | Next.js (App Router), Drizzle                                   | 3002     |
+| [`apps/mobile`](apps/mobile) | Ứng dụng di động | Expo / React Native (iOS · Android · Web)                       | Expo     |
 
 ## Yêu cầu
 
@@ -102,7 +102,7 @@ pnpm dev:api
 > | `SMTP_SECURE` | `false` | Đặt `true` khi dùng cổng SSL `465`; để `false` cho `587` |
 > | `SMTP_USER` | *(trống)* | Tài khoản đăng nhập SMTP |
 > | `SMTP_PASSWORD` | *(trống)* | Mật khẩu (Gmail dùng App Password, không phải mật khẩu tài khoản) |
-> | `SMTP_FROM` | *(trống)* | Địa chỉ người gửi hiển thị (vd `no-reply@iwefarm.local`) |
+> | `SMTP_FROM` | *(trống)* | Địa chỉ người gửi hiển thị (vd `no-reply@samngoclinh.vn`) |
 
 ---
 

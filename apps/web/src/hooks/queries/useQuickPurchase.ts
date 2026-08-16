@@ -23,6 +23,9 @@ export type CreateQuickOrderPayload = {
   paymentMethod?: string;
 };
 
+const EMPTY_CARE_PACKAGES: PackageOption[] = [];
+const EMPTY_PROTECTION_PACKAGES: PackageOption[] = [];
+
 export function usePlantPackages() {
   const careQuery = useQuery({
     queryKey: ['packages', 'care'],
@@ -43,8 +46,8 @@ export function usePlantPackages() {
   });
 
   return {
-    carePackages: careQuery.data || [],
-    protectionPackages: protectionQuery.data || [],
+    carePackages: careQuery.data ?? EMPTY_CARE_PACKAGES,
+    protectionPackages: protectionQuery.data ?? EMPTY_PROTECTION_PACKAGES,
     isLoading: careQuery.isLoading || protectionQuery.isLoading,
     isError: careQuery.isError || protectionQuery.isError,
   };

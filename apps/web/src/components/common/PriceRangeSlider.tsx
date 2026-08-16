@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 
 type PriceRangeSliderProps = {
@@ -22,20 +22,23 @@ export const PriceRangeSlider = ({
   onMinChange,
   onMaxChange,
 }: PriceRangeSliderProps) => {
+  const [prevMinPrice, setPrevMinPrice] = useState(minPrice);
   const [minInputVal, setMinInputVal] = useState<string>(
     minPrice.toLocaleString('vi-VN') + ' đ'
   );
+  if (minPrice !== prevMinPrice) {
+    setPrevMinPrice(minPrice);
+    setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
+  }
+
+  const [prevMaxPrice, setPrevMaxPrice] = useState(maxPrice);
   const [maxInputVal, setMaxInputVal] = useState<string>(
     maxPrice.toLocaleString('vi-VN') + ' đ'
   );
-
-  useEffect(() => {
-    setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
-  }, [minPrice]);
-
-  useEffect(() => {
+  if (maxPrice !== prevMaxPrice) {
+    setPrevMaxPrice(maxPrice);
     setMaxInputVal(maxPrice.toLocaleString('vi-VN') + ' đ');
-  }, [maxPrice]);
+  }
 
   const handleMinBlur = () => {
     const rawNum = parseInt(minInputVal.replace(/\D/g, ''), 10);
@@ -59,13 +62,10 @@ export const PriceRangeSlider = ({
     setMaxInputVal(clamped.toLocaleString('vi-VN') + ' đ');
   };
 
-  const getPercent = useCallback(
-    (value: number) => {
-      const clamped = Math.max(min, Math.min(max, value));
-      return Math.round(((clamped - min) / (max - min || 1)) * 100);
-    },
-    [min, max]
-  );
+  const getPercent = (value: number) => {
+    const clamped = Math.max(min, Math.min(max, value));
+    return Math.round(((clamped - min) / (max - min || 1)) * 100);
+  };
 
   const minPercent = getPercent(minPrice);
   const maxPercent = getPercent(maxPrice);
@@ -84,7 +84,7 @@ export const PriceRangeSlider = ({
           }}
           onBlur={handleMinBlur}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') handleMinBlur();
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleMinBlur();
           }}
           className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
         />
@@ -99,7 +99,7 @@ export const PriceRangeSlider = ({
           }}
           onBlur={handleMaxBlur}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') handleMaxBlur();
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleMaxBlur();
           }}
           className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
         />

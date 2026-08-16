@@ -31,6 +31,7 @@ export function ProfileHeader({
           src="/images/banners/homepage_banner_1.png"
           fill
           priority
+          sizes="100vw"
           className="h-full w-full object-cover opacity-40 mix-blend-overlay"
           alt="Profile Background"
         />

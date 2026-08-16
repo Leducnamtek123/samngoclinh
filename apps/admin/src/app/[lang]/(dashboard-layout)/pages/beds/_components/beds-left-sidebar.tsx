@@ -75,7 +75,7 @@ export function BedsLeftSidebar({
 }: BedsLeftSidebarProps) {
   return (
     <div
-      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-all duration-300 ${
+      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-[width,opacity] duration-300 ${
         leftSidebarOpen
           ? "w-full lg:w-72"
           : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
@@ -173,86 +173,80 @@ export function BedsLeftSidebar({
             return (
               <div
                 key={bed.id}
-                onClick={() => setSelectedBedCode(bed.code)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    setSelectedBedCode(bed.code)
-                  }
-                }}
-                className={`p-4 rounded-xl border transition-all cursor-pointer select-none space-y-3 relative group ${
+                className={`rounded-xl border transition-colors select-none relative group overflow-hidden ${
                   isSelected
                     ? "border-emerald-600 bg-emerald-50/20 dark:bg-emerald-950/20 shadow-xs ring-1 ring-emerald-500/20"
                     : "border-slate-200/60 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 bg-white dark:bg-slate-900 hover:shadow-xs"
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sprout
-                      className={`h-4 w-4 ${isSelected ? "text-emerald-600" : "text-slate-400"}`}
-                    />
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
-                      {bed.name}
-                    </h3>
-                  </div>
-                  <Badge
-                    variant={bed.status === "active" ? "default" : "secondary"}
-                    className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
-                      bed.status === "active"
-                        ? "bg-emerald-500/10 text-emerald-600 border-transparent"
-                        : ""
-                    }`}
-                  >
-                    {bed.status === "active" ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
-
-                <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden w-full">
-                  {blocks.map((bg, idx) => (
-                    <div key={idx} className={`flex-1 ${bg}`}></div>
-                  ))}
-                </div>
-
-                <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold">
-                    {bed.treeCount} / {bed.maxTrees || 100} cây
-                  </span>
-                  <span>{percentOccupied}%</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[10px] text-slate-500 dark:text-slate-400 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
-                  <div className="truncate">
-                    Thổ nhưỡng:{" "}
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      {bed.soilType || "Đất mùn rừng"}
-                    </span>
-                  </div>
-                  <div>
-                    Quy hoạch:{" "}
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      {bed.ageYear} năm
-                    </span>
-                  </div>
-                  <div className="truncate text-emerald-600 dark:text-emerald-400">
-                    Tưới:{" "}
-                    <span className="font-semibold">
-                      {formatDaysAgo(bed.lastWateredAt)}
-                    </span>
-                  </div>
-                  <div className="truncate text-amber-600 dark:text-amber-500">
-                    Bón:{" "}
-                    <span className="font-semibold">
-                      {formatDaysAgo(bed.lastFertilizedAt)}
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  className="flex justify-end gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800/80"
-                  onClick={(e) => e.stopPropagation()}
+                <button
+                  type="button"
+                  onClick={() => setSelectedBedCode(bed.code)}
+                  className="w-full text-left p-4 pb-2 space-y-3 cursor-pointer block"
                 >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sprout
+                        className={`h-4 w-4 ${isSelected ? "text-emerald-600" : "text-slate-400"}`}
+                      />
+                      <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
+                        {bed.name}
+                      </h3>
+                    </div>
+                    <Badge
+                      variant={bed.status === "active" ? "default" : "secondary"}
+                      className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
+                        bed.status === "active"
+                          ? "bg-emerald-500/10 text-emerald-600 border-transparent"
+                          : ""
+                      }`}
+                    >
+                      {bed.status === "active" ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+
+                  <div className="flex gap-0.5 h-1.5 rounded-full overflow-hidden w-full">
+                    {blocks.map((bg, idx) => (
+                      <div key={idx} className={`flex-1 ${bg}`}></div>
+                    ))}
+                  </div>
+
+                  <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-slate-400">
+                    <span className="font-semibold">
+                      {bed.treeCount} / {bed.maxTrees || 100} cây
+                    </span>
+                    <span>{percentOccupied}%</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-[10px] text-slate-500 dark:text-slate-400 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
+                    <div className="truncate">
+                      Thổ nhưỡng:{" "}
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {bed.soilType || "Đất mùn rừng"}
+                      </span>
+                    </div>
+                    <div>
+                      Quy hoạch:{" "}
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        {bed.ageYear} năm
+                      </span>
+                    </div>
+                    <div className="truncate text-emerald-600 dark:text-emerald-400">
+                      Tưới:{" "}
+                      <span className="font-semibold">
+                        {formatDaysAgo(bed.lastWateredAt)}
+                      </span>
+                    </div>
+                    <div className="truncate text-amber-600 dark:text-amber-500">
+                      Bón:{" "}
+                      <span className="font-semibold">
+                        {formatDaysAgo(bed.lastFertilizedAt)}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+
+                <div className="flex justify-end gap-1.5 px-4 py-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
                   <button
                     type="button"
                     onClick={() => handleToggleStatus(bed)}

@@ -24,8 +24,18 @@ async function handleCorsProxy(request: NextRequest) {
       return NextResponse.json({ error: 'Missing target URL parameter' }, { status: 400, headers: corsHeaders });
     }
 
-    const targetUrl = rawTarget;
-    const parsedTarget = new URL(targetUrl);
+    const ALLOWED_SEPAY_HOSTS = ['pay.sepay.vn', 'pay-sandbox.sepay.vn', 'my.sepay.vn', 'sepay.vn'];
+    let parsedTarget: URL;
+    try {
+      parsedTarget = new URL(rawTarget);
+      if (!ALLOWED_SEPAY_HOSTS.includes(parsedTarget.hostname)) {
+        return NextResponse.json({ error: 'Invalid or untrusted target host' }, { status: 403, headers: corsHeaders });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid target URL' }, { status: 400, headers: corsHeaders });
+    }
+
+    const targetUrl = parsedTarget.toString();
     const originHost = `${parsedTarget.protocol}//${parsedTarget.host}`;
 
     const method = request.method;
@@ -63,10 +73,23 @@ async function handleCorsProxy(request: NextRequest) {
       method,
       headers: customHeaders,
       body,
-      redirect: 'follow',
+      redirect: 'manual',
     });
 
     const resContentType = sepayRes.headers.get('content-type') || 'text/plain';
+
+    if (!sepayRes.ok) {
+      console.warn(`[SePay API Proxy] Upstream returned error status ${sepayRes.status} for ${targetUrl}`);
+      const errBuffer = await sepayRes.arrayBuffer();
+      return new NextResponse(errBuffer, {
+        status: sepayRes.status,
+        headers: {
+          'Content-Type': resContentType,
+          ...corsHeaders,
+        },
+      });
+    }
+
     const resBuffer = await sepayRes.arrayBuffer();
 
     const response = new NextResponse(resBuffer, {

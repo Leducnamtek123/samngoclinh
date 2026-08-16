@@ -3,11 +3,14 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-primary: #1C3F24;
   --color-primary-hover: #122B18;
-  --color-secondary: #22C55E;
-  --color-secondary-hover: #16A34A;
+  --color-secondary: #16A34A;
+  --color-secondary-hover: #15803D;
+  --color-accent-amber: #D97706;
+  --color-accent-amber-hover: #B45309;
   --color-brand-bg: #FCF9F8;
   --color-brand-surface: #FFFFFF;
 

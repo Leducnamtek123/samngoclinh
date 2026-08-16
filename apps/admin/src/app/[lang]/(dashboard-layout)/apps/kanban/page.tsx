@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { kanbanData } from "./_data/kanban"
+import { getKanbanData } from "./_data/kanban"
 
 import { Kanban } from "./_components/kanban"
 import { KanbanWrapper } from "./_components/kanban-wrapper"
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default function KanbanPage() {
+  const kanbanData = getKanbanData()
   return (
     <KanbanWrapper kanbanData={kanbanData}>
       <Kanban />

@@ -218,12 +218,10 @@ FormMessage.displayName = 'FormMessage';
 
 export {
   Form,
-  FormProvider,
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormDescription,
   FormMessage,
-  useFormField,
 };

@@ -52,6 +52,60 @@ interface ContractsListProps {
   onDelete: (id: string) => void
 }
 
+const formatVND = (value: number) => {
+  return Number(value || 0).toLocaleString("vi-VN") + " đ"
+}
+
+const getStatusBadge = (status: string) => {
+  switch (status) {
+    case "signed":
+      return (
+        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 font-semibold gap-1 text-[11px]">
+          <CheckCircle2 className="w-3 h-3" /> Đã ký
+        </Badge>
+      )
+    case "pending":
+      return (
+        <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 font-semibold gap-1 text-[11px]">
+          <Clock className="w-3 h-3" /> Chờ ký
+        </Badge>
+      )
+    case "expired":
+      return (
+        <Badge variant="destructive" className="gap-1 text-[11px]">
+          <AlertTriangle className="w-3 h-3" /> Hết hạn
+        </Badge>
+      )
+    case "cancelled":
+      return (
+        <Badge variant="outline" className="text-slate-500 text-[11px]">
+          Đã hủy
+        </Badge>
+      )
+    default:
+      return (
+        <Badge variant="secondary" className="text-[11px]">
+          {status}
+        </Badge>
+      )
+  }
+}
+
+const getContractTypeLabel = (type?: string) => {
+  switch (type) {
+    case "purchase_and_care":
+      return "Mua bán & Ký gửi"
+    case "purchase":
+      return "Mua bán sâm"
+    case "consignment":
+      return "Ký gửi chăm sóc"
+    case "care":
+      return "Gói chăm sóc"
+    default:
+      return type || "Mua bán"
+  }
+}
+
 export function ContractsList({
   contracts,
   users,
@@ -60,60 +114,6 @@ export function ContractsList({
 }: ContractsListProps) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-
-  const formatVND = (value: number) => {
-    return Number(value || 0).toLocaleString("vi-VN") + " đ"
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "signed":
-        return (
-          <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 font-semibold gap-1 text-[11px]">
-            <CheckCircle2 className="w-3 h-3" /> Đã ký
-          </Badge>
-        )
-      case "pending":
-        return (
-          <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 font-semibold gap-1 text-[11px]">
-            <Clock className="w-3 h-3" /> Chờ ký
-          </Badge>
-        )
-      case "expired":
-        return (
-          <Badge variant="destructive" className="gap-1 text-[11px]">
-            <AlertTriangle className="w-3 h-3" /> Hết hạn
-          </Badge>
-        )
-      case "cancelled":
-        return (
-          <Badge variant="outline" className="text-slate-500 text-[11px]">
-            Đã hủy
-          </Badge>
-        )
-      default:
-        return (
-          <Badge variant="secondary" className="text-[11px]">
-            {status}
-          </Badge>
-        )
-    }
-  }
-
-  const getContractTypeLabel = (type?: string) => {
-    switch (type) {
-      case "purchase_and_care":
-        return "Mua bán & Ký gửi"
-      case "purchase":
-        return "Mua bán sâm"
-      case "consignment":
-        return "Ký gửi chăm sóc"
-      case "care":
-        return "Gói chăm sóc"
-      default:
-        return type || "Mua bán"
-    }
-  }
 
   return (
     <>
@@ -154,8 +154,9 @@ export function ContractsList({
                 const isOrderSource = Boolean(
                   meta.orderId || meta.orderCode || contract.contractType === "purchase_and_care"
                 )
+                const webUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
                 const pdfDownloadUrl = `${apiUrl}/public/contracts/${contract.code}/pdf`
-                const traceUrl = `http://localhost:3002/trace/contract/${contract.code}`
+                const traceUrl = `${webUrl}/trace/contract/${contract.code}`
 
                 return (
                   <TableRow key={contract.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors">

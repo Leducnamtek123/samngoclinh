@@ -21,6 +21,7 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
   if (!isOpen) return null;
 
   const handleSendOtp = async () => {
+    if (requestMutation.isPending) return;
     setErrorMsg('');
     try {
       await requestMutation.mutateAsync();
@@ -33,6 +34,7 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
 
   const handleConfirmOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (confirmMutation.isPending) return;
     if (!otp || otp.trim().length < 4) {
       setErrorMsg('Vui lòng nhập đầy đủ mã OTP.');
       return;

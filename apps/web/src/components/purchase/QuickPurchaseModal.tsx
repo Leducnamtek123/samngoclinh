@@ -62,12 +62,12 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
   const modalContent = (
     <div
       data-lenis-prevent
-      className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto transition-opacity animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
         data-lenis-prevent
-        className="relative bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-xl overflow-hidden border border-border shrink-0 transition-all transform animate-in zoom-in-95 duration-200"
+        className="relative bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-xl overflow-hidden border border-border shrink-0 transition-transform transform animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -170,7 +170,7 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                     <button
                       type="button"
                       onClick={() => form.setDeliveryType('shipping')}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1 ${
+                      className={`p-3 rounded-xl border text-left transition-[border-color,background-color,box-shadow] cursor-pointer flex flex-col justify-between space-y-1 ${
                         form.deliveryType === 'shipping'
                           ? 'border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20'
                           : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'
@@ -193,7 +193,7 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                     <button
                       type="button"
                       onClick={() => form.setDeliveryType('pickup')}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between space-y-1 ${
+                      className={`p-3 rounded-xl border text-left transition-[border-color,background-color,box-shadow] cursor-pointer flex flex-col justify-between space-y-1 ${
                         form.deliveryType === 'pickup'
                           ? 'border-emerald-600 bg-emerald-50/60 dark:bg-emerald-950/40 ring-2 ring-emerald-500/20'
                           : 'border-gray-200 dark:border-gray-800 hover:border-gray-300'

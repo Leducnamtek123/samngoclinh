@@ -113,13 +113,13 @@ export function useProfileOrders(activeTab: string) {
     } catch (err: any) {
       setOrdersError(err?.message || 'Không thể tải lịch sử đơn hàng. Vui lòng thử lại.');
       if (page === 1) setUserOrders([]);
-    } finally {
-      setOrdersLoading(false);
     }
+    setOrdersLoading(false);
   }, [page, perPage, statusFilter]);
 
   useEffect(() => {
     if (activeTab !== 'orders') return;
+    // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
     fetchOrders();
   }, [activeTab, fetchOrders]);
 
@@ -142,9 +142,8 @@ export function useProfileOrders(activeTab: string) {
     } catch {
       // Fallback to list order object if detail endpoint fails
       setViewingOrderDetail(order);
-    } finally {
-      setDetailLoading(false);
     }
+    setDetailLoading(false);
   };
 
   const hasMore = page < pagination.totalPages;

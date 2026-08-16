@@ -11,12 +11,16 @@ export function useRecharts() {
     }
 
     let isMounted = true
-    import("recharts").then((m) => {
-      if (isMounted) {
-        rechartsCache = m
-        setRecharts(m)
-      }
-    })
+    import("recharts")
+      .then((m) => {
+        if (isMounted) {
+          rechartsCache = m
+          setRecharts(m)
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load recharts:", err)
+      })
 
     return () => {
       isMounted = false

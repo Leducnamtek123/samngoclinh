@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from '@/lib/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
@@ -8,14 +8,32 @@ import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
 
 import { useProfileMe } from '@/hooks/queries/useProfile';
 
-export function useUserHeaderMenu(initialProfile: { fullName?: string; email?: string; name?: string } | null) {
+const emptySubscribe = () => () => {};
+
+export function useUserHeaderMenu(
+  initialProfile: { fullName?: string; email?: string; name?: string } | null,
+  menuRef?: React.RefObject<HTMLDivElement | null>
+) {
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const cartCount = useSyncExternalStore(cartStore.subscribe, getCartCount, () => 0);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef?.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setShowLangMenu(false);
+        setIsNotifOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [menuRef]);
 
   const locale = useLocale();
   const router = useRouter();
@@ -36,39 +54,6 @@ export function useUserHeaderMenu(initialProfile: { fullName?: string; email?: s
   const unreadNotifCount = Array.isArray(notificationsData)
     ? notificationsData.filter((n: any) => !n.read && !n.isRead).length
     : 0;
-
-  useEffect(() => {
-    setMounted(true);
-    const handleUpdate = () => {
-      setCartCount(getCartCount());
-    };
-
-    handleUpdate();
-
-    window.addEventListener('cart_updated', handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-    const unsubscribe = cartStore.subscribe(handleUpdate);
-
-    return () => {
-      window.removeEventListener('cart_updated', handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-      unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setShowLangMenu(false);
-        setIsNotifOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -104,7 +89,6 @@ export function useUserHeaderMenu(initialProfile: { fullName?: string; email?: s
     setIsNotifOpen,
     selectedOrder,
     setSelectedOrder,
-    menuRef,
     locale,
     fullName: displayName,
     email,

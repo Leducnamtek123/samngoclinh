@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import {
   CheckCircle2,
@@ -24,6 +24,7 @@ import {
 import { ButtonLoading, Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { formatLocalDateTime } from '@/utils/datetime';
 import type { UserProfile, IdentityVerificationStatus } from '@/types';
 import {
   useIdentityVerificationHistory,
@@ -106,6 +107,662 @@ const DOCUMENT_OPTIONS: DocumentOption[] = [
   },
 ];
 
+// Subcomponent: Document Type Badge
+function KycDocTypeBadge({ type }: { type?: string }) {
+  switch (type) {
+    case 'passport':
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          <Globe className="w-3.5 h-3.5 text-indigo-600" />
+          Hộ chiếu
+        </span>
+      );
+    case 'driver_license':
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+          <Car className="w-3.5 h-3.5 text-sky-600" />
+          Bằng lái xe
+        </span>
+      );
+    default:
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+          Căn cước công dân
+        </span>
+      );
+  }
+}
+
+// Subcomponent: Verified State Certificate Card
+function KycVerifiedCard({
+  actualKycData,
+  profile,
+  existingFront,
+  existingBack,
+}: {
+  actualKycData: any;
+  profile?: UserProfile | null;
+  existingFront: string;
+  existingBack: string;
+}) {
+  return (
+    <Card className="border border-emerald-200/90 dark:border-emerald-900 bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/30 rounded-2xl shadow-xs overflow-hidden">
+      <CardContent className="p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/20 shrink-0">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                Chứng nhận định danh hợp lệ
+              </h4>
+              <p className="text-xs text-emerald-800 dark:text-emerald-400 font-medium mt-0.5">
+                Hồ sơ của bạn đã được đối soát thành công và có đầy đủ quyền lợi ký Hợp đồng điện tử.
+              </p>
+            </div>
+          </div>
+          <div className="self-start sm:self-auto">
+            <KycDocTypeBadge type={actualKycData?.documentType} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/90 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs">
+          <div className="space-y-1">
+            <span className="text-slate-400 font-medium block">Số giấy tờ tùy thân</span>
+            <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
+              {actualKycData?.idCardNumber || actualKycData?.idNumber || 'Đã đối soát'}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <span className="text-slate-400 font-medium block">Họ và tên chủ sở hữu</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              {actualKycData?.fullName || profile?.name || 'Chủ tài khoản'}
+            </span>
+          </div>
+        </div>
+
+        {existingFront && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/60">
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                Ảnh mặt trước / Trang thông tin
+              </span>
+              <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
+                <Image
+                  src={existingFront}
+                  alt="Ảnh mặt trước"
+                  fill
+                  sizes="(max-width: 640px) 100vw, 320px"
+                  unoptimized
+                  className="object-contain p-1"
+                />
+              </div>
+            </div>
+
+            {existingBack && (
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                  Ảnh mặt sau
+                </span>
+                <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Image
+                    src={existingBack}
+                    alt="Ảnh mặt sau"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 320px"
+                    unoptimized
+                    className="object-contain p-1"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// Subcomponent: Pending Review State Card
+function KycPendingCard({
+  actualKycData,
+  existingFront,
+  existingBack,
+  onReupload,
+}: {
+  actualKycData: any;
+  existingFront: string;
+  existingBack: string;
+  onReupload: () => void;
+}) {
+  return (
+    <Card className="border border-amber-200/90 dark:border-amber-900/80 bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/20 rounded-2xl shadow-xs overflow-hidden">
+      <CardContent className="p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+              <Clock className="w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                Hồ sơ đang trong quá trình xét duyệt
+              </h4>
+              <p className="text-xs text-amber-800 dark:text-amber-400 font-medium mt-0.5">
+                Ban quản trị đang đối soát giấy tờ tùy thân. Thời gian xử lý tiêu chuẩn từ 1 đến 2 giờ làm việc.
+              </p>
+            </div>
+          </div>
+          <div className="self-start sm:self-auto">
+            <KycDocTypeBadge type={actualKycData?.documentType} />
+          </div>
+        </div>
+
+        {existingFront && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                Ảnh mặt trước đã tải lên
+              </span>
+              <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
+                <Image src={existingFront} alt="Mặt trước" fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
+              </div>
+            </div>
+            {existingBack && (
+              <div className="space-y-2">
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                  Ảnh mặt sau đã tải lên
+                </span>
+                <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Image src={existingBack} alt="Mặt sau" fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex justify-end pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onReupload}
+            className="text-xs font-semibold text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-950/60 gap-1.5 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Thay đổi hoặc tải lại hồ sơ
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Subcomponent: Photo Upload Dropzones
+function KycPhotoUploadDropzone({
+  activeOption,
+  frontImagePreview,
+  backImagePreview,
+  existingFront,
+  existingBack,
+  isReuploadMode,
+  frontFileRef,
+  backFileRef,
+  setFrontImagePreview,
+  setBackImagePreview,
+}: {
+  activeOption: DocumentOption;
+  frontImagePreview: string;
+  backImagePreview: string;
+  existingFront: string;
+  existingBack: string;
+  isReuploadMode: boolean;
+  frontFileRef: React.MutableRefObject<File | null>;
+  backFileRef: React.MutableRefObject<File | null>;
+  setFrontImagePreview: (val: string) => void;
+  setBackImagePreview: (val: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Front Photo Zone */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+            {activeOption.frontTitle} <span className="text-rose-500">*</span>
+          </span>
+          <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
+        </div>
+
+        <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[border-color,box-shadow] bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/jpg"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                frontFileRef.current = file;
+                const reader = new FileReader();
+                reader.onload = (ev) => setFrontImagePreview(ev.target?.result as string);
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+          {frontImagePreview ? (
+            <div className="relative h-40 w-full flex items-center justify-center">
+              <Image src={frontImagePreview} alt="Ảnh mặt trước mới" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                <Camera className="w-4 h-4" />
+                Nhấp để đổi ảnh khác
+              </div>
+              <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                Đã chọn ảnh mới
+              </span>
+            </div>
+          ) : existingFront && !isReuploadMode ? (
+            <div className="relative h-40 w-full flex items-center justify-center">
+              <Image src={existingFront} alt="Ảnh mặt trước cũ" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2.5 text-center p-2">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <UploadCloud className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  Tải lên {activeOption.frontTitle.toLowerCase()}
+                </span>
+                <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
+                  {activeOption.frontDescription}
+                </span>
+              </div>
+            </div>
+          )}
+        </label>
+      </div>
+
+      {/* Back Photo Zone */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+            {activeOption.backTitle}{' '}
+            {activeOption.isBackRequired ? <span className="text-rose-500">*</span> : <span className="text-slate-400 font-normal">(Không bắt buộc)</span>}
+          </span>
+          <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
+        </div>
+
+        <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[border-color,box-shadow] bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/jpg"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                backFileRef.current = file;
+                const reader = new FileReader();
+                reader.onload = (ev) => setBackImagePreview(ev.target?.result as string);
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+          {backImagePreview ? (
+            <div className="relative h-40 w-full flex items-center justify-center">
+              <Image src={backImagePreview} alt="Ảnh mặt sau mới" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                <Camera className="w-4 h-4" />
+                Nhấp để đổi ảnh khác
+              </div>
+              <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
+                Đã chọn ảnh mới
+              </span>
+            </div>
+          ) : existingBack && !isReuploadMode ? (
+            <div className="relative h-40 w-full flex items-center justify-center">
+              <Image src={existingBack} alt="Ảnh mặt sau cũ" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2.5 text-center p-2">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <UploadCloud className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                  Tải lên {activeOption.backTitle.toLowerCase()}
+                </span>
+                <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
+                  {activeOption.backDescription}
+                </span>
+              </div>
+            </div>
+          )}
+        </label>
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Verification History Table
+function KycHistoryList({ historyList, formatDate }: { historyList: any[]; formatDate: (d?: string) => string }) {
+  if (historyList.length === 0) return null;
+
+  return (
+    <div className="space-y-4 pt-6 border-t border-slate-200/80 dark:border-slate-800">
+      <div className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
+        <History className="w-4 h-4 text-emerald-600" />
+        <span>Lịch sử xác thực eKYC ({historyList.length})</span>
+      </div>
+
+      <div className="space-y-3">
+        {historyList.map((item: any, idx: number) => {
+          const isItemApproved = item.status === 'APPROVED';
+          const isItemRejected = item.status === 'REJECTED';
+          return (
+            <div
+              key={item.id || `${item.documentType}-${item.createdAt || 'kyc'}`}
+              className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-bold text-slate-900 dark:text-slate-100">
+                    Lần {historyList.length - idx}
+                  </span>
+                  <KycDocTypeBadge type={item.documentType} />
+                  <span
+                    className={`font-semibold px-2.5 py-0.5 rounded-full text-[11px] ${
+                      isItemApproved
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : isItemRejected
+                        ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                        : 'bg-amber-50 text-amber-700 border border-amber-200'
+                    }`}
+                  >
+                    {isItemApproved ? 'Đã duyệt' : isItemRejected ? 'Bị từ chối' : 'Chờ đối soát'}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2 text-slate-400 font-medium">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>{formatDate(item.createdAt)}</span>
+                  {item.idCardNumber && (
+                    <span>
+                      Số giấy tờ: <strong className="font-mono text-slate-700 dark:text-slate-300">{item.idCardNumber}</strong>
+                    </span>
+                  )}
+                </div>
+
+                {isItemRejected && item.rejectionReason && (
+                  <p className="text-rose-600 font-medium pt-1">
+                    Lý do từ chối: {item.rejectionReason}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Subcomponent: Submission Form
+function KycSubmissionForm({
+  isRejected,
+  isReuploadMode,
+  actualKycData,
+  documentType,
+  setDocumentType,
+  setKycErrorMsg,
+  idCardNumber,
+  setIdCardNumber,
+  fullName,
+  setFullName,
+  activeOption,
+  kycErrorMsg,
+  frontImagePreview,
+  backImagePreview,
+  existingFront,
+  existingBack,
+  frontFileRef,
+  backFileRef,
+  setFrontImagePreview,
+  setBackImagePreview,
+  setIsReuploadMode,
+  handleSubmit,
+  isSubmitting,
+}: {
+  isRejected: boolean;
+  isReuploadMode: boolean;
+  actualKycData: any;
+  documentType: IdentityDocumentType;
+  setDocumentType: (val: IdentityDocumentType) => void;
+  setKycErrorMsg: (val: string) => void;
+  idCardNumber: string;
+  setIdCardNumber: (val: string) => void;
+  fullName: string;
+  setFullName: (val: string) => void;
+  activeOption: DocumentOption;
+  kycErrorMsg: string;
+  frontImagePreview: string;
+  backImagePreview: string;
+  existingFront: string;
+  existingBack: string;
+  frontFileRef: React.MutableRefObject<File | null>;
+  backFileRef: React.MutableRefObject<File | null>;
+  setFrontImagePreview: (val: string) => void;
+  setBackImagePreview: (val: string) => void;
+  setIsReuploadMode: (val: boolean) => void;
+  handleSubmit: (e: React.FormEvent) => Promise<void>;
+  isSubmitting: boolean;
+}) {
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {isRejected && !isReuploadMode && (
+        <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50/70 dark:bg-rose-950/30 flex items-start gap-4">
+          <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+            <AlertOctagon className="w-5 h-5" />
+          </div>
+          <div className="space-y-1.5 text-xs flex-1">
+            <h4 className="font-bold text-sm text-rose-900 dark:text-rose-200">
+              Hồ sơ xác thực trước đó không được phê duyệt
+            </h4>
+            <div className="bg-white/80 dark:bg-slate-900/80 p-3 rounded-xl border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 font-medium">
+              <span className="font-bold block text-rose-900 dark:text-rose-200 mb-0.5">Lý do từ chối:</span>
+              {actualKycData?.rejectionReason || 'Ảnh chụp không đủ rõ nét hoặc bị lóa sáng. Vui lòng tải lại ảnh mới.'}
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 font-medium pt-1">
+              Vui lòng kiểm tra lại thông tin và chụp lại ảnh rõ nét theo các tiêu chuẩn bên dưới.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Step 1: Select Document Type */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
+              1
+            </span>
+            Chọn loại giấy tờ tùy thân
+          </span>
+          <span className="text-xs text-slate-400 font-medium">Bắt buộc</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {DOCUMENT_OPTIONS.map((opt) => {
+            const Icon = opt.icon;
+            const isSelected = documentType === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => {
+                  setDocumentType(opt.id);
+                  setKycErrorMsg('');
+                }}
+                className={`relative p-5 rounded-2xl border text-left transition-[border-color,background-color,box-shadow] cursor-pointer flex flex-col justify-between min-h-[120px] ${
+                  isSelected
+                    ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-600/20 text-slate-900 dark:text-slate-100 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                <div className="flex items-start justify-between w-full">
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                      isSelected
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div
+                    className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                      isSelected
+                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                        : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800'
+                    }`}
+                  >
+                    {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <span className="font-bold text-sm text-slate-900 dark:text-slate-100 block">
+                    {opt.title}
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium block mt-0.5">
+                    {opt.subtitle}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step 2: Document Details Input */}
+      <div className="space-y-4 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
+            2
+          </span>
+          Thông tin chi tiết giấy tờ
+        </span>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="space-y-1.5">
+            <label htmlFor="kyc-id-card-number" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+              {activeOption.fieldLabel} <span className="text-rose-500">*</span>
+            </label>
+            <input
+              id="kyc-id-card-number"
+              type="text"
+              value={idCardNumber}
+              onChange={(e) => setIdCardNumber(e.target.value)}
+              placeholder={activeOption.fieldPlaceholder}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold font-mono text-slate-900 dark:text-slate-100 placeholder:font-sans placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-colors"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="kyc-full-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+              Họ và tên in trên giấy tờ <span className="text-rose-500">*</span>
+            </label>
+            <input
+              id="kyc-full-name"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Ví dụ: NGUYEN VAN A"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-colors"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Standard Guidelines Box */}
+      <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 flex items-start gap-3">
+        <Info className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+        <div className="space-y-1 text-xs">
+          <span className="font-bold text-slate-900 dark:text-slate-100 block">
+            Tiêu chuẩn ảnh chụp chứng thực
+          </span>
+          <ul className="space-y-0.5 text-slate-600 dark:text-slate-400 font-medium">
+            {activeOption.notes.map((note) => (
+              <li key={note} className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                {note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {kycErrorMsg && (
+        <div className="p-4 rounded-xl border border-rose-200 dark:rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>{kycErrorMsg}</span>
+        </div>
+      )}
+
+      {/* Step 3: Photo Upload Dropzones */}
+      <div className="space-y-3">
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
+            3
+          </span>
+          Tải ảnh giấy tờ tùy thân
+        </span>
+
+        <KycPhotoUploadDropzone
+          activeOption={activeOption}
+          frontImagePreview={frontImagePreview}
+          backImagePreview={backImagePreview}
+          existingFront={existingFront}
+          existingBack={existingBack}
+          isReuploadMode={isReuploadMode}
+          frontFileRef={frontFileRef}
+          backFileRef={backFileRef}
+          setFrontImagePreview={setFrontImagePreview}
+          setBackImagePreview={setBackImagePreview}
+        />
+      </div>
+
+      {/* Privacy Security Compliance Guarantee */}
+      <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <Lock className="w-4 h-4 text-emerald-700 shrink-0" />
+        <span>
+          Thông tin và hình ảnh giấy tờ được mã hóa theo tiêu chuẩn an ninh <strong>SSL 256-bit</strong> và tuân thủ chặt chẽ <strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân.
+        </span>
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800">
+        {isReuploadMode && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setIsReuploadMode(false)}
+            className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 cursor-pointer"
+          >
+            Hủy bỏ
+          </Button>
+        )}
+        <ButtonLoading
+          type="submit"
+          isLoading={isSubmitting}
+          className="bg-emerald-800 hover:bg-emerald-900 text-white px-8 py-3 rounded-xl font-bold text-xs shadow-md shadow-emerald-950/20 active:scale-[0.98] transition-[transform,background-color] cursor-pointer"
+        >
+          {isReuploadMode || isRejected ? 'Gửi lại hồ sơ eKYC' : 'Gửi hồ sơ xác thực'}
+        </ButtonLoading>
+      </div>
+    </form>
+  );
+}
+
 export const ProfileKycTab = ({
   profile,
   kycStatusData,
@@ -114,123 +771,97 @@ export const ProfileKycTab = ({
 }: ProfileKycTabProps) => {
   const actualKycData = (kycStatusData as any)?.data || kycStatusData;
 
-  const [documentType, setDocumentType] = useState<IdentityDocumentType>('cccd');
-  const [idCardNumber, setIdCardNumber] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [userDocumentType, setUserDocumentType] = useState<IdentityDocumentType | null>(null);
+  const [userIdCardNumber, setUserIdCardNumber] = useState<string | null>(null);
+  const [userFullName, setUserFullName] = useState<string | null>(null);
+
+  const documentType: IdentityDocumentType = userDocumentType ?? (actualKycData?.documentType as IdentityDocumentType) ?? 'cccd';
+  const setDocumentType = (val: IdentityDocumentType) => setUserDocumentType(val);
+
+  const idCardNumber = userIdCardNumber ?? actualKycData?.idCardNumber ?? actualKycData?.idNumber ?? '';
+  const setIdCardNumber = (val: string) => setUserIdCardNumber(val);
+
+  const fullName = userFullName ?? actualKycData?.fullName ?? profile?.name ?? '';
+  const setFullName = (val: string) => setUserFullName(val);
+
   const [frontImagePreview, setFrontImagePreview] = useState('');
   const [backImagePreview, setBackImagePreview] = useState('');
-  const [frontFile, setFrontFile] = useState<File | null>(null);
-  const [backFile, setBackFile] = useState<File | null>(null);
+  const frontFileRef = useRef<File | null>(null);
+  const backFileRef = useRef<File | null>(null);
   const [kycErrorMsg, setKycErrorMsg] = useState('');
   const [isReuploadMode, setIsReuploadMode] = useState(false);
 
   const { data: historyList = [] } = useIdentityVerificationHistory();
 
-  useEffect(() => {
-    if (actualKycData) {
-      if (actualKycData.documentType) {
-        setDocumentType(actualKycData.documentType as IdentityDocumentType);
-      }
-      if (actualKycData.idCardNumber || actualKycData.idNumber) {
-        setIdCardNumber(actualKycData.idCardNumber || actualKycData.idNumber || '');
-      }
-      if (actualKycData.fullName || profile?.name) {
-        setFullName(actualKycData.fullName || profile?.name || '');
-      }
-    }
-  }, [actualKycData, profile]);
+  const activeOption: DocumentOption = DOCUMENT_OPTIONS.find((o) => o.id === documentType) || DOCUMENT_OPTIONS[0]!;
 
-  const activeOption =
-    DOCUMENT_OPTIONS.find((opt) => opt.id === documentType) || DOCUMENT_OPTIONS[0]!;
+  const statusStr = (actualKycData?.status || '').toUpperCase();
+  const isVerified = statusStr === 'APPROVED' || statusStr === 'VERIFIED';
+  const isPending = statusStr === 'PENDING' || statusStr === 'PROCESSING';
+  const isRejected = statusStr === 'REJECTED';
 
-  const existingFront =
-    actualKycData?.frontImageUrl || actualKycData?.front || frontImagePreview;
-  const existingBack =
-    actualKycData?.backImageUrl || actualKycData?.back || backImagePreview;
+  const existingFront = actualKycData?.frontImageUrl || actualKycData?.frontUrl || '';
+  const existingBack = actualKycData?.backImageUrl || actualKycData?.backUrl || '';
 
-  const isVerified = !!(
-    profile?.isVerified ||
-    (profile as any)?.verified ||
-    actualKycData?.status === 'VERIFIED' ||
-    actualKycData?.status === 'APPROVED'
-  );
-
-  const isRejected = !isVerified && actualKycData?.status === 'REJECTED';
-  const isPending =
-    !isVerified &&
-    (actualKycData?.status === 'PENDING' ||
-      (!isRejected && !!actualKycData?.id && !isReuploadMode));
+  const formatDate = (dateStr?: string) => {
+    return formatLocalDateTime(dateStr);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitKycMutation.isPending) return;
     setKycErrorMsg('');
 
-    if (!frontFile && !frontImagePreview) {
-      setKycErrorMsg(`Vui lòng tải lên ${activeOption.frontTitle.toLowerCase()}.`);
+    const cleanId = idCardNumber.trim();
+    if (!cleanId) {
+      setKycErrorMsg(`Vui lòng nhập ${activeOption.fieldLabel.toLowerCase()}`);
       return;
     }
 
-    if (activeOption.isBackRequired && !backFile && !backImagePreview) {
-      setKycErrorMsg('Vui lòng tải lên đầy đủ ảnh mặt trước và mặt sau của giấy tờ.');
+    if (documentType === 'cccd' && cleanId.length !== 12) {
+      setKycErrorMsg('Số Căn cước công dân gắn chip phải đúng 12 chữ số');
+      return;
+    }
+
+    if (!fullName.trim()) {
+      setKycErrorMsg('Vui lòng nhập họ và tên in trên giấy tờ');
+      return;
+    }
+
+    const hasFront = !!frontFileRef.current || (existingFront && !isReuploadMode);
+    if (!hasFront) {
+      setKycErrorMsg(`Vui lòng tải lên ${activeOption.frontTitle.toLowerCase()}`);
+      return;
+    }
+
+    const hasBack = !!backFileRef.current || (existingBack && !isReuploadMode);
+    if (activeOption.isBackRequired && !hasBack) {
+      setKycErrorMsg(`Vui lòng tải lên ${activeOption.backTitle.toLowerCase()}`);
       return;
     }
 
     try {
-      await submitKycMutation.mutateAsync({
-        documentType,
-        idCardNumber: idCardNumber.trim() || undefined,
-        fullName: fullName.trim() || profile?.name || undefined,
-        front: frontFile,
-        back: backFile,
-        frontBase64: frontImagePreview || undefined,
-        backBase64: backImagePreview || undefined,
-      });
-      toast.success('Hồ sơ xác thực danh tính đã được gửi thành công.');
+      const formData = new FormData();
+      formData.append('documentType', documentType);
+      formData.append('idCardNumber', cleanId);
+      formData.append('fullName', fullName.trim());
+
+      if (frontFileRef.current) {
+        formData.append('frontImage', frontFileRef.current);
+      }
+      if (backFileRef.current) {
+        formData.append('backImage', backFileRef.current);
+      }
+
+      await submitKycMutation.mutateAsync(formData);
+
+      toast.success('Gửi hồ sơ xác thực eKYC thành công! Hệ thống đang tiến hành đối soát.');
       setIsReuploadMode(false);
-      refetchKycStatus?.();
+      if (refetchKycStatus) refetchKycStatus();
     } catch (err: any) {
-      setKycErrorMsg(err.message || 'Có lỗi xảy ra khi gửi hồ sơ xác thực. Vui lòng thử lại.');
-    }
-  };
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '';
-    try {
-      return new Date(dateStr).toLocaleString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return dateStr;
-    }
-  };
-
-  const renderDocTypeBadge = (type?: string) => {
-    switch (type) {
-      case 'passport':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-            <Globe className="w-3.5 h-3.5 text-indigo-600" />
-            Hộ chiếu
-          </span>
-        );
-      case 'driver_license':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-            <Car className="w-3.5 h-3.5 text-sky-600" />
-            Bằng lái xe
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-            <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
-            Căn cước công dân
-          </span>
-        );
+      const errorMsg = err?.message || 'Không thể gửi hồ sơ eKYC. Vui lòng kiểm tra lại kết nối mạng.';
+      setKycErrorMsg(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -252,7 +883,6 @@ export const ProfileKycTab = ({
           </p>
         </div>
 
-        {/* Global Verification Status Indicator */}
         <div className="flex-shrink-0">
           {isVerified ? (
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-xs">
@@ -280,542 +910,55 @@ export const ProfileKycTab = ({
 
       {/* STATE 1: VERIFIED CERTIFICATE CARD */}
       {isVerified && (
-        <Card className="border border-emerald-200/90 dark:border-emerald-900 bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/30 rounded-2xl shadow-xs overflow-hidden">
-          <CardContent className="p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-start gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/20 shrink-0">
-                  <CheckCircle2 className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
-                    Chứng nhận định danh hợp lệ
-                  </h4>
-                  <p className="text-xs text-emerald-800 dark:text-emerald-400 font-medium mt-0.5">
-                    Hồ sơ của bạn đã được đối soát thành công và có đầy đủ quyền lợi ký Hợp đồng điện tử.
-                  </p>
-                </div>
-              </div>
-              <div className="self-start sm:self-auto">
-                {renderDocTypeBadge(actualKycData?.documentType)}
-              </div>
-            </div>
-
-            {/* Document metadata panel */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/90 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs">
-              <div className="space-y-1">
-                <span className="text-slate-400 font-medium block">Số giấy tờ tùy thân</span>
-                <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
-                  {actualKycData?.idCardNumber || actualKycData?.idNumber || 'Đã đối soát'}
-                </span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-slate-400 font-medium block">Họ và tên chủ sở hữu</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
-                  {actualKycData?.fullName || profile?.name || 'Chủ tài khoản'}
-                </span>
-              </div>
-            </div>
-
-            {/* Photos preview */}
-            {existingFront && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/60">
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                    Ảnh mặt trước / Trang thông tin
-                  </span>
-                  <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                    <Image
-                      src={existingFront}
-                      alt="Ảnh mặt trước"
-                      fill
-                      unoptimized
-                      className="object-contain p-1"
-                    />
-                  </div>
-                </div>
-
-                {existingBack && (
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                      Ảnh mặt sau
-                    </span>
-                    <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                      <Image
-                        src={existingBack}
-                        alt="Ảnh mặt sau"
-                        fill
-                        unoptimized
-                        className="object-contain p-1"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <KycVerifiedCard
+          actualKycData={actualKycData}
+          profile={profile}
+          existingFront={existingFront}
+          existingBack={existingBack}
+        />
       )}
 
       {/* STATE 2: PENDING REVIEW NOTICE */}
       {isPending && !isReuploadMode && (
-        <Card className="border border-amber-200/90 dark:border-amber-900/80 bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/20 rounded-2xl shadow-xs overflow-hidden">
-          <CardContent className="p-6 space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div className="flex items-start gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
-                  <Clock className="w-6 h-6 animate-pulse" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
-                    Hồ sơ đang trong quá trình xét duyệt
-                  </h4>
-                  <p className="text-xs text-amber-800 dark:text-amber-400 font-medium mt-0.5">
-                    Ban quản trị đang đối soát giấy tờ tùy thân. Thời gian xử lý tiêu chuẩn từ 1 đến 2 giờ làm việc.
-                  </p>
-                </div>
-              </div>
-              <div className="self-start sm:self-auto">
-                {renderDocTypeBadge(actualKycData?.documentType)}
-              </div>
-            </div>
-
-            {existingFront && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                    Ảnh mặt trước đã tải lên
-                  </span>
-                  <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                    <Image src={existingFront} alt="Mặt trước" fill unoptimized className="object-contain p-1" />
-                  </div>
-                </div>
-                {existingBack && (
-                  <div className="space-y-2">
-                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                      Ảnh mặt sau đã tải lên
-                    </span>
-                    <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                      <Image src={existingBack} alt="Mặt sau" fill unoptimized className="object-contain p-1" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="flex justify-end pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsReuploadMode(true)}
-                className="text-xs font-semibold text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-950/60 gap-1.5 cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                Thay đổi hoặc tải lại hồ sơ
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <KycPendingCard
+          actualKycData={actualKycData}
+          existingFront={existingFront}
+          existingBack={existingBack}
+          onReupload={() => setIsReuploadMode(true)}
+        />
       )}
 
       {/* STATE 3: ONBOARDING / SUBMISSION FORM */}
-      {(!isVerified && !isPending) || isReuploadMode ? (
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Rejection notice if previously rejected */}
-          {isRejected && !isReuploadMode && (
-            <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-900 bg-rose-50/70 dark:bg-rose-950/30 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
-                <AlertOctagon className="w-5 h-5" />
-              </div>
-              <div className="space-y-1.5 text-xs flex-1">
-                <h4 className="font-bold text-sm text-rose-900 dark:text-rose-200">
-                  Hồ sơ xác thực trước đó không được phê duyệt
-                </h4>
-                <div className="bg-white/80 dark:bg-slate-900/80 p-3 rounded-xl border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 font-medium">
-                  <span className="font-bold block text-rose-900 dark:text-rose-200 mb-0.5">Lý do từ chối:</span>
-                  {actualKycData?.rejectionReason || 'Ảnh chụp không đủ rõ nét hoặc bị lóa sáng. Vui lòng tải lại ảnh mới.'}
-                </div>
-                <p className="text-slate-600 dark:text-slate-400 font-medium pt-1">
-                  Vui lòng kiểm tra lại thông tin và chụp lại ảnh rõ nét theo các tiêu chuẩn bên dưới.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Step 1: Select Document Type */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
-                  1
-                </span>
-                Chọn loại giấy tờ tùy thân
-              </label>
-              <span className="text-xs text-slate-400 font-medium">Bắt buộc</span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {DOCUMENT_OPTIONS.map((opt) => {
-                const Icon = opt.icon;
-                const isSelected = documentType === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => {
-                      setDocumentType(opt.id);
-                      setKycErrorMsg('');
-                    }}
-                    className={`relative p-5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between min-h-[120px] ${
-                      isSelected
-                        ? 'border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-600/20 text-slate-900 dark:text-slate-100 shadow-xs'
-                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between w-full">
-                      <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                          isSelected
-                            ? 'bg-emerald-600 text-white shadow-xs'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-                        }`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                          isSelected
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
-                      </div>
-                    </div>
-
-                    <div className="mt-3">
-                      <span className="font-bold text-sm text-slate-900 dark:text-slate-100 block">
-                        {opt.title}
-                      </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium block mt-0.5">
-                        {opt.subtitle}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Step 2: Document Details Input */}
-          <div className="space-y-4 p-5 rounded-2xl border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
-                2
-              </span>
-              Thông tin chi tiết giấy tờ
-            </label>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                  {activeOption.fieldLabel} <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={idCardNumber}
-                  onChange={(e) => setIdCardNumber(e.target.value)}
-                  placeholder={activeOption.fieldPlaceholder}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold font-mono text-slate-900 dark:text-slate-100 placeholder:font-sans placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                  Họ và tên in trên giấy tờ <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Ví dụ: NGUYEN VAN A"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Standard Guidelines Box */}
-          <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 flex items-start gap-3">
-            <Info className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-            <div className="space-y-1 text-xs">
-              <span className="font-bold text-slate-900 dark:text-slate-100 block">
-                Tiêu chuẩn ảnh chụp chứng thực
-              </span>
-              <ul className="space-y-0.5 text-slate-600 dark:text-slate-400 font-medium">
-                {activeOption.notes.map((note, idx) => (
-                  <li key={idx} className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                    {note}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Error Message banner */}
-          {kycErrorMsg && (
-            <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-bold flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>{kycErrorMsg}</span>
-            </div>
-          )}
-
-          {/* Step 3: Photo Upload Dropzones */}
-          <div className="space-y-3">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-              <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
-                3
-              </span>
-              Tải ảnh giấy tờ tùy thân
-            </label>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Front Photo Zone */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {activeOption.frontTitle} <span className="text-rose-500">*</span>
-                  </span>
-                  <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
-                </div>
-
-                <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setFrontFile(file);
-                        const reader = new FileReader();
-                        reader.onload = (ev) => setFrontImagePreview(ev.target?.result as string);
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                  {frontImagePreview ? (
-                    <div className="relative h-40 w-full flex items-center justify-center">
-                      <Image
-                        src={frontImagePreview}
-                        alt="Ảnh mặt trước mới"
-                        fill
-                        unoptimized
-                        className="object-contain rounded-xl"
-                      />
-                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                        <Camera className="w-4 h-4" />
-                        Nhấp để đổi ảnh khác
-                      </div>
-                      <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                        Đã chọn ảnh mới
-                      </span>
-                    </div>
-                  ) : existingFront && !isReuploadMode ? (
-                    <div className="relative h-40 w-full flex items-center justify-center">
-                      <Image
-                        src={existingFront}
-                        alt="Ảnh mặt trước cũ"
-                        fill
-                        unoptimized
-                        className="object-contain rounded-xl"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2.5 text-center p-2">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <UploadCloud className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                          Tải lên {activeOption.frontTitle.toLowerCase()}
-                        </span>
-                        <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
-                          {activeOption.frontDescription}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </label>
-              </div>
-
-              {/* Back Photo Zone */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {activeOption.backTitle}{' '}
-                    {activeOption.isBackRequired ? (
-                      <span className="text-rose-500">*</span>
-                    ) : (
-                      <span className="text-slate-400 font-normal">(Không bắt buộc)</span>
-                    )}
-                  </span>
-                  <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
-                </div>
-
-                <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/jpg"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setBackFile(file);
-                        const reader = new FileReader();
-                        reader.onload = (ev) => setBackImagePreview(ev.target?.result as string);
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                  {backImagePreview ? (
-                    <div className="relative h-40 w-full flex items-center justify-center">
-                      <Image
-                        src={backImagePreview}
-                        alt="Ảnh mặt sau mới"
-                        fill
-                        unoptimized
-                        className="object-contain rounded-xl"
-                      />
-                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                        <Camera className="w-4 h-4" />
-                        Nhấp để đổi ảnh khác
-                      </div>
-                      <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                        Đã chọn ảnh mới
-                      </span>
-                    </div>
-                  ) : existingBack && !isReuploadMode ? (
-                    <div className="relative h-40 w-full flex items-center justify-center">
-                      <Image
-                        src={existingBack}
-                        alt="Ảnh mặt sau cũ"
-                        fill
-                        unoptimized
-                        className="object-contain rounded-xl"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2.5 text-center p-2">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <UploadCloud className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                          Tải lên {activeOption.backTitle.toLowerCase()}
-                        </span>
-                        <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
-                          {activeOption.backDescription}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Privacy Security Compliance Guarantee */}
-          <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-            <Lock className="w-4 h-4 text-emerald-700 shrink-0" />
-            <span>
-              Thông tin và hình ảnh giấy tờ được mã hóa theo tiêu chuẩn an ninh <strong>SSL 256-bit</strong> và tuân thủ chặt chẽ <strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân.
-            </span>
-          </div>
-
-          {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800">
-            {isReuploadMode && (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsReuploadMode(false)}
-                className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 cursor-pointer"
-              >
-                Hủy bỏ
-              </Button>
-            )}
-            <ButtonLoading
-              type="submit"
-              isLoading={submitKycMutation.isPending}
-              className="bg-emerald-800 hover:bg-emerald-900 text-white px-8 py-3 rounded-xl font-bold text-xs shadow-md shadow-emerald-950/20 active:scale-[0.98] transition-all cursor-pointer"
-            >
-              {isReuploadMode || isRejected ? 'Gửi lại hồ sơ eKYC' : 'Gửi hồ sơ xác thực'}
-            </ButtonLoading>
-          </div>
-        </form>
-      ) : null}
+      {((!isVerified && !isPending) || isReuploadMode) && (
+        <KycSubmissionForm
+          isRejected={isRejected}
+          isReuploadMode={isReuploadMode}
+          actualKycData={actualKycData}
+          documentType={documentType}
+          setDocumentType={setDocumentType}
+          setKycErrorMsg={setKycErrorMsg}
+          idCardNumber={idCardNumber}
+          setIdCardNumber={setIdCardNumber}
+          fullName={fullName}
+          setFullName={setFullName}
+          activeOption={activeOption}
+          kycErrorMsg={kycErrorMsg}
+          frontImagePreview={frontImagePreview}
+          backImagePreview={backImagePreview}
+          existingFront={existingFront}
+          existingBack={existingBack}
+          frontFileRef={frontFileRef}
+          backFileRef={backFileRef}
+          setFrontImagePreview={setFrontImagePreview}
+          setBackImagePreview={setBackImagePreview}
+          setIsReuploadMode={setIsReuploadMode}
+          handleSubmit={handleSubmit}
+          isSubmitting={submitKycMutation.isPending}
+        />
+      )}
 
       {/* History Log Section */}
-      {historyList.length > 0 && (
-        <div className="space-y-4 pt-6 border-t border-slate-200/80 dark:border-slate-800">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
-            <History className="w-4 h-4 text-emerald-600" />
-            <span>Lịch sử xác thực eKYC ({historyList.length})</span>
-          </div>
-
-          <div className="space-y-3">
-            {historyList.map((item: any, idx: number) => {
-              const isItemApproved = item.status === 'APPROVED';
-              const isItemRejected = item.status === 'REJECTED';
-              return (
-                <div
-                  key={item.id || idx}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                      <span className="font-bold text-slate-900 dark:text-slate-100">
-                        Lần {historyList.length - idx}
-                      </span>
-                      {renderDocTypeBadge(item.documentType)}
-                      <span
-                        className={`font-semibold px-2.5 py-0.5 rounded-full text-[11px] ${
-                          isItemApproved
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : isItemRejected
-                            ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                        }`}
-                      >
-                        {isItemApproved ? 'Đã duyệt' : isItemRejected ? 'Bị từ chối' : 'Chờ đối soát'}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-slate-400 font-medium">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{formatDate(item.createdAt)}</span>
-                      {item.idCardNumber && (
-                        <span>
-                          Số giấy tờ: <strong className="font-mono text-slate-700 dark:text-slate-300">{item.idCardNumber}</strong>
-                        </span>
-                      )}
-                    </div>
-
-                    {isItemRejected && item.rejectionReason && (
-                      <p className="text-rose-600 font-medium pt-1">
-                        Lý do từ chối: {item.rejectionReason}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <KycHistoryList historyList={historyList} formatDate={formatDate} />
     </div>
   );
 };

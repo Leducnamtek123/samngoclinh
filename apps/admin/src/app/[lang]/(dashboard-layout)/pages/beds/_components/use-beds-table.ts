@@ -306,14 +306,7 @@ export function useBedsTable(
     fetchUsers()
   }, [])
 
-  // Load locations & trees whenever active bed changes
-  useEffect(() => {
-    if (selectedBedCode) {
-      loadBedLocations(selectedBedCode)
-    }
-  }, [selectedBedCode])
-
-  const loadBedLocations = async (bedCode: string) => {
+  const loadBedLocations = useCallback(async (bedCode: string) => {
     setLoadingGrid(true)
     setSelectedLocationId(null)
     setSelectedTreeDetails(null)
@@ -339,7 +332,22 @@ export function useBedsTable(
     } finally {
       setLoadingGrid(false)
     }
-  }
+  }, [])
+
+  // Load locations & trees whenever active bed changes
+  useEffect(() => {
+    let ignore = false
+    const load = async () => {
+      if (selectedBedCode) {
+        await loadBedLocations(selectedBedCode)
+      }
+    }
+    load()
+
+    return () => {
+      ignore = true
+    }
+  }, [selectedBedCode, loadBedLocations])
 
   const getCellTree = (treeCode?: string) => {
     if (!treeCode) return null

@@ -50,9 +50,7 @@ export default async function ContractTracePage(props: ContractTracePageProps) {
   setRequestLocale(locale);
 
   const verification = await getContractVerification(code);
-  const pdfDownloadUrl = verification?.pdfDownloadUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}${verification.pdfDownloadUrl.replace('/api', '')}`
-    : `http://localhost:3000/api/public/contracts/${code}/pdf`;
+  const pdfDownloadUrl = `/api/proxy/public/contracts/${encodeURIComponent(code)}/pdf`;
 
   return (
     <div className="w-full bg-slate-50 dark:bg-slate-950 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
@@ -225,7 +223,7 @@ export default async function ContractTracePage(props: ContractTracePageProps) {
                   href={pdfDownloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.98]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-md transition-[background-color,transform] active:scale-[0.98]"
                 >
                   <Download className="w-4 h-4" />
                   <span>Tải tệp PDF có dấu mộc & QR</span>

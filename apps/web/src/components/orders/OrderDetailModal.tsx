@@ -1,18 +1,21 @@
 'use client';
 
 import { useState, useEffect, useSyncExternalStore } from 'react';
+import Image from 'next/image';
 // @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { QrCode, XCircle } from 'lucide-react';
 import { useCancelOrder } from '@/hooks/queries/useOrderDetail';
 import { toast } from 'sonner';
 import { Button, ConfirmModal } from '@/components';
-import { getOrderStatusInfo } from '@/components/profile/ProfileOrdersTab';
+import { getOrderStatusInfo } from '@/utils/orderStatus';
 import { formatLocalDateTime } from '@/utils/datetime';
 
 const emptySubscribe = () => () => {};
 
 export type OrderDetailItem = {
+  id?: string;
+  productId?: string;
   name: string;
   quantity: number;
   price?: number;
@@ -125,7 +128,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
   const modalContent = (
     <>
       <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-in fade-in overflow-y-auto">
-        <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden border border-border transition-all duration-150 animate-in zoom-in-95 max-h-[88vh] flex flex-col shrink-0">
+        <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden border border-border transition-transform duration-150 animate-in zoom-in-95 max-h-[88vh] flex flex-col shrink-0">
           {/* Top Header Navigation Bar */}
           <div className="bg-white dark:bg-slate-900 bg-card px-6 py-4 border-b border-border flex items-center justify-between flex-shrink-0 z-10">
             <div className="flex items-center gap-3">
@@ -267,22 +270,22 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                       Không có chi tiết sản phẩm nào trong đơn hàng này
                     </div>
                   ) : (
-                    items.map((item, idx) => {
+                    items.map((item) => {
                       const itemPrice = Number(item.price) || 0;
                       const itemQty = Number(item.quantity) || 1;
                       const rawImg = item.imageUrl || item.image || (Array.isArray(item.images) ? item.images[0] : null);
                       const initialImg = rawImg && typeof rawImg === 'string' && rawImg.trim() !== '' ? rawImg : '/images/kon_tum_ginseng.png';
 
                       return (
-                        <div key={item.name || idx} className="border border-gray-100 rounded-xl p-4 bg-gray-50/50 flex gap-4 items-center">
+                        <div key={item.id || item.productId || item.name} className="border border-gray-100 rounded-xl p-4 bg-gray-50/50 flex gap-4 items-center">
                           <div className="relative w-16 h-16 shrink-0 bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center">
-                            <img
+                            <Image
                               src={initialImg}
                               alt={item.name || 'Sản phẩm'}
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/images/kon_tum_ginseng.png';
-                              }}
-                              className="w-full h-full object-cover rounded-lg"
+                              fill
+                              sizes="64px"
+                              unoptimized
+                              className="object-cover rounded-lg"
                             />
                           </div>
                           <div className="flex-1 min-w-0 space-y-1">

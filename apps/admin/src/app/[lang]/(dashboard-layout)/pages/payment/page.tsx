@@ -46,7 +46,19 @@ interface TransactionItem {
   occurredAt?: string | Date
 }
 
-export default async function PaymentPage() {
+const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+  style: "currency",
+  currency: "VND",
+})
+
+const formatMoney = (amount: number) => currencyFormatter.format(amount || 0)
+
+export default async function PaymentPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>
+}) {
+  const { lang } = await params
   let transactions: TransactionItem[] = []
   let errorMsg = ""
 
@@ -61,13 +73,6 @@ export default async function PaymentPage() {
   } catch (err) {
     console.error("Error fetching transactions in payment page:", err)
     errorMsg = "Không thể kết nối đến máy chủ API"
-  }
-
-  const formatMoney = (amount: number) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount)
   }
 
   return (

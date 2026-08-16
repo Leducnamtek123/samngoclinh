@@ -32,7 +32,7 @@ export function ProductDetailModal({
 
   return (
     <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-in fade-in overflow-y-auto">
-      <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden relative shadow-xl border border-border shrink-0 transition-all duration-200 animate-in zoom-in-95">
+      <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden relative shadow-xl border border-border shrink-0 transition-transform duration-200 animate-in zoom-in-95">
         {/* Sticky Header */}
         <div className="flex-shrink-0 px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10">
           <div className="flex items-center gap-2 min-w-0 pr-2">
