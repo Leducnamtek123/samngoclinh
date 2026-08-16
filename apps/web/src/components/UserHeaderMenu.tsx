@@ -1,7 +1,6 @@
 'use client';
 
 
-import { Link } from '@/lib/I18nNavigation';
 import { NotificationPopover } from '@/components/NotificationPopover';
 import { OrderDetailModal } from '@/components/orders/OrderDetailModal';
 import { useUserHeaderMenu } from '@/hooks/useUserHeaderMenu';
@@ -37,17 +36,26 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
 
   return (
     <div className="flex items-center gap-4 sm:gap-5" ref={menu.menuRef}>
-      {/* Shopping Cart Icon with Dynamic Badge */}
-      <Link href="/cart" className="relative p-1 text-gray-600 hover:text-primary transition-colors">
+      {/* Shopping Cart Icon with MiniCart trigger */}
+      <button
+        type="button"
+        onClick={() => {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('open_mini_cart'));
+          }
+        }}
+        className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
+        title="Giỏ hàng"
+      >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        {menu.cartCount > 0 && (
+        {menu.mounted && menu.cartCount > 0 && (
           <span className="absolute -top-1 -right-1.5 min-w-[1.125rem] h-4.5 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[10px] font-black border border-white px-1">
             {menu.cartCount}
           </span>
         )}
-      </Link>
+      </button>
 
       {/* Notification Bell Icon */}
       <div className="relative">
@@ -99,9 +107,6 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               <div className="overflow-hidden">
                 <p className="font-bold text-gray-900 text-sm truncate">{menu.fullName}</p>
                 <p className="text-xs text-gray-500 font-medium truncate">{menu.email}</p>
-                <span className="inline-block bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-bold px-2 py-0.5 rounded-md mt-1 uppercase tracking-wider">
-                  Khách hàng
-                </span>
               </div>
             </div>
 
@@ -116,20 +121,31 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span>Hồ sơ của tôi</span>
+                  <span>Tài khoản của tôi</span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => menu.navigateToTab('settings')}
+                  onClick={() => menu.navigateToTab('orders')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors cursor-pointer"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  <span>Cài đặt</span>
+                  <span>Đơn hàng của tôi</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => menu.navigateToTab('assets')}
+                  className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors cursor-pointer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  <span>Vườn sâm sở hữu</span>
                 </button>
               </li>
             </ul>

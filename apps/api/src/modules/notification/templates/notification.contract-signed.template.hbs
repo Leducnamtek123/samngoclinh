@@ -2,64 +2,93 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Xác Nhận Ký Kết Hợp Đồng Thành Công</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xác Nhận Ký Hợp Đồng Thành Công - Rượu Sâm Ngọc Linh</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .content-padding { padding: 20px 16px !important; }
+      .header-padding { padding: 24px 16px !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f5; color: #333333;">
-  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f7f5; padding: 30px 10px;">
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 10px;">
     <tr>
       <td align="center">
-        <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06);">
+        <table class="container" width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
           
-          <!-- Header Banner -->
+          <!-- Master Header -->
           <tr>
-            <td style="background-color: #1C3F24; padding: 30px; text-align: center; color: #ffffff;">
-              <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">
-                XÁC NHẬN KÝ KẾT HỢP ĐỒNG ĐIỆN TỬ
-              </h1>
-              <p style="margin: 6px 0 0 0; font-size: 13px; color: #A7F3D0; font-weight: 500;">
-                Công ty Cổ phần Sâm Ngọc Linh – Kon Tum
-              </p>
+            <td class="header-padding" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); padding: 36px 32px; text-align: center; border-bottom: 3px solid #b45309;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <span style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #fef08a; text-transform: uppercase; margin-bottom: 6px;">Chứng Thư Ký Số Điện Tử</span>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; color: #ffffff; text-transform: uppercase;">
+                      RƯỢU SÂM NGỌC LINH
+                    </h1>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Notification Body -->
+          <!-- Main Content Body -->
           <tr>
-            <td style="padding: 30px 30px 15px 30px; text-align: center;">
-              <div style="display: inline-block; background-color: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 50px; padding: 8px 20px; color: #065F46; font-size: 14px; font-weight: 700; margin-bottom: 12px;">
-                ✓ Ký Số Thành Công & Có Hiệu Lực
-              </div>
-              <h2 style="margin: 10px 0 5px 0; color: #1C3F24; font-size: 20px; font-weight: 700;">
-                Hợp đồng #{{contractCode}} đã hoàn tất ký kết!
+            <td class="content-padding" style="padding: 36px 32px 20px 32px; text-align: center;">
+              <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 16px auto;">
+                <tr>
+                  <td style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 8px 24px; text-align: center;">
+                    <span style="font-size: 13px; font-weight: 800; color: #047857; letter-spacing: 0.5px; text-transform: uppercase;">
+                      Ký Kết Hợp Đồng Thành Công
+                    </span>
+                  </td>
+                </tr>
+              </table>
+              <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
+                Kính gửi Quý khách {{customerName}},
               </h2>
-              <p style="margin: 0; color: #4B5563; font-size: 14px; line-height: 1.6;">
-                Hợp đồng Mua bán & Ủy quyền chăm sóc cây Sâm Ngọc Linh giữa quý khách và Công ty đã chính thức có hiệu lực pháp lý.
+              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Hợp đồng điện tử <strong style="color: #047857; font-family: monospace; font-size: 15px;">#{{contractNumber}}</strong> đã được Quý khách ký kết điện tử thành công và có đầy đủ giá trị pháp lý theo quy định hiện hành.
               </p>
             </td>
           </tr>
 
-          <!-- Contract Details Card -->
+          <!-- Signature Audit Details Card -->
           <tr>
-            <td style="padding: 15px 30px;">
-              <table width="100%" border="0" cellspacing="0" cellpadding="12" style="background-color: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB; font-size: 14px;">
+            <td class="content-padding" style="padding: 10px 32px 24px 32px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;">
                 <tr>
-                  <td style="color: #6B7280; width: 40%; border-bottom: 1px solid #E5E7EB;">Mã hợp đồng:</td>
-                  <td style="color: #111827; font-weight: 700; text-align: right; border-bottom: 1px solid #E5E7EB;">{{contractCode}}</td>
+                  <td style="padding: 16px 20px; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                    <span style="font-size: 12px; font-weight: 800; color: #334155; text-transform: uppercase; letter-spacing: 1px;">
+                      Nhật Ký Chứng Thực Ký Số
+                    </span>
+                  </td>
                 </tr>
                 <tr>
-                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Thời điểm ký:</td>
-                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">{{signedAt}}</td>
-                </tr>
-                <tr>
-                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Địa chỉ IP ký:</td>
-                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">{{signedIp}}</td>
-                </tr>
-                <tr>
-                  <td style="color: #6B7280; border-bottom: 1px solid #E5E7EB;">Thời hạn bảo trợ chăm sóc:</td>
-                  <td style="color: #111827; text-align: right; border-bottom: 1px solid #E5E7EB;">Đến ngày {{expiredAt}}</td>
-                </tr>
-                <tr>
-                  <td style="color: #6B7280;">Bảo hiểm bồi hoàn:</td>
-                  <td style="color: #059669; font-weight: 700; text-align: right;">Cam kết 100% rủi ro sinh trưởng</td>
+                  <td style="padding: 16px 20px;">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="8" style="font-size: 13px;">
+                      <tr>
+                        <td style="color: #64748b; width: 42%; border-bottom: 1px dashed #e2e8f0;">Mã hợp đồng:</td>
+                        <td style="color: #0f172a; font-weight: 800; font-family: monospace; text-align: right; border-bottom: 1px dashed #e2e8f0;">{{contractNumber}}</td>
+                      </tr>
+                      <tr>
+                        <td style="color: #64748b; border-bottom: 1px dashed #e2e8f0;">Thời điểm ký:</td>
+                        <td style="color: #0f172a; font-weight: 600; text-align: right; border-bottom: 1px dashed #e2e8f0;">{{signedAt}}</td>
+                      </tr>
+                      {{#if signedIp}}
+                      <tr>
+                        <td style="color: #64748b; border-bottom: 1px dashed #e2e8f0;">Địa chỉ IP ký số:</td>
+                        <td style="color: #0f172a; font-family: monospace; font-weight: 600; text-align: right; border-bottom: 1px dashed #e2e8f0;">{{signedIp}}</td>
+                      </tr>
+                      {{/if}}
+                      <tr>
+                        <td style="color: #64748b;">Trạng thái hiệu lực:</td>
+                        <td style="color: #047857; font-weight: 800; text-align: right;">Đang có hiệu lực pháp lý</td>
+                      </tr>
+                    </table>
+                  </td>
                 </tr>
               </table>
             </td>
@@ -67,18 +96,28 @@
 
           <!-- Action CTA Button -->
           <tr>
-            <td style="padding: 20px 30px; text-align: center;">
-              <a href="{{viewContractUrl}}" style="display: inline-block; background-color: #1C3F24; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(28,63,36,0.25);">
-                Tra Cứu Hợp Đồng Trong Hồ Sơ
-              </a>
+            <td class="content-padding" style="padding: 10px 32px 36px 32px; text-align: center;">
+              <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                <tr>
+                  <td align="center" style="background-color: #064e3b; border-radius: 10px; box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);">
+                    <a href="{{contractUrl}}" target="_blank" style="display: inline-block; padding: 14px 36px; font-size: 14px; font-weight: 800; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;">
+                      Xem & Tải Hợp Đồng PDF
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Support Footer -->
+          <!-- Master Footer -->
           <tr>
-            <td style="background-color: #F3F4F6; padding: 20px 30px; text-align: center; border-top: 1px solid #E5E7EB; font-size: 12px; color: #6B7280; line-height: 1.6;">
-              <p style="margin: 0 0 6px 0;">Nhật ký chăm sóc, độ tăng trưởng và hình ảnh sâm sẽ được cập nhật định kỳ trong ứng dụng.</p>
-              <p style="margin: 0; color: #9CA3AF;">© Rượu Sâm Ngọc Linh – Tinh hoa từ đại ngàn Kon Tum.</p>
+            <td style="background-color: #f8fafc; padding: 28px 32px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0 0 6px 0; font-weight: 600; color: #334155;">
+                CÔNG TY CỔ PHẦN NÔNG NGHIỆP CÔNG NGHỆ CAO SÂM NGỌC LINH
+              </p>
+              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+                Hotline hỗ trợ: 0967 234 234 &bull; Email: hotro@samngoclinh.vn &bull; Website: samngoclinh.vn
+              </p>
             </td>
           </tr>
 

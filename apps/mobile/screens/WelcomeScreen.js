@@ -19,7 +19,7 @@ export default function WelcomeScreen({ navigation }) {
         ]}
       >
         <View style={styles.hero}>
-          <Text style={styles.title}>Chào mừng đến với iWE FARM!</Text>
+          <Text style={styles.title}>Chào mừng đến với Sâm Ngọc Linh!</Text>
           <Text style={styles.subtitle}>Trải nghiệm nông nghiệp hiện đại trong tầm tay.</Text>
         </View>
 

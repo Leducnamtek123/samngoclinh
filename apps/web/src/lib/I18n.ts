@@ -13,6 +13,11 @@ import { routing } from './I18nRouting';
 // 3. Every 24 hours at 5am, the workflow will run automatically
 
 async function loadWebMessages(locale: string) {
+  let rootMessages = {};
+  try {
+    rootMessages = await import(`../locales/${locale}.json`).then((m) => m.default);
+  } catch {}
+
   const [
     common,
     marketing,
@@ -22,16 +27,17 @@ async function loadWebMessages(locale: string) {
     profile,
     notifications,
   ] = await Promise.all([
-    import(`../locales/${locale}/common.json`).then((m) => m.default),
-    import(`../locales/${locale}/marketing.json`).then((m) => m.default),
-    import(`../locales/${locale}/auth.json`).then((m) => m.default),
-    import(`../locales/${locale}/products.json`).then((m) => m.default),
-    import(`../locales/${locale}/cart.json`).then((m) => m.default),
-    import(`../locales/${locale}/profile.json`).then((m) => m.default),
-    import(`../locales/${locale}/notifications.json`).then((m) => m.default),
+    import(`../locales/${locale}/common.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/marketing.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/auth.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/products.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/cart.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/profile.json`).then((m) => m.default).catch(() => ({})),
+    import(`../locales/${locale}/notifications.json`).then((m) => m.default).catch(() => ({})),
   ]);
 
   return {
+    ...rootMessages,
     ...common,
     ...marketing,
     ...auth,

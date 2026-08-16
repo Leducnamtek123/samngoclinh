@@ -9,6 +9,6 @@ export function useWalletSummary(initialData?: WalletSummary) {
       fetchApiClient('/user/wallet/summary')
         .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
   });
 }

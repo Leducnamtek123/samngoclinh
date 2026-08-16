@@ -20,124 +20,47 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const US_STATES = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
+const VIETNAM_PROVINCES = [
+  "Kon Tum",
+  "Gia Lai",
+  "Quảng Nam",
+  "Đắk Lắk",
+  "Lâm Đồng",
+  "Đà Nẵng",
+  "Hà Nội",
+  "TP. Hồ Chí Minh",
+  "Bình Định",
+  "Phú Yên",
+  "Khánh Hòa",
+  "Khác",
 ]
 
 const COUNTRIES = [
-  "United States",
-  "Canada",
-  "United Kingdom",
-  "Australia",
-  "Germany",
-  "France",
-  "Japan",
-  "China",
-  "India",
-  "Brazil",
+  "Việt Nam",
+  "Hoa Kỳ (US)",
+  "Nhật Bản",
+  "Hàn Quốc",
+  "Singapore",
+  "Khác",
 ]
 
 const LANGUAGES = [
+  "Tiếng Việt",
   "English",
-  "Spanish",
-  "French",
-  "German",
-  "Chinese",
-  "Japanese",
-  "Arabic",
-  "portuguese",
-  "Russian",
-  "Hindi",
 ]
 
 const TIMEZONES = [
-  "GMT-12:00",
-  "GMT-11:00",
-  "GMT-10:00",
-  "GMT-09:00",
-  "GMT-08:00",
-  "GMT-07:00",
-  "GMT-06:00",
-  "GMT-05:00",
-  "GMT-04:00",
-  "GMT-03:00",
-  "GMT-02:00",
-  "GMT-01:00",
-  "GMT+00:00",
-  "GMT+01:00",
-  "GMT+02:00",
-  "GMT+03:00",
-  "GMT+04:00",
-  "GMT+05:00",
-  "GMT+06:00",
-  "GMT+07:00",
-  "GMT+08:00",
-  "GMT+09:00",
-  "GMT+10:00",
-  "GMT+11:00",
-  "GMT+12:00",
+  "GMT+07:00 (Hà Nội, Băng Cốc)",
+  "GMT+08:00 (Singapore, Bắc Kinh)",
+  "GMT+09:00 (Tokyo, Seoul)",
+  "GMT+00:00 (London, UTC)",
+  "GMT-05:00 (New York, EST)",
 ]
 
 const CURRENCIES = [
-  "USD",
-  "EUR",
-  "GBP",
-  "JPY",
-  "CAD",
-  "AUD",
-  "CHF",
-  "CNY",
-  "INR",
-  "BRL",
+  "VND (₫)",
+  "USD ($)",
+  "EUR (€)",
 ]
 
 interface ProfileFieldsSectionProps {
@@ -146,15 +69,15 @@ interface ProfileFieldsSectionProps {
 
 export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
   return (
-    <div className="grid gap-2 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-2">
       <FormField
         control={form.control}
         name="firstName"
         render={({ field }) => (
           <FormItem className="grow">
-            <FormLabel>First Name</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Tên</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="John" {...field} />
+              <Input type="text" placeholder="Nhập tên" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -165,9 +88,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="lastName"
         render={({ field }) => (
           <FormItem className="grow">
-            <FormLabel>Last Name</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Họ & Tên đệm</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Doe" {...field} />
+              <Input type="text" placeholder="Nhập họ và tên đệm" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -178,9 +101,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="username"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Username</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Tên tài khoản / Mã nhân viên</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="john_doe" {...field} />
+              <Input type="text" placeholder="admin_snl" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -191,9 +114,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Địa chỉ Email</FormLabel>
             <FormControl>
-              <Input type="email" placeholder="name@example.com" {...field} />
+              <Input type="email" placeholder="admin@samngoclinh.com" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -204,9 +127,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="phoneNumber"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Phone Number</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Số điện thoại liên hệ</FormLabel>
             <FormControl>
-              <InputPhone placeholder="+12133734253" {...field} />
+              <InputPhone placeholder="0967 234 234" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -217,15 +140,15 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="state"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>State</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Tỉnh / Thành phố công tác</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || "Kon Tum"}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a state" />
+                  <SelectValue placeholder="Chọn tỉnh thành" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {US_STATES.map((state) => (
+                {VIETNAM_PROVINCES.map((state) => (
                   <SelectItem key={state} value={state}>
                     {state}
                   </SelectItem>
@@ -241,11 +164,11 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="country"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Country</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Quốc gia</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || "Việt Nam"}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a country" />
+                  <SelectValue placeholder="Chọn quốc gia" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -265,9 +188,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="address"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Address</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Địa chỉ cơ sở / Vườn phụ trách</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="123 Main St" {...field} />
+              <Input type="text" placeholder="Đăk Tô, Kon Tum" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -278,9 +201,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="zipCode"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Zip Code</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Mã bưu chính / Khu vực</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="90210" {...field} />
+              <Input type="text" placeholder="600000" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -291,11 +214,11 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="language"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Preferred Language</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Ngôn ngữ giao diện</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || "Tiếng Việt"}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a language" />
+                  <SelectValue placeholder="Chọn ngôn ngữ" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -315,11 +238,11 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="timeZone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Time Zone</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Múi giờ vận hành</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || "GMT+07:00 (Hà Nội, Băng Cốc)"}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a time zone" />
+                  <SelectValue placeholder="Chọn múi giờ" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -339,11 +262,11 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="currency"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Currency</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Đơn vị tiền tệ mặc định</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value || "VND (₫)"}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a currency" />
+                  <SelectValue placeholder="Chọn đơn vị tiền tệ" />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -362,10 +285,10 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         control={form.control}
         name="organization"
         render={({ field }) => (
-          <FormItem>
-            <FormLabel>Organization (Optional)</FormLabel>
+          <FormItem className="md:col-span-2">
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">Tổ chức / Nông trường quản lý</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Company Name" {...field} />
+              <Input type="text" placeholder="Công ty CP Sâm Ngọc Linh Kon Tum" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

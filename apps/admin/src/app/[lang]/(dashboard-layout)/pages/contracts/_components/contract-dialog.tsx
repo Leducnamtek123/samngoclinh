@@ -72,12 +72,11 @@ export function ContractDialog({
           <DialogHeader>
             <DialogTitle>
               {mode === "create"
-                ? "Soạn hợp đồng điện tử mới"
+                ? "Soạn hợp đồng mới"
                 : "Chỉnh sửa điều khoản hợp đồng"}
             </DialogTitle>
             <DialogDescription>
-              Nhập thông số hợp đồng. Khách hàng sẽ nhận được thông báo ký hợp
-              đồng trên thiết bị di động.
+              Nhập thông số hợp đồng. Khách hàng sẽ nhận được thông báo ký hợp đồng.
             </DialogDescription>
           </DialogHeader>
 
@@ -89,7 +88,7 @@ export function ContractDialog({
 
           <div className="grid gap-4 py-4 grid-cols-2">
             <div className="grid gap-2 col-span-2">
-              <Label htmlFor="ctr-user">Khách hàng (Chủ hợp đồng)</Label>
+              <Label htmlFor="ctr-user">Khách hàng</Label>
               <Select
                 value={formData.userId}
                 onValueChange={(val) =>
@@ -111,7 +110,7 @@ export function ContractDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="ctr-tree">Gán vào lô cây giống (Optional)</Label>
+              <Label htmlFor="ctr-tree">Gán vào lô cây giống</Label>
               <Select
                 value={formData.treeCode}
                 onValueChange={(val) =>
@@ -147,13 +146,13 @@ export function ContractDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="purchase">
-                    Mua bán sâm (Purchase)
+                    Mua bán sâm
                   </SelectItem>
                   <SelectItem value="care_service">
-                    Dịch vụ chăm sóc (Care Service)
+                    Dịch vụ chăm sóc
                   </SelectItem>
                   <SelectItem value="leasing">
-                    Cho thuê đất vườn (Leasing)
+                    Cho thuê đất vườn
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -173,7 +172,7 @@ export function ContractDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="ctr-partyA">Bên A (Đại diện Trang trại)</Label>
+              <Label htmlFor="ctr-partyA">Bên A</Label>
               <Input
                 id="ctr-partyA"
                 value={formData.partyA}
@@ -185,7 +184,7 @@ export function ContractDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="ctr-partyB">Bên B (Khách hàng)</Label>
+              <Label htmlFor="ctr-partyB">Bên B</Label>
               <Input
                 id="ctr-partyB"
                 value={formData.partyB}
@@ -197,7 +196,7 @@ export function ContractDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="ctr-value">Giá trị hợp đồng (VND)</Label>
+              <Label htmlFor="ctr-value">Giá trị hợp đồng</Label>
               <Input
                 id="ctr-value"
                 type="number"
@@ -226,15 +225,15 @@ export function ContractDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="unpaid">
-                    Chưa thanh toán (Unpaid)
+                    Chưa thanh toán
                   </SelectItem>
-                  <SelectItem value="paid">Đã thanh toán (Paid)</SelectItem>
+                  <SelectItem value="paid">Đã thanh toán</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="ctr-expiry">Ngày hết hạn hợp đồng</Label>
+              <Label htmlFor="ctr-expiry">Ngày hết hạn</Label>
               <Input
                 id="ctr-expiry"
                 type="date"
@@ -248,7 +247,7 @@ export function ContractDialog({
 
             {mode === "edit" && (
               <div className="grid gap-2">
-                <Label htmlFor="ctr-status">Trạng thái ký kết</Label>
+                <Label htmlFor="ctr-status">Trạng thái</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(val) =>
@@ -260,12 +259,12 @@ export function ContractDialog({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="pending">
-                      Chờ ký kết (Pending)
+                      Chờ ký
                     </SelectItem>
-                    <SelectItem value="signed">Đã ký (Signed)</SelectItem>
-                    <SelectItem value="expired">Hết hạn (Expired)</SelectItem>
+                    <SelectItem value="signed">Đã ký</SelectItem>
+                    <SelectItem value="expired">Hết hạn</SelectItem>
                     <SelectItem value="terminated">
-                      Đã hủy (Terminated)
+                      Đã hủy
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -273,7 +272,7 @@ export function ContractDialog({
             )}
 
             <div className="grid gap-2 col-span-2">
-              <Label htmlFor="ctr-pdf">Đường dẫn tệp PDF hợp đồng</Label>
+              <Label htmlFor="ctr-pdf">Đường dẫn tệp PDF</Label>
               <Input
                 id="ctr-pdf"
                 value={formData.pdfUrl}
@@ -304,7 +303,7 @@ export function ContractDialog({
                 onChange={(e) =>
                   onChange((prev) => ({ ...prev, content: e.target.value }))
                 }
-                placeholder="Nhập chi tiết các điều khoản ràng buộc..."
+                placeholder="Nhập chi tiết các điều khoản..."
                 rows={4}
                 required
               />
@@ -325,7 +324,7 @@ export function ContractDialog({
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
             >
-              {loading ? "Đang lưu..." : "Lưu hợp đồng"}
+              {loading ? "Đang lưu..." : "Lưu"}
             </Button>
           </DialogFooter>
         </form>

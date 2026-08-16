@@ -38,21 +38,42 @@ export class EContractRepository {
         });
     }
 
-    async getContractById(id: string): Promise<EContract | null> {
+    async getContractById(id: string): Promise<any | null> {
         return this.databaseService.eContract.findUnique({
             where: { id },
+            include: {
+                items: true,
+                order: true,
+                amendments: {
+                    orderBy: { amendmentNumber: 'asc' },
+                },
+            },
         });
     }
 
-    async getContractByCode(code: string): Promise<EContract | null> {
+    async getContractByCode(code: string): Promise<any | null> {
         return this.databaseService.eContract.findUnique({
             where: { code },
+            include: {
+                items: true,
+                order: true,
+                amendments: {
+                    orderBy: { amendmentNumber: 'asc' },
+                },
+            },
         });
     }
 
-    async listContracts(userId?: string): Promise<EContract[]> {
+    async listContracts(userId?: string): Promise<any[]> {
         return this.databaseService.eContract.findMany({
             where: userId ? { userId } : undefined,
+            include: {
+                items: true,
+                order: true,
+                amendments: {
+                    orderBy: { amendmentNumber: 'asc' },
+                },
+            },
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -86,17 +107,6 @@ export class EContractRepository {
                 signedAt: new Date(),
                 signatureUrl,
                 pdfUrl: pdfUrl ?? undefined,
-                metadata: metadata as Prisma.InputJsonValue,
-            },
-        });
-    }
-
-    async renewContract(id: string, newExpiredAt: Date, metadata?: Record<string, unknown>): Promise<EContract> {
-        return this.databaseService.eContract.update({
-            where: { id },
-            data: {
-                status: 'signed',
-                expiredAt: newExpiredAt,
                 metadata: metadata as Prisma.InputJsonValue,
             },
         });

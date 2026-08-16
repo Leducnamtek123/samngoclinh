@@ -10,6 +10,8 @@ import { fetchApi } from '@/lib/Api';
 import { HeaderNav } from '@/components/HeaderNav';
 import QueryProvider from '@/providers/QueryProvider';
 
+import { Gift } from 'lucide-react';
+
 function HeaderNavSkeleton() {
   return (
     <>
@@ -20,7 +22,8 @@ function HeaderNavSkeleton() {
       </li>
       <li className="flex items-center">
         <span className="h-8 px-3 rounded-full inline-flex items-center justify-center gap-1.5 text-xs font-bold leading-none whitespace-nowrap flex-shrink-0 border bg-[#FFFBEB] border-amber-200/60 text-[#D97706]">
-          🎁 Khuyến mãi
+          <Gift className="w-3.5 h-3.5 text-[#D97706] flex-shrink-0" />
+          <span>Khuyến mãi</span>
         </span>
       </li>
       <li className="flex items-center">
@@ -36,11 +39,6 @@ function HeaderNavSkeleton() {
       <li className="flex items-center">
         <span className="h-8 px-1 inline-flex items-center justify-center gap-1 font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
           Thông tin
-        </span>
-      </li>
-      <li className="flex items-center">
-        <span className="h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none text-gray-600 whitespace-nowrap">
-          Mua bán cây
         </span>
       </li>
       <li className="flex items-center">
@@ -65,7 +63,7 @@ export default async function Layout(props: {
   let profile = null;
   if (token) {
     try {
-      const res = await fetchApi('/user/profile/me');
+      const res = await fetchApi('/v1/shared/user/profile');
       if (res.ok) {
         const json = await res.json();
         profile = json.data;

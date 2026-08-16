@@ -8,7 +8,7 @@ export function useBanner(pageKey: string, initialData?: any) {
       fetchApiClient(`/public/banners/${pageKey}`)
         .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
     staleTime: 5 * 60 * 1000,
   });
 }

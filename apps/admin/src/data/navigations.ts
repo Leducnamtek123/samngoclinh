@@ -9,6 +9,16 @@ export const navigationsData: NavigationType[] = [
         href: "/dashboards/analytics",
         iconName: "ChartPie",
       },
+      {
+        title: "Ecommerce",
+        href: "/dashboards/ecommerce",
+        iconName: "ShoppingCart",
+      },
+      {
+        title: "Crm",
+        href: "/dashboards/crm",
+        iconName: "Users",
+      },
     ],
   },
   {
@@ -44,6 +54,11 @@ export const navigationsData: NavigationType[] = [
         href: "/pages/qr-code",
         allowedRoles: ["SUPER_ADMIN", "ADMIN"],
       },
+    ],
+  },
+  {
+    title: "Customer Legal",
+    items: [
       {
         title: "Investor eKYC Approval",
         iconName: "UserCheck",
@@ -54,6 +69,12 @@ export const navigationsData: NavigationType[] = [
         title: "e-Contracts",
         iconName: "FileText",
         href: "/pages/contracts",
+        allowedRoles: ["SUPER_ADMIN", "ADMIN"],
+      },
+      {
+        title: "Contact Requests",
+        iconName: "Mail",
+        href: "/pages/contacts",
         allowedRoles: ["SUPER_ADMIN", "ADMIN"],
       },
     ],
@@ -111,12 +132,6 @@ export const navigationsData: NavigationType[] = [
         allowedRoles: ["SUPER_ADMIN", "ADMIN"],
       },
       {
-        title: "Contact Requests",
-        iconName: "Mail",
-        href: "/pages/contacts",
-        allowedRoles: ["SUPER_ADMIN", "ADMIN"],
-      },
-      {
         title: "System Settings",
         iconName: "Settings",
         items: [
@@ -130,6 +145,12 @@ export const navigationsData: NavigationType[] = [
             title: "Points Conversion",
             iconName: "Coins",
             href: "/pages/settings/points",
+            allowedRoles: ["SUPER_ADMIN", "ADMIN"],
+          },
+          {
+            title: "Contract Templates",
+            iconName: "FileCode",
+            href: "/pages/settings/templates",
             allowedRoles: ["SUPER_ADMIN", "ADMIN"],
           },
           {

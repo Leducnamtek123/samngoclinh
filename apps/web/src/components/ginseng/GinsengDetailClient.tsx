@@ -11,10 +11,11 @@ type GinsengDetailClientProps = {
   id: string;
   locale: string;
   isLoggedIn?: boolean;
+  initialData?: any;
 };
 
-export const GinsengDetailClient = ({ id, locale, isLoggedIn }: GinsengDetailClientProps) => {
-  const { data: plant, isLoading, isError } = useCatalogPlant(id);
+export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: GinsengDetailClientProps) => {
+  const { data: plant, isLoading, isError } = useCatalogPlant(id, initialData);
   const { data: allPlants } = useCatalogPlants();
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);

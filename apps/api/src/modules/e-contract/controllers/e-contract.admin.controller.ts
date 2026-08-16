@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response, ResponsePaging } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
@@ -7,6 +7,7 @@ import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { EContract, EnumRoleType, Prisma } from '@generated/prisma-client';
 import { EContractService } from '@modules/e-contract/services/e-contract.service';
+import { EContractTemplateService, IContractTemplateItem } from '@modules/e-contract/services/e-contract.template.service';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractUpdateRequestDto } from '@modules/e-contract/dtos/request/e-contract.update.request.dto';
 import {
@@ -26,7 +27,82 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
     path: '/contracts',
 })
 export class EContractAdminController {
-    constructor(private readonly eContractService: EContractService) {}
+    constructor(
+        private readonly eContractService: EContractService,
+        private readonly eContractTemplateService: EContractTemplateService
+    ) {}
+
+    // =========================================================================
+    // TEMPLATE MANAGEMENT ENDPOINTS
+    // =========================================================================
+
+    @ApiOperation({ summary: 'Lấy danh sách các mẫu văn bản hợp đồng và điều khoản' })
+    @Response('eContract.listTemplates')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/templates')
+    async listTemplates(): Promise<IResponseReturn<IContractTemplateItem[]>> {
+        const templates = await this.eContractTemplateService.listTemplates();
+        return {
+            data: templates,
+        };
+    }
+
+    @ApiOperation({ summary: 'Lấy chi tiết mẫu văn bản theo slug' })
+    @Response('eContract.getTemplate')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/templates/:slug')
+    async getTemplate(
+        @Param('slug') slug: string
+    ): Promise<IResponseReturn<IContractTemplateItem>> {
+        const template = await this.eContractTemplateService.getTemplate(slug);
+        return {
+            data: template,
+        };
+    }
+
+    @ApiOperation({ summary: 'Cập nhật nội dung mẫu văn bản HTML' })
+    @Response('eContract.updateTemplate')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Put('/templates/:slug')
+    async updateTemplate(
+        @Param('slug') slug: string,
+        @Body() body: { title?: string; version?: string; description?: string; contentHtml: string }
+    ): Promise<IResponseReturn<IContractTemplateItem>> {
+        const updated = await this.eContractTemplateService.updateTemplate(slug, body);
+        return {
+            data: updated,
+        };
+    }
+
+    @ApiOperation({ summary: 'Import toàn bộ mã HTML mới cho mẫu văn bản' })
+    @Response('eContract.importTemplateHtml')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/templates/:slug/import')
+    async importTemplateHtml(
+        @Param('slug') slug: string,
+        @Body() body: { rawHtml: string }
+    ): Promise<IResponseReturn<IContractTemplateItem>> {
+        const imported = await this.eContractTemplateService.importHtml(slug, body.rawHtml || '');
+        return {
+            data: imported,
+        };
+    }
+
+    // =========================================================================
+    // CONTRACT INSTANCE MANAGEMENT
+    // =========================================================================
 
     @EContractAdminListDoc()
     @ResponsePaging('eContract.list')
@@ -100,5 +176,30 @@ export class EContractAdminController {
     @Post('/check-expiry')
     async checkExpiry(): Promise<IResponseReturn<{ count: number; notified: string[] }>> {
         return this.eContractService.checkExpiringContracts();
+    }
+
+    @Response('eContract.getAmendments')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/:id/amendments')
+    async listContractAmendments(
+        @Param('id') id: string
+    ): Promise<IResponseReturn<any>> {
+        return this.eContractService.getAmendmentsByContractId(id);
+    }
+
+    @Response('eContract.createAmendment')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Post('/:id/amendments')
+    async createContractAmendment(
+        @Param('id') id: string,
+        @Body() body: any
+    ): Promise<IResponseReturn<any>> {
+        return this.eContractService.createAmendment(id, body);
     }
 }

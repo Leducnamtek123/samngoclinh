@@ -1,10 +1,10 @@
 export const linksData = [
   {
     href: "/pages/account/settings",
-    title: "General",
+    title: "Thông tin chung",
   },
   {
     href: "/pages/account/settings/notifications",
-    title: "Notifications",
+    title: "Cài đặt thông báo",
   },
 ]

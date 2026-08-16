@@ -66,22 +66,22 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
         />
         <ProfileFieldsSection form={form} />
 
-        <div className="flex gap-x-2 mt-2">
+        <div className="flex gap-x-2 mt-4">
           <ButtonLoading
             isLoading={isSubmitting}
-            className="w-fit"
+            className="w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
             disabled={isDisabled}
           >
-            Save
+            Lưu thay đổi
           </ButtonLoading>
           <Button
             type="reset"
-            variant="secondary"
-            className="w-fit"
+            variant="outline"
+            className="w-fit text-xs"
             disabled={isDisabled}
             onClick={handleResetForm}
           >
-            Reset
+            Đặt lại
           </Button>
         </div>
       </form>

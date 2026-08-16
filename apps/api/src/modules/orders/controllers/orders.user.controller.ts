@@ -36,7 +36,7 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
 @ApiTags('modules.user.orders')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/orders',
+    path: ['/orders', '/user/orders'],
 })
 export class OrdersUserController {
     constructor(private readonly ordersService: OrdersService) {}

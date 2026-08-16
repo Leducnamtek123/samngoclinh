@@ -160,7 +160,7 @@ export const migrationBusinessData: Record<
             {
                 id: 'banner-home-2',
                 pageKey: 'home',
-                title: 'Trồng sâm cùng iWE FARM',
+                title: 'Trồng sâm cùng Sâm Ngọc Linh',
                 subtitle:
                     'Minh bạch nguồn gốc, chuẩn gen, trồng đúng vùng ngay trên điện thoại.',
                 image: '/assets/images/banner_bg.png',
@@ -429,27 +429,27 @@ export const migrationBusinessData: Record<
                 requiredVerified: true,
                 requiredDeposit: true,
                 plantCode: 'plant-1y',
-                metadata: { source: 'iwefarm.com.vn/campaigns/free-tree' },
+                metadata: { source: 'samngoclinh.vn/campaigns/free-tree' },
             },
         ],
         contentArticles: [
             {
-                slug: 'bao-chi-noi-ve-iwe-farm',
-                title: 'Báo chí nói gì về iWE FARM',
+                slug: 'bao-chi-noi-ve-sam-ngoc-linh',
+                title: 'Báo chí nói gì về Sâm Ngọc Linh',
                 category: 'news',
                 summary:
                     'Tổng hợp góc nhìn báo chí về nền tảng minh bạch nguồn gốc Sâm Ngọc Linh.',
-                body: 'Sự ra đời của ứng dụng iWE FARM đã thu hút sự quan tâm của nhiều cơ quan báo chí...',
+                body: 'Sự ra đời của nền tảng Sâm Ngọc Linh đã thu hút sự quan tâm của nhiều cơ quan báo chí...',
                 status: 'published',
                 sortOrder: 1,
             },
             {
                 slug: 'cup-vang-nen-tang-nong-nghiep-thong-minh',
-                title: 'iWE FARM nhận Cúp vàng nền tảng nông nghiệp thông minh',
+                title: 'Sâm Ngọc Linh nhận Cúp vàng nền tảng nông nghiệp thông minh',
                 category: 'event',
                 summary:
                     'Ghi nhận cho mô hình nông nghiệp số và dữ liệu cây sâm.',
-                body: 'Ngày 6/12, ứng dụng iWE FARM do Công ty Cổ phần iWE Homes phát triển...',
+                body: 'Ngày 6/12, nền tảng Sâm Ngọc Linh đạt cúp vàng nông nghiệp số...',
                 status: 'published',
                 sortOrder: 2,
             },
@@ -459,7 +459,7 @@ export const migrationBusinessData: Record<
                 category: 'faq',
                 summary:
                     'Giải thích các câu hỏi phổ biến về cây sâm, tuổi cây và ứng dụng.',
-                body: '— iWE FARM — “Gieo mầm giá trị thật”.',
+                body: '— Sâm Ngọc Linh — “Gieo mầm giá trị thật”.',
                 status: 'published',
                 sortOrder: 3,
             },
@@ -885,7 +885,7 @@ export const migrationBusinessData: Record<
             phone: '0847 234 234',
             gender: 'female',
             verified: true,
-            metadata: { source: 'iwefarm.com.vn/profile' },
+            metadata: { source: 'samngoclinh.vn/profile' },
         },
     },
     [EnumAppEnvironment.development]: undefined as never,

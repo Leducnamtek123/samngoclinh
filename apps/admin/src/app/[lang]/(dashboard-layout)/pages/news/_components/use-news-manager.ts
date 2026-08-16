@@ -102,7 +102,7 @@ export function useNewsManager({
       status: "published",
       sortOrder: 0,
       coverImage: "",
-      authorName: "iWE FARM",
+      authorName: "Sâm Ngọc Linh",
     },
   })
 
@@ -231,7 +231,7 @@ export function useNewsManager({
         status: "published",
         sortOrder: 0,
         coverImage: "",
-        authorName: "iWE FARM",
+        authorName: "Sâm Ngọc Linh",
       },
     })
   }
@@ -253,7 +253,7 @@ export function useNewsManager({
         status: "published",
         sortOrder: 0,
         coverImage: article.coverImage || article.image || "",
-        authorName: article.metadata?.authorName || "iWE FARM",
+        authorName: article.metadata?.authorName || "Sâm Ngọc Linh",
       },
     })
 
@@ -273,7 +273,7 @@ export function useNewsManager({
             status: fullDetail.status || "published",
             sortOrder: fullDetail.sortOrder || 0,
             coverImage: fullDetail.coverImage || "",
-            authorName: fullDetail.metadata?.authorName || "iWE FARM",
+            authorName: fullDetail.metadata?.authorName || "Sâm Ngọc Linh",
           },
         }))
       }

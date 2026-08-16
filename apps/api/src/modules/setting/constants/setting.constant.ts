@@ -5,12 +5,12 @@
 export const SettingDefault: Record<string, string> = {
     homeAbout: JSON.stringify({
         description:
-            'Ứng dụng iWE FARM ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen – trồng đúng vùng ngay trên điện thoại.',
+            'Nền tảng Sâm Ngọc Linh ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen – trồng đúng vùng ngay trên điện thoại.',
     }),
     homeContact: JSON.stringify({
         address: '68 Nguyễn Huệ, Phường Sài Gòn, TP Hồ Chí Minh, Việt Nam',
         phone: '0847 234 234',
-        email: 'admin@iwefarm.com.vn',
+        email: 'admin@samngoclinh.vn',
     }),
     homeStats: JSON.stringify([
         {

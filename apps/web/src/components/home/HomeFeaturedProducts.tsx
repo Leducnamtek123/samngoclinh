@@ -84,6 +84,9 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
       category: item.displayCategory,
     });
     toast.success(t('addedToCart', { name: item.name }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('open_mini_cart'));
+    }
   };
 
   const handleBuyNow = (e: React.MouseEvent, item: any) => {

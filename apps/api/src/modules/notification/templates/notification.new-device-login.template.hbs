@@ -1,28 +1,106 @@
-<html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Hi {{username}},</p>
-<br/>
-<p>We noticed a login to your account from a new device.</p>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cảnh Báo Đăng Nhập Thiết Bị Mới - Rượu Sâm Ngọc Linh</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .content-padding { padding: 20px 16px !important; }
+      .header-padding { padding: 24px 16px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table class="container" width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+          
+          <!-- Master Header -->
+          <tr>
+            <td class="header-padding" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); padding: 36px 32px; text-align: center; border-bottom: 3px solid #b45309;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <span style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #fef08a; text-transform: uppercase; margin-bottom: 6px;">Giám Sát An Toàn Tài Khoản</span>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; color: #ffffff; text-transform: uppercase;">
+                      RƯỢU SÂM NGỌC LINH
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Content Body -->
+          <tr>
+            <td class="content-padding" style="padding: 36px 32px; text-align: center;">
+              <h2 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
+                Phát Hiện Đăng Nhập Trên Thiết Bị Mới
+              </h2>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Kính gửi Quý khách <strong>{{name}}</strong>,<br/>
+                Hệ thống phát hiện tài khoản của Quý khách vừa được đăng nhập thành công từ một thiết bị hoặc vị trí mới:
+              </p>
+
+              <!-- Device Info Card -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 16px 20px; text-align: left;">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="6" style="font-size: 13px;">
+                      <tr>
+                        <td style="color: #64748b; width: 35%; font-weight: 600;">Thời gian:</td>
+                        <td style="color: #0f172a; font-weight: 700;">{{date}}</td>
+                      </tr>
+                      <tr>
+                        <td style="color: #64748b; font-weight: 600;">Thiết bị & IP:</td>
+                        <td style="color: #0f172a; font-weight: 700;">{{device}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Notice -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fef2f2; border-radius: 10px; border: 1px solid #fecaca; margin-bottom: 24px;">
+                <tr>
+                  <td style="padding: 14px 18px; text-align: left; font-size: 12px; color: #991b1b; line-height: 1.6;">
+                    <strong style="color: #7f1d1d;">Quý khách KHÔNG thực hiện đăng nhập này?</strong><br/>
+                    Vui lòng ngay lập tức truy cập tài khoản để đổi mật khẩu và đăng xuất khỏi tất cả các thiết bị khác.
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action CTA Button -->
+              <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto;">
+                <tr>
+                  <td align="center" style="background-color: #064e3b; border-radius: 10px; box-shadow: 0 4px 12px rgba(6, 78, 59, 0.25);">
+                    <a href="http://localhost:3002/vi/profile?tabs=password" target="_blank" style="display: inline-block; padding: 14px 36px; font-size: 14px; font-weight: 800; color: #ffffff; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px;">
+                      Kiểm Tra Bảo Mật Tài Khoản
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Master Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 28px 32px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0 0 6px 0; font-weight: 600; color: #334155;">
+                CÔNG TY CỔ PHẦN NÔNG NGHIỆP CÔNG NGHỆ CAO SÂM NGỌC LINH
+              </p>
+              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+                Hotline hỗ trợ: 0967 234 234 &bull; Email: hotro@samngoclinh.vn &bull; Website: samngoclinh.vn
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    <tr><td>Login From</td><td>{{loginFrom}}</td></tr>
-    <tr><td>Login With</td><td>{{loginWith}}</td></tr>
-    <tr><td>Login At</td><td>{{loginAt}}</td></tr>
-    <tr><td>IP Address</td><td>{{ipAddress}}</td></tr>
-    <tr><td>Browser</td><td>{{userAgent.browser.name}} {{userAgent.browser.version}}</td></tr>
-    <tr><td>Device</td><td>{{userAgent.device.vendor}} {{userAgent.device.model}} ({{userAgent.device.type}})</td></tr>
-    <tr><td>OS</td><td>{{userAgent.os.name}} {{userAgent.os.version}}</td></tr>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
-  </tbody>
-</table>
-<br/>
-<p>By: {{homeName}}.</p>
+  </table>
 </body>
 </html>

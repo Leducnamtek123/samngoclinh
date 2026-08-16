@@ -1,24 +1,88 @@
-<html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Hi {{username}},</p>
-<br/>
-{{#if otp}}<p>Enter this OTP to verify your email.</p>{{else}}<p>Here is your email verification link.</p>{{/if}}
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mã Xác Thực Email - Rượu Sâm Ngọc Linh</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .content-padding { padding: 20px 16px !important; }
+      .header-padding { padding: 24px 16px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 10px;">
+    <tr>
+      <td align="center">
+        <table class="container" width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+          
+          <!-- Master Header -->
+          <tr>
+            <td class="header-padding" style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); padding: 36px 32px; text-align: center; border-bottom: 3px solid #b45309;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center">
+                    <span style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #fef08a; text-transform: uppercase; margin-bottom: 6px;">Bảo Mật Tài Khoản Thành Viên</span>
+                    <h1 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; color: #ffffff; text-transform: uppercase;">
+                      RƯỢU SÂM NGỌC LINH
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Main Content Body -->
+          <tr>
+            <td class="content-padding" style="padding: 36px 32px; text-align: center;">
+              <h2 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
+                Mã Xác Thực Địa Chỉ Email
+              </h2>
+              <p style="margin: 0 0 24px 0; font-size: 14px; line-height: 1.6; color: #475569;">
+                Kính gửi Quý khách <strong>{{name}}</strong>,<br/>
+                Quý khách vừa thực hiện yêu cầu xác thực email trên nền tảng Sâm Ngọc Linh. Vui lòng sử dụng mã OTP bên dưới để hoàn tất:
+              </p>
+
+              <!-- Luxury OTP Card -->
+              <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin: 0 auto 24px auto;">
+                <tr>
+                  <td align="center" style="background-color: #fefce8; border: 2px dashed #ca8a04; border-radius: 12px; padding: 18px 36px;">
+                    <span style="display: block; font-size: 11px; font-weight: 700; color: #854d0e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">MÃ XÁC THỰC OTP (HIỆU LỰC 15 PHÚT)</span>
+                    <span style="display: block; font-size: 36px; font-weight: 900; font-family: 'Courier New', Courier, monospace; letter-spacing: 10px; color: #713f12;">
+                      {{otp}}
+                    </span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Security Notice -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+                <tr>
+                  <td style="padding: 14px 18px; text-align: left; font-size: 12px; color: #64748b; line-height: 1.6;">
+                    <strong style="color: #334155;">Lưu ý an toàn:</strong> Tuyệt đối không chia sẻ mã xác thực này cho bất kỳ ai, kể cả nhân viên hỗ trợ hệ thống. Nếu Quý khách không thực hiện yêu cầu này, vui lòng bỏ qua email.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Master Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 28px 32px; text-align: center; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6;">
+              <p style="margin: 0 0 6px 0; font-weight: 600; color: #334155;">
+                CÔNG TY CỔ PHẦN NÔNG NGHIỆP CÔNG NGHỆ CAO SÂM NGỌC LINH
+              </p>
+              <p style="margin: 0; color: #94a3b8; font-size: 11px;">
+                Hotline hỗ trợ: 0967 234 234 &bull; Email: hotro@samngoclinh.vn &bull; Website: samngoclinh.vn
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    {{#if otp}}<tr><td>OTP</td><td>{{otp}}</td></tr>{{else}}<tr><td>Link</td><td>{{link}}</td></tr>{{/if}}
-    <tr><td>Expired At</td><td>{{expiredAt}} ({{expiredInMinutes}} minutes)</td></tr>
-    <tr><td>Reference</td><td>{{reference}}</td></tr>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
-  </tbody>
-</table>
-<br/>
-<p>By: {{homeName}}.</p>
+  </table>
 </body>
 </html>

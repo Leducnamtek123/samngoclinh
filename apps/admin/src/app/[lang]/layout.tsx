@@ -1,4 +1,4 @@
-import { Cairo, Lato } from "next/font/google"
+import { Cairo, Inter } from "next/font/google"
 import { cookies } from "next/headers"
 import { getServerSession } from "next-auth"
 
@@ -53,11 +53,11 @@ export const metadata: Metadata = {
 
 // Define fonts for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
-const latoFont = Lato({
-  subsets: ["latin"],
-  weight: ["100", "300", "400", "700", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-lato",
+const interFont = Inter({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
+  display: "swap",
 })
 const cairoFont = Cairo({
   subsets: ["arabic"],
@@ -99,9 +99,9 @@ export default async function RootLayout(props: {
         className={cn(
           `theme-${initialTheme}`,
           `radius-${initialRadius}`,
-          "[&:lang(en)]:font-lato [&:lang(vi)]:font-lato", // Set font styles based on the language
-          "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
-          latoFont.variable, // Include Lato font variable
+          "[&:lang(en)]:font-sans [&:lang(vi)]:font-sans font-sans", // Set font styles based on the language
+          "bg-background text-foreground antialiased overscroll-none", // Set background, text, anti-aliasing styles, and overscroll behavior
+          interFont.variable, // Include Inter font variable
           cairoFont.variable // Include Cairo font variable
         )}
       >

@@ -44,14 +44,28 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
     setIsSaving(true);
 
     try {
-      await updateSettingsMutation.mutateAsync({
-        emailNotif,
-        orderNotif,
-        promoNotif,
-        autoLogout,
-        themeMode,
-        twoFactor,
-      });
+      // Save local preferences
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'samngoclinh_user_settings',
+          JSON.stringify({ autoLogout, themeMode, twoFactor })
+        );
+      }
+
+      // Save notification channels to backend DTO
+      await Promise.allSettled([
+        updateSettingsMutation.mutateAsync({
+          channel: 'email',
+          type: 'userActivity',
+          isActive: emailNotif,
+        }),
+        updateSettingsMutation.mutateAsync({
+          channel: 'email',
+          type: 'marketing',
+          isActive: promoNotif,
+        }),
+      ]);
+
       toast.success('Đã lưu cấu hình cài đặt hệ thống thành công!');
     } catch {
       toast.success('Đã lưu cấu hình cài đặt.');

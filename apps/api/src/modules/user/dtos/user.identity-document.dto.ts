@@ -7,13 +7,17 @@ export class UserIdentityDocumentResponseDto extends DatabaseResponseDto {
     @Expose()
     userId: string;
 
+    @ApiProperty({ required: false, default: 'cccd', enum: ['cccd', 'driver_license', 'passport'] })
+    @Expose()
+    documentType: string;
+
     @ApiProperty({ required: true })
     @Expose()
     frontImageUrl: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: false })
     @Expose()
-    backImageUrl: string;
+    backImageUrl?: string;
 
     @ApiProperty({ required: false, default: 'PENDING' })
     @Expose()
@@ -45,13 +49,17 @@ export class UserIdentityHistoryResponseDto extends DatabaseResponseDto {
     @Expose()
     userId: string;
 
+    @ApiProperty({ required: false, default: 'cccd' })
+    @Expose()
+    documentType: string;
+
     @ApiProperty({ required: true })
     @Expose()
     frontImageUrl: string;
 
-    @ApiProperty({ required: true })
+    @ApiProperty({ required: false })
     @Expose()
-    backImageUrl: string;
+    backImageUrl?: string;
 
     @ApiProperty({ required: true })
     @Expose()
@@ -60,6 +68,14 @@ export class UserIdentityHistoryResponseDto extends DatabaseResponseDto {
     @ApiProperty({ required: false })
     @Expose()
     rejectionReason?: string;
+
+    @ApiProperty({ required: false })
+    @Expose()
+    idCardNumber?: string;
+
+    @ApiProperty({ required: false })
+    @Expose()
+    fullName?: string;
 
     @ApiProperty({ required: false })
     @Expose()

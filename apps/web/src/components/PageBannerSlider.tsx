@@ -23,15 +23,27 @@ export function PageBannerSlider({ banners = [], images = [] }: PageBannerSlider
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const safeBanners: Banner[] = banners.length > 0
+  const cleanBannerImage = (img?: string) => {
+    if (!img || img.includes('banner_bg') || img.trim() === '') {
+      return '/images/banners/homepage_banner_1.png';
+    }
+    return img;
+  };
+
+  const safeBanners: Banner[] = (banners.length > 0
     ? banners
     : images.map((img, idx) => ({
         id: `img-${idx}`,
         pageKey: 'home',
-        title: '',
-        subtitle: '',
+        title: 'SÂM NGỌC LINH KON TUM',
+        subtitle: 'Báu vật của đại ngàn, chuẩn chất lượng tuyệt đối.',
         image: img,
         order: idx,
+      }))).map((b) => ({
+        ...b,
+        image: cleanBannerImage(b.image),
+        title: b.title || 'SÂM NGỌC LINH KON TUM',
+        subtitle: b.subtitle || 'Báu vật của đại ngàn, chuẩn chất lượng tuyệt đối.',
       }));
 
   useEffect(() => {

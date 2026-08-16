@@ -6,6 +6,7 @@ import { fetchApi } from '@/lib/Api';
 import { Link } from '@/lib/I18nNavigation';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { HomeFeaturedProducts } from '@/components/home/HomeFeaturedProducts';
+import { HomeSaponinComparison } from '@/components/home/HomeSaponinComparison';
 
 export const dynamic = 'force-dynamic';
 
@@ -261,7 +262,7 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
-                <span>{article.author || 'iWE FARM'}</span>
+                <span>{article.author || 'Sâm Ngọc Linh'}</span>
               </div>
               <Link
                 href={`/news/${article.slug}`}
@@ -395,7 +396,7 @@ function ContactSection() {
                       Email
                     </span>
                     <p className="text-sm font-bold text-gray-700 leading-relaxed">
-                      <a href="mailto:admin@wefarm.com.vn" className="hover:text-secondary transition-colors">admin@wefarm.com.vn</a>
+                      <a href="mailto:admin@samngoclinh.vn" className="hover:text-secondary transition-colors">admin@samngoclinh.vn</a>
                     </p>
                   </div>
                 </div>
@@ -437,12 +438,12 @@ function CtaBanner() {
       <div className="max-w-4xl mx-auto space-y-5 relative z-10">
         <ScrollReveal variant="fade-up">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg">
-            Bắt đầu hành trình trồng cây của bạn ngay hôm nay
+            Bắt đầu hành trình cùng Sâm Ngọc Linh ngay hôm nay
           </h2>
         </ScrollReveal>
         <ScrollReveal variant="fade-up" delay={0.15}>
           <p className="text-white/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
-            Tham gia cùng hàng nghìn khách hàng đã tin tưởng iWE FARM. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
+            Tham gia cùng hàng nghìn khách hàng đã tin tưởng Sâm Ngọc Linh. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
           </p>
         </ScrollReveal>
         <ScrollReveal variant="scale" delay={0.3} scaleFrom={0.92} className="pt-2">
@@ -509,6 +510,9 @@ export default async function Index(props: IndexPageProps) {
         initialShopItems={initialShopItems}
         isLoggedIn={isLoggedIn}
       />
+
+      {/* Saponin Chemistry Comparison Section */}
+      <HomeSaponinComparison />
 
       <AboutSection t={t} />
       <NewsSection t={t} latestArticles={latestArticles} newsImages={newsImages} />

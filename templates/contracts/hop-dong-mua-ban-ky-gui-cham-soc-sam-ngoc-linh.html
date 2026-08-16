@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hợp Đồng Mua Bán Và Ký Gửi, Chăm Sóc Cây Sâm Ngọc Linh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 15mm 15mm 15mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.6;
+      font-size: 13px;
+      padding: 20px;
+    }
+    .contract-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+    }
+    .text-center { text-align: center; }
+    .text-justify { text-align: justify; }
+    .text-right { text-align: right; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold { font-weight: 800; }
+    .font-black { font-weight: 900; }
+    .italic { font-style: italic; }
+    .uppercase { text-transform: uppercase; }
+    
+    .national-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .national-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #0f172a;
+    }
+    .national-motto {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-top: 2px;
+    }
+    .national-divider {
+      width: 120px;
+      height: 1.5px;
+      background: #334155;
+      margin: 6px auto 0;
+    }
+
+    .contract-title-section {
+      text-align: center;
+      margin: 15px 0 20px;
+    }
+    .company-title {
+      font-size: 13px;
+      font-weight: 900;
+      color: #064e3b;
+      letter-spacing: 0.5px;
+    }
+    .versus-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      margin: 4px 0;
+    }
+    .customer-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .main-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-top: 10px;
+      line-height: 1.3;
+    }
+    .contract-meta {
+      font-size: 11px;
+      font-style: italic;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .legal-preamble {
+      font-size: 12px;
+      font-style: italic;
+      color: #334155;
+      margin-bottom: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .legal-preamble p {
+      margin-bottom: 4px;
+    }
+
+    .parties-box {
+      margin-bottom: 20px;
+    }
+    .party-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .party-title {
+      font-weight: 800;
+      color: #064e3b;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+    .party-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+    }
+    .party-full {
+      grid-column: span 2;
+    }
+
+    .section-title {
+      text-align: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: #064e3b;
+      padding: 6px 0;
+      margin: 20px 0 15px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .article {
+      margin-bottom: 16px;
+    }
+    .article-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #064e3b;
+      margin-bottom: 6px;
+    }
+    .article-content {
+      font-size: 12.5px;
+      color: #1e293b;
+    }
+    .article-content p {
+      margin-bottom: 6px;
+    }
+    .sub-clause {
+      padding-left: 16px;
+      margin-top: 4px;
+    }
+
+    .highlight-box {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0;
+      color: #064e3b;
+    }
+    .warning-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0;
+      color: #991b1b;
+      font-weight: 700;
+    }
+
+    .signatures-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #cbd5e1;
+      text-align: center;
+    }
+    .sign-title {
+      font-weight: 800;
+      font-size: 12px;
+      color: #0f172a;
+    }
+    .sign-subtitle {
+      font-size: 10.5px;
+      color: #64748b;
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .sign-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
+      border-radius: 6px;
+      color: #064e3b;
+      font-weight: 700;
+      font-size: 11px;
+      margin-top: 30px;
+    }
+    .red-stamp {
+      width: 105px;
+      height: 105px;
+      border: 2px solid #dc2626;
+      border-radius: 50%;
+      margin: 15px auto 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #dc2626;
+      transform: rotate(-5deg);
+      background: rgba(254, 242, 242, 0.4);
+    }
+    .inner-stamp {
+      width: 90px;
+      height: 90px;
+      border: 1px dashed #ef4444;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .stamp-text-sm { font-size: 7.5px; font-weight: 900; letter-spacing: -0.2px; }
+    .stamp-text-md { font-size: 9px; font-weight: 900; }
+    .stamp-text-star { font-size: 7.5px; font-weight: 700; color: #ef4444; margin-top: 2px; }
+
+    .appendix-section {
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 2px solid #cbd5e1;
+      page-break-before: always;
+    }
+    .appendix-title {
+      font-size: 13px;
+      font-weight: 900;
+      text-align: center;
+      color: #0f172a;
+    }
+    .appendix-subtitle {
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+      color: #064e3b;
+      margin-top: 2px;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 11.5px;
+    }
+    table.data-table th {
+      background: #064e3b;
+      color: #ffffff;
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      text-align: left;
+    }
+    table.data-table td {
+      padding: 7px 10px;
+      border: 1px solid #cbd5e1;
+    }
+    table.data-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    .weight-highlight {
+      background: #d1fae5 !important;
+      font-weight: 800;
+      color: #064e3b;
+      text-align: center;
+    }
+
+    @media print {
+      body { padding: 0; }
+      .contract-container { width: 100%; max-width: 100%; }
+      .page-break { page-break-before: always; }
+      .avoid-break { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="contract-container">
+    <!-- 1. NATIONAL MOTTO -->
+    <div class="national-header">
+      <div class="national-title">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+      <div class="national-motto">Độc lập – Tự do – Hạnh phúc</div>
+      <div class="national-divider"></div>
+    </div>
+
+    <!-- 2. BRANDING & CONTRACT TITLE -->
+    <div class="contract-title-section">
+      <div class="company-title">CÔNG TY CỔ PHẦN SÂM NGỌC LINH</div>
+      <div class="versus-text">VỚI</div>
+      <div class="customer-title">{{TEN_KHACH_HANG}} (KHÁCH HÀNG SỞ HỮU)</div>
+      <div class="main-title">HỢP ĐỒNG MUA BÁN VÀ KÝ GỬI, CHĂM SÓC CÂY SÂM NGỌC LINH</div>
+      <div class="contract-meta">Mã số: {{MA_HOP_DONG}} • Chứng thực số điện tử</div>
+    </div>
+
+    <!-- 3. LEGAL PREAMBLE -->
+    <div class="legal-preamble text-justify">
+      <p>- Căn cứ Bộ luật Dân sự số 91/2015/QH13 ngày 24/11/2015;</p>
+      <p>- Căn cứ Luật Thương mại số 36/2005/QH11 ngày 14/06/2005 và các văn bản hướng dẫn thi hành;</p>
+      <p>- Căn cứ Luật Trồng trọt số 31/2018/QH14 ngày 19 tháng 11 năm 2018 (đã được sửa đổi, bổ sung) và các văn bản hướng dẫn thi hành;</p>
+      <p>- Căn cứ Luật Giao dịch điện tử số 20/2023/QH15 và Luật Thương mại điện tử số 122/2025/QH15 cùng các văn bản hướng dẫn thi hành;</p>
+      <p>- Căn cứ các quy định pháp luật về Quản lý Ngoại hối và Thuế hiện hành;</p>
+      <p>- Căn cứ vào nhu cầu và năng lực thỏa thuận của các Bên.</p>
+    </div>
+
+    <p style="margin-bottom: 12px;" class="text-justify">
+      Hôm nay, ngày {{NGAY_KY}}, các bên sau đây đã lập và ký kết Hợp đồng hợp tác kinh doanh mua bán và ký gửi chăm sóc này với những thông tin sau:
+    </p>
+
+    <!-- 4. PARTIES INFORMATION -->
+    <div class="parties-box">
+      <!-- Party A -->
+      <div class="party-card">
+        <div class="party-title">BÊN A (BÊN BÁN VÀ NHẬN KÝ GỬI CHĂM SÓC): CÔNG TY CỔ PHẦN SÂM NGỌC LINH</div>
+        <div class="party-grid">
+          <div><strong>• Địa chỉ:</strong> Thôn 2, Xã Trà Linh, Thành phố Đà Nẵng / Nam Trà My, Kon Tum</div>
+          <div><strong>• Mã số thuế:</strong> 4001248522 / 0316913632</div>
+          <div><strong>• Đại diện PL:</strong> Trương Nguyên Tiến Trà</div>
+          <div><strong>• Chức vụ:</strong> Giám đốc</div>
+          <div class="party-full"><strong>• Hotline hỗ trợ:</strong> 0967 234 234 – Email: contact@samngoclinh.vn</div>
+        </div>
+        <p style="font-size: 11px; color: #64748b; font-style: italic; margin-top: 4px;">(Sau đây gọi tắt là Bên A).</p>
+      </div>
+
+      <!-- Party B -->
+      <div class="party-card">
+        <div class="party-title">BÊN B (BÊN MUA, KHÁCH HÀNG SỞ HỮU CÂY SÂM): {{TEN_KHACH_HANG}}</div>
+        <div class="party-grid">
+          <div><strong>• Họ và tên / Tên tổ chức:</strong> {{TEN_KHACH_HANG}}</div>
+          <div><strong>• Số CCCD / MST:</strong> {{CCCD_MST}}</div>
+          <div><strong>• Địa chỉ cư trú:</strong> {{DIA_CHI}}</div>
+          <div><strong>• Điện thoại liên hệ:</strong> {{SO_DIEN_THOAI}}</div>
+        </div>
+        <p style="font-size: 11px; color: #64748b; font-style: italic; margin-top: 4px;">
+          (Sau đây gọi tắt là Bên B – Thông tin được xác thực điện tử qua tài khoản cá nhân trên Nền tảng Sâm Ngọc Linh).
+        </p>
+      </div>
+    </div>
+
+    <!-- 5. WHEREAS & DEFINITIONS -->
+    <div class="article text-justify">
+      <div class="article-title">XÉT RẰNG:</div>
+      <ul style="padding-left: 20px; margin-bottom: 8px;">
+        <li style="margin-bottom: 4px;"><strong>Bên A</strong> là Bên chủ sở hữu/quản lý Vườn Sâm Ngọc Linh tại Thôn 2, xã Trà Linh thuộc vùng núi Ngọc Linh. Bên A có nhu cầu mua, bán và cung cấp dịch vụ hợp tác ký gửi hỗ trợ chăm sóc cây Sâm Ngọc Linh sau khi mua bán theo các Điều khoản thỏa thuận Hợp đồng này.</li>
+        <li style="margin-bottom: 4px;"><strong>Bên B</strong> là Khách hàng (Bên Mua cây Sâm Ngọc Linh) với mong muốn mua và ký gửi lại Vườn Sâm Ngọc Linh nhằm nhờ Bên A hỗ trợ, chăm sóc cây Sâm Ngọc Linh với các chi phí, cách thức theo các Điều khoản thỏa thuận Hợp đồng này.</li>
+      </ul>
+      <p><strong>VÌ VẬY</strong>, Bên A và Bên B thỏa thuận ký kết Hợp đồng này với các Điều kiện, Điều khoản sau:</p>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐỊNH NGHĨA TỪ NGỮ</div>
+      <ul style="padding-left: 20px;">
+        <li style="margin-bottom: 4px;"><strong>Hợp đồng:</strong> nghĩa là toàn bộ các điều khoản, điều kiện và các phụ lục đính kèm trong văn bản này và các điều chỉnh, bổ sung khác (nếu có).</li>
+        <li style="margin-bottom: 4px;"><strong>Cây Sâm:</strong> là Cây Sâm Ngọc Linh – &ldquo;quốc bảo dược liệu&rdquo; Việt Nam, phân bố chủ yếu ở vùng núi Ngọc Linh.</li>
+        <li style="margin-bottom: 4px;"><strong>Vườn Sâm Ngọc Linh:</strong> là vườn sâm thuộc sở hữu/quản lý của Bên A tại địa chỉ Thôn 2, xã Trà Linh thuộc vùng núi Ngọc Linh.</li>
+        <li style="margin-bottom: 4px;"><strong>Ứng dụng Sâm Ngọc Linh (&quot;App&quot;):</strong> Nền tảng phần mềm trực tuyến cho phép người dùng theo dõi tài sản, nhật ký sinh trưởng và thực hiện giao dịch hợp pháp.</li>
+      </ul>
+    </div>
+
+    <!-- 6. ARTICLES 1 TO 11 -->
+    <div class="section-title">PHẦN CÁC ĐIỀU KHOẢN HỢP ĐỒNG</div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 1. ĐỐI TƯỢNG HỢP ĐỒNG, PHƯƠNG ÁN LỰA CHỌN VÀ QUY ĐỊNH NGUỒN CUNG</div>
+      <div class="article-content">
+        <p><strong>1.1. Đối tượng hợp đồng:</strong> Bên A đồng ý bán và Bên B đồng ý mua số lượng Cây Sâm được trồng tại Vườn Sâm Ngọc Linh thuộc sở hữu/quản lý của Bên A tại địa chỉ Thôn 2, xã Trà Linh thuộc vùng núi Ngọc Linh.</p>
+        <p><strong>1.2. Số lượng cây sâm mua bán trong giao dịch này:</strong> {{SO_LUONG_CAY}} cây (Bằng chữ: {{SO_LUONG_CAY_CHU}}).</p>
+        <p><strong>1.3. Phương án thực hiện:</strong> Bên B lựa chọn phương án mua và ký gửi lại Vườn Sâm Ngọc Linh để nhờ Bên A hỗ trợ, chăm sóc duy trì hợp đồng. Cây sâm được chăm sóc theo tiêu chuẩn kỹ thuật hữu cơ và cấp mã vạch định danh quản lý trực tiếp trên hệ thống App.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 2: QUY ĐỊNH VỀ HIỂN THỊ THÔNG TIN VÀ TÍNH NĂNG QUẢN LÝ GIAO DỊCH TRÊN APP</div>
+      <div class="article-content">
+        <p><strong>2.1.</strong> Hiển thị chi tiết hóa đơn bán hàng (VAT); mã vạch định danh riêng của từng cây sâm, số lượng, độ tuổi và nhật ký tăng trưởng.</p>
+        <p><strong>2.2. Camera giám sát:</strong> Khách hàng sở hữu từ 100 cây sâm trở lên được cấp quyền truy cập camera phát sóng trực tiếp 24/7 để quan sát luống sâm thực tế.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 3: QUY ĐỊNH VỀ THỜI GIAN CHỜ KỸ THUẬT VÀ TIỀN TỆ GIAO DỊCH</div>
+      <div class="article-content">
+        <p><strong>3.1. Thời gian chờ:</strong> Áp dụng thời gian chờ kiểm duyệt kỹ thuật là 01 ngày (24 giờ) trước khi kích hoạt vận hành.</p>
+        <p><strong>3.2. Tiền tệ giao dịch:</strong> 100% bằng tiền Việt Nam Đồng (VND). Tuyệt đối không sử dụng tiền ảo hoặc các loại tài sản số không được pháp luật công nhận.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 4: GIÁ MUA BÁN, PHÍ CHĂM SÓC VÀ PHƯƠNG THỨC THANH TOÁN</div>
+      <div class="article-content">
+        <p><strong>4.1. Giá mua bán cây sâm:</strong> Tổng giá trị mua bán là: {{TONG_GIA_TRI}} VNĐ (Bằng chữ: {{TONG_GIA_TRI_CHU}}), đã bao gồm thuế VAT.</p>
+        <p><strong>4.2. Phí chăm sóc:</strong> Phí chăm sóc năm đầu tiên là: {{PHI_CHAM_SOC}} VNĐ (Bằng chữ: {{PHI_CHAM_SOC_CHU}}), được thanh toán định kỳ hàng năm.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 5: QUY ĐỊNH VỀ BẢO HIỂM CÂY SÂM, BẤT KHẢ KHÁNG VÀ HÌNH THỨC BỒI THƯỜNG</div>
+      <div class="article-content">
+        <p><strong>5.1. Bất khả kháng:</strong> Thiên tai bão lũ, dịch bệnh thực vật bất thường hoặc sự cố khách quan được xử lý theo quy định pháp luật.</p>
+        <div class="highlight-box">
+          <p><strong>5.2. CAM KẾT ĐỀN CỦ, KHÔNG ĐỀN CÂY:</strong></p>
+          <p>Đối với cây sâm từ 04 đến 08 tuổi bị thiệt hại do lỗi kỹ thuật chăm sóc của nhà vườn, Bên A cam kết bồi thường bằng <strong>CỦ SÂM THẬT</strong> đạt trọng lượng tối thiểu theo quy định tại <strong>Phụ lục 01</strong>, hoàn toàn không đền bằng cây giống non.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 6: QUY ĐỊNH THĂM VƯỜN, XÉT NGHIỆM ADN/DNA VÀ BỒI THƯỜNG CHẤT LƯỢNG</div>
+      <div class="article-content">
+        <p><strong>6.1.</strong> Bên B có quyền lên thăm vườn trực tiếp hoặc yêu cầu gọi video gián tiếp qua App (thông báo trước 15 ngày).</p>
+        <div class="warning-box">
+          6.2. Trường hợp kết quả kiểm tra ADN kết luận không phải Sâm Ngọc Linh thuần chủng, Bên A cam kết đền bù gấp 03 (ba) lần toàn bộ số tiền mua sâm cho Bên B.
+        </div>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 7: QUY ĐỊNH THU HOẠCH LÁ, HẠT HẰNG NĂM (CÂY TỪ 03 TUỔI TRỞ LÊN)</div>
+      <div class="article-content">
+        <p>Khách hàng được quyền thu hoạch lá và hạt sâm hằng năm theo Gói Tiêu chuẩn hoặc Gói Thương gia gửi hỏa tốc riêng (chi tiết tại Phụ lục 02), hoặc yêu cầu nhà vườn thu mua lại theo thời giá.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 8: QUY ĐỊNH HẾT HẠN, GIA HẠN VÀ XỬ LÝ QUÁ HẠN</div>
+      <div class="article-content">
+        <p>Hệ thống gửi cảnh báo trước 45 ngày hết hạn. Trường hợp sau 60 ngày kể từ ngày thông báo mà khách hàng không gia hạn hoặc mất liên lạc, cây và củ sâm sẽ được chuyển giao vào Quỹ địa phương (Xã Trà Linh) quản lý.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 9: CAM KẾT TRÁCH NHIỆM CÁC BÊN</div>
+      <div class="article-content">
+        <p>Bên A cam kết nguồn giống thuần chủng 100%, quy trình hữu cơ vi sinh sinh thái, đạo đức kinh doanh không huy động vốn trái phép. Bên B thực hiện đầy đủ nghĩa vụ thanh toán và cung cấp thông tin định danh chính xác.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 10: CHUYỂN NHƯỢNG, BÁN LẠI, TẶNG CHO TRÊN APP</div>
+      <div class="article-content">
+        <p>Mọi giao dịch chuyển nhượng được thực hiện qua App với biên độ giá khống chế không quá &plusmn;10% so với giá niêm yết để chống phá giá.</p>
+      </div>
+    </div>
+
+    <div class="article text-justify">
+      <div class="article-title">ĐIỀU 11: ĐIỀU KHOẢN CHUNG</div>
+      <div class="article-content">
+        <p>Hợp đồng có hiệu lực kể từ ngày ký xác thực điện tử. Mọi tranh chấp được giải quyết tại Tòa án nhân dân có thẩm quyền tại TP. Đà Nẵng. Phụ lục 01 và 02 là bộ phận không thể tách rời của Hợp đồng này.</p>
+      </div>
+    </div>
+
+    <!-- 7. SIGNATURES -->
+    <div class="signatures-section avoid-break">
+      <div>
+        <div class="sign-title">ĐẠI DIỆN BÊN B</div>
+        <div class="sign-subtitle">(Ký, ghi rõ họ tên và xác thực điện tử)</div>
+        <div class="sign-badge">[XÁC THỰC ĐIỆN TỬ QUA TÀI KHOẢN]</div>
+        <p style="font-size: 11.5px; font-weight: 600; margin-top: 8px;">{{TEN_KHACH_HANG}}</p>
+      </div>
+
+      <div>
+        <div class="sign-title">ĐẠI DIỆN BÊN A</div>
+        <div class="sign-subtitle">CÔNG TY CỔ PHẦN SÂM NGỌC LINH</div>
+        
+        <div class="red-stamp">
+          <div class="inner-stamp">
+            <div class="stamp-text-sm">CÔNG TY CỔ PHẦN</div>
+            <div class="stamp-text-md">SÂM NGỌC LINH</div>
+            <div class="stamp-text-star">★ ĐÃ KÝ SỐ ★</div>
+          </div>
+        </div>
+
+        <p style="font-size: 11.5px; font-weight: 800; margin-top: 4px;">Tổng Giám Đốc</p>
+        <p style="font-size: 11px; font-style: italic; color: #475569;">Trương Nguyên Tiến Trà</p>
+      </div>
+    </div>
+
+    <!-- 8. APPENDIX 01 -->
+    <div class="appendix-section avoid-break">
+      <div class="appendix-title">PHỤ LỤC 01</div>
+      <div class="appendix-subtitle">QUY CHUẨN ĐỘ TUỔI, HÌNH THỨC VÀ TRỌNG LƯỢNG CỦ SÂM LÀM CĂN CỨ ĐỀN BÙ</div>
+      <p style="font-size: 11.5px; color: #64748b; font-style: italic; text-align: center; margin-top: 2px;">
+        (Áp dụng theo quy định tại Điều 5 và Điều 9 của Hợp đồng)
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 100px;">Độ tuổi</th>
+            <th>Quy chuẩn hình thức &amp; Cấu trúc sinh trưởng</th>
+            <th style="width: 140px; text-align: center;">Trọng lượng củ tối thiểu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Cây 1 Tuổi</strong></td>
+            <td>Có đủ từ 01 lá kết trở lên, sức khỏe tốt, không sâu bệnh.</td>
+            <td style="text-align: center; color: #64748b; font-style: italic;">Thỏa thuận thực tế</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 2 Tuổi</strong></td>
+            <td>Có đủ 02 mắt sâm, bộ lá xanh tốt khỏe mạnh.</td>
+            <td style="text-align: center; color: #64748b; font-style: italic;">Thỏa thuận thực tế</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 3 Tuổi</strong></td>
+            <td>Củ sâm hình thành rõ rệt, chuẩn chủng giống, &ge; 02 mắt sâm.</td>
+            <td style="text-align: center; color: #64748b; font-style: italic;">Thỏa thuận thực tế</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 4 Tuổi</strong></td>
+            <td>Đạt đúng độ tuổi năm thứ 4 trên nhật ký App.</td>
+            <td class="weight-highlight">Từ 22 gam trở lên</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 5 Tuổi</strong></td>
+            <td>Đạt đúng độ tuổi năm thứ 5 trên nhật ký App.</td>
+            <td class="weight-highlight">Từ 30 gam trở lên</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 6 Tuổi</strong></td>
+            <td>Đạt đúng độ tuổi năm thứ 6 trên nhật ký App.</td>
+            <td class="weight-highlight">Từ 53 gam trở lên</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 7 Tuổi</strong></td>
+            <td>Đạt đúng độ tuổi năm thứ 7 trên nhật ký App.</td>
+            <td class="weight-highlight">Từ 67 gam trở lên</td>
+          </tr>
+          <tr>
+            <td><strong>Cây 8 Tuổi</strong></td>
+            <td>Đạt đúng độ tuổi năm thứ 8 trên nhật ký App.</td>
+            <td class="weight-highlight">Từ 79 gam trở lên</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 9. APPENDIX 02 -->
+    <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #cbd5e1;" class="avoid-break">
+      <div class="appendix-title">PHỤ LỤC 02</div>
+      <div class="appendix-subtitle">BIỂU PHÍ GỬI LÁ VÀ HẠT RIÊNG LẺ (GÓI THƯƠNG GIA)</div>
+      <ul style="padding-left: 20px; margin-top: 8px; font-size: 12px; color: #334155;">
+        <li style="margin-bottom: 4px;"><strong>Phí nhân công hái gùi hạ sơn riêng lẻ:</strong> Theo thỏa thuận thực tế tại vườn sâm.</li>
+        <li style="margin-bottom: 4px;"><strong>Phí đóng gói chuyên dụng bảo quản tươi:</strong> Tính theo định lượng thùng chuyên dụng.</li>
+        <li style="margin-bottom: 4px;"><strong>Phí chuyển phát nhanh hỏa tốc:</strong> Theo cước thực tế đơn vị vận chuyển tại thời điểm gửi.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

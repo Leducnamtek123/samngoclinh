@@ -18,7 +18,7 @@ import {
   signInEmailSchema,
   type SignInEmailFormValues,
 } from '@/lib/validation/schemas';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { apiSignIn } from '@/services/auth.service';
 
 function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void }) {
@@ -72,7 +72,6 @@ function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void 
 
 export default function SignInForm() {
   const locale = useLocale();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams?.get('reason');
 
@@ -97,11 +96,8 @@ export default function SignInForm() {
 
     try {
       const data = await apiSignIn({ email: values.email, password: values.password, type: 'email' });
-      if (data.redirectUrl) {
-        router.push(data.redirectUrl);
-      } else {
-        router.push(`/${locale}`);
-      }
+      const targetUrl = data.redirectUrl || `/${locale}`;
+      window.location.href = targetUrl;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Đã xảy ra lỗi kết nối';
       setError(msg);

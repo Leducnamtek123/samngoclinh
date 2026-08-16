@@ -9,7 +9,7 @@ export function useCatalogPlants(initialData?: GinsengPlantItem[]) {
       fetchApiClient('/public/catalog/plants')
         .then((res) => res?.data || [])
         .catch(() => []),
-    initialData: initialData ?? [],
+    initialData,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -21,7 +21,7 @@ export function useCatalogPlant(id: string, initialData?: GinsengPlantItem) {
       fetchApiClient(`/public/catalog/plants/${id}`)
         .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
@@ -34,7 +34,7 @@ export function useCatalogShopItems(initialData?: ProductItem[]) {
       fetchApiClient('/public/catalog/shop-items')
         .then((res) => res?.data || [])
         .catch(() => []),
-    initialData: initialData ?? [],
+    initialData,
     staleTime: 5 * 60 * 1000,
   });
 }
@@ -46,7 +46,7 @@ export function useCatalogShopItem(id: string, initialData?: ProductItem) {
       fetchApiClient(`/public/catalog/shop-items/${id}`)
         .then((res) => (res?.data !== undefined ? res.data : null))
         .catch(() => null),
-    initialData: initialData ?? null,
+    initialData,
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });

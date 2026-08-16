@@ -10,32 +10,32 @@ export class BannerService {
         home: {
             title: 'SÂM NGỌC LINH KON TUM',
             subtitle: 'Báu vật của đại ngàn, thần dược của sức khỏe.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/homepage_banner_1.png',
         },
         products: {
             title: 'Trồng Sâm Cùng Rượu Sâm Ngọc Linh',
             subtitle: 'Trải nghiệm mô hình trồng sâm cùng Rượu Sâm Ngọc Linh qua nền tảng công nghệ số. Kiến tạo giá trị bền vững với những củ Sâm Ngọc Linh minh bạch nguồn gốc và đạt chuẩn chất lượng tuyệt đối.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/homepage_banner_2.png',
         },
         ginseng: {
             title: 'Sản Phẩm Rượu Sâm Ngọc Linh',
             subtitle: 'Khám phá danh mục sản phẩm rượu sâm Ngọc Linh nguyên cây, nguyên củ và các chế phẩm sâm cao cấp khác.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/homepage_banner_3.png',
         },
         campaigns: {
             title: 'Khuyến Mãi & Ưu Đãi',
             subtitle: 'Các chương trình quà tặng đặc biệt dành cho khách hàng thân thiết.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/campaigns_banner.png',
         },
         about: {
             title: 'Về Chúng Tôi',
             subtitle: 'Hành trình mang sâm Ngọc Linh - Quốc bảo Việt Nam đến với mọi nhà.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/about_banner.png',
         },
         news: {
             title: 'Tin Tức & Sự Kiện',
             subtitle: 'Cập nhật những thông tin mới nhất về sâm Ngọc Linh và các hoạt động của chúng tôi.',
-            image: '/assets/images/banner_bg.png',
+            image: '/images/banners/news_banner.png',
         },
     };
 

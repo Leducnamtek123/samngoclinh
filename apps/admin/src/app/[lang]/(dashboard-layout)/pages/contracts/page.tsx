@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 
 import type { Metadata } from "next"
-import type { Tree, User } from "./_components/use-contracts-manager"
+import type { EContract, Tree, User } from "./_components/contracts-manager"
 
 import { fetchApi } from "@/lib/api"
 

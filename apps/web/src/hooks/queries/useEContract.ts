@@ -14,7 +14,7 @@ export function useEContracts(initialData?: any) {
       fetchApiClient('/user/contracts')
         .then((res) => res?.data || [])
         .catch(() => []),
-    initialData: initialData ?? [],
+    initialData,
   });
 }
 

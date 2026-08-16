@@ -296,12 +296,13 @@ export function BedsRightSidebar({
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-32 text-center text-slate-455 font-semibold gap-2.5">
-            <Sprout className="h-7 w-7 text-slate-350 animate-pulse" />
-            <div className="text-xs">Chưa chọn vị trí ô đất</div>
-            <p className="text-[10px] text-slate-400 max-w-[220px] font-medium leading-relaxed">
-              Vui lòng nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới trung
-              tâm để xem và biên soạn hồ sơ cây sâm.
+          <div className="flex flex-col items-center justify-center py-24 px-4 text-center border-2 border-dashed border-emerald-500/20 rounded-2xl bg-emerald-500/[0.02]">
+            <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
+              <Sprout className="h-6 w-6 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+            </div>
+            <div className="text-xs font-bold text-slate-700 dark:text-slate-200">Chưa chọn vị trí ô đất</div>
+            <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] leading-relaxed">
+              Nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới để tra cứu hồ sơ và chăm sóc cây sâm.
             </p>
           </div>
         )}

@@ -25,30 +25,35 @@
     "viewOrderDetails": "View Details"
   },
   "addressSelector": {
-    "selectDeliveryAddress": "SELECT SHIPPING ADDRESS",
-    "change": "Change",
-    "addAddress": "Add Address",
-    "noAddressSaved": "No shipping address saved yet.",
-    "pleaseAddAddress": "Please add a new address to continue."
+    "title": "DELIVERY ADDRESS",
+    "addNewAddress": "+ Add New Address",
+    "addAddress": "+ Add New Address",
+    "defaultBadge": "Default",
+    "emptyState": {
+      "description": "You do not have any saved delivery address.",
+      "addAddress": "Add Address"
+    }
   },
   "addAddressModal": {
-    "title": "Add New Delivery Address",
-    "recipientLabel": "Recipient Name *",
-    "recipientPlaceholder": "Enter recipient full name",
-    "phoneLabel": "Phone Number *",
-    "phonePlaceholder": "Enter phone number (e.g. 0912345678)",
-    "addressLabel": "Detailed Address (House number, Street, Ward, District, Province) *",
-    "addressPlaceholder": "Enter house number, street name...",
-    "defaultCheckbox": "Set as default shipping address",
+    "title": "Add Delivery Address",
+    "subtitle": "Pick your location on the map or enter details manually",
+    "recipientNameLabel": "Recipient Full Name",
+    "recipientNamePlaceholder": "Enter recipient name...",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter phone number...",
+    "addressLabel": "Detailed Address",
+    "addressPlaceholder": "Enter house number, street or pick on map...",
     "cancel": "Cancel",
-    "save": "Save Address"
+    "saveAndUse": "Save & Use Address",
+    "savedSuccess": "Delivery address saved successfully!"
   },
   "changeAddressModal": {
-    "title": "Select Shipping Address",
-    "closeAriaLabel": "Close address selection modal",
+    "title": "Delivery Address Book",
+    "subtitle": "Choose an address to use for this order",
+    "defaultRecipient": "Recipient",
     "defaultBadge": "Default",
-    "addAddressBtn": "Add New Address",
-    "confirmSelect": "Confirm Selection"
+    "addNewAddress": "Add New Address",
+    "close": "Close"
   },
   "kyc": {
     "title": "Identity Verification (eKYC)",
