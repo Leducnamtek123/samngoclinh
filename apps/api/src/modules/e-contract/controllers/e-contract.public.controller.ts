@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, Res, VERSION_NEUTRAL } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
-import { ApiTags, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { EContractService, IPublicContractVerification } from '@modules/e-contract/services/e-contract.service';
 import { EContractTemplateService, IContractTemplateItem } from '@modules/e-contract/services/e-contract.template.service';

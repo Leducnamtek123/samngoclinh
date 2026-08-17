@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IFileStorageDriver, FileStorageDriverType } from '../interfaces/file.storage-driver.interface';
+import { FileStorageDriverType, IFileStorageDriver } from '../interfaces/file.storage-driver.interface';
 import { IFile, ILocalStorage } from '../interfaces/file.interface';
 import { HelperService } from '@common/helper/services/helper.service';
 import {

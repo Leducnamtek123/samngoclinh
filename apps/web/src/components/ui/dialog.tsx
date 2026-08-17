@@ -2,7 +2,6 @@
 
 import { X } from 'lucide-react';
 import * as React from 'react';
-// @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 

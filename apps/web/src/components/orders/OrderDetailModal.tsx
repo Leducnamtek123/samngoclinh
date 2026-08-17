@@ -4,7 +4,6 @@ import { QrCode, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useState, useEffect, useSyncExternalStore } from 'react';
-// @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Button, ConfirmModal } from '@/components';

@@ -5,8 +5,8 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import type { Article } from '@/types';
 import { Link } from '@/lib/I18nNavigation';
+import type { Article } from '@/types';
 import { Card, CardContent } from './ui/card';
 import { Checkbox } from './ui/checkbox';
 import { Input } from './ui/input';
@@ -182,7 +182,11 @@ export const NewsSidebar = ({
               >
                 <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800">
                   <Image
-                    src={article.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
+                    src={
+                      article.image ||
+                      newsImages[idx % newsImages.length] ||
+                      '/images/default_plant.png'
+                    }
                     alt={article.title}
                     fill
                     sizes="56px"

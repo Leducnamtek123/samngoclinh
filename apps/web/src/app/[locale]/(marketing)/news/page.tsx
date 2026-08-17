@@ -5,7 +5,6 @@ import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { Button } from '@/components/ui/button';
 import { fetchApi } from '@/lib/Api';
 import { Link } from '@/lib/I18nNavigation';
-
 import type { Article, Banner } from '@/types';
 
 type NewsPageProps = {
@@ -163,7 +162,11 @@ export default async function NewsPage(props: NewsPageProps) {
                           <Link href={`/news/${article.slug}`}>
                             <Image
                               className="h-full w-full cursor-pointer rounded-2xl object-cover"
-                              src={article.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
+                              src={
+                                article.image ||
+                                newsImages[idx % newsImages.length] ||
+                                '/images/default_plant.png'
+                              }
                               alt={article.title}
                               fill
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

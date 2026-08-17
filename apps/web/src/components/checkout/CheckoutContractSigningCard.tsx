@@ -12,11 +12,11 @@ import {
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useRef, useState, useEffect } from 'react';
+import type { KycSubmissionData } from '@/components/profile/kyc/types';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
-import type { KycSubmissionData } from '@/components/profile/kyc/types';
 import type { UserIdentityDocument } from '@/services/user.service';
 import type { UserProfile, IdentityVerificationStatus } from '@/types';
 import { formatVNDPrice } from '@/utils/formatters';

@@ -16,7 +16,7 @@ describe('cartUtils', () => {
     global.window = {
       location: { origin: 'http://localhost:3000', pathname: '/', search: '' },
     } as unknown as Window & typeof globalThis;
-    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: {} })));
+    global.fetch = vi.fn().mockResolvedValue(Response.json({ data: {} }));
     global.localStorage = {
       getItem: (key: string) => store[key] || null,
       setItem: (key: string, value: string) => {

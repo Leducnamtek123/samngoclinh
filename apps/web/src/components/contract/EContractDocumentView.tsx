@@ -36,7 +36,11 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
 
   const contractCode = String(contract?.code || contract?.id || 'SNL-2026');
   const customerName = String(
-    contract?.userName || contract?.user?.name || contract?.user?.fullName || contract?.partyB || 'Customer',
+    contract?.userName ||
+      contract?.user?.name ||
+      contract?.user?.fullName ||
+      contract?.partyB ||
+      'Customer',
   );
   const customerCccd = String(
     contract?.userIdentityNumber ||

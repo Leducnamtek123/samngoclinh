@@ -1,16 +1,21 @@
 import { fetchApiClient } from '@/lib/ApiClient';
 
 export type RawNotification = {
-  id: string;
+  id?: string;
+  _id?: string;
   type?: string;
   title?: string;
+  titleKey?: string;
   message?: string;
   body?: string;
+  bodyKey?: string;
   isRead?: boolean;
   read?: boolean;
   createdAt?: string;
   timestamp?: string;
   data?: Record<string, unknown>;
+  orderPayload?: Record<string, unknown>;
+  details?: Record<string, unknown>;
   [key: string]: unknown;
 };
 

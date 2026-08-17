@@ -10,10 +10,10 @@ import { CheckoutContractSigningCard } from '@/components/checkout/CheckoutContr
 import { Button, ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Form, FormTextarea } from '@/components/ui/form';
+import type { UserIdentityDocument } from '@/hooks/queries/useIdentityVerification';
 import { useProfileMe } from '@/hooks/queries/useProfile';
 import { shippingAddressSchema } from '@/lib/validation/schemas';
 import type { ShippingAddressFormValues } from '@/lib/validation/schemas';
-import type { UserIdentityDocument } from '@/hooks/queries/useIdentityVerification';
 import type { AddressItem, IdentityVerificationStatus } from '@/types';
 import type { CartItem } from '@/utils/cart';
 import { formatVNDPrice } from '@/utils/formatters';
@@ -258,17 +258,18 @@ export const CartStepShipping = ({
     }
   });
 
-  const apiAddresses: AddressItem[] = (profile?.addresses || []).map(
-    (a: AddressItem | Record<string, unknown>) => ({
+  const apiAddresses: AddressItem[] = (profile?.addresses || []).map((item: unknown) => {
+    const a = (item || {}) as Record<string, string | boolean | undefined>;
+    return {
       id: String(a.id || ''),
       name: String(a.recipient || a.name || profile?.fullName || ''),
       recipient: String(a.recipient || a.name || profile?.fullName || ''),
       phone: String(a.phone || profile?.mobileNumber || ''),
       address: String(a.detail || a.address || ''),
       detail: String(a.detail || a.address || ''),
-      isDefault: !!a.isDefault,
-    }),
-  );
+      isDefault: Boolean(a.isDefault),
+    };
+  });
   const allAddresses = [
     ...new Map([...apiAddresses, ...localAddresses].map((a) => [a.id, a])).values(),
   ];
@@ -313,12 +314,13 @@ export const CartStepShipping = ({
       name: (data as AddressItem).name || (data as ShippingAddressFormValues).recipientName || '',
       recipient:
         (data as AddressItem).recipient || (data as ShippingAddressFormValues).recipientName || '',
-      phone: (data as AddressItem).phone || (data as ShippingAddressFormValues).recipientPhone || '',
+      phone:
+        (data as AddressItem).phone || (data as ShippingAddressFormValues).recipientPhone || '',
       address:
         (data as AddressItem).address || (data as ShippingAddressFormValues).shippingAddress || '',
       detail:
         (data as AddressItem).detail || (data as ShippingAddressFormValues).shippingAddress || '',
-      isDefault: (data as AddressItem).isDefault ?? (localAddresses.length === 0),
+      isDefault: (data as AddressItem).isDefault ?? localAddresses.length === 0,
     };
     const updated = [newAddr, ...localAddresses];
     setLocalAddresses(updated);

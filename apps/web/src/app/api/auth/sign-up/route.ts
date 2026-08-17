@@ -73,9 +73,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         message:
-          error instanceof Error
-            ? error.message
-            : 'Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.',
+          error instanceof Error ? error.message : 'Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.',
       },
       { status: 500 },
     );

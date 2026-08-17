@@ -7,8 +7,8 @@ import {
     ILocalStorage,
 } from '@common/file/interfaces/file.interface';
 import {
-    IFileStorageDriver,
     FileStorageDriverType,
+    IFileStorageDriver,
 } from '@common/file/interfaces/file.storage-driver.interface';
 import { LocalStorageDriver } from '@common/file/drivers/local.storage-driver';
 import { HelperService } from '@common/helper/services/helper.service';

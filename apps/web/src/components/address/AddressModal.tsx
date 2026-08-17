@@ -25,7 +25,9 @@ export type AddressModalProps = {
   onSelectAddress?: (id: string) => void;
   onOpenAddModal?: () => void;
   // Add mode props
-  onSubmitSuccess?: (data: (ShippingAddressFormValues & { newId?: string }) | Partial<AddressItem>) => void;
+  onSubmitSuccess?: (
+    data: (ShippingAddressFormValues & { newId?: string }) | Partial<AddressItem>,
+  ) => void;
   initialValues?: Partial<ShippingAddressFormValues>;
 };
 

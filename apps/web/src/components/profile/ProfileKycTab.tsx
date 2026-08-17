@@ -77,16 +77,14 @@ export const ProfileKycTab = ({
     setUserDocumentType(val);
   };
 
-  const idCardNumber = String(
-    userIdCardNumber ?? actualKycData?.idCardNumber ?? actualKycData?.idNumber ?? '',
-  );
+  const kyc = (actualKycData || {}) as Record<string, string | undefined>;
+
+  const idCardNumber = String(userIdCardNumber ?? kyc.idCardNumber ?? kyc.idNumber ?? '');
   const setIdCardNumber = (val: string) => {
     setUserIdCardNumber(val);
   };
 
-  const fullName = String(
-    userFullName ?? actualKycData?.fullName ?? profile?.name ?? profile?.fullName ?? '',
-  );
+  const fullName = String(userFullName ?? kyc.fullName ?? profile?.name ?? profile?.fullName ?? '');
   const setFullName = (val: string) => {
     setUserFullName(val);
   };
@@ -108,8 +106,8 @@ export const ProfileKycTab = ({
   const isPending = statusStr === 'PENDING' || statusStr === 'PROCESSING';
   const isRejected = statusStr === 'REJECTED';
 
-  const existingFront = String(actualKycData?.frontImageUrl || actualKycData?.frontUrl || '');
-  const existingBack = String(actualKycData?.backImageUrl || actualKycData?.backUrl || '');
+  const existingFront = String(kyc.frontImageUrl || kyc.frontUrl || '');
+  const existingBack = String(kyc.backImageUrl || kyc.backUrl || '');
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) {

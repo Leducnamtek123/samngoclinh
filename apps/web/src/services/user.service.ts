@@ -35,7 +35,10 @@ export const userService = {
     return res?.data || res;
   },
 
-  async changePassword(payload: { currentPassword?: string; newPassword?: string }): Promise<{ success: boolean; message?: string }> {
+  async changePassword(payload: {
+    currentPassword?: string;
+    newPassword?: string;
+  }): Promise<{ success: boolean; message?: string }> {
     const res = await fetchApiClient('/v1/shared/user/change-password', {
       method: 'PATCH',
       body: JSON.stringify(payload),
@@ -53,7 +56,9 @@ export const userService = {
     return (res?.data || res || []) as UserIdentityDocument[];
   },
 
-  async saveIdentityDocument(payload: FormData | Record<string, unknown>): Promise<UserIdentityDocument> {
+  async saveIdentityDocument(
+    payload: FormData | Record<string, unknown>,
+  ): Promise<UserIdentityDocument> {
     const res = await fetchApiClient('/v1/shared/user/identity-document', {
       method: 'PUT',
       body:

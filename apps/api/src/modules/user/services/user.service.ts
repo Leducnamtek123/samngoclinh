@@ -733,7 +733,7 @@ export class UserService implements IUserService {
                 data: this.userUtil.mapIdentityDocument(saved),
             };
         } catch (err: unknown) {
-            if (err instanceof BadRequestException) throw err;
+            if (err instanceof BadRequestException) {throw err;}
             throw new AppUnknownException(err);
         }
     }

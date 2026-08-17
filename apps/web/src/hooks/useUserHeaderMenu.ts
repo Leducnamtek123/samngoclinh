@@ -3,10 +3,10 @@ import { useState, useEffect, useSyncExternalStore } from 'react';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
 import { useNotificationsList } from '@/hooks/queries/useNotifications';
 import { useProfileMe } from '@/hooks/queries/useProfile';
-import type { RawNotification } from '@/services/notification.service';
-import type { UserProfile } from '@/types';
 import { usePathname, useRouter } from '@/lib/I18nNavigation';
 import { cartStore } from '@/lib/stores/useCartStore';
+import type { RawNotification } from '@/services/notification.service';
+import type { UserProfile } from '@/types';
 import { getCartCount } from '@/utils/cart';
 
 const emptySubscribe = () => () => {};

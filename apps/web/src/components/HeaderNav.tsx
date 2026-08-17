@@ -16,9 +16,7 @@ export const HeaderNav = () => {
 
   const getCategoryLabel = (category: string) => {
     try {
-      return tCat.has(category as Parameters<typeof tCat.has>[0])
-        ? tCat(category as Parameters<typeof tCat>[0])
-        : category;
+      return tCat.has(category) ? tCat(category) : category;
     } catch {
       return category;
     }
@@ -31,9 +29,9 @@ export const HeaderNav = () => {
       try {
         const data = await fetchApiClient('/public/content/articles');
         const rawList = Array.isArray(data?.data) ? (data.data as { category?: string }[]) : [];
-        const uniqueCategories: string[] = Array.from(
-          new Set(rawList.flatMap((item) => (item.category ? [String(item.category)] : []))),
-        );
+        const uniqueCategories: string[] = [
+          ...new Set(rawList.flatMap((item) => (item.category ? [String(item.category)] : []))),
+        ];
         setCategories(uniqueCategories);
       } catch (error) {
         console.error('Failed to load categories for header nav:', error);

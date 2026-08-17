@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PDFDocument, rgb, StandardFonts, PDFFont, PDFPage } from 'pdf-lib';
+import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from 'pdf-lib';
 import * as QRCode from 'qrcode';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
@@ -64,7 +64,7 @@ export interface IGeneratedPdfResult {
 }
 
 function sanitizeFallback(str?: string | null): string {
-    if (!str) return '';
+    if (!str) {return '';}
     return str
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -102,7 +102,7 @@ export class EContractPdfService {
         const { fontRegular, fontBold, fontOblique, isUnicode } = await this.loadFonts(pdfDoc);
 
         const safe = (text?: string | null): string => {
-            if (!text) return '';
+            if (!text) {return '';}
             return isUnicode ? text : sanitizeFallback(text);
         };
 
@@ -299,7 +299,7 @@ export class EContractPdfService {
         if (data.signatureDataUrl) {
             try {
                 let sigImageBytes: Buffer;
-                if (data.signatureDataUrl.startsWith('data:image')) sigImageBytes = Buffer.from(data.signatureDataUrl.split(',')[1], 'base64');
+                if (data.signatureDataUrl.startsWith('data:image')) {sigImageBytes = Buffer.from(data.signatureDataUrl.split(',')[1], 'base64');}
                 else {
                     const axios = (await import('axios')).default;
                     const response = await axios.get(data.signatureDataUrl, { responseType: 'arraybuffer', timeout: 5000 });
@@ -470,7 +470,7 @@ export class EContractPdfService {
         const { fontRegular, fontBold, fontOblique, isUnicode } = await this.loadFonts(pdfDoc);
 
         const safe = (text?: string | null): string => {
-            if (!text) return '';
+            if (!text) {return '';}
             return isUnicode ? text : sanitizeFallback(text);
         };
 

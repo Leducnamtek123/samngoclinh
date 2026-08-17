@@ -144,9 +144,7 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
       });
     } catch (error: unknown) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Có lỗi xảy ra khi ký hợp đồng. Vui lòng thử lại.',
+        error instanceof Error ? error.message : 'Có lỗi xảy ra khi ký hợp đồng. Vui lòng thử lại.',
       );
     }
   };
