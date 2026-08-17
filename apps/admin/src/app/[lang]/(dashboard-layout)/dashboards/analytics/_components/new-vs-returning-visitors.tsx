@@ -9,8 +9,21 @@ export function NewVsReturningVisitors({
 }: {
   stats?: AnalyticsDashboardStats
 }) {
-  const newCount = stats?.newVsReturning?.summary?.newVisitors || 0
-  const returningCount = stats?.newVsReturning?.summary?.returningVisitors || 0
+  const summary = stats?.newVsReturning?.summary as
+    | {
+        newVisitors?: number
+        returningVisitors?: number
+        singleOrderUsers?: number
+        returningUsers?: number
+      }
+    | undefined
+
+  const newCount = Number(
+    summary?.newVisitors ?? summary?.singleOrderUsers ?? 0
+  )
+  const returningCount = Number(
+    summary?.returningVisitors ?? summary?.returningUsers ?? 0
+  )
   const total = newCount + returningCount || 1
 
   const visitors = {

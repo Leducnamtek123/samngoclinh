@@ -30,7 +30,7 @@ export function TrafficSourcesTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((item) => (
+        {(data || []).map((item) => (
           <TableRow key={item.name}>
             <TableCell className="w-6" aria-hidden>
               <DynamicIcon
@@ -45,11 +45,11 @@ export function TrafficSourcesTable({
                 Lượt:{" "}
               </span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {item.visitors.toLocaleString()}
+                {Number(item.visitors ?? 0).toLocaleString()}
               </span>
             </TableCell>
             <TableCell className="text-end">
-              <PercentageChangeBadge value={item.percentageChange} />
+              <PercentageChangeBadge value={Number(item.percentageChange ?? 0)} />
             </TableCell>
           </TableRow>
         ))}

@@ -83,7 +83,7 @@ export function LeadSourcesChart({
                       y={viewBox.cy}
                       className="fill-foreground text-2xl font-semibold"
                     >
-                      {data.summary.totalLeads.toLocaleString()}
+                      {Number(data?.summary?.totalLeads ?? 0).toLocaleString()}
                     </tspan>
                     <tspan
                       x={viewBox.cx}

@@ -91,6 +91,8 @@ export class BackofficeRepository {
                     revenue: monthTotal,
                     ordersCount: ordersInMonth.length,
                     treesPlanted,
+                    visitors: ordersInMonth.length,
+                    conversions: treesPlanted,
                 });
             }
 
@@ -102,11 +104,11 @@ export class BackofficeRepository {
             const businessContractsCount = await this.databaseService.eContract.count().catch(() => 0);
 
             const trafficSources = [
-                { name: "Vườn canh tác hoạt động", count: activeBedsCount, fill: "hsl(var(--chart-1))", icon: "Sprout" },
-                { name: "Đại lý Gold", count: goldProfilesCount, fill: "hsl(var(--chart-2))", icon: "Home" },
-                { name: "Đơn hàng hoàn tất", count: onlineOrdersCount, fill: "hsl(var(--chart-3))", icon: "ShoppingBag" },
-                { name: "Cây có gói chăm sóc", count: freeGinsengCount, fill: "hsl(var(--chart-4))", icon: "User" },
-                { name: "Hợp đồng điện tử", count: businessContractsCount, fill: "hsl(var(--chart-5))", icon: "FileCheck" }
+                { name: "Vườn canh tác hoạt động", count: activeBedsCount, visitors: activeBedsCount, percentageChange: 0, fill: "hsl(var(--chart-1))", icon: "Sprout" },
+                { name: "Đại lý Gold", count: goldProfilesCount, visitors: goldProfilesCount, percentageChange: 0, fill: "hsl(var(--chart-2))", icon: "Home" },
+                { name: "Đơn hàng hoàn tất", count: onlineOrdersCount, visitors: onlineOrdersCount, percentageChange: 0, fill: "hsl(var(--chart-3))", icon: "ShoppingBag" },
+                { name: "Cây có gói chăm sóc", count: freeGinsengCount, visitors: freeGinsengCount, percentageChange: 0, fill: "hsl(var(--chart-4))", icon: "User" },
+                { name: "Hợp đồng điện tử", count: businessContractsCount, visitors: businessContractsCount, percentageChange: 0, fill: "hsl(var(--chart-5))", icon: "FileCheck" }
             ];
 
             // 3. User distribution (Orders vs Returning)
@@ -120,6 +122,8 @@ export class BackofficeRepository {
 
             const newVsReturning = {
                 summary: {
+                    newVisitors: singleOrderUsersCount,
+                    returningVisitors: returningUsersCount,
                     singleOrderUsers: singleOrderUsersCount,
                     returningUsers: returningUsersCount,
                     totalRegisteredUsers: totalUsers,
@@ -128,6 +132,8 @@ export class BackofficeRepository {
                     month: m.month,
                     orders: m.ordersCount,
                     trees: m.treesPlanted,
+                    new: m.ordersCount,
+                    returning: m.treesPlanted,
                 }))
             };
 
@@ -150,6 +156,8 @@ export class BackofficeRepository {
                         country: country.name,
                         code: country.alpha2Code.toLowerCase(),
                         count: item._count.id,
+                        visitors: item._count.id,
+                        percentageChange: 0,
                         fill: "hsl(var(--chart-1))",
                     });
                 }
@@ -159,8 +167,8 @@ export class BackofficeRepository {
             const totalSessions = await this.databaseService.session.count().catch(() => 0);
             const totalDevices = await this.databaseService.device.count().catch(() => 0);
             const engagementByDevice = [
-                { id: "1", device: "Active User Sessions", count: totalSessions },
-                { id: "2", device: "Registered Devices", count: totalDevices },
+                { id: "1", device: "Active User Sessions", count: totalSessions, sessions: totalSessions },
+                { id: "2", device: "Registered Devices", count: totalDevices, sessions: totalDevices },
             ];
 
             return {
