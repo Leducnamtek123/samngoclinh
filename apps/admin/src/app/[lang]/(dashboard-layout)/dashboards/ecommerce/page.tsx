@@ -22,7 +22,14 @@ export const metadata: Metadata = {
     "Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng, sâm củ và hợp đồng ủy quyền canh tác",
 }
 
-export default async function EcommercePage() {
+interface EcommercePageProps {
+  params: Promise<{
+    lang: string
+  }>
+}
+
+export default async function EcommercePage(props: EcommercePageProps) {
+  await props.params
   let overview: BackofficeOverview | null = null
   let orders: Order[] = []
   let shopItems: ShopItem[] = []
@@ -60,14 +67,14 @@ export default async function EcommercePage() {
         </div>
       </div>
       <Overview stats={overview} />
-      <ChurnRate />
+      <ChurnRate overview={overview} />
       <RevenueBySource
         sources={overview?.trafficSources}
         totalRevenue={overview?.totalRevenue}
       />
       <div className="col-span-full grid gap-4 md:grid-cols-4">
         <CustomerInsights overview={overview} />
-        <GenderDistribution />
+        <GenderDistribution overview={overview} />
       </div>
       <SalesTrend
         monthlyRevenue={overview?.monthlyRevenue}

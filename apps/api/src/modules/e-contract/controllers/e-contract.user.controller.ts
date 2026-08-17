@@ -35,8 +35,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -53,8 +52,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -72,8 +70,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -94,8 +91,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -115,8 +111,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -135,8 +130,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -156,8 +150,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()

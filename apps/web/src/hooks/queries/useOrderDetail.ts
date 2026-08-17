@@ -1,15 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { ordersService } from '@/services/orders.service';
 
 export function useCancelOrder() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (orderId: string) => {
-      const res = await fetchApiClient(`/user/orders/${orderId}/cancel`, {
-        method: 'PATCH',
-      });
-      return res.data || res;
+      return ordersService.cancelOrder(orderId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

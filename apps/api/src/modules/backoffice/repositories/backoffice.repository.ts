@@ -1,7 +1,6 @@
 import { DatabaseService } from '@common/database/services/database.service';
 import { Injectable } from '@nestjs/common';
 import { IBackofficeOverview } from '@modules/backoffice/interfaces/backoffice.interface';
-import { EnumRoleType } from '@generated/prisma-client';
 
 @Injectable()
 export class BackofficeRepository {
@@ -19,14 +18,7 @@ export class BackofficeRepository {
         ];
 
         try {
-            const activeProvidersCount = await this.databaseService.user.count({
-                where: {
-                    status: 'active',
-                    role: {
-                        type: EnumRoleType.provider,
-                    },
-                },
-            }).catch(() => 0);
+            const activeProvidersCount = 0;
 
             const articlesCount = await this.databaseService.contentArticle.count().catch(() => 0);
 

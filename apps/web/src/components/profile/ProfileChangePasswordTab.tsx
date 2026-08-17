@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Check, AlertCircle } from 'lucide-react';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 import { toast } from 'sonner';
 import { Form, FormPassword } from '@/components/ui/form';
 import { ButtonLoading } from '@/components/ui/button';
@@ -36,12 +36,9 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
     setErrorMsg('');
     setIsSubmitting(true);
     try {
-      await fetchApiClient('/v1/shared/user/change-password', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          oldPassword: values.oldPassword,
-          newPassword: values.newPassword,
-        }),
+      await userService.changePassword({
+        currentPassword: values.oldPassword,
+        newPassword: values.newPassword,
       });
 
       toast.success('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');

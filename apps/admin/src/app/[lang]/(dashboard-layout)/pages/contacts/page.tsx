@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import type { ContactRequest, PaginationMeta } from "@/types"
 
-import { fetchApi } from "@/lib/api"
+import { legalService } from "@/services/legal.service"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContactsTable } from "./_components/contacts-table"
@@ -40,23 +40,17 @@ export default async function ContactsPage({
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-    if (isRead && isRead !== "all") queryParams.append("isRead", isRead)
+    const payload = await legalService.getContacts({
+      page,
+      perPage,
+      search,
+      status: isRead,
+    })
 
-    const res = await fetchApi(`/admin/contacts?${queryParams.toString()}`)
-    const payload = await res.json()
-
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải danh sách liên hệ."
-    } else {
-      contacts = Array.isArray(payload.data)
-        ? payload.data
-        : payload.data?.items || []
-      metadata = payload.metadata || null
-    }
+    contacts = Array.isArray(payload.data)
+      ? payload.data
+      : (payload.data as any)?.items || []
+    metadata = payload.metadata || null
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Lỗi khi kết nối máy chủ"
     console.error("Error loading contacts page data:", e)

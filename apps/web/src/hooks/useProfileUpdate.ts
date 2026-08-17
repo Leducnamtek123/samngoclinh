@@ -1,6 +1,7 @@
 'use client';
 
 import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -41,26 +42,44 @@ export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
         body.birthDate = updatedData.birthDate;
       }
 
-      await fetchApiClient('/v1/shared/user/profile/update', {
-        method: 'PUT',
-        body: JSON.stringify(body),
-      });
+      await userService.updateProfile(body as any);
 
-      const phoneDigits = (updatedData.phone || '').replace(/\D/g, '');
+      let phoneDigits = (updatedData.phone || '').replace(/\D/g, '');
+      if (phoneDigits.startsWith('84') && phoneDigits.length === 11) {
+        phoneDigits = `0${phoneDigits.slice(2)}`;
+      }
+
       const existingPhone = profile?.mobileNumbers?.[0] || null;
       const phoneCode = profile?.country?.phoneCode?.[0] || '84';
+      let updatedMobileNumber = existingPhone;
 
       if (phoneDigits && countryId) {
         if (!existingPhone) {
-          await fetchApiClient('/v1/shared/user/mobile-number/add', {
-            method: 'POST',
-            body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
-          }).catch(() => {});
+          try {
+            const addRes = await fetchApiClient('/v1/shared/user/mobile-number/add', {
+              method: 'POST',
+              body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
+            });
+            updatedMobileNumber = addRes?.data || { number: phoneDigits, phoneCode, countryId };
+          } catch (phoneErr: any) {
+            console.error('Failed to add mobile number:', phoneErr);
+            throw new Error(
+              phoneErr?.message || 'Không thể lưu số điện thoại. Có thể số điện thoại này đã được sử dụng bởi tài khoản khác.'
+            );
+          }
         } else if (phoneDigits !== existingPhone.number) {
-          await fetchApiClient(`/v1/shared/user/mobile-number/update/${existingPhone.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
-          }).catch(() => {});
+          try {
+            const updateRes = await fetchApiClient(`/v1/shared/user/mobile-number/update/${existingPhone.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({ countryId, phoneCode, number: phoneDigits }),
+            });
+            updatedMobileNumber = updateRes?.data || { ...existingPhone, number: phoneDigits, phoneCode, countryId };
+          } catch (phoneErr: any) {
+            console.error('Failed to update mobile number:', phoneErr);
+            throw new Error(
+              phoneErr?.message || 'Không thể cập nhật số điện thoại. Có thể số điện thoại này đã được sử dụng bởi tài khoản khác.'
+            );
+          }
         }
       }
 
@@ -72,6 +91,9 @@ export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
           fullName: updatedData.fullName.trim(),
           gender: updatedData.gender === 'female' ? 'female' : 'male',
           birthDate: updatedData.birthDate || old.birthDate,
+          mobileNumbers: phoneDigits
+            ? (updatedMobileNumber ? [updatedMobileNumber] : [{ number: phoneDigits, phoneCode, countryId }])
+            : [],
         };
       });
       await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });

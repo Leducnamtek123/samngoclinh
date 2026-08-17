@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmptyState } from '@/components/common';
 import { Badge } from '@/components/ui';
-import { Sprout } from 'lucide-react';
+import { Sprout, MapPin, Calendar } from 'lucide-react';
 
 export interface GinsengBedsGridProps {
   beds: any[];
@@ -35,17 +35,22 @@ export const GinsengBedsGrid: React.FC<GinsengBedsGridProps> = ({ beds }) => {
                 {bed.ageYear} tuổi
               </Badge>
             </div>
-            <p className="text-xs text-gray-500 font-medium">
-              📍 {bed.gardenName || bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}
+            <p className="text-xs text-gray-500 font-medium flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>{bed.gardenName || bed.gardenLocation || 'Vườn Nam Trà My, Kon Tum'}</span>
             </p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p>
-                🌱 Số cây sâm: <span className="font-bold text-gray-800">{bed.treeCount || 50} cây</span>
+            <div className="text-xs text-gray-600 space-y-1.5">
+              <p className="flex items-center gap-1.5">
+                <Sprout className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Số cây sâm: <strong className="font-bold text-gray-800">{bed.treeCount || 50} cây</strong></span>
               </p>
-              <p>
-                📅 Ngày trồng:{' '}
-                <span className="font-bold text-gray-800">
-                  {bed.plantedAt ? new Date(bed.plantedAt).toLocaleDateString('vi-VN') : 'Mới trồng'}
+              <p className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>
+                  Ngày trồng:{' '}
+                  <strong className="font-bold text-gray-800">
+                    {bed.plantedAt ? new Date(bed.plantedAt).toLocaleDateString('vi-VN') : 'Mới trồng'}
+                  </strong>
                 </span>
               </p>
             </div>

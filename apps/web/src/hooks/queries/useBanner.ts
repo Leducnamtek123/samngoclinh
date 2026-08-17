@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { contentService } from '@/services/content.service';
 
 export function useBanner(pageKey: string, initialData?: any) {
   return useQuery({
     queryKey: ['banners', pageKey],
     queryFn: () =>
-      fetchApiClient(`/public/banners/${pageKey}`)
-        .then((res) => (res?.data !== undefined ? res.data : null))
+      contentService
+        .getBanner(pageKey)
+        .then((data) => (data !== undefined ? data : null))
         .catch(() => null),
     initialData,
     staleTime: 5 * 60 * 1000,

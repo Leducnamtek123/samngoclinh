@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { fetchApi } from "@/lib/api"
+import { contentService } from "@/services/content.service"
 
 import { BannersManager } from "./_components/banners-manager"
 
@@ -24,16 +24,12 @@ export default async function BannersPage() {
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/admin/banners")
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load banners"
-    } else {
-      banners = payload.data || []
-    }
-  } catch (e) {
+    const payload = await contentService.getBanners()
+    banners = (payload.data as any)?.items || (Array.isArray(payload.data) ? payload.data : [])
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching banners on server:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

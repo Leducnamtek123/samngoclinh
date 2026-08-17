@@ -1,5 +1,5 @@
 export type UserStatus = "active" | "inactive" | "blocked" | "pending"
-export type RoleType = "superAdmin" | "admin" | "user" | "provider" | "staff"
+export type RoleType = "superAdmin" | "admin" | "user" | "staff"
 
 export interface Role {
   id: string

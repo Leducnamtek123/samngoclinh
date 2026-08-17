@@ -1,4 +1,4 @@
-import { salesByCountryData } from "../_data/sales-by-country"
+import type { BackofficeOverview } from "@/types"
 
 import {
   DashboardCard,
@@ -6,14 +6,28 @@ import {
 } from "@/components/dashboards/dashboard-card"
 import { SalesByCountryChart } from "./sales-by-country-chart"
 
-export function SalesByCountry() {
+interface SalesByCountryProps {
+  overview?: BackofficeOverview | null
+}
+
+export function SalesByCountry({ overview }: SalesByCountryProps) {
+  const visitorsByCountry = overview?.visitorsByCountry || []
+  const countries =
+    visitorsByCountry.length > 0
+      ? visitorsByCountry.map((c) => ({
+          countryName: c.country,
+          countryCode: (c.code || "VN").toUpperCase(),
+          sales: c.visitors * 50000,
+        }))
+      : []
+
   return (
     <DashboardCard
-      title="Sales by Country"
-      period={salesByCountryData.period}
+      title="Thị Trường & Khu Vực Đầu Tư"
+      period="Toàn hệ thống"
       action={<DashboardCardActionsDropdown />}
     >
-      <SalesByCountryChart data={salesByCountryData.countries} />
+      <SalesByCountryChart data={countries} />
     </DashboardCard>
   )
 }

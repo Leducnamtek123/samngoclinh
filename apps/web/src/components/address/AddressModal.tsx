@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/form';
 import { FormAddressPicker } from '@/components/address/FormAddressPicker';
 import { Button } from '@/components/ui/button';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 import { toast } from 'sonner';
 import {
   shippingAddressSchema,
@@ -76,17 +76,14 @@ export function AddressModal({
     setIsSubmitting(true);
     let createdId = generateLocalId();
     try {
-      const res: any = await fetchApiClient('/v1/shared/user/address/add', {
-        method: 'POST',
-        body: JSON.stringify({
-          detail: data.shippingAddress,
-          recipient: data.recipientName,
-          phone: data.recipientPhone,
-          isDefault: false,
-        }),
+      const res: any = await userService.addAddress({
+        detail: data.shippingAddress,
+        recipient: data.recipientName,
+        phone: data.recipientPhone,
+        isDefault: false,
       });
-      if (res?.data?.id) {
-        createdId = res.data.id;
+      if (res?.data?.id || res?.id) {
+        createdId = res?.data?.id || res?.id;
       }
       toast.success(tAdd('savedSuccess'));
     } catch {

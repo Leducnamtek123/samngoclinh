@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck, Clock } from 'lucide-react';
+import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck, Clock, Download, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EContractSignaturePad } from './EContractSignaturePad';
@@ -63,32 +63,50 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
           ) : (
             <>
               {/* Contract Metadata Banner */}
-              <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Trạng thái hợp đồng</span>
-                  <div className="flex items-center gap-2">
-                    {modal.isSigned ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-xs">
-                        <CheckCircle2 className="w-4 h-4" /> Đã ký điện tử
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-bold shadow-xs">
-                        <PenTool className="w-4 h-4" /> Vui lòng hoàn tất chữ ký
-                      </span>
-                    )}
-                    <span className="text-xs text-slate-500 font-medium">
-                      • Ngày tạo: {new Date(modal.contract.createdAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}
-                    </span>
-                  </div>
-                </div>
+              {(() => {
+                const status = (modal.contract.status || '').toLowerCase();
+                const isDraft = status === 'draft' || status === 'pending_issue';
+                const isExpired = status === 'expired';
+                const rawVal = modal.contract.contractValue ?? modal.contract.totalAmount ?? modal.contract.value ?? modal.contract.order?.total ?? 0;
+                const contractValueNum = Number(rawVal) || 0;
 
-                <div className="text-right">
-                  <span className="text-xs text-slate-500 font-semibold block">Giá trị hợp đồng</span>
-                  <span className="text-lg font-black text-primary">
-                    {(modal.contract.totalAmount || modal.contract.value || 0).toLocaleString('vi-VN')} VNĐ
-                  </span>
-                </div>
-              </div>
+                return (
+                  <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Trạng thái hợp đồng</span>
+                      <div className="flex items-center gap-2">
+                        {modal.isSigned ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-xs">
+                            <CheckCircle2 className="w-4 h-4" /> Đã ký điện tử
+                          </span>
+                        ) : isDraft ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-600 text-white rounded-full text-xs font-bold shadow-xs">
+                            <Clock className="w-4 h-4" /> Bản nháp (Đang khởi tạo)
+                          </span>
+                        ) : isExpired ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-600 text-white rounded-full text-xs font-bold shadow-xs">
+                            <AlertCircle className="w-4 h-4" /> Đã hết hạn
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-bold shadow-xs">
+                            <PenTool className="w-4 h-4" /> Vui lòng hoàn tất chữ ký
+                          </span>
+                        )}
+                        <span className="text-xs text-slate-500 font-medium">
+                          • Ngày tạo: {modal.contract.createdAt ? new Date(modal.contract.createdAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : '—'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-xs text-slate-500 font-semibold block">Giá trị hợp đồng</span>
+                      <span className="text-lg font-black text-primary">
+                        {contractValueNum.toLocaleString('vi-VN')} VNĐ
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Contract Document Text Container */}
               <EContractDocumentView contract={modal.contract} />
@@ -119,20 +137,22 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
 
                   <div className="flex flex-wrap items-center gap-3 pt-1">
                     <a
-                      href={`/api/proxy/public/contracts/${modal.contract.code}/pdf`}
+                      href={`/api/proxy/public/contracts/pdf?code=${encodeURIComponent(modal.contract.code)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
                     >
-                      <span>📥 Tải tệp PDF có dấu mộc & QR</span>
+                      <Download className="w-4 h-4 shrink-0" />
+                      <span>Tải tệp PDF có dấu mộc & QR</span>
                     </a>
                     <a
-                      href={`/trace/contract/${modal.contract.code}`}
+                      href={`/vi/trace/contract/${modal.contract.code}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-colors"
                     >
-                      <span>🔍 Tra cứu chứng nhận số</span>
+                      <Search className="w-4 h-4 shrink-0" />
+                      <span>Tra cứu chứng nhận số</span>
                     </a>
                   </div>
                 </div>

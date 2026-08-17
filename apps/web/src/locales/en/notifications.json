@@ -13,9 +13,14 @@
     "originDetails": "Origin Information",
     "treeCode": "Tree Code",
     "gardenLocation": "Garden Location",
+    "garden": "Farm Location",
+    "bed": "Bed Position",
     "harvestDate": "Harvest Date",
     "certificate": "Origin Certificate",
-    "verifiedBadge": "100% Genuine Certified"
+    "verifiedBadge": "100% Genuine Certified",
+    "verified": "AUTHENTICITY VERIFIED",
+    "careLogs": "Care & Cultivation Log",
+    "ageAndStatus": "Age & Health Status"
   },
   "mapLocationPicker": {
     "searchPlaceholder": "Search address, street name, district...",

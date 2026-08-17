@@ -1,10 +1,6 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
-
 import type { NextAuthOptions } from "next-auth"
-import type { Adapter } from "next-auth/adapters"
 
 import { API_KEY } from "@/lib/api-key"
-import { db } from "@/lib/prisma"
 
 import CredentialsProvider from "next-auth/providers/credentials"
 
@@ -96,7 +92,6 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -130,14 +125,13 @@ export const authOptions: NextAuthOptions = {
               return null
             }
 
+            const rawRole = payload.data.role
             const userRole =
-              payload.data.role?.name ||
-              payload.data.role ||
-              (payload.data.email?.includes("superadmin")
-                ? "SUPER_ADMIN"
-                : payload.data.email?.includes("admin")
-                  ? "ADMIN"
-                  : "USER")
+              typeof rawRole === "object" && rawRole !== null
+                ? (rawRole as { name?: string }).name || "USER"
+                : typeof rawRole === "string" && rawRole.trim() !== ""
+                  ? rawRole
+                  : "USER"
 
             return {
               id: payload.data.id,
@@ -231,14 +225,10 @@ export const authOptions: NextAuthOptions = {
           const rawRole = profilePayload?.data?.role
           const userRole =
             typeof rawRole === "object" && rawRole !== null
-              ? rawRole.name || "USER"
-              : typeof rawRole === "string"
+              ? (rawRole as { name?: string }).name || "USER"
+              : typeof rawRole === "string" && rawRole.trim() !== ""
                 ? rawRole
-                : userEmail?.includes("superadmin")
-                  ? "SUPER_ADMIN"
-                  : userEmail?.includes("admin")
-                    ? "ADMIN"
-                    : "USER"
+                : "USER"
 
           return {
             id: profilePayload?.data?.id || "admin-id",

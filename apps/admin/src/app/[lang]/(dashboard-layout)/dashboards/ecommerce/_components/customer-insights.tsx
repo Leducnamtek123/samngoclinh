@@ -11,12 +11,12 @@ interface CustomerInsightsProps {
 }
 
 export function CustomerInsights({ overview }: CustomerInsightsProps) {
-  const total = overview?.totalUsers || 100
+  const total = overview?.totalUsers || 0
   const returning = overview?.newVsReturning?.summary?.returningVisitors
     ? Math.round(overview.newVsReturning.summary.returningVisitors / 120)
-    : 35
-  const newCust = Math.max(total - returning, 15)
-  const vip = Math.round(total * 0.2)
+    : 0
+  const newCust = Math.max(total - returning, 0)
+  const vip = Math.round(total * 0.15)
 
   const data = {
     period: "Toàn hệ thống",

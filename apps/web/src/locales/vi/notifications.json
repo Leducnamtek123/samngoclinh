@@ -13,9 +13,14 @@
     "originDetails": "Thông Tin Nguồn Gốc",
     "treeCode": "Mã Cây Sâm",
     "gardenLocation": "Vị Trí Nông Trường",
+    "garden": "Nông trường",
+    "bed": "Vị trí luống",
     "harvestDate": "Ngày Thu Hoạch",
     "certificate": "Giấy Chứng Nhận Nguồn Gốc",
-    "verifiedBadge": "Chứng Nhận Chính Gốc 100%"
+    "verifiedBadge": "Chứng Nhận Chính Gốc 100%",
+    "verified": "ĐÃ XÁC MINH CHÍNH GỐC",
+    "careLogs": "Nhật Ký Chăm Sóc & Canh Tác",
+    "ageAndStatus": "Độ Tuổi & Trạng Thái"
   },
   "mapLocationPicker": {
     "searchPlaceholder": "Tìm kiếm địa chỉ, tên đường, quận huyện...",

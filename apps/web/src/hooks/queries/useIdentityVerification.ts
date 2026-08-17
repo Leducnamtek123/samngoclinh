@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 
 export type IdentityDocumentType = 'cccd' | 'driver_license' | 'passport';
 
@@ -49,10 +49,7 @@ export type SaveIdentityDocumentPayload = {
 export function useIdentityVerificationStatus(initialData?: any) {
   return useQuery({
     queryKey: ['identity-document'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/identity-document')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
+    queryFn: () => userService.getIdentityDocument(),
     initialData,
   });
 }
@@ -60,10 +57,7 @@ export function useIdentityVerificationStatus(initialData?: any) {
 export function useIdentityVerificationHistory(initialData?: any) {
   return useQuery({
     queryKey: ['identity-document-history'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/identity-document/history')
-        .then((res) => (Array.isArray(res?.data) ? res.data : []))
-        .catch(() => []),
+    queryFn: () => userService.getIdentityDocumentHistories(),
     initialData,
   });
 }
@@ -74,23 +68,17 @@ export function useSubmitIdentityVerification() {
   return useMutation({
     mutationFn: (payload: SaveIdentityDocumentPayload | FormData) => {
       if (typeof FormData !== 'undefined' && payload instanceof FormData) {
-        return fetchApiClient('/v1/shared/user/identity-document', {
-          method: 'PUT',
-          body: payload,
-        });
+        return userService.saveIdentityDocument(payload);
       }
 
       const pay = payload as SaveIdentityDocumentPayload;
       if (pay.frontBase64) {
-        return fetchApiClient('/v1/shared/user/identity-document', {
-          method: 'PUT',
-          body: JSON.stringify({
-            documentType: pay.documentType || 'cccd',
-            frontBase64: pay.frontBase64,
-            backBase64: pay.backBase64,
-            idCardNumber: pay.idCardNumber,
-            fullName: pay.fullName,
-          }),
+        return userService.saveIdentityDocument({
+          documentType: pay.documentType || 'cccd',
+          frontBase64: pay.frontBase64,
+          backBase64: pay.backBase64,
+          idCardNumber: pay.idCardNumber,
+          fullName: pay.fullName,
         });
       }
 
@@ -107,10 +95,7 @@ export function useSubmitIdentityVerification() {
       if (pay.idCardNumber) formData.append('idCardNumber', pay.idCardNumber);
       if (pay.fullName) formData.append('fullName', pay.fullName);
 
-      return fetchApiClient('/v1/shared/user/identity-document', {
-        method: 'PUT',
-        body: formData,
-      });
+      return userService.saveIdentityDocument(formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['identity-document'] });

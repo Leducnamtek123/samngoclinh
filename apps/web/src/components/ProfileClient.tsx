@@ -31,7 +31,7 @@ import { useProfileOrders } from '@/hooks/useProfileOrders';
 import { useRouter } from 'next/navigation';
 import { apiSignOut } from '@/services/auth.service';
 
-import type { UserProfile, UserBusiness, WalletSummary, GinsengTreeItem } from '@/types';
+import type { UserProfile, UserBusiness, WalletSummary, CultivationTree } from '@/types';
 
 type ProfileClientProps = {
   locale: string;
@@ -39,7 +39,7 @@ type ProfileClientProps = {
   initialProfile?: UserProfile;
   initialBusiness?: UserBusiness;
   initialWallet?: WalletSummary;
-  initialTrees?: GinsengTreeItem[];
+  initialTrees?: CultivationTree[];
 };
 
 export const ProfileClient = ({
@@ -125,7 +125,7 @@ export const ProfileClient = ({
   }
 
   const safeOrders = Array.isArray(userOrders) ? userOrders : [];
-  const safeTrees = Array.isArray(trees) ? trees : Array.isArray(trees?.data) ? trees.data : [];
+  const safeTrees = Array.isArray(trees) ? trees : [];
   const safeAddresses = Array.isArray(addresses) ? addresses : [];
 
   const fullName = profile?.fullName ?? profile?.name ?? '—';

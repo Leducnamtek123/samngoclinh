@@ -25,11 +25,19 @@ export default async function PackagesPage() {
       packagesService.getProtectionPackages().catch(() => null),
     ])
 
-    if (careRes?.data && Array.isArray(careRes.data)) {
-      carePackages = careRes.data
+    if (careRes?.data) {
+      if (Array.isArray(careRes.data)) {
+        carePackages = careRes.data
+      } else if (Array.isArray((careRes.data as any)?.items)) {
+        carePackages = (careRes.data as any).items
+      }
     }
-    if (protRes?.data && Array.isArray(protRes.data)) {
-      protectionPackages = protRes.data
+    if (protRes?.data) {
+      if (Array.isArray(protRes.data)) {
+        protectionPackages = protRes.data
+      } else if (Array.isArray((protRes.data as any)?.items)) {
+        protectionPackages = (protRes.data as any).items
+      }
     }
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"

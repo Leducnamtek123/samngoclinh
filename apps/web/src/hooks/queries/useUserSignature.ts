@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 
 export function useUserSignature() {
   return useQuery({
     queryKey: ['user', 'signature'],
     queryFn: async () => {
       try {
-        const res = await fetchApiClient('/v1/shared/user/signature', { method: 'GET' });
-        return res?.data?.signatureUrl || null;
+        const res = await userService.getSignature();
+        return res?.signatureUrl || null;
       } catch (err) {
         console.error('Failed to fetch user signature:', err);
         return null;
@@ -22,10 +22,7 @@ export function useSaveUserSignature() {
 
   return useMutation({
     mutationFn: async (signatureData: string) => {
-      const res = await fetchApiClient('/v1/shared/user/signature', {
-        method: 'PUT',
-        body: JSON.stringify({ signatureData }),
-      });
+      const res = await userService.saveSignature(signatureData);
       return res?.data?.signatureUrl || signatureData;
     },
     onSuccess: (savedUrl) => {

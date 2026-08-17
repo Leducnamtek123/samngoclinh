@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { cultivationService } from '@/services/cultivation.service';
+import { ordersService } from '@/services/orders.service';
 
 export type PackageOption = {
   id: string;
@@ -30,18 +31,16 @@ export function usePlantPackages() {
   const careQuery = useQuery({
     queryKey: ['packages', 'care'],
     queryFn: async () => {
-      const res = await fetchApiClient('/user/packages/care');
-      const data = res.data || res;
-      return (Array.isArray(data) ? data : data?.items || []) as PackageOption[];
+      const items = await cultivationService.getCarePackages();
+      return items as unknown as PackageOption[];
     },
   });
 
   const protectionQuery = useQuery({
     queryKey: ['packages', 'protection'],
     queryFn: async () => {
-      const res = await fetchApiClient('/user/packages/protection');
-      const data = res.data || res;
-      return (Array.isArray(data) ? data : data?.items || []) as PackageOption[];
+      const items = await cultivationService.getProtectionPackages();
+      return items as unknown as PackageOption[];
     },
   });
 
@@ -68,13 +67,7 @@ export function useCreateQuickOrder() {
         note: payload.notes || (payload.mode === 'plant' ? `Đăng ký trồng sâm (Gói chăm sóc: ${payload.carePackageId || 'default'}, Gói bảo hiểm: ${payload.protectionPackageId || 'default'})` : undefined),
       };
 
-      const res = await fetchApiClient('/user/orders/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(checkoutPayload),
-      });
-
-      return res.data || res;
+      return ordersService.checkout(checkoutPayload as any);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

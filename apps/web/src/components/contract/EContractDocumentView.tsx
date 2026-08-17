@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { econtractService } from '@/services/econtract.service';
 import { ExternalLink, Loader2, ShieldCheck, Eye, ListFilter } from 'lucide-react';
 
 const vnDateFormatter = new Intl.DateTimeFormat('vi-VN', {
@@ -45,14 +46,7 @@ export const EContractDocumentView = ({ contract }: EContractDocumentViewProps) 
 
   const { data: dynamicTemplateHtml = '', isLoading: isLoadingTemplate } = useQuery({
     queryKey: ['contract-template', 'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh'],
-    queryFn: async () => {
-      const res = await fetch(
-        '/api/proxy/public/contracts/templates/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh'
-      );
-      if (!res.ok) return '';
-      const payload = await res.json();
-      return (payload?.data?.contentHtml as string) || '';
-    },
+    queryFn: () => econtractService.getTemplate('hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh').catch(() => ''),
     enabled: isTemplateNeeded,
   });
 

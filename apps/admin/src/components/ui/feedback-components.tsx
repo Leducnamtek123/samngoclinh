@@ -10,6 +10,7 @@ import {
   Image as ImageIcon,
   Info,
   Loader2,
+  Package,
   RefreshCw,
   Search,
   Trash2,
@@ -426,7 +427,7 @@ export function EmptyState({
       )}
     >
       <div className="w-20 h-20 mb-6 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400">
-        {icon || <span className="text-4xl">📦</span>}
+        {icon || <Package className="w-10 h-10 text-slate-400" />}
       </div>
       <h4 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
         {title}

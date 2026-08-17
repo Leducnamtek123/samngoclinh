@@ -3,7 +3,7 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import type { Article, PaginationMeta } from "@/types"
 
-import { fetchApi } from "@/lib/api"
+import { contentService } from "@/services/content.service"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { NewsManager } from "./_components/news-manager"
@@ -37,24 +37,19 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
   let errorMsg = ""
 
   try {
-    const queryParams = new URLSearchParams()
-    queryParams.append("page", page)
-    queryParams.append("perPage", perPage)
-    if (search) queryParams.append("search", search)
-    if (status && status !== "all") queryParams.append("category", status)
+    const payload = await contentService.getArticles({
+      page,
+      perPage,
+      search,
+      status,
+    })
 
-    const res = await fetchApi(
-      `/public/content/articles?${queryParams.toString()}`
-    )
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load articles"
-    } else {
-      articles = Array.isArray(payload.data?.items)
-        ? payload.data.items
-        : payload.data || []
-      metadata = payload.metadata || null
-    }
+    articles = Array.isArray(payload.data)
+      ? payload.data
+      : Array.isArray((payload.data as any)?.items)
+      ? (payload.data as any).items
+      : []
+    metadata = payload.metadata || null
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching articles:", e)

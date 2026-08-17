@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Truck, Store } from 'lucide-react';
+import { Truck, Store, X } from 'lucide-react';
 import { AddressModal } from '@/components/address/AddressModal';
 import { PlantPackageSelector } from './PlantPackageSelector';
 import { AddressSelector } from '@/components/address/AddressSelector';
@@ -89,7 +89,7 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
             onClick={onClose}
             className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
-            ✕
+            <X className="w-4 h-4" />
           </Button>
         </div>
 

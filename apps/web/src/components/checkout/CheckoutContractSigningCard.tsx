@@ -336,15 +336,23 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                 className="w-full h-32 cursor-crosshair touch-none bg-white dark:bg-slate-950"
               />
               {!hasDrawn && !signatureData && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs font-medium">
-                  ✍️ Dùng chuột hoặc ngón tay vẽ chữ ký của bạn tại đây
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs font-medium gap-1.5">
+                  <PenTool className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Dùng chuột hoặc ngón tay vẽ chữ ký của bạn tại đây</span>
                 </div>
               )}
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[11px] text-slate-500 font-medium">
-                {signatureData ? '✓ Đã ghi nhận nét vẽ chữ ký (được tự động lưu vào hồ sơ)' : 'Vui lòng ký vào khung trên'}
-              </span>
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                {signatureData ? (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Đã ghi nhận nét vẽ chữ ký (được tự động lưu vào hồ sơ)</span>
+                  </>
+                ) : (
+                  <span>Vui lòng ký vào khung trên</span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={clearCanvas}

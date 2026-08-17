@@ -308,15 +308,19 @@ export class EContractService implements IEContractService {
             if (userAcc?.email && this.notificationSmtpService?.isInitialized()) {
                 const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
                 const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
+                const customerName = userAcc?.name || contract.partyB || 'Quý khách';
                 await this.notificationSmtpService.send({
                     templateName: EnumNotificationProcess.contractSigned,
                     sender,
                     templateData: {
+                        customerName,
+                        contractNumber: contract.code,
                         contractCode: contract.code,
                         signedAt: new Date().toLocaleString('vi-VN'),
                         signedIp: clientIp || '127.0.0.1',
                         expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
-                        viewContractUrl: `${webUrl}/trace/contract/${contract.code}`,
+                        contractUrl: `${webUrl}/vi/trace/contract/${contract.code}`,
+                        viewContractUrl: `${webUrl}/vi/trace/contract/${contract.code}`,
                     },
                     recipients: [userAcc.email],
                 });
@@ -343,57 +347,48 @@ export class EContractService implements IEContractService {
             throw new NotFoundException('Contract not found');
         }
 
-        // Domain Invariant: For SIGNED contracts, DO NOT regenerate. Load stored immutable artifact.
-        if (contract.status === 'signed') {
-            if (!contract.pdfUrl) {
-                this.logger.error(`SIGNED contract ${contract.code} is missing immutable PDF storage URL.`);
-                throw new BadRequestException('SIGNED contract is missing immutable PDF storage.');
-            }
-
+        // Domain Invariant: For SIGNED contracts, try to load stored immutable artifact first
+        if (contract.status === 'signed' && contract.pdfUrl) {
             // Case 1: Remote URL (Cloudinary / S3)
             if (contract.pdfUrl.startsWith('http://') || contract.pdfUrl.startsWith('https://')) {
                 try {
                     const response = await fetch(contract.pdfUrl);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status} ${response.statusText}`);
+                    if (response.ok) {
+                        const arrayBuffer = await response.arrayBuffer();
+                        return {
+                            buffer: Buffer.from(arrayBuffer),
+                            fileName: `Hop-Dong-${contract.code}.pdf`,
+                        };
                     }
-                    const arrayBuffer = await response.arrayBuffer();
-                    return {
-                        buffer: Buffer.from(arrayBuffer),
-                        fileName: `Hop-Dong-${contract.code}.pdf`,
-                    };
                 } catch (fetchErr) {
-                    this.logger.error(`Failed to fetch stored remote PDF for contract ${contract.code}:`, fetchErr);
-                    throw new InternalServerErrorException('Không thể tải tệp PDF hợp đồng đã lưu trữ.');
+                    this.logger.warn(`Failed to fetch stored remote PDF for contract ${contract.code}, will regenerate dynamically:`, fetchErr);
                 }
-            }
-
-            // Case 2: Local storage path (/uploads/contracts/...)
-            const localKey = contract.pdfUrl.replace(/^\/?uploads\//, '');
-            try {
-                const buffer = this.fileService.readLocalByKey(localKey);
-                return {
-                    buffer,
-                    fileName: `Hop-Dong-${contract.code}.pdf`,
-                };
-            } catch {
-                const directPath = path.join(
-                    process.cwd(),
-                    contract.pdfUrl.startsWith('/') ? contract.pdfUrl.slice(1) : contract.pdfUrl
-                );
-                if (fs.existsSync(directPath)) {
-                    const buffer = fs.readFileSync(directPath);
+            } else {
+                // Case 2: Local storage path (/uploads/contracts/...)
+                const localKey = contract.pdfUrl.replace(/^\/?uploads\//, '');
+                try {
+                    const buffer = this.fileService.readLocalByKey(localKey);
                     return {
                         buffer,
                         fileName: `Hop-Dong-${contract.code}.pdf`,
                     };
+                } catch {
+                    const directPath = path.join(
+                        process.cwd(),
+                        contract.pdfUrl.startsWith('/') ? contract.pdfUrl.slice(1) : contract.pdfUrl
+                    );
+                    if (fs.existsSync(directPath)) {
+                        const buffer = fs.readFileSync(directPath);
+                        return {
+                            buffer,
+                            fileName: `Hop-Dong-${contract.code}.pdf`,
+                        };
+                    }
                 }
-                this.logger.error(`Local immutable PDF artifact not found for contract ${contract.code} at ${contract.pdfUrl}`);
-                throw new BadRequestException('SIGNED contract is missing immutable PDF storage.');
             }
         }
 
-        // Case 3: DRAFT / PENDING contracts: Generate dynamic preview buffer in RAM
+        // Case 3: Dynamic high-fidelity PDF Generation from contract data
         const userAcc = await this.databaseService.user.findUnique({
             where: { id: contract.userId },
             select: {
@@ -951,17 +946,27 @@ export class EContractService implements IEContractService {
 
             if (userEmail && this.notificationSmtpService?.isInitialized() && !contract.isReminderSent) {
                 try {
+                    const contractMeta = (contract.metadata || {}) as any;
+                    const treeCount = contractMeta.treeQuantity || ((contract as any).items as any[])?.length || 1;
+                    const gardenName = contractMeta.gardenName || 'Vườn bảo tồn Nam Trà My, Kon Tum';
+                    const createdAtStr = new Date(contract.createdAt).toLocaleDateString('vi-VN');
+
                     await this.notificationSmtpService.send({
                         templateName: EnumNotificationProcess.contractCreated,
                         sender,
                         templateData: {
                             customerName,
+                            contractNumber: contract.code,
                             contractCode: contract.code,
                             partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
                             partyB: contract.partyB || customerName,
-                            contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN'),
+                            treeCount,
+                            gardenName,
+                            createdAt: createdAtStr,
+                            contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN') + ' VNĐ',
                             expiredAt: effectiveExpiry.toLocaleDateString('vi-VN'),
-                            signContractUrl: `${webUrl}/profile?tab=contracts`,
+                            signUrl: `${webUrl}/vi/profile?tabs=contracts`,
+                            signContractUrl: `${webUrl}/vi/profile?tabs=contracts`,
                         },
                         recipients: [userEmail],
                     });
@@ -1021,17 +1026,27 @@ export class EContractService implements IEContractService {
 
         if (userEmail && this.notificationSmtpService?.isInitialized()) {
             try {
+                const contractMeta = (contract.metadata || {}) as any;
+                const treeCount = contractMeta.treeQuantity || ((contract as any).items as any[])?.length || 1;
+                const gardenName = contractMeta.gardenName || 'Vườn bảo tồn Nam Trà My, Kon Tum';
+                const createdAtStr = new Date(contract.createdAt).toLocaleDateString('vi-VN');
+
                 await this.notificationSmtpService.send({
                     templateName: EnumNotificationProcess.contractCreated,
                     sender,
                     templateData: {
                         customerName,
+                        contractNumber: contract.code,
                         contractCode: contract.code,
                         partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
                         partyB: contract.partyB || customerName,
-                        contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN'),
+                        treeCount,
+                        gardenName,
+                        createdAt: createdAtStr,
+                        contractValue: Number(contract.contractValue || 0).toLocaleString('vi-VN') + ' VNĐ',
                         expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
-                        signContractUrl: `${webUrl}/profile?tabs=contracts`,
+                        signUrl: `${webUrl}/vi/profile?tabs=contracts`,
+                        signContractUrl: `${webUrl}/vi/profile?tabs=contracts`,
                     },
                     recipients: [userEmail],
                 });

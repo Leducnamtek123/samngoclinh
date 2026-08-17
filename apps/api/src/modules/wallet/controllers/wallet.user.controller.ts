@@ -28,7 +28,7 @@ export class WalletUserController {
 
     @WalletUserSummaryDoc()
     @Response('wallet.summary')
-    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -41,7 +41,7 @@ export class WalletUserController {
 
     @WalletUserTransactionsDoc()
     @Response('wallet.transactions')
-    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

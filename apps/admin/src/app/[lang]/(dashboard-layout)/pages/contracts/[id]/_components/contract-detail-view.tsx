@@ -222,8 +222,8 @@ export function ContractDetailView({
     "SHA256:d8a9f4e2b1c78e39021fa4b75c829103e2"
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
   const webUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
-  const pdfDownloadUrl = `${apiUrl}/public/contracts/${contractCode}/pdf`
-  const traceUrl = `${webUrl}/trace/contract/${contractCode}`
+  const pdfDownloadUrl = `${apiUrl}/public/contracts/pdf?code=${encodeURIComponent(contractCode)}`
+  const traceUrl = `${webUrl}/vi/trace/contract/${contractCode}`
 
   const handleCopyHash = () => {
     navigator.clipboard.writeText(documentHash)

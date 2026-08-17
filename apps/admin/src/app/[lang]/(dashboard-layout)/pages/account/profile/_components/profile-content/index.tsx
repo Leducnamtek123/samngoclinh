@@ -125,8 +125,9 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
               <div>
                 <p className="text-xs text-muted-foreground font-semibold uppercase">Chức vụ & Quyền hạn</p>
                 <p className="font-bold text-foreground">{role === 'SUPER_ADMIN' ? 'Tổng Quản Trị Hệ Thống (Super Admin)' : 'Quản Lý Vườn Sâm'}</p>
-                <Badge variant="secondary" className="mt-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-none font-bold text-[10px]">
-                  ✓ Toàn quyền Quản trị (All-Access)
+                <Badge variant="secondary" className="mt-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-none font-bold text-[10px] inline-flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                  <span>Toàn quyền Quản trị (All-Access)</span>
                 </Badge>
               </div>
             </div>

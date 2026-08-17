@@ -69,7 +69,9 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>Invoices</CardTitle>
+        <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">
+          Đơn Hàng & Giao Dịch Gần Đây
+        </CardTitle>
         <InvoiceTableToolbar table={table} />
       </CardHeader>
       <CardContent className="p-0">
@@ -115,9 +117,9 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
                 <TableRow>
                   <TableCell
                     colSpan={invoicesTableColumns.length}
-                    className="h-24 text-center"
+                    className="h-24 text-center text-muted-foreground"
                   >
-                    No results.
+                    Không tìm thấy dữ liệu đơn hàng phù hợp.
                   </TableCell>
                 </TableRow>
               )}

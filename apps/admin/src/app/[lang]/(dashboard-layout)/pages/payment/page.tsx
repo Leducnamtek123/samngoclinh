@@ -7,10 +7,7 @@ import {
 
 import type { Metadata } from "next"
 
-import { paymentData } from "./_data/payment"
-
 import { fetchApi } from "@/lib/api"
-
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -27,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { PaymentContent } from "./_components/payment-contnet"
 
 export const metadata: Metadata = {
   title: "Quản lý Giao dịch & Thanh toán | Admin",
@@ -246,14 +242,6 @@ export default async function PaymentPage({
           )}
         </CardContent>
       </Card>
-
-      {/* Additional UI Demo Payment Component */}
-      <div className="pt-4 border-t">
-        <h3 className="text-lg font-bold mb-4">
-          Cấu hình Thẻ & Phương thức Thanh toán Mẫu
-        </h3>
-        <PaymentContent data={paymentData} />
-      </div>
     </section>
   )
 }

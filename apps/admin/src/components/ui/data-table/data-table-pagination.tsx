@@ -27,12 +27,12 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex flex-col items-center justify-between gap-2 py-4 md:flex-row">
       <div className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        Đã chọn {table.getFilteredSelectedRowModel().rows.length} /{" "}
+        {table.getFilteredRowModel().rows.length} dòng.
       </div>
       <div className="flex items-center gap-x-6">
         <div className="hidden items-center gap-x-2 md:flex">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Số dòng mỗi trang</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -57,8 +57,8 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Trang {table.getState().pagination.pageIndex + 1} /{" "}
+          {table.getPageCount() || 1}
         </div>
         <div className="flex items-center gap-x-2 rtl:[&>button>svg]:-scale-100">
           <Button

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { FileText, RefreshCw, Eye, Code } from "lucide-react"
+import { FileText, RefreshCw, Eye, Code, Lightbulb, PenTool } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -139,8 +139,9 @@ export function CreateContractStep3Preview({
               >
                 <RefreshCw className="w-3.5 h-3.5" /> Khôi phục theo mẫu tự động
               </Button>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
-                💡 <strong>Mẹo:</strong> Bạn có thể chuyển sang tab <em>"Chỉnh sửa nội dung"</em> bên phải để sửa trực tiếp bất kỳ câu từ, điều khoản nào cho hợp đồng này trước khi gửi cho khách.
+              <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <span><strong>Mẹo:</strong> Bạn có thể chuyển sang tab <em>"Chỉnh sửa nội dung"</em> bên phải để sửa trực tiếp bất kỳ câu từ, điều khoản nào cho hợp đồng này trước khi gửi cho khách.</span>
               </p>
             </div>
           </CardContent>
@@ -172,7 +173,7 @@ export function CreateContractStep3Preview({
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
                 }`}
               >
-                <Code className="w-3.5 h-3.5" /> ✍️ Chỉnh sửa nội dung văn bản
+                <PenTool className="w-3.5 h-3.5" /> <span>Chỉnh sửa nội dung văn bản</span>
               </button>
             </div>
           </div>

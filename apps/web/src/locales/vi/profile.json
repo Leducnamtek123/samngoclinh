@@ -85,5 +85,32 @@
     "attempt": "Lần gửi #",
     "sentDate": "Ngày gửi:",
     "reviewedDate": "Xét duyệt:"
+  },
+  "trees": {
+    "title": "Sổ Tay Vườn Sâm & Tài Sản Canh Tác",
+    "subtitle": "Quản lý số dư Điểm Sâm và chi tiết cây sâm sở hữu trên hệ thống",
+    "farmLocation": "Nông trường Măng Ri (Độ cao 2.100m)",
+    "rewardPointsTitle": "Ví Điểm Thưởng & Tích Lũy",
+    "rewardPointsUnit": "Điểm Sâm khả dụng",
+    "rewardPointsDesc": "Dùng để đổi quà, voucher giảm giá và dịch vụ.",
+    "treesOwnedTitle": "Cây Sâm Sở Hữu",
+    "treesOwnedUnit": "Cây",
+    "treesOwnedType": "Cây giống kỹ thuật số",
+    "treesOwnedDesc": "Chăm sóc tự nhiên dưới tán rừng nguyên sinh Kon Tum.",
+    "listTitle": "Danh Sách Cây Sâm Chi Tiết",
+    "countBadge": "{count} cây",
+    "emptyTitle": "Bạn chưa sở hữu cây sâm Ngọc Linh nào",
+    "emptyDesc": "Hãy tham gia chương trình sở hữu cây giống để đồng hành chăm sóc và theo dõi quá trình sinh trưởng tại nông trường.",
+    "explorePackages": "Khám phá gói trồng sâm",
+    "treeNameFallback": "Cây Sâm Ngọc Linh ({age} Năm Tuổi)",
+    "treeCode": "Mã cây: {code}",
+    "healthHealthy": "Khỏe mạnh",
+    "bedPosition": "Vị trí luống",
+    "defaultBed": "Luống vườn",
+    "farm": "Nông trường",
+    "defaultGarden": "Nông trường Măng Ri",
+    "traceQr": "Truy xuất QR",
+    "viewBedMap": "Xem bản đồ luống"
   }
 }
+

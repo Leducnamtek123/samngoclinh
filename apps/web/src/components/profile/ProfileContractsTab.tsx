@@ -1,7 +1,7 @@
 import { Link } from '@/lib/I18nNavigation';
 import { Button, Badge } from '@/components/ui';
 import { EmptyState, LoadingState } from '@/components/common';
-import { FileText } from 'lucide-react';
+import { FileText, CheckCircle2, Clock, AlertTriangle, XCircle, PenTool } from 'lucide-react';
 import { DigitalSignatureCard } from './DigitalSignatureCard';
 import type { EContractData } from '@/types';
 
@@ -37,7 +37,7 @@ export const ProfileContractsTab = ({
         </EmptyState>
       ) : (
         <div className="space-y-4">
-          {contractsData.map((contract: any) => {
+          {contractsData.map((contract: EContractData) => {
             const status = (contract.status || '').toLowerCase();
             const isSigned = status === 'signed' || Boolean(contract.signedAt);
             const isDraft = status === 'draft' || status === 'pending_issue';
@@ -49,7 +49,7 @@ export const ProfileContractsTab = ({
             const expiredAtStr = contract.expiredAt
               ? new Date(contract.expiredAt).toLocaleDateString('vi-VN')
               : '—';
-            const contractVal = contract.contractValue || contract.totalAmount || contract.value || 0;
+            const contractVal = contract.contractValue ?? contract.totalAmount ?? contract.value ?? contract.order?.total ?? 0;
 
             return (
               <div
@@ -62,24 +62,29 @@ export const ProfileContractsTab = ({
                       {contract.title || `Hợp đồng #${contract.code || contract.id.slice(0, 8)}`}
                     </span>
                     {isSigned ? (
-                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-none font-bold text-xs">
-                        ✓ Đã ký & Có hiệu lực
+                      <Badge variant="secondary" className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-none font-bold text-xs inline-flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span>Đã ký & Có hiệu lực</span>
                       </Badge>
                     ) : isDraft ? (
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-800 border-none font-bold text-xs">
-                        🕒 Đang soạn thảo / Chờ BQL phát hành
+                      <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-none font-bold text-xs inline-flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <span>Đang soạn thảo</span>
                       </Badge>
                     ) : status === 'expired' ? (
-                      <Badge variant="secondary" className="bg-rose-100 text-rose-800 border-none font-bold text-xs">
-                        ⚠️ Đã hết hạn
+                      <Badge variant="secondary" className="bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-none font-bold text-xs inline-flex items-center gap-1">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+                        <span>Đã hết hạn</span>
                       </Badge>
                     ) : status === 'cancelled' ? (
-                      <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-none font-bold text-xs">
-                        ✕ Đã hủy
+                      <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-none font-bold text-xs inline-flex items-center gap-1">
+                        <XCircle className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+                        <span>Đã hủy</span>
                       </Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-none font-bold text-xs animate-pulse">
-                        ✍️ Chờ bạn ký số
+                      <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-none font-bold text-xs inline-flex items-center gap-1 animate-pulse">
+                        <PenTool className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Chờ bạn ký số</span>
                       </Badge>
                     )}
                   </div>

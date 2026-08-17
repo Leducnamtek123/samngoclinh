@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 import { toast } from 'sonner';
 import type { AddressItem } from '@/types';
 
@@ -52,17 +52,14 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
       isDefault: addresses.length === 0,
     };
     try {
-      const res = await fetchApiClient('/v1/shared/user/address/add', {
-        method: 'POST',
-        body: JSON.stringify({
-          detail: data.shippingAddress,
-          recipient: data.recipientName,
-          phone: data.recipientPhone,
-          isDefault: addresses.length === 0,
-        }),
+      const res = await userService.addAddress({
+        detail: data.shippingAddress,
+        recipient: data.recipientName,
+        phone: data.recipientPhone,
+        isDefault: addresses.length === 0,
       });
-      if (res?.data?.id) {
-        newAddr.id = res.data.id;
+      if ((res as any)?.id) {
+        newAddr.id = (res as any).id;
       }
     } catch {}
     const updated = [...addresses, newAddr];
@@ -82,9 +79,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
     if (!deletingAddressId || isDeletingAddress) return;
     setIsDeletingAddress(true);
     try {
-      await fetchApiClient(`/v1/shared/user/address/delete/${deletingAddressId}`, {
-        method: 'DELETE',
-      });
+      await userService.deleteAddress(deletingAddressId);
       const updated = addresses.filter((a) => a.id !== deletingAddressId);
       setLocalAddresses(updated);
       saveToStorage(updated);

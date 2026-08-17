@@ -15,7 +15,7 @@ function emitChange() {
   for (const listener of listeners) {
     listener();
   }
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
     window.dispatchEvent(new Event('cart_updated'));
     window.dispatchEvent(new Event('storage'));
   }

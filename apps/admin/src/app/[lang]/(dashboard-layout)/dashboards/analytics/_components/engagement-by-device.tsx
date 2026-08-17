@@ -1,6 +1,5 @@
 import type { BackofficeOverview } from "@/types"
 import type { EngagementByDeviceType } from "../types"
-import { engagementByDeviceData } from "../_data/engagement-by-device"
 import { EngagementByDeviceTable } from "./engagement-by-device-table"
 
 export function EngagementByDevice({ stats }: { stats?: BackofficeOverview | null }) {
@@ -13,7 +12,7 @@ export function EngagementByDevice({ stats }: { stats?: BackofficeOverview | nul
         userPercentage: d.userPercentage || 0.25,
         conversionRate: d.conversionRate || 0.05,
       }))
-    : engagementByDeviceData
+    : []
 
   return (
     <article className="col-span-full">

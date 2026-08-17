@@ -1,30 +1,36 @@
-"use client"
+import type { ContactRequest } from "@/types"
+import type { ActivityTimelineType } from "../types"
 
-import { activityTimelineData } from "../_data/activity-timeline"
-
-import { DatePicker } from "@/components/ui/date-picker"
 import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { ActivityTimelineList } from "./activity-timeline-list"
 
-export function ActivityTimeline() {
+interface ActivityTimelineProps {
+  contacts?: ContactRequest[] | null
+}
+
+export function ActivityTimeline({ contacts }: ActivityTimelineProps) {
+  const activities: ActivityTimelineType["activities"] =
+    contacts && contacts.length > 0
+      ? contacts.slice(0, 4).map((c) => ({
+          type: "note" as const,
+          iconName: "FileText" as const,
+          fill: "hsl(var(--chart-1))",
+          title: `Yêu cầu tư vấn: ${c.subject || "Quan tâm đầu tư Sâm Ngọc Linh"}`,
+          description: `Khách hàng: ${c.fullName || "Khách hàng"} - SĐT/Email: ${c.phoneNumber || c.phone || c.email || "Liên hệ"}. Ghi chú: ${c.message || "Không có"}`,
+          status: c.status || "Chờ liên hệ",
+          date: c.createdAt || new Date().toISOString(),
+          assignedMembers: [],
+        }))
+      : []
+
   return (
     <DashboardCard
-      title="Activity Timeline"
-      period={activityTimelineData.period}
-      action={
-        <div suppressHydrationWarning>
-          <DatePicker
-            value={new Date("2026-07-19")}
-            buttonClassName="w-9 [&_>_svg]:text-foreground [&_>_span]:hidden"
-            buttonOptions={{ size: "icon" }}
-            popoverContentOptions={{ align: "end" }}
-          />
-        </div>
-      }
+      title="Nhật Ký Yêu Cầu Tư Vấn & Chăm Sóc"
+      period="Gần nhất"
       size="lg"
       contentClassName="pb-0"
     >
-      <ActivityTimelineList data={activityTimelineData.activities} />
+      <ActivityTimelineList data={activities} />
     </DashboardCard>
   )
 }

@@ -191,8 +191,8 @@ export function ContractsList({
               )
               const webUrl =
                 process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
-              const pdfDownloadUrl = `${apiUrl}/public/contracts/${contractCode}/pdf`
-              const traceUrl = `${webUrl}/trace/contract/${contractCode}`
+              const pdfDownloadUrl = `${apiUrl}/public/contracts/pdf?code=${encodeURIComponent(contractCode)}`
+              const traceUrl = `${webUrl}/vi/trace/contract/${contractCode}`
 
               return (
                 <TableRow

@@ -85,5 +85,32 @@
     "attempt": "Submission #",
     "sentDate": "Submitted on:",
     "reviewedDate": "Reviewed on:"
+  },
+  "trees": {
+    "title": "Ginseng Garden & Cultivation Assets",
+    "subtitle": "Manage Ginseng Reward Points and owned ginseng plants",
+    "farmLocation": "Mang Ri Farm (Elevation 2,100m)",
+    "rewardPointsTitle": "Reward Points Wallet",
+    "rewardPointsUnit": "Available Points",
+    "rewardPointsDesc": "Use for gifts, discount vouchers and services.",
+    "treesOwnedTitle": "Owned Ginseng Plants",
+    "treesOwnedUnit": "Plants",
+    "treesOwnedType": "Digital Plant Asset",
+    "treesOwnedDesc": "Naturally grown under primary forest canopy in Kon Tum.",
+    "listTitle": "Detailed Ginseng Plant List",
+    "countBadge": "{count} plants",
+    "emptyTitle": "You do not own any Ngoc Linh Ginseng plants yet",
+    "emptyDesc": "Join the planting program to accompany cultivation and monitor growth at the farm.",
+    "explorePackages": "Explore Planting Packages",
+    "treeNameFallback": "Ngoc Linh Ginseng Plant ({age} Years Old)",
+    "treeCode": "Plant Code: {code}",
+    "healthHealthy": "Healthy",
+    "bedPosition": "Bed Position",
+    "defaultBed": "Garden Bed",
+    "farm": "Farm",
+    "defaultGarden": "Mang Ri Farm",
+    "traceQr": "Trace QR",
+    "viewBedMap": "View Bed Map"
   }
 }
+

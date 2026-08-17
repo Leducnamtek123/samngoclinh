@@ -1,14 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 import type { UserProfile, UserBusiness } from '@/types';
 
 export function useProfileMe(initialData?: UserProfile) {
   return useQuery<UserProfile | null>({
     queryKey: ['profile', 'me'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/profile')
-        .then((res) => (res?.data !== undefined ? res.data : res || null))
-        .catch(() => null),
+    queryFn: () => userService.getProfile(),
     initialData,
     retry: false,
   });
@@ -17,10 +14,7 @@ export function useProfileMe(initialData?: UserProfile) {
 export function useProfileBusiness(initialData?: UserBusiness) {
   return useQuery<UserBusiness | null>({
     queryKey: ['profile', 'business'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/profile')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
+    queryFn: () => userService.getBusiness(),
     initialData,
     retry: false,
   });

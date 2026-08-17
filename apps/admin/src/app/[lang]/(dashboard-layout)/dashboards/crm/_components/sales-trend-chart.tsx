@@ -103,7 +103,7 @@ export function SalesTrendChart({ data }: { data: SalesTrendType }) {
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            tickFormatter={(value: string) => value.slice(0, 3)}
+            tickFormatter={(value: string) => (value ? String(value).slice(0, 3) : "")}
           />
           <ChartTooltip
             cursor={false}

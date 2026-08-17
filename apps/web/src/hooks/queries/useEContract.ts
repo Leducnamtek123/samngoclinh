@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { econtractService } from '@/services/econtract.service';
+import { userService } from '@/services/user.service';
+import type { EContractData } from '@/types';
 
 export type EContractSignPayload = {
   contractId: string;
@@ -7,32 +9,18 @@ export type EContractSignPayload = {
   otpCode?: string;
 };
 
-export function useEContracts(initialData?: any) {
-  return useQuery({
+export function useEContracts(initialData?: EContractData[]) {
+  return useQuery<EContractData[]>({
     queryKey: ['contracts', 'list'],
-    queryFn: async () => {
-      try {
-        const res = await fetchApiClient('/user/contracts');
-        if (Array.isArray(res?.data)) return res.data;
-        if (Array.isArray(res)) return res;
-        if (Array.isArray(res?.data?.items)) return res.data.items;
-        return [];
-      } catch (e) {
-        console.error('Failed to fetch user e-contracts:', e);
-        return [];
-      }
-    },
+    queryFn: () => econtractService.getMyContracts(),
     initialData,
   });
 }
 
 export function useEContractDetail(id: string | null) {
-  return useQuery({
+  return useQuery<EContractData | null>({
     queryKey: ['contracts', 'detail', id],
-    queryFn: () =>
-      fetchApiClient(`/user/contracts/${id}`)
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
+    queryFn: () => (id ? econtractService.getContract(id) : Promise.resolve(null)),
     enabled: !!id,
   });
 }
@@ -42,10 +30,7 @@ export function useSignEContract() {
 
   return useMutation({
     mutationFn: ({ contractId, signatureData, otpCode }: EContractSignPayload) =>
-      fetchApiClient(`/user/contracts/${contractId}/sign`, {
-        method: 'POST',
-        body: JSON.stringify({ signatureData, otpCode }),
-      }),
+      econtractService.signContract(contractId, signatureData, otpCode),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['contracts', 'list'] });
       queryClient.invalidateQueries({ queryKey: ['contracts', 'detail', variables.contractId] });
@@ -58,14 +43,11 @@ export function useUpdateUserSignature() {
 
   return useMutation({
     mutationFn: async (signatureData: string) => {
-      const res = await fetchApiClient('/v1/shared/user/signature', {
-        method: 'PUT',
-        body: JSON.stringify({ signatureData }),
-      });
-      return res.data || res;
+      return userService.saveSignature(signatureData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user-signature'] });
     },
   });
 }

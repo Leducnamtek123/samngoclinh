@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
@@ -12,28 +13,53 @@ import { ProductFilterSidebar } from './products/ProductFilterSidebar';
 import { ProductDetailModal } from './products/ProductDetailModal';
 import { ProductsGrid } from './products/ProductsGrid';
 import { SearchInput } from '@/components/common/SearchInput';
+import type { ProductItem } from '@/types';
+
 type ProductsClientProps = {
   locale: string;
-  initialItems?: any[];
+  initialItems?: ProductItem[];
   isLoggedIn?: boolean;
 };
 
 export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { data: items, isLoading, isError } = useCatalogShopItems(initialItems);
   const { data: banners } = useBanner('products');
-  const [searchTerm, setSearchTerm] = useState('');
+
+  // Initialize state from URL search params if present
+  const initialQ = searchParams.get('q') || '';
+  const initialCat = searchParams.get('category') || null;
+  const initialMinPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : 50000;
+  const initialMaxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : 5000000;
+
+  const [searchTerm, setSearchTerm] = useState(initialQ);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCat);
+  const [minPrice, setMinPrice] = useState<number>(initialMinPrice);
+  const [maxPrice, setMaxPrice] = useState<number>(initialMaxPrice);
 
   // Multi-image detail modal state
-  const [selectedDetailProduct, setSelectedDetailProduct] = useState<any | null>(null);
+  const [selectedDetailProduct, setSelectedDetailProduct] = useState<ProductItem | null>(null);
   const [activeImageIdx, setActiveImageIdx] = useState<number>(0);
-  const [quickPurchaseProduct, setQuickPurchaseProduct] = useState<any | null>(null);
+  const [quickPurchaseProduct, setQuickPurchaseProduct] = useState<ProductItem | null>(null);
 
-  // Filter states
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [minPrice, setMinPrice] = useState<number>(50000);
-  const [maxPrice, setMaxPrice] = useState<number>(5000000);
+  // Sync state changes back to URL search params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('q', searchTerm);
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (minPrice !== 50000) params.set('minPrice', String(minPrice));
+    if (maxPrice !== 5000000) params.set('maxPrice', String(maxPrice));
 
-  const handleAddToCartOnly = (e: React.MouseEvent, item: any) => {
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    if (typeof window !== 'undefined' && window.location.pathname + window.location.search !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchTerm, selectedCategory, minPrice, maxPrice, pathname]);
+
+  const handleAddToCartOnly = (e: React.MouseEvent, item: ProductItem) => {
     e.preventDefault();
     e.stopPropagation();
     if (!isLoggedIn) {
@@ -54,7 +80,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
     }
   };
 
-  const handleBuyItem = (e: React.MouseEvent, item: any) => {
+  const handleBuyItem = (e: React.MouseEvent, item: ProductItem) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!isLoggedIn) {
       window.location.href = `/${locale}/sign-in?reason=products`;
@@ -65,7 +91,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
     setQuickPurchaseProduct(item);
   };
 
-  const openProductDetail = (item: any) => {
+  const openProductDetail = (item: ProductItem) => {
     if (item?.id) {
       window.location.href = `/${locale}/products/${item.id}`;
     }
@@ -74,22 +100,22 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
   const displayItems = items || [];
 
   const categories = Array.from(
-    new Set(displayItems.flatMap((item: any) => (item.category ? [item.category] : [])))
+    new Set(displayItems.flatMap((item: ProductItem) => (item.category ? [item.category] : [])))
   ) as string[];
 
   let processedItems = [...displayItems];
 
   if (searchTerm) {
-    processedItems = processedItems.filter((item: any) =>
+    processedItems = processedItems.filter((item: ProductItem) =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
   if (selectedCategory) {
-    processedItems = processedItems.filter((item: any) => item.category === selectedCategory);
+    processedItems = processedItems.filter((item: ProductItem) => item.category === selectedCategory);
   }
 
-  processedItems = processedItems.filter((item: any) => {
+  processedItems = processedItems.filter((item: ProductItem) => {
     const price = item.price || 0;
     return price >= minPrice && price <= maxPrice;
   });
@@ -167,7 +193,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
           locale={locale}
           isLoggedIn={isLoggedIn}
           onClose={() => setQuickPurchaseProduct(null)}
-          onSuccessPayment={(orderData: any) => {
+          onSuccessPayment={(orderData: { code?: string; id?: string }) => {
             setQuickPurchaseProduct(null);
             const orderCode = orderData?.code || orderData?.id;
             if (orderCode) {

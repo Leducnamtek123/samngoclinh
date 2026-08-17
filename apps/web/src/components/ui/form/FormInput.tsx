@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { FormItem, FormDescription, FormMessage } from './Form';
 import { FloatingInput } from '../floating-input';
 import { Input } from '../input';
@@ -74,15 +74,15 @@ export function FormInput<
       )}
 
       {!loading && clearButton && valueStr.length > 0 && !disabled && (
-        <button
-          type="button"
-          tabIndex={-1}
-          onClick={handleClear}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded-full text-xs font-bold transition-colors cursor-pointer"
-          title="Xóa nội dung"
-        >
-          ✕
-        </button>
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={handleClear}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded-full transition-colors cursor-pointer"
+            title="Xóa nội dung"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
       )}
 
       {!loading && hasError && (

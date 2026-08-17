@@ -59,13 +59,19 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error: { response?: { status?: number } }) => {
+  (error: any) => {
+    const errorMsg =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.message ||
+      "Đã có lỗi xảy ra khi kết nối máy chủ"
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      console.warn(
-        "Unauthorized access detected, redirecting or refreshing session if needed."
-      )
+      console.warn("Unauthorized access detected (401)")
     }
-    return Promise.reject(error)
+    const customError = new Error(errorMsg)
+    ;(customError as any).status = error.response?.status
+    ;(customError as any).response = error.response
+    return Promise.reject(customError)
   }
 )
 

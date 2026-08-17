@@ -60,18 +60,23 @@ export class EContractPublicController {
         name: 'code',
         required: true,
         type: 'string',
-        example: 'CTR-O20260815123',
+        example: 'CTR-SNL-2026/7090',
     })
     @ApiResponse({
         status: 200,
         description: 'Thông tin xác thực hợp đồng',
     })
     @Response('eContract.verify')
-    @Get('/verify/:code')
+    @Get(['/verify', '/verify/:code', '/verify/:p1/:p2', '/verify/:p1/:p2/:p3'])
     async verifyContract(
-        @Param('code') code: string
+        @Param('code') code?: string,
+        @Param('p1') p1?: string,
+        @Param('p2') p2?: string,
+        @Param('p3') p3?: string,
+        @Query('code') queryCode?: string
     ): Promise<IResponseReturn<IPublicContractVerification>> {
-        return this.eContractService.verifyContractByCode(code);
+        const resolvedCode = queryCode || code || [p1, p2, p3].filter(Boolean).join('/');
+        return this.eContractService.verifyContractByCode(resolvedCode);
     }
 
     @ApiOperation({
@@ -82,14 +87,19 @@ export class EContractPublicController {
         name: 'code',
         required: true,
         type: 'string',
-        example: 'CTR-O20260815123',
+        example: 'CTR-SNL-2026/7090',
     })
-    @Get('/:code/pdf')
+    @Get(['/pdf', '/:code/pdf', '/:p1/:p2/pdf', '/:p1/:p2/:p3/pdf'])
     async getContractPdf(
-        @Param('code') code: string,
+        @Param('code') code: string | undefined,
+        @Param('p1') p1: string | undefined,
+        @Param('p2') p2: string | undefined,
+        @Param('p3') p3: string | undefined,
+        @Query('code') queryCode: string | undefined,
         @Res() res: ExpressResponse
     ): Promise<void> {
-        const { buffer, fileName } = await this.eContractService.getContractPdfBuffer(code);
+        const resolvedCode = queryCode || code || [p1, p2, p3].filter(Boolean).join('/');
+        const { buffer, fileName } = await this.eContractService.getContractPdfBuffer(resolvedCode);
 
         res.set({
             'Content-Type': 'application/pdf',
@@ -109,21 +119,34 @@ export class EContractPublicController {
         name: 'code',
         required: true,
         type: 'string',
-        example: 'CTR-O20260815123',
+        example: 'CTR-SNL-2026/7090',
     })
     @ApiParam({
         name: 'amendmentCode',
         required: true,
         type: 'string',
-        example: 'AMD-CTR-O20260815123-01',
+        example: 'AMD-CTR-SNL-2026/7090-01',
     })
-    @Get('/:code/amendments/:amendmentCode/pdf')
+    @Get([
+        '/amendments/pdf',
+        '/:code/amendments/:amendmentCode/pdf',
+        '/:p1/:p2/amendments/:a1/pdf',
+        '/:p1/:p2/amendments/:a1/:a2/pdf',
+    ])
     async getAmendmentPdf(
-        @Param('code') code: string,
-        @Param('amendmentCode') amendmentCode: string,
+        @Param('code') code: string | undefined,
+        @Param('p1') p1: string | undefined,
+        @Param('p2') p2: string | undefined,
+        @Param('amendmentCode') amendmentCode: string | undefined,
+        @Param('a1') a1: string | undefined,
+        @Param('a2') a2: string | undefined,
+        @Query('code') queryCode: string | undefined,
+        @Query('amendmentCode') queryAmdCode: string | undefined,
         @Res() res: ExpressResponse
     ): Promise<void> {
-        const { buffer, fileName } = await this.eContractService.getAmendmentPdfBuffer(code, amendmentCode);
+        const resolvedCode = queryCode || code || [p1, p2].filter(Boolean).join('/');
+        const resolvedAmdCode = queryAmdCode || amendmentCode || [a1, a2].filter(Boolean).join('/');
+        const { buffer, fileName } = await this.eContractService.getAmendmentPdfBuffer(resolvedCode, resolvedAmdCode);
 
         res.set({
             'Content-Type': 'application/pdf',

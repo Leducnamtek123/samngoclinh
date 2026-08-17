@@ -41,9 +41,9 @@ export function TrafficSourcesTable({
             <TableCell className="font-semibold">{item.name}</TableCell>
             <TableCell>
               <span className="text-muted-foreground" aria-hidden>
-                Visitors:{" "}
+                Lượt:{" "}
               </span>
-              <span className="font-semibold">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {item.visitors.toLocaleString()}
               </span>
             </TableCell>

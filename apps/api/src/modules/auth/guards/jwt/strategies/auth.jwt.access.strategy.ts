@@ -4,11 +4,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { passportJwtSecret } from 'jwks-rsa';
 import { Algorithm } from 'jsonwebtoken';
+import { createPublicKey } from 'crypto';
 import { IAuthJwtAccessTokenPayload } from '@modules/auth/interfaces/auth.interface';
 import { AuthJwtAccessGuardKey } from '@modules/auth/constants/auth.constant';
 import { AuthService } from '@modules/auth/services/auth.service';
 
-/** Passport strategy validating access tokens via JWKS, default algorithm ES256. */
+/** Passport strategy validating access tokens, default algorithm ES256. */
 @Injectable()
 export class AuthJwtAccessStrategy extends PassportStrategy(
     Strategy,
@@ -18,6 +19,17 @@ export class AuthJwtAccessStrategy extends PassportStrategy(
         private readonly authService: AuthService,
         configService: ConfigService
     ) {
+        const pubKeyBase64 = configService.get<string>('auth.jwt.accessToken.publicKey');
+        const pemPublicKey = pubKeyBase64
+            ? (createPublicKey({
+                  key: Buffer.from(pubKeyBase64, 'base64'),
+                  format: 'der',
+                  type: 'spki',
+              }).export({ type: 'spki', format: 'pem' }) as string)
+            : undefined;
+
+        const jwksUri = configService.get<string>('auth.jwt.accessToken.jwksUri');
+
         // @note: we don't validate jti here
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme(
@@ -30,14 +42,16 @@ export class AuthJwtAccessStrategy extends PassportStrategy(
                 audience: configService.get<string>('auth.jwt.audience')!,
                 issuer: configService.get<string>('auth.jwt.issuer')!,
             },
-            secretOrKeyProvider: passportJwtSecret({
-                cache: true,
-                rateLimit: true,
-                jwksRequestsPerMinute: 5,
-                jwksUri: configService.get<string>(
-                    'auth.jwt.accessToken.jwksUri'
-                )!,
-            }),
+            ...(pemPublicKey
+                ? { secretOrKey: pemPublicKey }
+                : {
+                      secretOrKeyProvider: passportJwtSecret({
+                          cache: true,
+                          rateLimit: true,
+                          jwksRequestsPerMinute: 5,
+                          jwksUri: jwksUri!,
+                      }),
+                  }),
             algorithms: [
                 configService.get<Algorithm>('auth.jwt.accessToken.algorithm')!,
             ],

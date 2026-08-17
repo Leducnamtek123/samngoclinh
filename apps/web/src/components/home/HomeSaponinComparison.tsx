@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Award, Check, Sparkles } from 'lucide-react';
+import { Award, Check, Sparkles, X } from 'lucide-react';
 import { ScrollReveal } from '@/components/animation';
 
 export const HomeSaponinComparison: React.FC = () => {
@@ -97,7 +97,7 @@ export const HomeSaponinComparison: React.FC = () => {
 
                 <div className="space-y-2.5 pt-2 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400">
                   <div className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">✕</span>
+                    <X className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <span><strong className="text-gray-800 dark:text-gray-200">Hợp chất MR2:</strong> 0% (Không chứa saponin nhóm Ocotillol quý hiếm).</span>
                   </div>
                   <div className="flex items-start gap-2">
@@ -141,7 +141,7 @@ export const HomeSaponinComparison: React.FC = () => {
 
                 <div className="space-y-2.5 pt-2 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-600 dark:text-gray-400">
                   <div className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold">✕</span>
+                    <X className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <span><strong className="text-gray-800 dark:text-gray-200">Hợp chất MR2:</strong> 0% (Không chứa hợp chất kháng ung thư MR2).</span>
                   </div>
                   <div className="flex items-start gap-2">

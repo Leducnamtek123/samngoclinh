@@ -2,9 +2,16 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { fetchApi } from '@/lib/Api';
+import type { CultivationBed, CultivationCareLog } from '@/types';
 
 type TracePageProps = {
   params: Promise<{ locale: string; code: string }>;
+};
+
+type TraceCareLogItem = {
+  id?: string;
+  date: string;
+  action: string;
 };
 
 export async function generateMetadata(props: TracePageProps): Promise<Metadata> {
@@ -20,7 +27,7 @@ export default async function TracePage(props: TracePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations('trace');
 
-  let bedData = null;
+  let bedData: (CultivationBed & { gardenName?: string; healthStatus?: string; careLogs?: CultivationCareLog[]; ageYear?: number }) | null = null;
   try {
     const res = await fetchApi(`/public/cultivation/beds/${code}`);
     if (res.ok) {
@@ -34,13 +41,13 @@ export default async function TracePage(props: TracePageProps) {
   const age = bedData?.ageYear ?? 4;
   const plantName = bedData ? `Cây Sâm Ngọc Linh ${age} năm tuổi` : `Sâm Ngọc Linh #${code}`;
   const gardenName = bedData?.gardenName || 'Vườn Sâm Ngọc Linh Đắk Tô';
-  const bedCode = bedData?.name || 'Luống 01';
+  const bedCode = bedData?.name || bedData?.code || 'Luống 01';
   const status = bedData?.healthStatus === 'healthy' ? 'Cây khỏe' : bedData?.healthStatus || 'Cây khỏe';
-  const careLogs = bedData?.careLogs?.length
-    ? bedData.careLogs.map((log: any) => ({
-        id: log.code,
-        date: new Date(log.loggedAt).toLocaleDateString('vi-VN'),
-        action: log.description || log.title,
+  const careLogs: TraceCareLogItem[] = bedData?.careLogs?.length
+    ? bedData.careLogs.map((log: CultivationCareLog) => ({
+        id: log.id || log.treeCode,
+        date: log.loggedAt ? new Date(log.loggedAt).toLocaleDateString('vi-VN') : '—',
+        action: log.notes || log.actionType,
       }))
     : [
         { date: '2026-07-01', action: 'Bón phân hữu cơ sinh học & tưới sương' },
@@ -81,7 +88,7 @@ export default async function TracePage(props: TracePageProps) {
             <p className="text-base font-bold text-gray-900">{bedCode}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-200/80 shadow-sm space-y-1">
-            <span className="text-xs font-semibold text-gray-500 uppercase">Độ tuổi & Trạng thái</span>
+            <span className="text-xs font-semibold text-gray-500 uppercase">{t('ageAndStatus')}</span>
             <p className="text-base font-bold text-emerald-700">{age} năm tuổi • {status}</p>
           </div>
         </div>
@@ -96,7 +103,7 @@ export default async function TracePage(props: TracePageProps) {
           </h2>
 
           <div className="divide-y divide-gray-100">
-            {careLogs.map((log: any) => (
+            {careLogs.map((log: TraceCareLogItem) => (
               <div key={log.id || `${log.date}-${log.action}`} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-gray-400 w-32 shrink-0">{log.date}</span>
                 <span className="text-sm font-medium text-gray-800 flex-grow">{log.action}</span>
@@ -109,3 +116,4 @@ export default async function TracePage(props: TracePageProps) {
     </div>
   );
 }
+

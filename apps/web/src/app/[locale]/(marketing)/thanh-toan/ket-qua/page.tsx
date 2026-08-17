@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { fetchApi } from '@/lib/Api';
+import { FileText, PenTool } from 'lucide-react';
 
 type PaymentResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -122,16 +123,18 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
         {view === VIEWS.success && (
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left space-y-2">
             <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-              <span>📜 Hợp đồng điện tử đã khởi tạo</span>
+              <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Hợp đồng điện tử đã khởi tạo</span>
             </div>
             <p className="text-xs text-emerald-700 leading-relaxed">
               Hợp đồng ủy quyền chăm sóc & sở hữu cây sâm đã được tạo tự động. Quý khách vui lòng thực hiện ký số để kích hoạt bảo trợ.
             </p>
             <Link
-              className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
-              href={`/${locale}/profile?tab=contracts`}
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
+              href={`/${locale}/profile?tabs=contracts`}
             >
-              ✍️ Ký Hợp Đồng Điện Tử Ngay
+              <PenTool className="w-4 h-4 shrink-0" />
+              <span>Ký Hợp Đồng Điện Tử Ngay</span>
             </Link>
           </div>
         )}

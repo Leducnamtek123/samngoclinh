@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Link } from '@/lib/I18nNavigation';
 import { toast } from 'sonner';
+import { MapPin } from 'lucide-react';
 import { useCatalogPlant, useCatalogPlants } from '@/hooks/queries/useCatalog';
 import { addToCart, type CartItem } from '@/utils/cart';
 
@@ -158,8 +159,9 @@ export const GinsengDetailClient = ({ id, locale, isLoggedIn, initialData }: Gin
                   {plant.ageYears ? `Sâm ${plant.ageYears} Tuổi` : 'Cây giống Sâm Ngọc Linh'}
                 </span>
                 {plant.origin && (
-                  <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                    📍 {plant.origin}
+                  <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full inline-flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span>{plant.origin}</span>
                   </span>
                 )}
               </div>

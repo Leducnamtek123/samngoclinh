@@ -81,8 +81,28 @@ export class EContractRepository {
     }
 
     async getContractByCode(code: string): Promise<any | null> {
-        return this.databaseService.eContract.findUnique({
+        const direct = await this.databaseService.eContract.findUnique({
             where: { code },
+            include: {
+                items: true,
+                order: true,
+                amendments: {
+                    orderBy: { amendmentNumber: 'asc' },
+                },
+            },
+        });
+        if (direct) return direct;
+
+        return this.databaseService.eContract.findFirst({
+            where: {
+                OR: [
+                    { id: code },
+                    { code: code },
+                    { code: code.replace(/^HD-/, 'CTR-') },
+                    { code: code.replace(/^CTR-/, 'HD-') },
+                    { code: { contains: code } },
+                ],
+            },
             include: {
                 items: true,
                 order: true,

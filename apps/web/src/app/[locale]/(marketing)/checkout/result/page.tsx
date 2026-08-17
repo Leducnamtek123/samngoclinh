@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { fetchApi } from '@/lib/Api';
+import { FileText, Package } from 'lucide-react';
 
 type PaymentResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -128,22 +129,25 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
           hasContract ? (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left space-y-2.5">
               <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                <span>📜 Hợp đồng điện tử đã được ký kết & kích hoạt</span>
+                <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Hợp đồng điện tử đã được ký kết & kích hoạt</span>
               </div>
               <p className="text-xs text-emerald-700 leading-relaxed">
                 Hợp đồng ủy quyền chăm sóc & sở hữu cây sâm {contractCode ? `(#${contractCode}) ` : ''}của bạn đã được ký kết tự động bằng chữ ký số và có đầy đủ giá trị pháp lý.
               </p>
               <Link
-                className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-emerald-700 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-800"
-                href={`/${locale}/profile?tab=contracts`}
+                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-800"
+                href={`/${locale}/profile?tabs=contracts`}
               >
-                📄 Xem & Quản Lý Hợp Đồng
+                <FileText className="w-4 h-4 shrink-0" />
+                <span>Xem & Quản Lý Hợp Đồng</span>
               </Link>
             </div>
           ) : (
             <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-left space-y-1.5">
               <div className="flex items-center gap-2 text-gray-800 font-bold text-sm">
-                <span>📦 Đơn hàng đang được đóng gói giao hàng</span>
+                <Package className="w-4 h-4 text-gray-600 shrink-0" />
+                <span>Đơn hàng đang được đóng gói giao hàng</span>
               </div>
               <p className="text-xs text-gray-600 leading-relaxed">
                 Đơn hàng sản phẩm của bạn đang được chuẩn bị và sẽ sớm được chuyển phát nhanh đến địa chỉ nhận hàng.

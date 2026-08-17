@@ -31,29 +31,47 @@ export const metadata: Metadata = {
     "Báo cáo thống kê hiệu năng, canh tác và kinh doanh hệ thống Sâm Ngọc Linh",
 }
 
-const DEFAULT_OVERVIEW_STATS: BackofficeOverview = {
+const INITIAL_ZERO_STATS: BackofficeOverview = {
   domains: ["cultivation", "orders", "catalog", "wallet", "contracts"],
   totalPendingApprovals: 0,
-  totalActiveProviders: 1,
-  totalArticles: 8,
-  totalGardens: 5,
-  totalBeds: 12,
-  totalTrees: 350,
-  totalOrders: 45,
-  totalRevenue: 150000000,
-  totalContracts: 20,
-  totalSignedContracts: 15,
-  totalUsers: 100,
+  totalActiveProviders: 0,
+  totalArticles: 0,
+  totalGardens: 0,
+  totalBeds: 0,
+  totalTrees: 0,
+  totalOrders: 0,
+  totalRevenue: 0,
+  totalContracts: 0,
+  totalSignedContracts: 0,
+  totalUsers: 0,
+  monthlyRevenue: [],
+  trafficSources: [],
+  newVsReturning: {
+    summary: { newVisitors: 0, returningVisitors: 0 },
+    data: [],
+  },
+  visitorsByCountry: [],
+  engagementByDevice: [],
 }
 
-export default async function AnalyticsPage() {
-  let stats: BackofficeOverview = DEFAULT_OVERVIEW_STATS
+interface AnalyticsPageProps {
+  params: Promise<{
+    lang: string
+  }>
+}
+
+export default async function AnalyticsPage(props: AnalyticsPageProps) {
+  await props.params
+  let stats: BackofficeOverview = INITIAL_ZERO_STATS
   let errorMsg = ""
 
   try {
     const res = await backofficeService.getOverview()
-    if (res.data) {
-      stats = res.data
+    if (res && res.data) {
+      stats = {
+        ...INITIAL_ZERO_STATS,
+        ...res.data,
+      }
     }
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
@@ -84,7 +102,7 @@ export default async function AnalyticsPage() {
             variant="outline"
             className="bg-blue-50 border-blue-200 text-blue-700 font-semibold px-3 py-1"
           >
-            Hợp tác xã sâm Ngọc Linh
+            Nông trại Sâm Ngọc Linh
           </Badge>
         </div>
       </div>
@@ -109,7 +127,7 @@ export default async function AnalyticsPage() {
               </AlertDescription>
             </div>
           </div>
-          <Link href="/pages/users">
+          <Link href="/pages/kyc-approvals">
             <Button
               size="sm"
               className="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs gap-1.5"
@@ -126,7 +144,7 @@ export default async function AnalyticsPage() {
       {/* Main visual charts grid */}
       <section className="grid gap-6 md:grid-cols-2">
         <TrafficSources stats={stats} />
-        <ConversionFunnel />
+        <ConversionFunnel stats={stats} />
         <NewVsReturningVisitors stats={stats} />
         <PerformanceOverTime stats={stats} />
         <VisitorsByCountry stats={stats} />

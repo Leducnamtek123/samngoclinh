@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { ordersService } from '@/services/orders.service';
+import { settingsService } from '@/services/content.service';
 
 export interface CreateOrderPayload {
   customerName: string;
@@ -21,7 +22,7 @@ export function useShippingFee() {
     queryKey: ['shippingFee'],
     queryFn: async () => {
       try {
-        const res = await fetchApiClient('/v1/public/settings/shipping_fee');
+        const res = await settingsService.getShippingFee();
         const val = res?.data?.value || res?.value;
         if (val) {
           const parsed = parseInt(val, 10);
@@ -41,11 +42,7 @@ export function useCreateOrderMutation() {
 
   return useMutation({
     mutationFn: async (payload: CreateOrderPayload) => {
-      const res = await fetchApiClient('/user/orders/checkout', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return res?.data || res;
+      return ordersService.checkout(payload as any);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

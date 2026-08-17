@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { ordersService } from '@/services/orders.service';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
 
 export type StatusCounts = {
@@ -54,14 +54,15 @@ export function useProfileOrders(activeTab: string) {
     setOrdersLoading(true);
     setOrdersError(null);
     try {
-      const params = new URLSearchParams();
-      params.set('page', String(page));
-      params.set('perPage', String(perPage));
+      const queryParams: Record<string, string> = {
+        page: String(page),
+        perPage: String(perPage),
+      };
       if (statusFilter && statusFilter !== 'all') {
-        params.set('status', statusFilter);
+        queryParams.status = statusFilter;
       }
 
-      const res = await fetchApiClient(`/user/orders?${params.toString()}`);
+      const res = await ordersService.getMyOrders(queryParams);
       
       const list = Array.isArray(res?.data)
         ? res.data
@@ -136,7 +137,7 @@ export function useProfileOrders(activeTab: string) {
     }
     setDetailLoading(true);
     try {
-      const res = await fetchApiClient(`/user/orders/${orderId}`);
+      const res = await ordersService.getOrderDetail(orderId);
       const detailData = res?.data || res;
       setViewingOrderDetail(detailData);
     } catch {

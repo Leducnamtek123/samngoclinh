@@ -29,34 +29,53 @@ export default async function ContractDetailPage({
   let errorMsg = ""
 
   try {
-    // 1. Fetch contracts to find the matching contract by id or code
-    const res = await fetchApi("/admin/contracts?perPage=500")
-    const payload = await res.json()
-    const items: EContract[] = Array.isArray(payload.data?.items)
-      ? payload.data.items
-      : Array.isArray(payload.data)
-      ? payload.data
-      : []
-
-    contract =
-      items.find(
-        (c: EContract) =>
-          c.id === id ||
-          c.contractCode === id ||
-          c.code === id ||
-          c.contractNumber === id
-      ) || null
-
-    // 2. Fetch users to get customer details
-    const usersRes = await fetchApi("/admin/user/list?page=1&perPage=500")
-    const usersPayload = await usersRes.json()
-    if (usersRes.status < 400) {
-      users = Array.isArray(usersPayload.data) ? usersPayload.data : []
+    // 1. Fetch contract by ID directly
+    const res = await fetchApi(`/admin/contracts/${encodeURIComponent(id)}`)
+    if (res.ok) {
+      const payload = await res.json()
+      contract = payload.data || null
+    } else {
+      // Fallback search by code if ID was code
+      const searchRes = await fetchApi(`/admin/contracts?search=${encodeURIComponent(id)}`)
+      if (searchRes.ok) {
+        const searchPayload = await searchRes.json()
+        const items: EContract[] = Array.isArray(searchPayload.data?.items)
+          ? searchPayload.data.items
+          : Array.isArray(searchPayload.data)
+          ? searchPayload.data
+          : []
+        contract =
+          items.find(
+            (c: EContract) =>
+              c.id === id ||
+              c.contractCode === id ||
+              c.code === id ||
+              c.contractNumber === id
+          ) || null
+      }
     }
 
-    if (contract) {
-      user = users.find((u: AdminUser) => u.id === contract?.userId) || null
-    } else {
+    // 2. Fetch users to get customer details
+    if (contract?.userId) {
+      const usersRes = await fetchApi(`/admin/user/get/${encodeURIComponent(contract.userId)}`)
+      if (usersRes.ok) {
+        const usersPayload = await usersRes.json()
+        user = usersPayload.data || null
+      } else {
+        const listRes = await fetchApi(`/admin/user/list?search=${encodeURIComponent(contract.userId)}`)
+        if (listRes.ok) {
+          const usersPayload = await listRes.json()
+          users = Array.isArray(usersPayload.data)
+            ? usersPayload.data
+            : Array.isArray(usersPayload.data?.items)
+            ? usersPayload.data.items
+            : []
+          user = users.find((u: AdminUser) => u.id === contract?.userId) || null
+        }
+      }
+    }
+
+    if (!contract) {
       errorMsg = "Không tìm thấy hợp đồng với mã định danh này."
     }
   } catch (e: unknown) {

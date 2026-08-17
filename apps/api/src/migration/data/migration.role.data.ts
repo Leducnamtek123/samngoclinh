@@ -23,12 +23,6 @@ const roleData: RoleCreateRequestDto[] = [
         type: EnumRoleType.admin,
     },
     {
-        name: 'provider',
-        description: 'Provider Role',
-        abilities: [],
-        type: EnumRoleType.provider,
-    },
-    {
         name: 'user',
         description: 'User Role',
         abilities: [],

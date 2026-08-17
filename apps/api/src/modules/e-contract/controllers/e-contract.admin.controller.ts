@@ -127,6 +127,19 @@ export class EContractAdminController {
         return this.eContractService.listContractsPaginated(pagination, status);
     }
 
+    @ApiOperation({ summary: 'Lấy chi tiết hợp đồng điện tử theo ID' })
+    @Response('eContract.get')
+    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get('/:id')
+    async getContractDetail(
+        @Param('id') id: string
+    ): Promise<IResponseReturn<EContract>> {
+        return this.eContractService.getContract(id);
+    }
+
     @EContractAdminCreateDoc()
     @Response('eContract.create')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)

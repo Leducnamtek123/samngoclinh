@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { RoleGuard } from "@/components/guards/rbac-guard"
+import type { PaginationMeta } from "@/types"
 
 interface CareLog {
   id: string
@@ -81,7 +82,7 @@ export default function CareLogsPage() {
     isLoading,
     isError,
     refetch,
-  } = useApiQuery<CareLog[] | { items: CareLog[]; metadata?: import("@/types").PaginationMeta }>(
+  } = useApiQuery<CareLog[] | { items: CareLog[]; metadata?: PaginationMeta }>(
     ["care-logs", page],
     `/user/cultivation/logs?page=${page}&perPage=${perPage}`
   )
@@ -94,7 +95,7 @@ export default function CareLogsPage() {
     : Array.isArray((rawData as { items?: CareLog[] })?.items)
       ? (rawData as { items: CareLog[] }).items
       : []
-  const metadata = response?.metadata || (rawData as { metadata?: import("@/types").PaginationMeta })?.metadata || null
+  const metadata = response?.metadata || (rawData as { metadata?: PaginationMeta })?.metadata || null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

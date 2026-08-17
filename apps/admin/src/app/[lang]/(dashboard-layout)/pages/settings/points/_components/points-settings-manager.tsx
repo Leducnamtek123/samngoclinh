@@ -26,7 +26,7 @@ export function PointsSettingsManager() {
     let mounted = true
     async function loadSetting() {
       try {
-        const res = await fetchApi("/settings/point_rate")
+        const res = await fetchApi("/admin/settings/point_rate")
         if (res.ok) {
           const payload = await res.json()
           const val = payload.data?.value || payload.value
@@ -51,7 +51,7 @@ export function PointsSettingsManager() {
     setSuccess(false)
 
     try {
-      const res = await fetchApi("/settings/point_rate", {
+      const res = await fetchApi("/admin/settings/point_rate", {
         method: "PUT",
         body: JSON.stringify({ value: String(pointRate || "10000") }),
       })

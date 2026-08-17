@@ -24,7 +24,7 @@ export function GeneralSettingsManager() {
     let mounted = true
     async function loadSettings() {
       try {
-        const res = await fetchApi("/settings")
+        const res = await fetchApi("/admin/settings")
         if (res.ok) {
           const payload = await res.json()
           const items =
@@ -50,7 +50,7 @@ export function GeneralSettingsManager() {
     setSuccessKey(null)
 
     try {
-      const res = await fetchApi(`/settings/${key}`, {
+      const res = await fetchApi(`/admin/settings/${key}`, {
         method: "PUT",
         body: JSON.stringify({ value }),
       })

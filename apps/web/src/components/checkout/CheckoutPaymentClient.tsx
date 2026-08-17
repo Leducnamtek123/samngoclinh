@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { paymentService } from '@/services/content.service';
 import { clearCart } from '@/utils/cart';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -40,7 +40,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
 
     async function loadOrder() {
       try {
-        const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+        const res: any = await paymentService.verifySepayOrder(orderId);
         const data = res?.data || res;
 
         if (data?.status === 'paid' || data?.status === 'completed') {
@@ -93,7 +93,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
 
     const checkPaymentStatus = async () => {
       try {
-        const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+        const res: any = await paymentService.verifySepayOrder(orderId);
         const data = res?.data || res;
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
@@ -123,7 +123,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
   const handleManualComplete = async () => {
     setIsVerifying(true);
     try {
-      const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+      const res: any = await paymentService.verifySepayOrder(orderId);
       const data = res?.data || res;
       if (data?.status === 'paid' || data?.status === 'completed') {
         clearCart();
