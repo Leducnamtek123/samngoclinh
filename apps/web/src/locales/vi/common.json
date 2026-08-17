@@ -49,7 +49,9 @@
     "my_farm": "Vườn sâm của tôi",
     "security": "Bảo mật & Mật khẩu",
     "points_balance": "{points} Điểm Sâm",
-    "member_rank": "Hạng thành viên"
+    "member_rank": "Hạng thành viên",
+    "ginseng": "Cây giống Sâm",
+    "account": "Tài khoản"
   },
   "topBanner": {
     "announcement": "🌾 Ưu đãi mùa trồng Sâm 2026: Tặng kèm bảo hiểm nông nghiệp 100% khi sở hữu cây giống!",
@@ -103,7 +105,11 @@
     "apply": "Áp dụng",
     "loading": "Đang xử lý...",
     "saving": "Đang lưu...",
-    "submitting": "Đang gửi..."
+    "submitting": "Đang gửi...",
+    "clearFilters": "Xóa bộ lọc",
+    "error": "Lỗi",
+    "checkout": "Thanh toán",
+    "viewAll": "Xem tất cả"
   },
   "status": {
     "draft": "Bản nháp",
@@ -136,7 +142,9 @@
     "platinum": "Hạng Bạch Kim (Platinum)",
     "diamond": "Hạng Kim Cương (Diamond)",
     "badge": "Hạng {rank}",
-    "pointsSuffix": "điểm"
+    "pointsSuffix": "điểm",
+    "bronze": "Đồng",
+    "vip": "VIP"
   },
   "confirmModal": {
     "title": "Xác nhận thao tác",
@@ -188,5 +196,12 @@
     "itemUnit": "sản phẩm",
     "yearUnit": "năm",
     "pointUnit": "Điểm Sâm"
+  },
+  "common": {
+    "close": "Đóng",
+    "noImage": "Chưa có ảnh",
+    "loading": "Đang tải...",
+    "searchPlaceholder": "Tìm kiếm sản phẩm, tin tức...",
+    "clear": "Xóa tìm kiếm"
   }
 }

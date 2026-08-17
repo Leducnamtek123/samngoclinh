@@ -15,7 +15,8 @@
     "desc": "Mô tả danh mục",
     "status": "Trạng thái",
     "active": "Kích hoạt",
-    "inactive": "Tạm dừng"
+    "inactive": "Tạm dừng",
+    "parent": "Danh mục cha"
   },
   "fields": {
     "name": "Tên sản phẩm",

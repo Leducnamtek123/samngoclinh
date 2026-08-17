@@ -16,7 +16,7 @@ export function useMapLocationPicker({
   onSelectLocation,
   onClose,
 }: UseMapLocationPickerProps) {
-  const t = useTranslations('profile.mapPicker');
+  const t = useTranslations('mapPicker');
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [position, setPosition] = useState(DEFAULT_CENTER);
   const [address, setAddress] = useState(initialAddress);

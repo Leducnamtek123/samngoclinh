@@ -1,3 +1,8 @@
 {
-    "listArticles": "Articles loaded successfully."
+    "listArticles": "Articles loaded successfully.",
+    "list": "Successfully retrieved articles list.",
+    "detail": "Successfully retrieved article details.",
+    "create": "Successfully created new article.",
+    "update": "Successfully updated article.",
+    "delete": "Successfully deleted article."
 }

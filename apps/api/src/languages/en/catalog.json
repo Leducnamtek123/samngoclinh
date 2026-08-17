@@ -1,4 +1,9 @@
 {
     "listPlants": "Plant catalog loaded successfully.",
-    "listShopItems": "Shop catalog loaded successfully."
+    "listShopItems": "Shop catalog loaded successfully.",
+    "list": "Successfully retrieved catalog list.",
+    "get": "Successfully retrieved product details.",
+    "create": "Successfully created new product.",
+    "update": "Successfully updated product.",
+    "delete": "Successfully deleted product."
 }

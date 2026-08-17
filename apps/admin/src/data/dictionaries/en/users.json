@@ -19,7 +19,8 @@
     "createdAt": "Created At",
     "lastLogin": "Last Login",
     "address": "Address",
-    "avatar": "Avatar"
+    "avatar": "Avatar",
+    "identityNumber": "Identity / CCCD Number"
   },
   "status": {
     "active": "Active",

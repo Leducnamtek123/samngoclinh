@@ -19,7 +19,8 @@
     "createdAt": "Ngày tạo",
     "lastLogin": "Đăng nhập gần nhất",
     "address": "Địa chỉ",
-    "avatar": "Ảnh đại diện"
+    "avatar": "Ảnh đại diện",
+    "identityNumber": "Số CCCD/CMND"
   },
   "status": {
     "active": "Hoạt động",

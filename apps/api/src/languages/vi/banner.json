@@ -1,0 +1,7 @@
+{
+    "list": "Lấy danh sách banner thành công.",
+    "get": "Lấy thông tin banner thành công.",
+    "create": "Tạo banner mới thành công.",
+    "update": "Cập nhật banner thành công.",
+    "delete": "Xóa banner thành công."
+}

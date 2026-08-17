@@ -1,5 +1,6 @@
 {
   "search": "Search...",
   "noResults": "No results found.",
-  "typeCommand": "Type a command or search..."
+  "typeCommand": "Type a command or search...",
+  "searchPlaceholder": "Search..."
 }

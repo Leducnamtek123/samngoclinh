@@ -4,7 +4,7 @@
     "create": "Create",
     "edit": "Edit",
     "delete": "Delete",
-    "save": "Save Changes",
+    "save": "Save",
     "cancel": "Cancel",
     "search": "Search...",
     "filter": "Filter",
@@ -26,7 +26,10 @@
     "reject": "Reject",
     "scan": "Scan QR Code",
     "generate": "Generate",
-    "filterAll": "Filter: All"
+    "filterAll": "Filter: All",
+    "upload": "Upload",
+    "readAll": "Mark all read",
+    "collapse": "Collapse"
   },
   "status": {
     "all": "All statuses",
@@ -54,7 +57,8 @@
     "harvested": "Harvested",
     "justNow": "Just now",
     "verified": "Verified",
-    "unverified": "Unverified"
+    "unverified": "Unverified",
+    "noImage": "No image"
   },
   "table": {
     "rowsPerPage": "Rows per page",
@@ -62,7 +66,9 @@
     "noResults": "No results found.",
     "selected": "{count} selected",
     "showing": "Showing {start} to {end} of {total} entries",
-    "total": "total"
+    "total": "total",
+    "actions": "Actions",
+    "loading": "Loading data..."
   },
   "confirmations": {
     "deleteTitle": "Are you sure?",
@@ -80,5 +86,16 @@
     "defaultParamDesc": "System configuration parameter",
     "currentValue": "Current value: {value}",
     "infoNotice": "You can quickly configure Shipping Fees and Reward Rates directly in the submenus above."
-  }
+  },
+  "search": {
+    "searchPlaceholder": "Search..."
+  },
+  "cancel": "Cancel",
+  "processing": "Processing...",
+  "save": "Save Changes",
+  "notFound": "Not Found",
+  "error": "Error",
+  "back": "Back",
+  "success": "Success",
+  "failed": "Operation failed"
 }

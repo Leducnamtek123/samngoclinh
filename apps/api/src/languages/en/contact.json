@@ -1,0 +1,6 @@
+{
+    "list": "Successfully retrieved contact requests list.",
+    "detail": "Successfully retrieved contact request details.",
+    "create": "Successfully submitted contact inquiry. We will get back to you soon!",
+    "delete": "Successfully deleted contact request."
+}

@@ -49,7 +49,9 @@
     "my_farm": "My Farm",
     "security": "Security & Password",
     "points_balance": "{points} Ginseng Points",
-    "member_rank": "Member Rank"
+    "member_rank": "Member Rank",
+    "ginseng": "Ginseng Plants",
+    "account": "Account"
   },
   "topBanner": {
     "announcement": "🌾 2026 Planting Season Offer: Free 100% agricultural insurance when owning ginseng seedlings!",
@@ -103,7 +105,11 @@
     "apply": "Apply",
     "loading": "Processing...",
     "saving": "Saving...",
-    "submitting": "Submitting..."
+    "submitting": "Submitting...",
+    "clearFilters": "Clear Filters",
+    "error": "Error",
+    "checkout": "Checkout",
+    "viewAll": "View All"
   },
   "status": {
     "draft": "Draft",
@@ -136,7 +142,9 @@
     "platinum": "Platinum Rank",
     "diamond": "Diamond Rank",
     "badge": "{rank} Member",
-    "pointsSuffix": "pts"
+    "pointsSuffix": "pts",
+    "bronze": "Bronze",
+    "vip": "VIP"
   },
   "confirmModal": {
     "title": "Confirm Action",
@@ -188,5 +196,12 @@
     "itemUnit": "item(s)",
     "yearUnit": "year(s)",
     "pointUnit": "Ginseng Points"
+  },
+  "common": {
+    "close": "Close",
+    "noImage": "No Image",
+    "loading": "Loading...",
+    "searchPlaceholder": "Search products, news...",
+    "clear": "Clear search"
   }
 }

@@ -47,7 +47,8 @@
     "contractExpiryDate": "Ngày hết hạn hợp đồng *",
     "createdAt": "Ngày lập:",
     "initialDuration": "Thời hạn ban đầu:",
-    "currentValidity": "Hiệu lực hiện tại:"
+    "currentValidity": "Hiệu lực hiện tại:",
+    "customTerms": "Điều khoản bổ sung"
   },
   "identity": {
     "title": "Thông tin pháp lý hiển thị trên hợp đồng",
@@ -144,5 +145,8 @@
     "addBtn": "Thêm biến",
     "errMissingKey": "Vui lòng nhập mã biến (ví dụ: SO_TAI_KHOAN)",
     "successAdded": "Đã thêm trường {{{key}}}"
+  },
+  "placeholders": {
+    "customTerms": "Ghi chú thêm các cam kết hoặc thỏa thuận riêng nếu có..."
   }
 }

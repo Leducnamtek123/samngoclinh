@@ -31,7 +31,8 @@
     "viewOrderDetails": "View Details",
     "avatarTitle": "Profile Picture",
     "uploadAvatar": "Upload Photo",
-    "uploadAvatarHint": "Supports JPG, PNG, WEBP (Max 5MB)."
+    "uploadAvatarHint": "Supports JPG, PNG, WEBP (Max 5MB).",
+    "myCode": "Referral Code"
   },
   "accountHeader": {
     "memberSince": "Member since",
@@ -63,7 +64,8 @@
     "emptyState": {
       "description": "You have no delivery addresses saved yet. Click \"+ Add New Address\".",
       "addAddress": "Add Address"
-    }
+    },
+    "defaultRecipient": "Recipient"
   },
   "addAddressModal": {
     "title": "Add Delivery Address",
@@ -77,9 +79,11 @@
     "isDefaultLabel": "Set as default shipping address",
     "cancel": "Cancel",
     "saveAndUse": "Save & Use This Address",
-    "savedSuccess": "Delivery address saved successfully!",
+    "savedSuccess": "Address saved successfully!",
     "deleteSuccess": "Address deleted successfully!",
-    "deleteError": "Failed to delete address. Please try again."
+    "deleteError": "Failed to delete address. Please try again.",
+    "shippingAddressLabel": "Shipping Address",
+    "shippingAddressPlaceholder": "Select location on map or enter manually..."
   },
   "mapPicker": {
     "gpsNotSupported": "Your browser does not support GPS geolocation.",
@@ -88,7 +92,7 @@
     "addressNotFound": "No matching address found.",
     "searchError": "Error while searching for address.",
     "selectValidAddress": "Please select a valid address.",
-    "locating": "Locating your position..."
+    "locating": "Locating GPS coordinates..."
   },
   "changeAddressModal": {
     "title": "Address Book",
@@ -216,7 +220,18 @@
     "farm": "Farm Location",
     "defaultGarden": "Mang Ri Garden",
     "traceQr": "Traceability QR",
-    "viewBedMap": "View Live"
+    "viewBedMap": "View Live",
+    "age": "Age",
+    "garden": "Garden",
+    "health": "Health Status",
+    "healthy": "Healthy",
+    "cultivationBed": "Cultivation Bed",
+    "emptyGinseng": "No ginseng plants in this bed yet.",
+    "bedCode": "Bed Code",
+    "yearsOld": "years old",
+    "treeCount": "Tree Count",
+    "plantedDate": "Planted Date",
+    "treeInfo": "Ginseng Tree Details"
   },
   "security": {
     "title": "Security & Password",

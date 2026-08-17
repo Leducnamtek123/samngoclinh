@@ -10,6 +10,7 @@ const ADDRESSES_STORAGE_KEY = 'user_addresses:v1';
 
 export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
   const t = useTranslations('profile');
+  const tAddAddress = useTranslations('addAddressModal');
   const [localAddresses, setLocalAddresses] = useState<AddressItem[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -68,7 +69,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
     setLocalAddresses(updated);
     saveToStorage(updated);
     setIsAddAddressOpen(false);
-    toast.success(t('addAddressModal.savedSuccess'));
+    toast.success(tAddAddress('savedSuccess'));
   };
 
   const setDefaultAddress = (id: string) => {
@@ -85,9 +86,9 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
       const updated = addresses.filter((a) => a.id !== deletingAddressId);
       setLocalAddresses(updated);
       saveToStorage(updated);
-      toast.success(t('addAddressModal.deleteSuccess'));
+      toast.success(tAddAddress('deleteSuccess'));
     } catch {
-      toast.error(t('addAddressModal.deleteError'));
+      toast.error(tAddAddress('deleteError'));
     }
     setIsDeletingAddress(false);
     setDeletingAddressId(null);

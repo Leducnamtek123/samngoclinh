@@ -15,7 +15,8 @@
     "desc": "Category Description",
     "status": "Status",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "parent": "Parent Category"
   },
   "fields": {
     "name": "Product Name",

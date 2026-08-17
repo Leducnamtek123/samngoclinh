@@ -47,7 +47,8 @@
     "contractExpiryDate": "Contract Expiry Date *",
     "createdAt": "Created Date:",
     "initialDuration": "Initial Duration:",
-    "currentValidity": "Current Validity:"
+    "currentValidity": "Current Validity:",
+    "customTerms": "Custom Terms"
   },
   "identity": {
     "title": "Legal Identity Information for Contract",
@@ -144,5 +145,8 @@
     "addBtn": "Add variable",
     "errMissingKey": "Please enter variable key (e.g. BANK_ACCOUNT)",
     "successAdded": "Added field {{{key}}}"
+  },
+  "placeholders": {
+    "customTerms": "Add custom terms or commitments..."
   }
 }

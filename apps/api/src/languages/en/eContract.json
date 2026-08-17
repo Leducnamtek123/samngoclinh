@@ -1,0 +1,20 @@
+{
+    "list": "Successfully retrieved contracts list.",
+    "get": "Successfully retrieved contract details.",
+    "create": "Successfully initialized contract.",
+    "update": "Successfully updated contract information.",
+    "issue": "Successfully issued electronic contract.",
+    "sign": "Successfully signed electronic contract.",
+    "renew": "Successfully renewed contract.",
+    "delete": "Successfully deleted contract.",
+    "verify": "Successfully verified contract authenticity.",
+    "checkExpiry": "Successfully verified contract expiration status.",
+    "listTemplates": "Successfully retrieved contract templates list.",
+    "getTemplate": "Successfully retrieved contract template details.",
+    "updateTemplate": "Successfully updated contract template.",
+    "importTemplateHtml": "Successfully imported contract template HTML.",
+    "createAmendment": "Successfully created contract amendment.",
+    "getAmendments": "Successfully retrieved contract amendments.",
+    "signAmendment": "Successfully signed contract amendment.",
+    "cancelAmendment": "Successfully cancelled contract amendment."
+}

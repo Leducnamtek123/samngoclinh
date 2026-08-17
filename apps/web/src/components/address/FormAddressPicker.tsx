@@ -42,8 +42,8 @@ export function FormAddressPicker<
   clearButton = true,
   ...props
 }: FormAddressPickerProps<TFieldValues, TName>) {
-  const t = useTranslations('profile.addAddressModal');
-  const tMap = useTranslations('profile.mapPicker');
+  const t = useTranslations('addAddressModal');
+  const tMap = useTranslations('mapPicker');
   const formContext = useFormContext<TFieldValues>();
   const [isMapOpen, setIsMapOpen] = useState(false);
 

@@ -20,7 +20,7 @@ export function AddressCardItem({
   defaultBadgeLabel,
   className = '',
 }: AddressCardItemProps) {
-  const t = useTranslations('address');
+  const t = useTranslations('addressSelector');
   const defaultBadge = defaultBadgeLabel || t('defaultBadge');
   const recipient = address.recipient || address.name || t('defaultRecipient');
   const phone = address.phone || '';

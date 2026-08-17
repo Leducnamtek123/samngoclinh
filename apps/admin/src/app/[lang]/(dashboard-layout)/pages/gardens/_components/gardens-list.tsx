@@ -126,7 +126,7 @@ export function GardensList({
       columns={columns}
       data={gardens}
       emptyMessage={t("trees.gardens.emptyMessage")}
-      rowActionsHeader={t("common.actions")}
+      rowActionsHeader={t("common.table.actions")}
       rowActions={(garden) => (
         <div className="flex items-center justify-end gap-2">
           <Button

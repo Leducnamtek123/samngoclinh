@@ -45,7 +45,16 @@
     "noProductsDesc": "Hãy thử thay đổi từ khóa hoặc chọn danh mục khác.",
     "quantity": "Số lượng",
     "decreaseQuantity": "Giảm số lượng",
-    "increaseQuantity": "Tăng số lượng"
+    "increaseQuantity": "Tăng số lượng",
+    "featured": "Nổi bật",
+    "notFoundTitle": "Không tìm thấy cây sâm",
+    "notFoundDesc": "Cây sâm bạn đang tìm kiếm không tồn tại hoặc đã ngừng kinh doanh.",
+    "productCode": "Mã sản phẩm",
+    "guaranteedQuality": "Cam kết nguồn gốc và chất lượng Sâm Ngọc Linh thuần chủng",
+    "relatedProducts": "Sản phẩm liên quan",
+    "viewDetails": "Xem chi tiết",
+    "noImage": "Chưa có hình ảnh",
+    "description": "Mô tả sản phẩm"
   },
   "productDetail": {
     "notFoundTitle": "Không tìm thấy sản phẩm",

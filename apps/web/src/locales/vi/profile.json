@@ -31,7 +31,8 @@
     "viewOrderDetails": "Xem chi tiết",
     "avatarTitle": "Ảnh đại diện",
     "uploadAvatar": "Tải ảnh mới",
-    "uploadAvatarHint": "Hỗ trợ định dạng JPG, PNG, WEBP (tối đa 5MB)."
+    "uploadAvatarHint": "Hỗ trợ định dạng JPG, PNG, WEBP (tối đa 5MB).",
+    "myCode": "Mã giới thiệu"
   },
   "accountHeader": {
     "memberSince": "Thành viên từ",
@@ -63,7 +64,8 @@
     "emptyState": {
       "description": "Bạn chưa có địa chỉ nhận hàng nào. Vui lòng bấm \"+ Thêm địa chỉ mới\".",
       "addAddress": "Thêm địa chỉ"
-    }
+    },
+    "defaultRecipient": "Người nhận"
   },
   "addAddressModal": {
     "title": "Thêm địa chỉ nhận hàng",
@@ -77,9 +79,11 @@
     "isDefaultLabel": "Đặt làm địa chỉ nhận hàng mặc định",
     "cancel": "Hủy bỏ",
     "saveAndUse": "Lưu & Sử dụng địa chỉ này",
-    "savedSuccess": "Đã lưu địa chỉ nhận hàng thành công!",
+    "savedSuccess": "Lưu địa chỉ thành công!",
     "deleteSuccess": "Đã xóa địa chỉ thành công!",
-    "deleteError": "Không thể xóa địa chỉ. Vui lòng thử lại."
+    "deleteError": "Không thể xóa địa chỉ. Vui lòng thử lại sau.",
+    "shippingAddressLabel": "Địa chỉ giao hàng",
+    "shippingAddressPlaceholder": "Chọn vị trí trên bản đồ hoặc nhập thủ công..."
   },
   "mapPicker": {
     "gpsNotSupported": "Trình duyệt của bạn không hỗ trợ định vị GPS.",
@@ -88,7 +92,7 @@
     "addressNotFound": "Không tìm thấy địa chỉ phù hợp.",
     "searchError": "Lỗi khi tìm kiếm địa chỉ.",
     "selectValidAddress": "Vui lòng chọn địa chỉ hợp lệ.",
-    "locating": "Đang xác định vị trí của bạn..."
+    "locating": "Đang định vị tọa độ GPS..."
   },
   "changeAddressModal": {
     "title": "Sổ địa chỉ nhận hàng",
@@ -216,7 +220,18 @@
     "farm": "Nông trại",
     "defaultGarden": "Vườn Măng Ri",
     "traceQr": "Truy xuất nguồn gốc",
-    "viewBedMap": "Xem trực tiếp"
+    "viewBedMap": "Xem trực tiếp",
+    "age": "Độ tuổi",
+    "garden": "Vườn trồng",
+    "health": "Tình trạng",
+    "healthy": "Khỏe mạnh",
+    "cultivationBed": "Luống Sâm Trồng",
+    "emptyGinseng": "Hiện chưa có cây sâm nào trong luống này.",
+    "bedCode": "Mã luống",
+    "yearsOld": "năm tuổi",
+    "treeCount": "Số lượng cây",
+    "plantedDate": "Ngày trồng",
+    "treeInfo": "Thông tin cây sâm"
   },
   "security": {
     "title": "Bảo Mật & Mật Khẩu",
