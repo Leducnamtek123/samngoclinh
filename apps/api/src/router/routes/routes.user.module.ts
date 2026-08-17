@@ -1,7 +1,6 @@
 import { CartUserController } from '@modules/cart/controllers/cart.user.controller';
 import { CartModule } from '@modules/cart/cart.module';
 import { CultivationUserController } from '@modules/cultivation/controllers/cultivation.user.controller';
-import { CultivationProviderController } from '@modules/cultivation/controllers/cultivation.provider.controller';
 import { CultivationModule } from '@modules/cultivation/cultivation.module';
 import { OrdersUserController } from '@modules/orders/controllers/orders.user.controller';
 import { OrdersModule } from '@modules/orders/orders.module';
@@ -27,7 +26,6 @@ import { Module } from '@nestjs/common';
         WalletUserController,
         OrdersUserController,
         CultivationUserController,
-        CultivationProviderController,
         CartUserController,
         EContractUserController,
         PackagesUserController,

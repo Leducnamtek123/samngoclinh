@@ -1001,19 +1001,20 @@ export class UserRepository {
         });
     }
 
-    async findIdentityDocumentsList() {
+    async findIdentityDocumentsList(limit = 100, skip = 0) {
         const docs = await this.databaseService.userIdentityDocument.findMany({
             orderBy: { createdAt: 'desc' },
+            take: limit,
+            skip: skip,
+            include: {
+                user: {
+                    select: { id: true, email: true, name: true, isVerified: true },
+                },
+            },
         });
-        const userIds = Array.from(new Set(docs.map((d) => d.userId)));
-        const users = await this.databaseService.user.findMany({
-            where: { id: { in: userIds } },
-            select: { id: true, email: true, name: true, isVerified: true },
-        });
-        const userMap = new Map(users.map((u) => [u.id, u]));
 
         return docs.map((d) => {
-            const u = userMap.get(d.userId);
+            const u = d.user;
             return {
                 id: d.id,
                 userId: d.userId,

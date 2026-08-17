@@ -171,6 +171,13 @@ model User {
   trees                   CultivationTree[]          @relation("UserTrees")
   orders                  Order[]                    @relation("UserOrders")
   contracts               EContract[]                @relation("UserContracts")
+  identityDocument        UserIdentityDocument?      @relation("UserIdentityDocument")
+  identityHistories       UserIdentityHistory[]      @relation("UserIdentityHistories")
+  signature               UserSignature?             @relation("UserSignature")
+  businessProfile         BusinessProfile?           @relation("UserBusinessProfile")
+  gardenBookings          GardenBooking[]            @relation("UserGardenBookings")
+  wallet                  WalletAccount?             @relation("UserWallet")
+  walletTransactions      WalletTransaction[]        @relation("UserWalletTransactions")
 
   @@unique(fields: [username])
   @@unique(fields: [email])
@@ -707,8 +714,8 @@ model CultivationBedLocation {
 
 
 model WalletAccount {
-  id               String @id @default(uuid())
-  userId           String
+  id               String   @id @default(uuid())
+  userId           String   @unique
   balancePoint     Int      @default(0)
   treesOwned       Int      @default(0)
   transferEnabled  Boolean  @default(true)
@@ -719,14 +726,15 @@ model WalletAccount {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  @@unique(fields: [userId])
+  user      User     @relation("UserWallet", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index(fields: [balancePoint, treesOwned])
   @@map("WalletAccounts")
 }
 
 model WalletTransaction {
-  id             String @id @default(uuid())
-  code           String
+  id             String   @id @default(uuid())
+  code           String   @unique
   userId         String
   type           String
   title          String
@@ -741,7 +749,8 @@ model WalletTransaction {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  @@unique(fields: [code])
+  user      User     @relation("UserWalletTransactions", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index(fields: [userId, occurredAt(sort: Desc)])
   @@map("WalletTransactions")
 }
@@ -773,9 +782,10 @@ model Order {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  user       User?       @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
-  orderItems OrderItem[] @relation("OrderItems")
-  contract   EContract?  @relation("OrderContract")
+  user              User?              @relation("UserOrders", fields: [userId], references: [id], onDelete: Cascade)
+  orderItems        OrderItem[]        @relation("OrderItems")
+  contract          EContract?         @relation("OrderContract")
+  stockReservations StockReservation[] @relation("OrderStockReservations")
 
   @@unique(fields: [code])
   @@index(fields: [userId, status, createdAt(sort: Desc)])
@@ -821,6 +831,8 @@ model UserIdentityDocument {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  user      User     @relation("UserIdentityDocument", fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("UserIdentityDocuments")
 }
 
@@ -838,6 +850,8 @@ model UserIdentityHistory {
   reviewedBy      String?
   createdAt       DateTime  @default(now())
 
+  user            User      @relation("UserIdentityHistories", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId, createdAt])
   @@map("UserIdentityHistories")
 }
@@ -852,14 +866,16 @@ model UserSignature {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
+  user      User     @relation("UserSignature", fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("UserSignatures")
 }
 
 model BusinessProfile {
   id           String @id @default(uuid())
-  userId       String
+  userId       String @unique
   fullName     String
-  referralCode String
+  referralCode String @unique
   rank         String
   phone        String?
   gender       String?
@@ -873,8 +889,8 @@ model BusinessProfile {
   updatedAt DateTime @updatedAt
   updatedBy String?
 
-  @@unique(fields: [userId])
-  @@unique(fields: [referralCode])
+  user      User     @relation("UserBusinessProfile", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index(fields: [rank, verified])
   @@map("BusinessProfiles")
 }
@@ -903,7 +919,7 @@ model CultivationCareLog {
 
 model GardenBooking {
   id           String @id @default(uuid())
-  code         String
+  code         String @unique
   userId       String
   gardenCode   String
   visitDate    DateTime
@@ -915,7 +931,8 @@ model GardenBooking {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@unique(fields: [code])
+  user         User     @relation("UserGardenBookings", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index(fields: [userId, status])
   @@map("GardenBookings")
 }
@@ -1278,6 +1295,8 @@ model StockReservation {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  order       Order    @relation("OrderStockReservations", fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([expiresAt, status])
   @@index([orderId])

@@ -83,7 +83,8 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             'sepay.webhookApiKey'
         );
         if (!expectedSecret) {
-            return true;
+            this.logger.error('CRITICAL: SEPAY_WEBHOOK_API_KEY is not configured in environment. Rejecting webhook.');
+            return false;
         }
 
         if (!authHeader) {

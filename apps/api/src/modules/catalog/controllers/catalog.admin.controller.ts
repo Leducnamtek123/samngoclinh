@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, Logger, Param, Post, Put, UploadedFile, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Post, Put, UploadedFile, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -6,7 +6,6 @@ import { AuthJwtAccessProtected } from '@modules/auth/decorators/auth.jwt.decora
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { CatalogPlant, CatalogProduct, EnumRoleType } from '@generated/prisma-client';
-import { ConfigService } from '@nestjs/config';
 import { CatalogService } from '../services/catalog.service';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { FileUploadSingle } from '@common/file/decorators/file.decorator';
@@ -14,7 +13,7 @@ import { IFile } from '@common/file/interfaces/file.interface';
 import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
 import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
 import { RequestRequiredPipe } from '@common/request/pipes/request.required.pipe';
-import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
+import { FileService } from '@common/file/services/file.service';
 import {
     CatalogPlantCreateDto,
     CatalogPlantUpdateDto,
@@ -36,11 +35,9 @@ import {
     path: '/catalog',
 })
 export class CatalogAdminController {
-    private readonly logger = new Logger(CatalogAdminController.name);
-
     constructor(
         private readonly catalogService: CatalogService,
-        private readonly configService: ConfigService
+        private readonly fileService: FileService
     ) {}
 
     @CatalogAdminCreatePlantDoc()
@@ -128,47 +125,11 @@ export class CatalogAdminController {
         )
         file: IFile
     ): Promise<IResponseReturn<{ url: string }>> {
-        try {
-            cloudinary.config({
-                cloud_name:
-                    this.configService.get<string>('cloudinary.cloudName') ??
-                    undefined,
-                api_key:
-                    this.configService.get<string>('cloudinary.apiKey') ??
-                    undefined,
-                api_secret:
-                    this.configService.get<string>('cloudinary.apiSecret') ??
-                    undefined,
-            });
-
-            const uploadFromBuffer = (buffer: Buffer): Promise<UploadApiResponse> => {
-                return new Promise((resolve, reject) => {
-                    const uploadStream = cloudinary.uploader.upload_stream(
-                        {
-                            folder: 'samngoclinh',
-                        },
-                        (error, result) => {
-                            if (result) {
-                                resolve(result);
-                            } else {
-                                reject(error);
-                            }
-                        }
-                    );
-                    uploadStream.end(buffer);
-                });
-            };
-
-            const result = await uploadFromBuffer(file.buffer);
-            return {
-                data: {
-                    url: result.secure_url,
-                },
-            };
-        } catch (e: unknown) {
-            this.logger.error(e, 'Cloudinary upload failed');
-            const message = e instanceof Error ? e.message : String(e);
-            throw new Error(`Cloudinary upload failed: ${message}`);
-        }
+        const url = await this.fileService.uploadFile(file, 'catalog');
+        return {
+            data: {
+                url,
+            },
+        };
     }
 }

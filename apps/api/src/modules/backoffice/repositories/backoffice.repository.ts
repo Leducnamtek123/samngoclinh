@@ -88,12 +88,13 @@ export class BackofficeRepository {
                 
                 monthlyRevenue.push({
                     month: mName,
-                    visitors: Math.max(1000 + Math.floor(monthTotal / 50000), 1000 + (6 - i) * 200),
-                    conversions: treesPlanted > 0 ? treesPlanted : Math.max(10 + Math.floor(monthTotal / 1000000), 15 + (6 - i) * 5)
+                    revenue: monthTotal,
+                    ordersCount: ordersInMonth.length,
+                    treesPlanted,
                 });
             }
 
-            // 2. Traffic sources
+            // 2. Channel & Source metrics based on real database records
             const activeBedsCount = await this.databaseService.cultivationBed.count({ where: { status: 'active' } }).catch(() => 0);
             const goldProfilesCount = await this.databaseService.businessProfile.count({ where: { rank: 'Gold' } }).catch(() => 0);
             const onlineOrdersCount = await this.databaseService.order.count({ where: { status: 'completed' } }).catch(() => 0);
@@ -101,39 +102,36 @@ export class BackofficeRepository {
             const businessContractsCount = await this.databaseService.eContract.count().catch(() => 0);
 
             const trafficSources = [
-                { name: "Vườn liên kết", visitors: Math.max(activeBedsCount * 250, 4000), fill: "hsl(var(--chart-1))", percentageChange: 0.15, icon: "Sprout" },
-                { name: "Đại lý phân phối", visitors: Math.max(goldProfilesCount * 300, 2500), fill: "hsl(var(--chart-2))", percentageChange: 0.22, icon: "Home" },
-                { name: "Đơn hàng Online", visitors: Math.max(onlineOrdersCount * 120, 2000), fill: "hsl(var(--chart-3))", percentageChange: 0.35, icon: "ShoppingBag" },
-                { name: "Khách ký gửi tự do", visitors: Math.max(freeGinsengCount * 80, 1000), fill: "hsl(var(--chart-4))", percentageChange: -0.05, icon: "User" },
-                { name: "Hợp đồng doanh nghiệp", visitors: Math.max(businessContractsCount * 150, 500), fill: "hsl(var(--chart-5))", percentageChange: 0.08, icon: "FileCheck" }
+                { name: "Vườn canh tác hoạt động", count: activeBedsCount, fill: "hsl(var(--chart-1))", icon: "Sprout" },
+                { name: "Đại lý Gold", count: goldProfilesCount, fill: "hsl(var(--chart-2))", icon: "Home" },
+                { name: "Đơn hàng hoàn tất", count: onlineOrdersCount, fill: "hsl(var(--chart-3))", icon: "ShoppingBag" },
+                { name: "Cây có gói chăm sóc", count: freeGinsengCount, fill: "hsl(var(--chart-4))", icon: "User" },
+                { name: "Hợp đồng điện tử", count: businessContractsCount, fill: "hsl(var(--chart-5))", icon: "FileCheck" }
             ];
 
-            // 3. New vs Returning
+            // 3. User distribution (Orders vs Returning)
             const allOrders = await this.databaseService.order.findMany({ select: { userId: true } }).catch(() => []);
             const orderCounts: Record<string, number> = {};
             for (const o of allOrders) {
                 orderCounts[o.userId] = (orderCounts[o.userId] || 0) + 1;
             }
-            const returningUsers = Object.keys(orderCounts).filter(u => orderCounts[u] > 1);
-            const returningCount = Math.max(returningUsers.length, 2);
-            const newCount = Math.max(totalUsers - returningCount, 4);
+            const returningUsersCount = Object.keys(orderCounts).filter(u => orderCounts[u] > 1).length;
+            const singleOrderUsersCount = Object.keys(orderCounts).filter(u => orderCounts[u] === 1).length;
 
             const newVsReturning = {
                 summary: {
-                    newVisitors: newCount * 100,
-                    returningVisitors: returningCount * 120,
+                    singleOrderUsers: singleOrderUsersCount,
+                    returningUsers: returningUsersCount,
+                    totalRegisteredUsers: totalUsers,
                 },
-                data: [
-                    { month: "January", new: 80, returning: 40 },
-                    { month: "February", new: 120, returning: 60 },
-                    { month: "March", new: 150, returning: 80 },
-                    { month: "April", new: 110, returning: 90 },
-                    { month: "May", new: 180, returning: 110 },
-                    { month: "June", new: newCount * 25, returning: returningCount * 30 }
-                ]
+                data: monthlyRevenue.map(m => ({
+                    month: m.month,
+                    orders: m.ordersCount,
+                    trees: m.treesPlanted,
+                }))
             };
 
-            // 4. Visitors by Country
+            // 4. Distribution by Country
             const countriesGroup = await this.databaseService.user.groupBy({
                 by: ['countryId'],
                 _count: {
@@ -151,26 +149,18 @@ export class BackofficeRepository {
                     visitorsByCountry.push({
                         country: country.name,
                         code: country.alpha2Code.toLowerCase(),
-                        visitors: item._count.id * 1500,
+                        count: item._count.id,
                         fill: "hsl(var(--chart-1))",
-                        percentageChange: 0.05
                     });
                 }
             }
-            
-            if (visitorsByCountry.length === 0) {
-                visitorsByCountry.push(
-                    { country: "Vietnam", code: "vn", visitors: 8500, fill: "hsl(var(--chart-1))", percentageChange: 0.12 },
-                    { country: "United States", code: "us", visitors: 1200, fill: "hsl(var(--chart-2))", percentageChange: 0.05 },
-                    { country: "Singapore", code: "sg", visitors: 800, fill: "hsl(var(--chart-3))", percentageChange: 0.08 }
-                );
-            }
 
-            // 5. Engagement by Device
+            // 5. Active Sessions by Platform
+            const totalSessions = await this.databaseService.session.count().catch(() => 0);
+            const totalDevices = await this.databaseService.device.count().catch(() => 0);
             const engagementByDevice = [
-                { id: "1", device: "Desktop Web", sessions: 4200, bounceRate: "42.5%", sessionDuration: "4m 12s" },
-                { id: "2", device: "Mobile App (iOS/Android)", sessions: 6800, bounceRate: "28.3%", sessionDuration: "6m 45s" },
-                { id: "3", device: "Admin/System Panel", sessions: 1100, bounceRate: "15.8%", sessionDuration: "12m 30s" }
+                { id: "1", device: "Active User Sessions", count: totalSessions },
+                { id: "2", device: "Registered Devices", count: totalDevices },
             ];
 
             return {

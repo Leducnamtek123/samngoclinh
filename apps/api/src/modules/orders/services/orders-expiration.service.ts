@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { DatabaseService } from '@common/database/services/database.service';
 
 @Injectable()
@@ -10,7 +11,9 @@ export class OrdersExpirationService {
     /**
      * Quét và giải phóng các reservation đã hết hạn (expiresAt < NOW() và status = 'active').
      * Tự động chuyển các đơn hàng pending liên quan sang trạng thái 'cancelled'.
+     * Chạy định kỳ mỗi 2 phút.
      */
+    @Cron('*/2 * * * *')
     async cleanExpiredReservations(): Promise<{ releasedCount: number; cancelledOrdersCount: number }> {
         const now = new Date();
         const expiredReservations = await this.databaseService.stockReservation.findMany({

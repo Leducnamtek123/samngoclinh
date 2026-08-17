@@ -41,7 +41,11 @@ export class CartUserController {
 
     @CartUserSummaryDoc()
     @Response('cart.summary')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.user
+    )
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -54,7 +58,11 @@ export class CartUserController {
 
     @CartUserAddItemDoc()
     @Response('cart.addItem')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.user
+    )
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -68,7 +76,11 @@ export class CartUserController {
 
     @CartUserUpdateItemDoc()
     @Response('cart.updateItem')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.user
+    )
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -83,7 +95,11 @@ export class CartUserController {
 
     @CartUserRemoveItemDoc()
     @Response('cart.removeItem')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.user
+    )
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -97,7 +113,11 @@ export class CartUserController {
 
     @CartUserClearDoc()
     @Response('cart.clear')
-    @RoleProtected(EnumRoleType.user)
+    @RoleProtected(
+        EnumRoleType.superAdmin,
+        EnumRoleType.admin,
+        EnumRoleType.user
+    )
     @UserProtected(false)
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

@@ -31,10 +31,16 @@ export class WalletRepository {
         };
     }
 
-    async getTransactions(userId: string): Promise<IWalletTransactionItem[]> {
+    async getTransactions(
+        userId: string,
+        limit = 50,
+        skip = 0
+    ): Promise<IWalletTransactionItem[]> {
         const txns = await this.databaseService.walletTransaction.findMany({
             where: { userId },
             orderBy: { occurredAt: 'desc' },
+            take: limit,
+            skip: skip,
             select: {
                 id: true,
                 code: true,
@@ -59,9 +65,14 @@ export class WalletRepository {
         }));
     }
 
-    async listAllTransactions(): Promise<WalletTransaction[]> {
+    async listAllTransactions(
+        limit = 100,
+        skip = 0
+    ): Promise<WalletTransaction[]> {
         return this.databaseService.walletTransaction.findMany({
             orderBy: { occurredAt: 'desc' },
+            take: limit,
+            skip: skip,
         });
     }
 

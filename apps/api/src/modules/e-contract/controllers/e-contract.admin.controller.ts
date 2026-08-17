@@ -10,6 +10,7 @@ import { EContractService } from '@modules/e-contract/services/e-contract.servic
 import { EContractTemplateService, IContractTemplateItem } from '@modules/e-contract/services/e-contract.template.service';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractUpdateRequestDto } from '@modules/e-contract/dtos/request/e-contract.update.request.dto';
+import { ContractAmendmentCreateRequestDto } from '@modules/e-contract/dtos/request/contract-amendment.create.request.dto';
 import {
     EContractAdminCheckExpiryDoc,
     EContractAdminCreateDoc,
@@ -228,7 +229,7 @@ export class EContractAdminController {
     @Post('/:id/amendments')
     async createContractAmendment(
         @Param('id') id: string,
-        @Body() body: any
+        @Body() body: ContractAmendmentCreateRequestDto
     ): Promise<IResponseReturn<any>> {
         return this.eContractService.createAmendment(id, body);
     }

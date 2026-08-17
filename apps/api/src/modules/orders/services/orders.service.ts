@@ -727,7 +727,14 @@ export class OrdersService implements IOrdersService, OnModuleInit {
         const webhookSecret = this.configService.get<string>(
             'payment.webhookSecret'
         );
-        if (webhookSecret && payload.signature) {
+        if (webhookSecret) {
+            if (!payload.signature) {
+                throw new UnauthorizedException({
+                    statusCode: 401,
+                    message: 'Missing webhook signature',
+                });
+            }
+
             const rawData = `${payload.orderCode}|${payload.amount}|${payload.status}|${payload.gatewayRef}`;
             const expectedSig = crypto
                 .createHmac('sha256', webhookSecret)

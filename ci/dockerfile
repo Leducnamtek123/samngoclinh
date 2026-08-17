@@ -32,8 +32,9 @@ COPY --from=builder /app/apps/api/assets ./apps/api/assets
 # Set working directory to apps/api for running the app
 WORKDIR /app/apps/api
 
-# Create non-root user for security
-RUN addgroup -S ec2-user && adduser -S ec2-user -G ec2-user && \
+# Create uploads directory and non-root user for security
+RUN mkdir -p /app/apps/api/uploads && \
+    addgroup -S ec2-user && adduser -S ec2-user -G ec2-user && \
     chown -R ec2-user:ec2-user /app
 USER ec2-user
 
