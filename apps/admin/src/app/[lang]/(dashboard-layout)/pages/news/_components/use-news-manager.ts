@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
+import type { Article } from "@/types"
+
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
-
-import type { Article } from "@/types"
 
 interface UseNewsManagerProps {
   initialArticles: Article[]
@@ -190,7 +190,8 @@ export function useNewsManager({
       }
     } catch (err: unknown) {
       console.error(err)
-      const message = err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
+      const message =
+        err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
       setDialogState((prev) => ({
         ...prev,
         error: message,
@@ -323,7 +324,8 @@ export function useNewsManager({
       }
     } catch (err: unknown) {
       console.error(err)
-      const message = err instanceof Error ? err.message : "Lỗi máy chủ khi lưu tin tức"
+      const message =
+        err instanceof Error ? err.message : "Lỗi máy chủ khi lưu tin tức"
       setDialogState((prev) => ({
         ...prev,
         error: message,

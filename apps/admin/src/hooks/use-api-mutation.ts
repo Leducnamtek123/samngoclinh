@@ -6,18 +6,21 @@ import type {
   UseMutationResult,
 } from "@tanstack/react-query"
 
-import { deleteApiData, postApiData, putApiData } from "@/lib/api-client"
+import { deleteApiData, postApiData, putApiData } from "@/lib/api"
 
 export type MutationMethod = "POST" | "PUT" | "DELETE"
 
-interface MutationVariables<D = unknown> {
+export interface MutationVariables<D = unknown> {
   endpoint: string
   data?: D
   method?: MutationMethod
 }
 
 export interface ApiMutationOptions<T = unknown, D = unknown>
-  extends UseMutationOptions<ApiResponse<T>, Error, MutationVariables<D>> {
+  extends Omit<
+    UseMutationOptions<ApiResponse<T>, Error, MutationVariables<D>>,
+    "mutationFn"
+  > {
   invalidateQueries?: (string | readonly unknown[])[]
 }
 
@@ -25,6 +28,7 @@ export function useApiMutation<T = unknown, D = unknown>(
   options?: ApiMutationOptions<T, D>
 ): UseMutationResult<ApiResponse<T>, Error, MutationVariables<D>> {
   const queryClient = useQueryClient()
+  const { invalidateQueries, onSuccess, ...restOptions } = options || {}
 
   return useMutation<ApiResponse<T>, Error, MutationVariables<D>>({
     mutationFn: async ({ endpoint, data, method = "POST" }) => {
@@ -36,19 +40,16 @@ export function useApiMutation<T = unknown, D = unknown>(
       }
       return await postApiData<ApiResponse<T>, D>(endpoint, data)
     },
-    ...options,
-    onSuccess: (data, variables, context) => {
-      if (options?.invalidateQueries) {
-        options.invalidateQueries.forEach((key) => {
+    ...restOptions,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      if (invalidateQueries && invalidateQueries.length > 0) {
+        invalidateQueries.forEach((key) => {
           const queryKey = Array.isArray(key) ? key : [key]
           queryClient.invalidateQueries({ queryKey })
         })
-      } else {
-        queryClient.invalidateQueries()
       }
-      if (options?.onSuccess) {
-        // @ts-expect-error tanstack query v5 callback overload
-        options.onSuccess(data, variables, context)
+      if (onSuccess) {
+        onSuccess(data, variables, onMutateResult, context)
       }
     },
   })

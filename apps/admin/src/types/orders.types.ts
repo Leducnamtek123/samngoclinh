@@ -9,7 +9,12 @@ export type OrderStatus =
 
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded"
 
-export type ProductType = "ginseng" | "package" | "merchandise" | "mixed" | string
+export type ProductType =
+  | "ginseng"
+  | "package"
+  | "merchandise"
+  | "mixed"
+  | string
 
 export interface OrderItem {
   id: string

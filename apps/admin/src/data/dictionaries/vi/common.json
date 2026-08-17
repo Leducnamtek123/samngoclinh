@@ -4,7 +4,7 @@
     "create": "Tạo mới",
     "edit": "Chỉnh sửa",
     "delete": "Xóa",
-    "save": "Lưu thay đổi",
+    "save": "Lưu",
     "cancel": "Hủy bỏ",
     "search": "Tìm kiếm...",
     "filter": "Lọc",
@@ -26,7 +26,10 @@
     "reject": "Từ chối",
     "scan": "Quét mã QR",
     "generate": "Tạo mã",
-    "filterAll": "Lọc: Tất cả"
+    "filterAll": "Lọc: Tất cả",
+    "upload": "Tải lên",
+    "readAll": "Đọc tất cả",
+    "collapse": "Thu gọn"
   },
   "status": {
     "all": "Tất cả trạng thái",
@@ -34,7 +37,7 @@
     "available": "Có sẵn",
     "inactive": "Không hoạt động",
     "blocked": "Đã khóa",
-    "pending": "Chờ thanh toán",
+    "pending": "Chờ xử lý",
     "paid": "Đã thanh toán",
     "shipping": "Đang giao hàng",
     "completed": "Hoàn thành",
@@ -42,7 +45,7 @@
     "failed": "Thất bại",
     "success": "Thành công",
     "processing": "Đang xử lý",
-    "expired": "Hết hạn",
+    "expired": "Đã hết hạn",
     "draft": "Bản nháp",
     "approved": "Đã duyệt",
     "rejected": "Đã từ chối",
@@ -54,7 +57,16 @@
     "harvested": "Đã thu hoạch",
     "justNow": "Vừa xong",
     "verified": "Đã xác minh",
-    "unverified": "Chưa xác minh"
+    "unverified": "Chưa xác minh",
+    "noImage": "Chưa có ảnh",
+    "pending_issue": "Chờ phát hành",
+    "pending_signature": "Chờ ký",
+    "signed": "Đã ký",
+    "shipped": "Đang giao hàng",
+    "delivered": "Đã giao hàng",
+    "in_transit": "Đang vận chuyển",
+    "unpaid": "Chưa thanh toán",
+    "refunded": "Đã hoàn tiền"
   },
   "table": {
     "rowsPerPage": "Số hàng mỗi trang",
@@ -62,12 +74,42 @@
     "noResults": "Không tìm thấy dữ liệu.",
     "selected": "Đã chọn {count}",
     "showing": "Hiển thị {start} đến {end} trong tổng số {total} mục",
-    "total": "tổng số"
+    "total": "tổng số",
+    "actions": "Thao tác",
+    "loading": "Đang tải dữ liệu..."
   },
   "confirmations": {
     "deleteTitle": "Bạn có chắc chắn?",
     "deleteDescription": "Hành động này không thể hoàn tác. Dữ liệu sẽ bị xóa vĩnh viễn.",
     "confirmText": "Xác nhận xóa",
     "cancelText": "Hủy bỏ"
+  },
+  "generalSettings": {
+    "title": "Cấu Hình Hệ Thống Chung",
+    "subtitle": "Tổng hợp toàn bộ các tham số vận hành và cài đặt hệ thống được lưu trong cơ sở dữ liệu.",
+    "listTitle": "Danh Sách Tham Số Cấu Hình",
+    "listDesc": "Xem và chỉnh sửa trực tiếp các tham số cài đặt hệ thống.",
+    "loadingParams": "Đang tải danh sách tham số...",
+    "emptyParams": "Chưa có cấu hình bổ sung nào khác. Các cấu hình chính như Phí vận chuyển và Tỷ lệ điểm đã được phân chia theo menu con riêng.",
+    "defaultParamDesc": "Tham số cài đặt hệ thống",
+    "currentValue": "Giá trị hiện tại: {value}",
+    "infoNotice": "Bạn có thể dễ dàng quản lý nhanh các thông số Phí vận chuyển và Tỷ lệ điểm thưởng trực tiếp tại 2 menu con phía trên."
+  },
+  "search": {
+    "searchPlaceholder": "Tìm kiếm..."
+  },
+  "cancel": "Hủy",
+  "processing": "Đang xử lý...",
+  "save": "Lưu thay đổi",
+  "notFound": "Không tìm thấy",
+  "error": "Lỗi",
+  "back": "Quay lại",
+  "success": "Thành công",
+  "failed": "Thao tác thất bại",
+  "notification": {
+    "success": "Thao tác thành công",
+    "error": "Đã có lỗi xảy ra",
+    "warning": "Cảnh báo",
+    "info": "Thông báo"
   }
 }

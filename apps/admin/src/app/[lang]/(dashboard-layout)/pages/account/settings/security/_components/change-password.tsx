@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ChangePasswordForm } from "./chnage-password-form"
+import { ChangePasswordForm } from "./change-password-form"
 
 export function ChangePassword() {
   return (

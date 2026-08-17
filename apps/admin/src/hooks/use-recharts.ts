@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
+
 import type * as RechartsModule from "recharts"
 
 let rechartsCache: typeof RechartsModule | null = null
 
 export function useRecharts(): typeof RechartsModule | null {
-  const [recharts, setRecharts] = useState<typeof RechartsModule | null>(rechartsCache)
+  const [recharts, setRecharts] = useState<typeof RechartsModule | null>(
+    rechartsCache
+  )
 
   useEffect(() => {
     if (rechartsCache) {

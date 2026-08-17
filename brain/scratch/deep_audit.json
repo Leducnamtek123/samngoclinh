@@ -1,0 +1,1466 @@
+{
+  "mega_files": [
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "lines": 423
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "lines": 993
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "lines": 503
+    },
+    {
+      "file": "apps/admin/src/lib/utils.ts",
+      "lines": 410
+    },
+    {
+      "file": "apps/admin/src/components/ui/chart.tsx",
+      "lines": 407
+    },
+    {
+      "file": "apps/admin/src/components/ui/feedback-components.tsx",
+      "lines": 971
+    },
+    {
+      "file": "apps/admin/src/components/ui/sidebar.tsx",
+      "lines": 706
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/trees/_components/use-trees-manager.ts",
+      "lines": 456
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/products/category/_components/use-shop-items-manager.ts",
+      "lines": 456
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/orders/details/page.tsx",
+      "lines": 644
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/gardens/_components/use-gardens-manager.ts",
+      "lines": 435
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/_components/contracts-list.tsx",
+      "lines": 437
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/_components/contract-detail-view.tsx",
+      "lines": 458
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/_components/contract-edit-dialog.tsx",
+      "lines": 984
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/beds/_components/beds-dialogs.tsx",
+      "lines": 477
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/beds/_components/beds-interactive-grid.tsx",
+      "lines": 974
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/beds/_components/use-beds-table.ts",
+      "lines": 1037
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/banners/_components/banners-manager.tsx",
+      "lines": 721
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/kanban/_data/kanban.ts",
+      "lines": 411
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/email/_data/emails.ts",
+      "lines": 464
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/(design-system)/extended-ui/feedback/_components/feedback-client-showcase.tsx",
+      "lines": 561
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/(design-system)/charts/line-charts/_components/line-charts.tsx",
+      "lines": 456
+    },
+    {
+      "file": "apps/admin/src/app/(unlocalized)/docs/miscellaneous/sources-and-credits/_data/sources-and-credits.ts",
+      "lines": 507
+    }
+  ],
+  "use_effects": [],
+  "listeners_timers": [
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/products/category/_components/use-shop-items-manager.ts",
+      "line": 25,
+      "code": "img.addEventListener(\"load\", () => resolve(img))",
+      "missing": "removeEventListener"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/products/category/_components/use-shop-items-manager.ts",
+      "line": 26,
+      "code": "img.addEventListener(\"error\", (err) => reject(err))",
+      "missing": "removeEventListener"
+    }
+  ],
+  "heavy_bundle_imports": [
+    {
+      "file": "apps/web/src/components/animation/ScrollAnimationProvider.tsx",
+      "line": 5,
+      "lib": "gsap",
+      "code": "import gsap from 'gsap';"
+    },
+    {
+      "file": "apps/web/src/components/animation/ScrollAnimationProvider.tsx",
+      "line": 6,
+      "lib": "gsap",
+      "code": "import { ScrollTrigger } from 'gsap/ScrollTrigger';"
+    },
+    {
+      "file": "apps/web/src/components/animation/ScrollReveal.tsx",
+      "line": 4,
+      "lib": "gsap",
+      "code": "import gsap from 'gsap';"
+    },
+    {
+      "file": "apps/web/src/components/animation/ScrollReveal.tsx",
+      "line": 5,
+      "lib": "gsap",
+      "code": "import { ScrollTrigger } from 'gsap/ScrollTrigger';"
+    },
+    {
+      "file": "apps/web/src/components/animation/StaggerContainer.tsx",
+      "line": 4,
+      "lib": "gsap",
+      "code": "import gsap from 'gsap';"
+    },
+    {
+      "file": "apps/web/src/components/animation/StaggerContainer.tsx",
+      "line": 5,
+      "lib": "gsap",
+      "code": "import { ScrollTrigger } from 'gsap/ScrollTrigger';"
+    },
+    {
+      "file": "apps/admin/src/components/highlight.tsx",
+      "line": 5,
+      "lib": "shiki",
+      "code": "import { codeToHast } from \"shiki/bundle/web\""
+    },
+    {
+      "file": "apps/admin/src/components/highlight.tsx",
+      "line": 8,
+      "lib": "shiki",
+      "code": "import type { BundledLanguage } from \"shiki/bundle/web\""
+    },
+    {
+      "file": "apps/admin/src/hooks/use-recharts.ts",
+      "line": 2,
+      "lib": "recharts",
+      "code": "import type * as RechartsModule from \"recharts\""
+    },
+    {
+      "file": "apps/admin/src/components/ui/chart.tsx",
+      "line": 11,
+      "lib": "recharts",
+      "code": "import type { LegendProps, TooltipProps } from \"recharts\""
+    },
+    {
+      "file": "apps/admin/src/components/ui/code-block.tsx",
+      "line": 4,
+      "lib": "shiki",
+      "code": "import { bundledLanguages } from \"shiki/bundle/web\""
+    },
+    {
+      "file": "apps/admin/src/components/ui/code-block.tsx",
+      "line": 7,
+      "lib": "shiki",
+      "code": "import type { BundledLanguage } from \"shiki/bundle/web\""
+    },
+    {
+      "file": "apps/admin/src/components/ui/emoji-picker.tsx",
+      "line": 5,
+      "lib": "emoji-picker-react",
+      "code": "import { Theme } from \"emoji-picker-react\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/types.ts",
+      "line": 1,
+      "lib": "@fullcalendar",
+      "code": "import type { CalendarApi } from \"@fullcalendar/core/index.js\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 5,
+      "lib": "@fullcalendar",
+      "code": "import dayGridPlugin from \"@fullcalendar/daygrid\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 6,
+      "lib": "@fullcalendar",
+      "code": "import interactionPlugin from \"@fullcalendar/interaction\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 7,
+      "lib": "@fullcalendar",
+      "code": "import listPlugin from \"@fullcalendar/list\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 8,
+      "lib": "@fullcalendar",
+      "code": "import FullCalendar from \"@fullcalendar/react\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 9,
+      "lib": "@fullcalendar",
+      "code": "import timeGridPlugin from \"@fullcalendar/timegrid\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 12,
+      "lib": "@fullcalendar",
+      "code": "import type { DateInput, EventSourceInput } from \"@fullcalendar/core/index.js\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 13,
+      "lib": "@fullcalendar",
+      "code": "import type { EventImpl } from \"@fullcalendar/core/internal\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_contexts/calendar-context.tsx",
+      "line": 5,
+      "lib": "@fullcalendar",
+      "code": "import type { CalendarApi } from \"@fullcalendar/core/index.js\""
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/(design-system)/charts/line-charts/_components/line-charts.tsx",
+      "line": 3,
+      "lib": "recharts",
+      "code": "import type * as RechartsModule from \"recharts\""
+    }
+  ],
+  "react_query_issues": [
+    {
+      "file": "apps/web/src/hooks/queries/useCultivation.ts",
+      "line": 6,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<CultivationTree[]>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useCultivation.ts",
+      "line": 16,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<CultivationBed[]>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useEContract.ts",
+      "line": 13,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<EContractData[]>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useEContract.ts",
+      "line": 21,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<EContractData | null>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useIdentityVerification.ts",
+      "line": 50,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useIdentityVerification.ts",
+      "line": 58,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useNotifications.ts",
+      "line": 38,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useProfile.ts",
+      "line": 6,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<UserProfile | null>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useProfile.ts",
+      "line": 15,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<UserBusiness | null>({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useQuickPurchase.ts",
+      "line": 31,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "const careQuery = useQuery({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useQuickPurchase.ts",
+      "line": 39,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "const protectionQuery = useQuery({"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useWallet.ts",
+      "line": 6,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<WalletSummary | null>({"
+    },
+    {
+      "file": "apps/web/src/components/contract/EContractDocumentView.tsx",
+      "line": 46,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "const { data: dynamicTemplateHtml = '', isLoading: isLoadingTemplate } = useQuery({"
+    },
+    {
+      "file": "apps/admin/src/hooks/use-api-query.ts",
+      "line": 17,
+      "issue": "Missing explicit staleTime (default is 0ms, causes immediate refetch on mount/window focus)",
+      "code": "return useQuery<ApiResponse<T>, Error>({"
+    }
+  ],
+  "any_types": [
+    {
+      "file": "apps/web/next.config.ts",
+      "line": 7,
+      "code": "const baseConfig: any = {"
+    },
+    {
+      "file": "apps/web/next.config.ts",
+      "line": 42,
+      "code": "let configWithPlugins: any = createNextIntlPlugin('./src/lib/I18n.ts')(baseConfig);"
+    },
+    {
+      "file": "apps/web/tests/contracts/web-contract-lifecycle.test.ts",
+      "line": 30,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/tests/contracts/web-contract-lifecycle.test.ts",
+      "line": 47,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/tests/contracts/web-contract-lifecycle.test.ts",
+      "line": 72,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/tests/contracts/web-contract-lifecycle.test.ts",
+      "line": 97,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/tests/contracts/web-contract-lifecycle.test.ts",
+      "line": 113,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/src/components/CartClient.tsx",
+      "line": 29,
+      "code": "const apiItems: CartItem[] = res.data.items.map((it: any) => ({"
+    },
+    {
+      "file": "apps/web/src/components/HeaderNav.tsx",
+      "line": 19,
+      "code": "return tCat(category as any);"
+    },
+    {
+      "file": "apps/web/src/components/HeaderNav.tsx",
+      "line": 33,
+      "code": "new Set(items.flatMap((item: any) => item.category ? [item.category] : []))"
+    },
+    {
+      "file": "apps/web/src/components/NewsSidebar.tsx",
+      "line": 17,
+      "code": "recentArticles: any[];"
+    },
+    {
+      "file": "apps/web/src/components/NewsSidebar.tsx",
+      "line": 162,
+      "code": "{recentArticles.map((article: any, idx: number) => ("
+    },
+    {
+      "file": "apps/web/src/hooks/useAddressBook.ts",
+      "line": 64,
+      "code": "if ((res as any)?.id) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useAddressBook.ts",
+      "line": 65,
+      "code": "newAddr.id = (res as any).id;"
+    },
+    {
+      "file": "apps/web/src/hooks/useNotificationPopover.ts",
+      "line": 88,
+      "code": "const notifications: NotificationItem[] = rawItems.map((item: any) => ({"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileOrders.ts",
+      "line": 25,
+      "code": "const [userOrders, setUserOrders] = useState<any[]>([]);"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileOrders.ts",
+      "line": 51,
+      "code": "const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<any>(null);"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileOrders.ts",
+      "line": 78,
+      "code": "const newUnique = list.filter((o: any) => !existingIds.has(o.id || o.code));"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileOrders.ts",
+      "line": 114,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileOrders.ts",
+      "line": 132,
+      "code": "const handleViewOrderDetail = async (order: any) => {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 16,
+      "code": "export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 28,
+      "code": "const vn = countries.find((c: any) => c.alpha2Code === 'VN') || countries[0];"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 47,
+      "code": "await userService.updateProfile(body as any);"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 66,
+      "code": "} catch (phoneErr: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 79,
+      "code": "} catch (phoneErr: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 88,
+      "code": "queryClient.setQueryData(['profile', 'me'], (old: any) => {"
+    },
+    {
+      "file": "apps/web/src/hooks/useProfileUpdate.ts",
+      "line": 108,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/useUserHeaderMenu.ts",
+      "line": 43,
+      "code": "const { data: dynamicProfile } = useProfileMe((initialProfile as any) || undefined);"
+    },
+    {
+      "file": "apps/web/src/hooks/useUserHeaderMenu.ts",
+      "line": 48,
+      "code": "(effectiveProfile as any)?.name?.trim() ||"
+    },
+    {
+      "file": "apps/web/src/hooks/useUserHeaderMenu.ts",
+      "line": 56,
+      "code": "? notificationsData.filter((n: any) => !n.read && !n.isRead).length"
+    },
+    {
+      "file": "apps/web/src/services/content.service.ts",
+      "line": 4,
+      "code": "async getArticles(params?: Record<string, string>): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/content.service.ts",
+      "line": 10,
+      "code": "async getBanner(pageKey: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/content.service.ts",
+      "line": 24,
+      "code": "async getShippingFee(): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/cultivation.service.ts",
+      "line": 51,
+      "code": "}): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/econtract.service.ts",
+      "line": 15,
+      "code": "async signContract(id: string, signatureData: string, otpCode?: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/econtract.service.ts",
+      "line": 22,
+      "code": "async renewContract(id: string, durationMonths: number): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/econtract.service.ts",
+      "line": 38,
+      "code": "async verifyContract(code: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/notification.service.ts",
+      "line": 4,
+      "code": "async getList(): Promise<any[]> {"
+    },
+    {
+      "file": "apps/web/src/services/notification.service.ts",
+      "line": 9,
+      "code": "async markAsRead(id: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/notification.service.ts",
+      "line": 15,
+      "code": "async markAllAsRead(): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/notification.service.ts",
+      "line": 21,
+      "code": "async getUserSetting(): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/notification.service.ts",
+      "line": 26,
+      "code": "async updateUserSetting(payload: any): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/orders.service.ts",
+      "line": 16,
+      "code": "async checkout(payload: CheckoutPayload): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/orders.service.ts",
+      "line": 23,
+      "code": "async getMyOrders(params?: Record<string, string>): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/orders.service.ts",
+      "line": 28,
+      "code": "async getOrderDetail(orderId: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/orders.service.ts",
+      "line": 33,
+      "code": "async cancelOrder(orderId: string, reason?: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 30,
+      "code": "async updateProfile(payload: Partial<UserProfile>): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 37,
+      "code": "async changePassword(payload: { currentPassword?: string; newPassword?: string }): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 49,
+      "code": "async getIdentityDocumentHistories(): Promise<any[]> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 54,
+      "code": "async saveIdentityDocument(payload: any): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 66,
+      "code": "async saveSignature(signatureData: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 87,
+      "code": "async deleteAddress(addressId: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 93,
+      "code": "async requestEmailVerification(): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/user.service.ts",
+      "line": 99,
+      "code": "async confirmEmailVerification(otp: string): Promise<any> {"
+    },
+    {
+      "file": "apps/web/src/services/wallet.service.ts",
+      "line": 17,
+      "code": "async getTransactions(): Promise<any[]> {"
+    },
+    {
+      "file": "apps/web/src/utils/cart.test.ts",
+      "line": 18,
+      "code": "} as any;"
+    },
+    {
+      "file": "apps/web/src/utils/cart.test.ts",
+      "line": 22,
+      "code": "} as any);"
+    },
+    {
+      "file": "apps/web/src/utils/productUtils.ts",
+      "line": 1,
+      "code": "export const getProductImage = (item: any, index = 0): string | null => {"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useBanner.ts",
+      "line": 4,
+      "code": "export function useBanner(pageKey: string, initialData?: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useCheckout.ts",
+      "line": 45,
+      "code": "return ordersService.checkout(payload as any);"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useIdentityVerification.ts",
+      "line": 49,
+      "code": "export function useIdentityVerificationStatus(initialData?: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useIdentityVerification.ts",
+      "line": 57,
+      "code": "export function useIdentityVerificationHistory(initialData?: any) {"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useNotifications.ts",
+      "line": 48,
+      "code": "mutationFn: async (payload: any) => {"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/useQuickPurchase.ts",
+      "line": 70,
+      "code": "return ordersService.checkout(checkoutPayload as any);"
+    },
+    {
+      "file": "apps/web/src/components/address/AddressModal.tsx",
+      "line": 79,
+      "code": "const res: any = await userService.addAddress({"
+    },
+    {
+      "file": "apps/web/src/components/address/FormAddressPicker.tsx",
+      "line": 54,
+      "code": "formContext.setValue(name, address as any, {"
+    },
+    {
+      "file": "apps/web/src/components/address/FormAddressPicker.tsx",
+      "line": 76,
+      "code": "formContext.setValue(name, address as any, {"
+    },
+    {
+      "file": "apps/web/src/components/address/useMapLocationPicker.ts",
+      "line": 26,
+      "code": "const [customIcon, setCustomIcon] = useState<any>(null);"
+    },
+    {
+      "file": "apps/web/src/components/campaigns/ClaimPlantModal.tsx",
+      "line": 27,
+      "code": "item?: any;"
+    },
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "line": 249,
+      "code": "const [localAddresses, setLocalAddresses] = useState<any[]>(() => {"
+    },
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "line": 258,
+      "code": "const apiAddresses = (profile?.addresses || []).map((a: any) => ({"
+    },
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "line": 271,
+      "code": "const defaultAddr = allAddresses.find((a: any) => a.isDefault) || allAddresses[0];"
+    },
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "line": 286,
+      "code": "const chosen = allAddresses.find((a: any) => a.id === id);"
+    },
+    {
+      "file": "apps/web/src/components/cart/CartStepShipping.tsx",
+      "line": 297,
+      "code": "const handleModalAddSuccess = (newAddr: any) => {"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutConfirmClient.tsx",
+      "line": 130,
+      "code": "const orderData: any = await createOrderMutation.mutateAsync({"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutConfirmClient.tsx",
+      "line": 157,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutContractSigningCard.tsx",
+      "line": 58,
+      "code": "const kycDoc = kycStatusData as any;"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutContractSigningCard.tsx",
+      "line": 59,
+      "code": "const profMeta = profile as any;"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutContractSigningCard.tsx",
+      "line": 181,
+      "code": "(kycStatusData as any)?.status === 'APPROVED' ||"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutPaymentClient.tsx",
+      "line": 43,
+      "code": "const res: any = await paymentService.verifySepayOrder(orderId);"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutPaymentClient.tsx",
+      "line": 96,
+      "code": "const res: any = await paymentService.verifySepayOrder(orderId);"
+    },
+    {
+      "file": "apps/web/src/components/checkout/CheckoutPaymentClient.tsx",
+      "line": 130,
+      "code": "const res: any = await paymentService.verifySepayOrder(orderId);"
+    },
+    {
+      "file": "apps/web/src/components/contract/EContractDocumentView.tsx",
+      "line": 26,
+      "code": "contract: any;"
+    },
+    {
+      "file": "apps/web/src/components/contract/EContractDocumentView.tsx",
+      "line": 68,
+      "code": "const meta = (contract?.metadata || {}) as any;"
+    },
+    {
+      "file": "apps/web/src/components/contract/useEContractModal.ts",
+      "line": 133,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/contract/useEContractModal.ts",
+      "line": 142,
+      "code": "(contract as any)?.userSignatureUrl"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengBedsGrid.tsx",
+      "line": 10,
+      "code": "beds: any[];"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengBedsGrid.tsx",
+      "line": 32,
+      "code": "{beds.map((bed: any) => ("
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengDetailClient.tsx",
+      "line": 17,
+      "code": "initialData?: any;"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengDetailClient.tsx",
+      "line": 32,
+      "code": "? allPlants.filter((item: any) => item.id !== id).slice(0, 6)"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengDetailClient.tsx",
+      "line": 272,
+      "code": "{relatedPlants.map((relPlant: any) => {"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengProductCard.tsx",
+      "line": 6,
+      "code": "item: any;"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengProductCard.tsx",
+      "line": 7,
+      "code": "onOpenDetail: (item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengProductCard.tsx",
+      "line": 8,
+      "code": "onAddToCart?: (e: React.MouseEvent, item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/ginseng/GinsengProductCard.tsx",
+      "line": 9,
+      "code": "onQuickPurchase: (item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/home/HomeFeaturedProducts.tsx",
+      "line": 68,
+      "code": "const handleAddToCart = (e: React.MouseEvent, item: any) => {"
+    },
+    {
+      "file": "apps/web/src/components/home/HomeFeaturedProducts.tsx",
+      "line": 88,
+      "code": "const handleBuyNow = (e: React.MouseEvent, item: any) => {"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductDetailClient.tsx",
+      "line": 20,
+      "code": "initialData?: any;"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductDetailModal.tsx",
+      "line": 77,
+      "code": "onBuyItem({} as any, item, false);"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductDetailModal.tsx",
+      "line": 81,
+      "code": "onBuyItem({} as any, item, true);"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductsGrid.tsx",
+      "line": 15,
+      "code": "items: ProductItem[] | any[];"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductsGrid.tsx",
+      "line": 18,
+      "code": "onOpenDetail: (item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductsGrid.tsx",
+      "line": 19,
+      "code": "onAddToCart: (e: React.MouseEvent, item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductsGrid.tsx",
+      "line": 20,
+      "code": "onQuickPurchase: (item: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/products/ProductsGrid.tsx",
+      "line": 59,
+      "code": "{items.map((item: any) => {"
+    },
+    {
+      "file": "apps/web/src/components/profile/AccountLayout.tsx",
+      "line": 11,
+      "code": "profile?: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/DigitalSignatureCard.tsx",
+      "line": 256,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileAddressTab.tsx",
+      "line": 15,
+      "code": "onAddAddress: (data: any) => void;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileChangePasswordTab.tsx",
+      "line": 52,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileInfoTab.tsx",
+      "line": 43,
+      "code": "form: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 38,
+      "code": "submitKycMutation: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 92,
+      "code": "actualKycData: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 185,
+      "code": "actualKycData: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 401,
+      "code": "function KycHistoryList({ historyList, formatDate }: { historyList: any[]; formatDate: (d?: string) => string }) {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 413,
+      "code": "{historyList.map((item: any, idx: number) => {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 493,
+      "code": "actualKycData: any;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 725,
+      "code": "const actualKycData = (kycStatusData as any)?.data || kycStatusData;"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 851,
+      "code": "const payload: any = {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileKycTab.tsx",
+      "line": 889,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/profile/ProfileOrdersTab.tsx",
+      "line": 154,
+      "code": "{safeItems.length > 0 && safeItems.map((item: any, idx: number) => ("
+    },
+    {
+      "file": "apps/web/src/components/profile/VerifyEmailModal.tsx",
+      "line": 33,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/profile/VerifyEmailModal.tsx",
+      "line": 50,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/purchase/PlantPackageSelector.tsx",
+      "line": 6,
+      "code": "carePackagesList: any[];"
+    },
+    {
+      "file": "apps/web/src/components/purchase/PlantPackageSelector.tsx",
+      "line": 7,
+      "code": "protectionPackagesList: any[];"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 37,
+      "code": "const [localAddresses, setLocalAddresses] = useState<any[]>(() => {"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 47,
+      "code": "? profile.addresses.map((a: any) => ({"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 61,
+      "code": "const defaultAddr = addresses.find((a: any) => a.isDefault) || addresses[0];"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 65,
+      "code": "const selectedCareId = userSelectedCareId ?? (carePackages[0] as any)?.code ?? carePackages[0]?.id ?? '';"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 68,
+      "code": "const selectedProtectionId = userSelectedProtectionId ?? (protectionPackages[0] as any)?.code ?? protectionPackages[0]?.id ?? '';"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 92,
+      "code": "carePackages.find((c: any) => c.code === selectedCareId || c.id === selectedCareId) ||"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 94,
+      "code": "const careUnitPrice = selectedCareObj ? Number((selectedCareObj as any).price || 0) : 0;"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 97,
+      "code": "protectionPackages.find((p: any) => p.code === selectedProtectionId || p.id === selectedProtectionId) ||"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 99,
+      "code": "const protectionUnitPrice = selectedProtectionObj ? Number((selectedProtectionObj as any).price || 0) : 0;"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 164,
+      "code": "const res: any = await createQuickOrderMutation.mutateAsync({"
+    },
+    {
+      "file": "apps/web/src/components/purchase/useQuickPurchaseForm.ts",
+      "line": 187,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/components/ui/accordion.tsx",
+      "line": 71,
+      "code": "return React.cloneElement(child as React.ReactElement<any>, { itemValue: value });"
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 21,
+      "code": "const Form = React.forwardRef<HTMLFormElement, FormProps<any>>("
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 46,
+      "code": "error?: any;"
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 72,
+      "code": "let fieldState: any = {};"
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 96,
+      "code": "error?: any;"
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 180,
+      "code": "error?: any;"
+    },
+    {
+      "file": "apps/web/src/components/ui/form/Form.tsx",
+      "line": 191,
+      "code": "let body = error ? String((error as any)?.message || error) : children;"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 92,
+      "code": "return list.map((item: any) => item.image);"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 110,
+      "code": "function AboutSection({ t }: { t: any }) {"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 213,
+      "code": "function NewsSection({ t, latestArticles, newsImages, locale }: { t: any; latestArticles: any[]; newsImages: string[]; locale: string }) {"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 229,
+      "code": "{latestArticles.slice(0, 4).map((article: any, idx: number) => ("
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 411,
+      "code": "function CtaBanner({ t }: { t: any }) {"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/page.tsx",
+      "line": 468,
+      "code": ".sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/page.tsx",
+      "line": 99,
+      "code": "filteredArticles = filteredArticles.filter((article: any) =>"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/page.tsx",
+      "line": 107,
+      "code": "filteredArticles = filteredArticles.filter((article: any) => article.category === selectedCategory);"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/page.tsx",
+      "line": 111,
+      "code": "const sortedArticles = [...filteredArticles].sort((a: any, b: any) =>"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/page.tsx",
+      "line": 146,
+      "code": "{displayedArticles.map((article: any, idx: number) => ("
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/[slug]/page.tsx",
+      "line": 42,
+      "code": ".filter((a: any) => a.category === category && a.slug !== currentSlug)"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/[slug]/page.tsx",
+      "line": 133,
+      "code": "<span>{locale === 'en' ? 'Author:' : 'T\u00e1c gi\u1ea3:'} {(article.metadata as any)?.authorName || 'S\u00e2m Ng\u1ecdc Linh'}</span>"
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/[slug]/page.tsx",
+      "line": 174,
+      "code": "{relatedArticles.map((rel: any, idx: number) => ("
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/sepay-api-proxy/route.ts",
+      "line": 121,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/sepay-gateway-checkout/route.ts",
+      "line": 3,
+      "code": "function htmlEscapeJson(data: any): string {"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/sepay-gateway-checkout/route.ts",
+      "line": 166,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/[...path]/route.ts",
+      "line": 37,
+      "code": "let body: any;"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/[...path]/route.ts",
+      "line": 138,
+      "code": "let data: any = {};"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/[...path]/route.ts",
+      "line": 169,
+      "code": "} catch (e: any) {"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/sign-in/route.ts",
+      "line": 10,
+      "code": "let bodyPayload: any = {"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/sign-up/route.ts",
+      "line": 68,
+      "code": "} catch (error: any) {"
+    },
+    {
+      "file": "apps/admin/src/lib/api-client.ts",
+      "line": 62,
+      "code": "(error: any) => {"
+    },
+    {
+      "file": "apps/admin/src/lib/api-client.ts",
+      "line": 72,
+      "code": ";(customError as any).status = error.response?.status"
+    },
+    {
+      "file": "apps/admin/src/lib/api-client.ts",
+      "line": 73,
+      "code": ";(customError as any).response = error.response"
+    },
+    {
+      "file": "apps/admin/src/services/legal.service.ts",
+      "line": 83,
+      "code": "async getAmendments(id: string): Promise<ApiResponse<any[]>> {"
+    },
+    {
+      "file": "apps/admin/src/services/legal.service.ts",
+      "line": 84,
+      "code": "return fetchApiJson<any[]>(`/admin/contracts/${encodeURIComponent(id)}/amendments`)"
+    },
+    {
+      "file": "apps/admin/src/services/legal.service.ts",
+      "line": 87,
+      "code": "async createAmendment(id: string, data: any): Promise<ApiResponse<any>> {"
+    },
+    {
+      "file": "apps/admin/src/services/legal.service.ts",
+      "line": 88,
+      "code": "return fetchApiJson<any>(`/admin/contracts/${encodeURIComponent(id)}/amendments`, {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 47,
+      "code": "async getSelfProfile(): Promise<ApiResponse<any>> {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 48,
+      "code": "return fetchApiJson<any>(\"/v1/shared/user/profile\").catch(() => {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 49,
+      "code": "return fetchApiJson<any>(\"/user/profile\")"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 53,
+      "code": "async updateSelfProfile(data: SelfProfileUpdateInput): Promise<ApiResponse<any>> {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 55,
+      "code": "return await fetchApiJson<any>(\"/v1/shared/user/profile/update\", {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 63,
+      "code": "return await fetchApiJson<any>(\"/user/profile/update\", {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 72,
+      "code": "async uploadAvatar(file: File): Promise<ApiResponse<any>> {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 92,
+      "code": "}): Promise<ApiResponse<any>> {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 93,
+      "code": "return fetchApiJson<any>(\"/v1/shared/user/password/change\", {"
+    },
+    {
+      "file": "apps/admin/src/services/users.service.ts",
+      "line": 100,
+      "code": "return fetchApiJson<any>(\"/user/password/change\", {"
+    },
+    {
+      "file": "apps/admin/src/types/settings.types.ts",
+      "line": 23,
+      "code": "value: any"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/banners/page.tsx",
+      "line": 28,
+      "code": "banners = (payload.data as any)?.items || (Array.isArray(payload.data) ? payload.data : [])"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contacts/page.tsx",
+      "line": 52,
+      "code": ": (payload.data as any)?.items || []"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/page.tsx",
+      "line": 54,
+      "code": ": Array.isArray((contractRes.data as any)?.items)"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/page.tsx",
+      "line": 55,
+      "code": "? (contractRes.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/page.tsx",
+      "line": 57,
+      "code": "metadata = contractRes.metadata || (contractRes.data as any)?.metadata || null"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/page.tsx",
+      "line": 63,
+      "code": ": (usersRes.data as any)?.items || []"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/page.tsx",
+      "line": 69,
+      "code": ": (treesRes.data as any)?.items || []"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/news/page.tsx",
+      "line": 49,
+      "code": ": Array.isArray((payload.data as any)?.items)"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/news/page.tsx",
+      "line": 50,
+      "code": "? (payload.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/packages/page.tsx",
+      "line": 31,
+      "code": "} else if (Array.isArray((careRes.data as any)?.items)) {"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/packages/page.tsx",
+      "line": 32,
+      "code": "carePackages = (careRes.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/packages/page.tsx",
+      "line": 38,
+      "code": "} else if (Array.isArray((protRes.data as any)?.items)) {"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/packages/page.tsx",
+      "line": 39,
+      "code": "protectionPackages = (protRes.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/settings/general/_components/general-settings-manager.tsx",
+      "line": 20,
+      "code": "const [settingsList, setSettingsList] = useState<any[]>([])"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/packages/_components/use-packages-manager.ts",
+      "line": 101,
+      "code": "coverage: (pkg as any).coverage || String((pkg as ProtectionPackage).coveragePercentage || \"\"),"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/gardens/_components/use-gardens-manager.ts",
+      "line": 249,
+      "code": "const payloadBody: any = {"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/page.tsx",
+      "line": 42,
+      "code": ": Array.isArray((searchRes.data as any)?.items)"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/page.tsx",
+      "line": 43,
+      "code": "? (searchRes.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/_components/contracts-manager.tsx",
+      "line": 180,
+      "code": "} catch (err: any) {"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/_components/contract-detail-view.tsx",
+      "line": 109,
+      "code": ": Array.isArray((searchRes?.data as any)?.items)"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/contracts/[id]/_components/contract-detail-view.tsx",
+      "line": 110,
+      "code": "? (searchRes?.data as any).items"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/dashboards/analytics/_components/traffic-sources-table.tsx",
+      "line": 36,
+      "code": "name={(item.icon as any) || \"Globe\"}"
+    }
+  ],
+  "ts_ignores": [
+    {
+      "file": "apps/web/src/components/orders/OrderDetailModal.tsx",
+      "line": 6,
+      "code": "// @ts-expect-error react-dom type declaration"
+    },
+    {
+      "file": "apps/web/src/components/purchase/QuickPurchaseModal.tsx",
+      "line": 4,
+      "code": "// @ts-expect-error react-dom type declaration"
+    },
+    {
+      "file": "apps/web/src/components/ui/dialog.tsx",
+      "line": 4,
+      "code": "// @ts-expect-error react-dom type declaration"
+    },
+    {
+      "file": "apps/admin/src/components/highlight.tsx",
+      "line": 3,
+      "code": "// @ts-ignore"
+    },
+    {
+      "file": "apps/admin/src/hooks/use-api-mutation.ts",
+      "line": 50,
+      "code": "// @ts-expect-error tanstack query v5 callback overload"
+    },
+    {
+      "file": "apps/admin/src/components/ui/editor/index.tsx",
+      "line": 10,
+      "code": "// @ts-ignore"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/dashboards/ecommerce/_components/churn-rate-chart.tsx",
+      "line": 31,
+      "code": "// @ts-ignore"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/dashboards/crm/_components/sales-by-country-chart.tsx",
+      "line": 104,
+      "code": "// @ts-ignore"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/apps/calendar/_components/calendar-content.tsx",
+      "line": 81,
+      "code": "// @ts-ignore"
+    }
+  ],
+  "dangerously_set": [
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/news/[slug]/page.tsx",
+      "line": 163,
+      "code": "dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body || article.summary) }}",
+      "sanitized": true
+    },
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/contracts/[slug]/page.tsx",
+      "line": 108,
+      "code": "dangerouslySetInnerHTML={{",
+      "sanitized": true
+    },
+    {
+      "file": "apps/admin/src/components/ui/chart.tsx",
+      "line": 105,
+      "code": "dangerouslySetInnerHTML={{",
+      "sanitized": false
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/layout.tsx",
+      "line": 119,
+      "code": "dangerouslySetInnerHTML={{",
+      "sanitized": false
+    }
+  ],
+  "mock_data_dead_code": [],
+  "client_root_pages": [
+    {
+      "file": "apps/web/src/app/[locale]/(marketing)/trace/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/care-logs/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/kyc-approvals/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/qr-code/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/users/details/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/products/add/page.tsx",
+      "name": "page.tsx"
+    },
+    {
+      "file": "apps/admin/src/app/[lang]/(dashboard-layout)/pages/orders/details/page.tsx",
+      "name": "page.tsx"
+    }
+  ],
+  "duplicate_api_clients": [],
+  "gsap_leaflet_cleanup": [
+    {
+      "file": "apps/web/src/components/animation/ScrollAnimationProvider.tsx",
+      "type": "GSAP animation without gsap.context / useGSAP cleanup",
+      "evidence": "Uses gsap / ScrollTrigger directly without context revert"
+    }
+  ]
+}

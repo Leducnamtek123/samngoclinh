@@ -9,13 +9,13 @@ const EMPTY_CART: CartItem[] = [];
 let cachedRaw: string | null = null;
 let cachedSnapshot: CartItem[] = EMPTY_CART;
 
-let listeners: Array<() => void> = [];
+let listeners: (() => void)[] = [];
 
 function emitChange() {
   for (const listener of listeners) {
     listener();
   }
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
     window.dispatchEvent(new Event('cart_updated'));
     window.dispatchEvent(new Event('storage'));
   }
@@ -23,7 +23,9 @@ function emitChange() {
 
 export const cartStore = {
   getSnapshot(): CartItem[] {
-    if (typeof window === 'undefined') return EMPTY_CART;
+    if (typeof window === 'undefined') {
+      return EMPTY_CART;
+    }
     try {
       const saved = localStorage.getItem(CART_KEY) || localStorage.getItem('cart_items');
       if (saved === cachedRaw) {
@@ -58,7 +60,9 @@ export const cartStore = {
   },
 
   setItems(items: CartItem[]) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     const str = JSON.stringify(items);
     localStorage.setItem(CART_KEY, str);
     cachedRaw = str;
@@ -68,15 +72,17 @@ export const cartStore = {
 
   addItem(
     product: { id: string; name: string; price: number; image?: string; category?: string },
-    quantity = 1
+    quantity = 1,
   ) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     const previousItems = this.getSnapshot();
     const items = [...previousItems];
     const targetId = String(product.id);
     const existingIndex = items.findIndex((i) => String(i.id) === targetId);
 
-    if (existingIndex > -1 && items[existingIndex]) {
+    if (existingIndex !== -1 && items[existingIndex]) {
       const currentQty = Number(items[existingIndex].quantity) || 1;
       items[existingIndex] = {
         ...items[existingIndex],
@@ -110,7 +116,9 @@ export const cartStore = {
   },
 
   updateQuantity(id: string, delta: number): CartItem[] {
-    if (typeof window === 'undefined') return [];
+    if (typeof window === 'undefined') {
+      return [];
+    }
     const previousItems = this.getSnapshot();
     let targetQuantity = 0;
     const targetId = String(id);
@@ -149,7 +157,9 @@ export const cartStore = {
   },
 
   removeItem(id: string): CartItem[] {
-    if (typeof window === 'undefined') return [];
+    if (typeof window === 'undefined') {
+      return [];
+    }
     const targetId = String(id);
     const previousItems = this.getSnapshot();
     const next = previousItems.filter((item) => String(item.id) !== targetId);
@@ -169,7 +179,9 @@ export const cartStore = {
   },
 
   clear() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     localStorage.removeItem(CART_KEY);
     localStorage.removeItem('cart_items');
     cachedRaw = null;

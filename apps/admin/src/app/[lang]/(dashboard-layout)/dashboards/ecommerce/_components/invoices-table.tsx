@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-table"
 import type { InvoiceType } from "../types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   Card,
   CardContent,
@@ -35,21 +36,24 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { InvoiceTableToolbar } from "./invoice-table-toolbar"
-import { invoicesTableColumns } from "./invoices-table-columns"
+import { getInvoicesTableColumns } from "./invoices-table-columns"
 
 interface InvoicesTableProps {
   data: InvoiceType[]
 }
 
 export function InvoicesTable({ data }: InvoicesTableProps) {
+  const { t } = useTranslation()
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
+  const columns = getInvoicesTableColumns(t)
+
   const table = useReactTable({
     data: data,
-    columns: invoicesTableColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -69,7 +73,9 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
   return (
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
-        <CardTitle>Invoices</CardTitle>
+        <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">
+          {t("orders.title")}
+        </CardTitle>
         <InvoiceTableToolbar table={table} />
       </CardHeader>
       <CardContent className="p-0">
@@ -114,10 +120,10 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={invoicesTableColumns.length}
-                    className="h-24 text-center"
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
                   >
-                    No results.
+                    {t("common.table.noResults")}
                   </TableCell>
                 </TableRow>
               )}

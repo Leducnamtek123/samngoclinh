@@ -727,7 +727,14 @@ export class OrdersService implements IOrdersService, OnModuleInit {
         const webhookSecret = this.configService.get<string>(
             'payment.webhookSecret'
         );
-        if (webhookSecret && payload.signature) {
+        if (webhookSecret) {
+            if (!payload.signature) {
+                throw new UnauthorizedException({
+                    statusCode: 401,
+                    message: 'Missing webhook signature',
+                });
+            }
+
             const rawData = `${payload.orderCode}|${payload.amount}|${payload.status}|${payload.gatewayRef}`;
             const expectedSig = crypto
                 .createHmac('sha256', webhookSecret)
@@ -940,7 +947,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
                             const providerTrees = await tx.cultivationTree.findMany({
                                 where: {
-                                    ownerUserId: { not: order.userId },
+                                    ownerUserId: null,
                                     ageYear: ageYear,
                                     status: 'active',
                                 },
@@ -1020,7 +1027,11 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         });
 
                         // Auto-generate E-Contract for plant ownership & care
-                        const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                        const contractCode = order.code.startsWith('ORD-')
+                            ? order.code.replace(/^ORD-/, 'CTR-')
+                            : (order.code.startsWith('ORD')
+                                ? order.code.replace(/^ORD/, 'CTR')
+                                : `CTR-${order.code}`);
                         const existingContract = await tx.eContract.findUnique({
                             where: { code: contractCode },
                         });
@@ -1190,6 +1201,13 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                     const customerName = order.customerName || userAcc?.name || 'Quý khách';
                     const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
 
+                    const orderMeta = (order.metadata || {}) as any;
+                    const shippingInfo = orderMeta.shipping || {};
+                    const phone = (order as any).recipientPhone || (order as any).phone || shippingInfo.phone || shippingInfo.recipientPhone || '';
+                    const address = (order as any).shippingAddress || (order as any).address || shippingInfo.address || shippingInfo.shippingAddress || '';
+                    const orderDateStr = new Date(order.createdAt || Date.now()).toLocaleDateString('vi-VN');
+                    const totalFormatted = Number(order.total || 0).toLocaleString('vi-VN') + ' VNĐ';
+
                     // 1. Send Order Success Email
                     await this.notificationSmtpService.send({
                         templateName: EnumNotificationProcess.orderSuccess,
@@ -1197,35 +1215,54 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         templateData: {
                             customerName,
                             orderCode: order.code,
-                            createdAt: new Date().toLocaleDateString('vi-VN'),
-                            subtotal: Number(order.subtotal || 0).toLocaleString('vi-VN'),
-                            vatAmount: Number((order.metadata as any)?.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN'),
-                            totalAmount: Number(order.total || 0).toLocaleString('vi-VN'),
-                            orderUrl: `${webUrl}/profile?tab=orders`,
+                            orderDate: orderDateStr,
+                            createdAt: orderDateStr,
+                            subtotal: Number(order.subtotal || 0).toLocaleString('vi-VN') + ' VNĐ',
+                            vatAmount: Number(orderMeta.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN') + ' VNĐ',
+                            totalAmount: totalFormatted,
+                            orderTotal: totalFormatted,
+                            recipientPhone: phone || undefined,
+                            shippingAddress: address || undefined,
+                            orderLink: `${webUrl}/vi/profile?tabs=orders`,
+                            orderUrl: `${webUrl}/vi/profile?tabs=orders`,
                             supportEmail: this.configService.get<string>('email.support') || 'admin@samngoclinh.vn',
                         },
                         recipients: [customerEmail],
                     });
 
                     // 2. If contract was created, send Contract Created Email
-                    const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                    const contractCode = order.code.startsWith('ORD-')
+                        ? order.code.replace(/^ORD-/, 'CTR-')
+                        : (order.code.startsWith('ORD')
+                            ? order.code.replace(/^ORD/, 'CTR')
+                            : `CTR-${order.code}`);
                     const contract = await this.databaseService.eContract.findUnique({
                         where: { code: contractCode },
                     });
 
                     if (contract) {
+                        const contractMeta = (contract.metadata || {}) as any;
+                        const treeCount = contractMeta.treeQuantity || ((contract as any).items as any[])?.length || 1;
+                        const gardenName = contractMeta.gardenName || 'Vườn bảo tồn Nam Trà My, Kon Tum';
+                        const createdAtStr = new Date(contract.createdAt).toLocaleDateString('vi-VN');
+
                         await this.notificationSmtpService.send({
                             templateName: EnumNotificationProcess.contractCreated,
                             sender,
                             templateData: {
                                 customerName,
-                                orderCode: order.code,
+                                contractNumber: contract.code,
                                 contractCode: contract.code,
+                                orderCode: order.code,
                                 partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
                                 partyB: contract.partyB || customerName,
-                                contractValue: Number(contract.contractValue || order.total).toLocaleString('vi-VN'),
+                                treeCount,
+                                gardenName,
+                                createdAt: createdAtStr,
+                                contractValue: Number(contract.contractValue || order.total).toLocaleString('vi-VN') + ' VNĐ',
                                 expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
-                                signContractUrl: `${webUrl}/profile?tab=contracts`,
+                                signUrl: `${webUrl}/vi/profile?tabs=contracts`,
+                                signContractUrl: `${webUrl}/vi/profile?tabs=contracts`,
                             },
                             recipients: [customerEmail],
                         });

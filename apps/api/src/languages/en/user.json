@@ -12,10 +12,10 @@
     "deleteMobileNumber": "Mobile number deleted successfully.",
     "addAddress": "Address added successfully.",
     "deleteAddress": "Address deleted successfully.",
-    "getIdentityDocument": "Identity document retrieved successfully.",
-    "saveIdentityDocument": "Identity document saved successfully.",
-    "requestEmailVerification": "Verification OTP sent to your email.",
-    "confirmEmailVerification": "Email verified successfully.",
+    "getIdentityDocument": "Successfully retrieved identity document details.",
+    "saveIdentityDocument": "Successfully saved identity document and photos.",
+    "requestEmailVerification": "Successfully sent email verification code.",
+    "confirmEmailVerification": "Successfully confirmed email verification.",
     "claimUsername": "Username claimed successfully.",
     "checkUsername": "Username availability checked successfully.",
     "checkEmail": "Email availability checked successfully.",
@@ -66,5 +66,11 @@
         "verificationEmailResendLimitExceeded": "You have exceeded the limit for resending verification emails. Try again after {minutes} minutes.",
         "forgotPasswordRequestLimitExceeded": "You have exceeded the limit for password reset requests. Try again after {minutes} minutes.",
         "importEmailExist": "There are existing users with the provided email addresses. Email: {emails}"
-    }
+    },
+    "approveKyc": "Successfully approved identity verification (eKYC).",
+    "rejectKyc": "Successfully rejected identity verification (eKYC).",
+    "kycList": "Successfully retrieved eKYC verification list.",
+    "getIdentityDocumentHistories": "Successfully retrieved identity document history.",
+    "getSignature": "Successfully retrieved digital signature.",
+    "saveSignature": "Successfully saved digital signature."
 }

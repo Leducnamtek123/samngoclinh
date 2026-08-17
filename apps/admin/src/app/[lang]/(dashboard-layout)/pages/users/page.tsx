@@ -1,14 +1,14 @@
 import { Suspense } from "react"
-import type { Metadata } from "next"
 
 import type { AdminUser, LocaleType, PaginationMeta } from "@/types"
+import type { Metadata } from "next"
 
-import { usersService } from "@/services/users.service"
 import { getDictionary } from "@/lib/get-dictionary"
 import { createTranslator } from "@/lib/i18n"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { UsersTable } from "./_components/users-table"
+import { usersService } from "@/services/users.service"
 
 interface UsersPageProps {
   params: Promise<{
@@ -24,7 +24,8 @@ interface UsersPageProps {
 
 export const metadata: Metadata = {
   title: "Quản lý người dùng | Sâm Ngọc Linh Admin",
-  description: "Quản trị danh sách người dùng, khách hàng và đối tác trong hệ thống",
+  description:
+    "Quản trị danh sách người dùng, khách hàng và đối tác trong hệ thống",
 }
 
 export default async function UsersPage({
@@ -53,7 +54,8 @@ export default async function UsersPage({
       metadata = res.metadata || null
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching users:", e)
     errorMsg = message
   }
@@ -65,7 +67,8 @@ export default async function UsersPage({
           {t("navigation.users")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Quản lý tài khoản người dùng, phân quyền và trạng thái hoạt động trong hệ thống
+          Quản lý tài khoản người dùng, phân quyền và trạng thái hoạt động trong
+          hệ thống
         </p>
       </div>
 

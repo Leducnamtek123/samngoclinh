@@ -37,7 +37,8 @@ export function FileDropzone({
       const readAsDataUrl = (file: File): Promise<string> =>
         new Promise((resolve) => {
           const reader = new FileReader()
-          reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "")
+          reader.onload = () =>
+            resolve(typeof reader.result === "string" ? reader.result : "")
           reader.onerror = () => resolve("")
           reader.readAsDataURL(file)
         })

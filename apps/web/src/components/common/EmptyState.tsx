@@ -1,11 +1,13 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
+import { PackageOpen } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import React from 'react';
-import { PackageOpen, LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export interface EmptyStateProps {
+export type EmptyStateProps = {
   /** Title text or i18n string */
   title?: string;
   /** Description text explaining the empty state */
@@ -22,11 +24,11 @@ export interface EmptyStateProps {
   className?: string;
   /** Custom children elements to render below description */
   children?: React.ReactNode;
-}
+};
 
 export function EmptyState({
-  title = 'Không có dữ liệu',
-  description = 'Chưa có thông tin hiển thị tại đây.',
+  title,
+  description,
   icon: Icon = PackageOpen,
   actionLabel,
   onAction,
@@ -34,20 +36,24 @@ export function EmptyState({
   className,
   children,
 }: EmptyStateProps) {
+  const t = useTranslations('emptyState');
+  const resolvedTitle = title || t('title');
+  const resolvedDesc = description === undefined ? t('description') : description;
+
   return (
     <div
       className={cn(
         'flex flex-col items-center justify-center p-8 text-center rounded-xl border border-dashed border-border bg-card/50 my-4',
-        className
+        className,
       )}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted/80 text-muted-foreground mb-4">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/80 text-muted-foreground">
         <Icon className="h-7 w-7 stroke-[1.5]" />
       </div>
-      <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
-      {description && (
-        <p className="text-sm text-muted-foreground max-w-sm mb-4 leading-relaxed">
-          {description}
+      <h3 className="mb-1 text-base font-semibold text-foreground">{resolvedTitle}</h3>
+      {resolvedDesc && (
+        <p className="mb-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          {resolvedDesc}
         </p>
       )}
       {children}

@@ -4,7 +4,7 @@
     "create": "Create",
     "edit": "Edit",
     "delete": "Delete",
-    "save": "Save Changes",
+    "save": "Save",
     "cancel": "Cancel",
     "search": "Search...",
     "filter": "Filter",
@@ -26,11 +26,15 @@
     "reject": "Reject",
     "scan": "Scan QR Code",
     "generate": "Generate",
-    "filterAll": "Filter: All"
+    "filterAll": "Filter: All",
+    "upload": "Upload",
+    "readAll": "Mark all read",
+    "collapse": "Collapse"
   },
   "status": {
     "all": "All statuses",
     "active": "Active",
+    "available": "Available",
     "inactive": "Inactive",
     "blocked": "Blocked",
     "pending": "Pending",
@@ -53,7 +57,16 @@
     "harvested": "Harvested",
     "justNow": "Just now",
     "verified": "Verified",
-    "unverified": "Unverified"
+    "unverified": "Unverified",
+    "noImage": "No image",
+    "pending_issue": "Pending Issue",
+    "pending_signature": "Pending Signature",
+    "signed": "Signed",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "in_transit": "In Transit",
+    "unpaid": "Unpaid",
+    "refunded": "Refunded"
   },
   "table": {
     "rowsPerPage": "Rows per page",
@@ -61,12 +74,42 @@
     "noResults": "No results found.",
     "selected": "{count} selected",
     "showing": "Showing {start} to {end} of {total} entries",
-    "total": "total"
+    "total": "total",
+    "actions": "Actions",
+    "loading": "Loading data..."
   },
   "confirmations": {
     "deleteTitle": "Are you sure?",
     "deleteDescription": "This action cannot be undone. This will permanently delete the item.",
     "confirmText": "Yes, delete",
     "cancelText": "Cancel"
+  },
+  "generalSettings": {
+    "title": "General System Settings",
+    "subtitle": "Comprehensive list of operational parameters and system settings stored in the database.",
+    "listTitle": "System Configuration Parameters",
+    "listDesc": "View and directly edit system operational settings.",
+    "loadingParams": "Loading parameter list...",
+    "emptyParams": "No additional configurations yet. Primary settings like Shipping Fees and Reward Rates are managed in their dedicated submenus.",
+    "defaultParamDesc": "System configuration parameter",
+    "currentValue": "Current value: {value}",
+    "infoNotice": "You can quickly configure Shipping Fees and Reward Rates directly in the submenus above."
+  },
+  "search": {
+    "searchPlaceholder": "Search..."
+  },
+  "cancel": "Cancel",
+  "processing": "Processing...",
+  "save": "Save Changes",
+  "notFound": "Not Found",
+  "error": "Error",
+  "back": "Back",
+  "success": "Success",
+  "failed": "Operation failed",
+  "notification": {
+    "success": "Operation successful",
+    "error": "An error occurred",
+    "warning": "Warning",
+    "info": "Information"
   }
 }

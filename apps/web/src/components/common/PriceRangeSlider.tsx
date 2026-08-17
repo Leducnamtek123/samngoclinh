@@ -1,7 +1,9 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type PriceRangeSliderProps = {
   min: number;
@@ -16,103 +18,95 @@ type PriceRangeSliderProps = {
 export const PriceRangeSlider = ({
   min,
   max,
-  step = 10000,
+  step = 10_000,
   minPrice,
   maxPrice,
   onMinChange,
   onMaxChange,
 }: PriceRangeSliderProps) => {
+  const t = useTranslations('products');
   const [prevMinPrice, setPrevMinPrice] = useState(minPrice);
-  const [minInputVal, setMinInputVal] = useState<string>(
-    minPrice.toLocaleString('vi-VN') + ' đ'
-  );
+  const [minInputVal, setMinInputVal] = useState<string>(formatVNDPrice(minPrice));
   if (minPrice !== prevMinPrice) {
     setPrevMinPrice(minPrice);
-    setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
+    setMinInputVal(formatVNDPrice(minPrice));
   }
 
   const [prevMaxPrice, setPrevMaxPrice] = useState(maxPrice);
-  const [maxInputVal, setMaxInputVal] = useState<string>(
-    maxPrice.toLocaleString('vi-VN') + ' đ'
-  );
+  const [maxInputVal, setMaxInputVal] = useState<string>(formatVNDPrice(maxPrice));
   if (maxPrice !== prevMaxPrice) {
     setPrevMaxPrice(maxPrice);
-    setMaxInputVal(maxPrice.toLocaleString('vi-VN') + ' đ');
+    setMaxInputVal(formatVNDPrice(maxPrice));
   }
 
   const handleMinBlur = () => {
-    const rawNum = parseInt(minInputVal.replace(/\D/g, ''), 10);
-    if (isNaN(rawNum)) {
-      setMinInputVal(minPrice.toLocaleString('vi-VN') + ' đ');
-      return;
+    const rawVal = Number(minInputVal.replaceAll(/\D/g, ''));
+    if (Number.isNaN(rawVal)) {
+      setMinInputVal(formatVNDPrice(minPrice));
+    } else {
+      const clamped = Math.min(Math.max(rawVal, min), maxPrice - step);
+      onMinChange(clamped);
+      setMinInputVal(formatVNDPrice(clamped));
     }
-    const clamped = Math.max(min, Math.min(rawNum, maxPrice - step));
-    onMinChange(clamped);
-    setMinInputVal(clamped.toLocaleString('vi-VN') + ' đ');
   };
 
   const handleMaxBlur = () => {
-    const rawNum = parseInt(maxInputVal.replace(/\D/g, ''), 10);
-    if (isNaN(rawNum)) {
-      setMaxInputVal(maxPrice.toLocaleString('vi-VN') + ' đ');
-      return;
+    const rawVal = Number(maxInputVal.replaceAll(/\D/g, ''));
+    if (Number.isNaN(rawVal)) {
+      setMaxInputVal(formatVNDPrice(maxPrice));
+    } else {
+      const clamped = Math.max(Math.min(rawVal, max), minPrice + step);
+      onMaxChange(clamped);
+      setMaxInputVal(formatVNDPrice(clamped));
     }
-    const clamped = Math.min(max, Math.max(rawNum, minPrice + step));
-    onMaxChange(clamped);
-    setMaxInputVal(clamped.toLocaleString('vi-VN') + ' đ');
   };
 
-  const getPercent = (value: number) => {
-    const clamped = Math.max(min, Math.min(max, value));
-    return Math.round(((clamped - min) / (max - min || 1)) * 100);
-  };
-
-  const minPercent = getPercent(minPrice);
-  const maxPercent = getPercent(maxPrice);
+  const minPercent = ((minPrice - min) / (max - min)) * 100;
+  const maxPercent = ((maxPrice - min) / (max - min)) * 100;
 
   return (
-    <div className="space-y-3">
-      {/* Interactive Price Inputs */}
-      <div className="flex justify-between items-center gap-2 text-xs font-bold text-gray-700">
-        <Input
-          type="text"
-          value={minInputVal}
-          onChange={(e) => setMinInputVal(e.target.value)}
-          onFocus={() => {
-            const raw = minInputVal.replace(/\D/g, '');
-            setMinInputVal(raw);
-          }}
-          onBlur={handleMinBlur}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleMinBlur();
-          }}
-          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
-        />
-        <span className="text-gray-400 font-normal shrink-0">—</span>
-        <Input
-          type="text"
-          value={maxInputVal}
-          onChange={(e) => setMaxInputVal(e.target.value)}
-          onFocus={() => {
-            const raw = maxInputVal.replace(/\D/g, '');
-            setMaxInputVal(raw);
-          }}
-          onBlur={handleMaxBlur}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleMaxBlur();
-          }}
-          className="h-8 px-2 text-xs text-center font-mono border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-primary dark:text-emerald-400 font-bold focus:bg-white"
-        />
+    <div className="space-y-4">
+      {/* Price Input Controls */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <Input
+            id="min-price-input"
+            type="text"
+            value={minInputVal}
+            onChange={(e) => {
+              setMinInputVal(e.target.value);
+            }}
+            onBlur={handleMinBlur}
+            onKeyDown={(e) => e.key === 'Enter' && handleMinBlur()}
+            className="h-8 px-2 text-center text-xs"
+            placeholder={formatVNDPrice(min)}
+          />
+        </div>
+        <span className="text-xs text-gray-400">-</span>
+        <div className="flex-1">
+          <Input
+            id="max-price-input"
+            type="text"
+            value={maxInputVal}
+            onChange={(e) => {
+              setMaxInputVal(e.target.value);
+            }}
+            onBlur={handleMaxBlur}
+            onKeyDown={(e) => e.key === 'Enter' && handleMaxBlur()}
+            className="h-8 px-2 text-center text-xs"
+            placeholder={formatVNDPrice(max)}
+          />
+        </div>
       </div>
 
-      {/* Single Dual-Thumb Slider Track Container */}
-      <div className="relative w-full h-6 flex items-center">
-        {/* Background Track */}
-        <div className="absolute w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg pointer-events-none" />
+      {/* Dual Range Track */}
+      <div className="relative flex h-4 touch-none items-center select-none">
+        {/* Base Background Track */}
+        <div className="absolute h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700" />
 
-        {/* Active Range Highlight */}
+        {/* Selected Range Highlight */}
         <div
-          className="absolute h-2 bg-primary dark:bg-emerald-600 rounded-lg pointer-events-none"
+          className="absolute z-10 h-1.5 rounded-full bg-primary"
           style={{
             left: `${minPercent}%`,
             width: `${Math.max(0, maxPercent - minPercent)}%`,
@@ -125,13 +119,13 @@ export const PriceRangeSlider = ({
           min={min}
           max={max}
           step={step}
-          aria-label="Giá tối thiểu"
+          aria-label={t('filters.fromPrice', { price: minPrice })}
           value={minPrice}
           onChange={(e) => {
             const value = Math.min(Number(e.target.value), maxPrice - step);
             onMinChange(value);
           }}
-          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-30 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+          className="pointer-events-none absolute z-30 h-2 w-full cursor-pointer appearance-none bg-transparent focus:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:shadow-md [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
         />
 
         {/* Max Thumb Slider */}
@@ -140,13 +134,13 @@ export const PriceRangeSlider = ({
           min={min}
           max={max}
           step={step}
-          aria-label="Giá tối đa"
+          aria-label={t('filters.toPrice', { price: maxPrice })}
           value={maxPrice}
           onChange={(e) => {
             const value = Math.max(Number(e.target.value), minPrice + step);
             onMaxChange(value);
           }}
-          className="absolute w-full h-2 appearance-none bg-transparent pointer-events-none cursor-pointer z-40 focus:outline-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:appearance-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+          className="pointer-events-none absolute z-40 h-2 w-full cursor-pointer appearance-none bg-transparent focus:outline-none [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:shadow-md [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
         />
       </div>
     </div>

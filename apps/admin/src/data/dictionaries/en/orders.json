@@ -15,5 +15,40 @@
     "4": "4-Year-Old Ginseng",
     "5": "5-Year-Old Ginseng",
     "6": "Ginseng > 5 Years Old"
+  },
+  "fields": {
+    "orderCode": "Order Code",
+    "customer": "Customer",
+    "orderDate": "Order Date",
+    "totalAmount": "Total Amount",
+    "deliveryStatus": "Delivery Status"
+  },
+  "deliveryStatus": {
+    "Delivered": "Delivered",
+    "Shipped": "Shipped",
+    "In Transit": "In Transit",
+    "Processing": "Processing",
+    "Pending": "Pending"
+  },
+  "transactions": {
+    "title": "Transaction & Payment Management",
+    "subtitle": "Transaction history for wallet balances, deposits/withdrawals, and system revenue.",
+    "totalCount": "Total Transactions",
+    "totalCountDesc": "Transactions recorded in the system",
+    "totalCredit": "Total Credit Transactions",
+    "totalCreditDesc": "Deposits & Top-ups",
+    "totalDebit": "Total Debit Transactions",
+    "totalDebitDesc": "Withdrawals & Payouts",
+    "realtimeLog": "System Transaction Log (Real-time API)",
+    "realtimeLogDesc": "List of deposits, withdrawals, and purchases collected from API",
+    "code": "Txn Code",
+    "description": "Description",
+    "type": "Type",
+    "amount": "Amount / Points",
+    "balanceAfter": "Balance After",
+    "status": "Status",
+    "time": "Time",
+    "credit": "Credit / Deposit",
+    "debit": "Debit / Withdrawal"
   }
 }

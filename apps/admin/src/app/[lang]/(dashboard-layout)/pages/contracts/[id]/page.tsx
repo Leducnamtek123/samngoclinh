@@ -1,10 +1,13 @@
 import { Suspense } from "react"
-import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { fetchApi } from "@/lib/api"
+
 import type { AdminUser, EContract } from "@/types"
+import type { Metadata } from "next"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContractDetailView } from "./_components/contract-detail-view"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 
 export const metadata: Metadata = {
   title: "Chi tiết hợp đồng điện tử | Sâm Ngọc Linh Admin",
@@ -21,46 +24,55 @@ interface ContractDetailPageProps {
 export default async function ContractDetailPage({
   params,
 }: ContractDetailPageProps) {
-  const { id } = await params
+  const { id, lang } = await params
 
   let contract: EContract | null = null
   let user: AdminUser | null = null
-  let users: AdminUser[] = []
   let errorMsg = ""
 
   try {
-    // 1. Fetch contracts to find the matching contract by id or code
-    const res = await fetchApi("/admin/contracts?perPage=500")
-    const payload = await res.json()
-    const items: EContract[] = Array.isArray(payload.data?.items)
-      ? payload.data.items
-      : Array.isArray(payload.data)
-      ? payload.data
-      : []
-
-    contract =
-      items.find(
-        (c: EContract) =>
-          c.id === id ||
-          c.contractCode === id ||
-          c.code === id ||
-          c.contractNumber === id
-      ) || null
-
-    // 2. Fetch users to get customer details
-    const usersRes = await fetchApi("/admin/user/list?page=1&perPage=500")
-    const usersPayload = await usersRes.json()
-    if (usersRes.status < 400) {
-      users = Array.isArray(usersPayload.data) ? usersPayload.data : []
+    // 1. Fetch contract by ID directly via legalService
+    const res = await legalService.getContractDetail(id).catch(() => null)
+    if (res?.data) {
+      contract = res.data
+    } else {
+      // 2. Fallback search by code if ID was code or custom format
+      const searchRes = await legalService
+        .getContracts({ search: id })
+        .catch(() => null)
+      if (searchRes?.data) {
+        const items: EContract[] = Array.isArray(searchRes.data)
+          ? searchRes.data
+          : Array.isArray((searchRes.data as { items?: EContract[] })?.items)
+            ? (searchRes.data as { items?: EContract[] }).items || []
+            : []
+        contract =
+          items.find(
+            (c: EContract) =>
+              c.id === id ||
+              c.contractCode === id ||
+              c.code === id ||
+              c.contractNumber === id
+          ) || null
+      }
     }
 
-    if (contract) {
-      user = users.find((u: AdminUser) => u.id === contract?.userId) || null
-    } else {
+    // 3. Fetch user details if contract has a customer
+    if (contract?.userId) {
+      const userRes = await usersService
+        .getUserDetail(contract.userId)
+        .catch(() => null)
+      if (userRes?.data) {
+        user = userRes.data
+      }
+    }
+
+    if (!contract) {
       errorMsg = "Không tìm thấy hợp đồng với mã định danh này."
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API."
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API."
     console.error("Error loading contract detail:", e)
     errorMsg = message
   }
@@ -75,6 +87,8 @@ export default async function ContractDetailPage({
         <ContractDetailView
           contract={contract}
           user={user}
+          lang={lang}
+          requestedId={id}
           errorMsg={errorMsg}
         />
       </Suspense>

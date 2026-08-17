@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Input, type InputProps } from './input';
+import { Input } from './input';
+import type { InputProps } from './input';
 
-export interface FloatingInputProps {
+export type FloatingInputProps = {
   label: string;
   id?: string;
   required?: boolean;
@@ -14,7 +15,7 @@ export interface FloatingInputProps {
   suffixIcon?: React.ReactNode;
   className?: string;
   children: React.ReactElement<InputProps>;
-}
+};
 
 export function FloatingInput({
   label,
@@ -60,11 +61,10 @@ export function FloatingInput({
     className: cn(
       'peer text-sm font-semibold h-12 pt-3 pb-1',
       suffixIcon && 'pr-10',
-      error &&
-        'border-red-500 focus-visible:ring-red-500/30 focus-visible:border-red-500',
+      error && 'border-red-500 focus-visible:ring-red-500/30 focus-visible:border-red-500',
       success &&
         'border-emerald-600 focus-visible:ring-emerald-600/30 focus-visible:border-emerald-600',
-      children.props.className
+      children.props.className,
     ),
   });
 
@@ -81,14 +81,14 @@ export function FloatingInput({
             ? 'top-0 -translate-y-1/2 text-xs font-bold text-gray-700 dark:text-gray-300'
             : 'top-1/2 -translate-y-1/2 text-[13px] font-medium text-gray-400 dark:text-gray-500',
           isFocused && !error && 'text-emerald-800 dark:text-emerald-400 font-bold',
-          error && 'text-red-500 font-bold'
+          error && 'text-red-500 font-bold',
         )}
       >
         {prefixIcon && (
           <span
             className={cn(
               'transition-[width,height,color] duration-200 flex items-center justify-center shrink-0',
-              isFloating ? 'w-3.5 h-3.5' : 'w-4 h-4 text-gray-400 dark:text-gray-500'
+              isFloating ? 'w-3.5 h-3.5' : 'w-4 h-4 text-gray-400 dark:text-gray-500',
             )}
           >
             {prefixIcon}
@@ -98,7 +98,7 @@ export function FloatingInput({
       </label>
 
       {suffixIcon && (
-        <div className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 text-gray-400 dark:text-gray-500 flex items-center justify-center">
+        <div className="absolute top-1/2 right-3.5 z-20 flex -translate-y-1/2 items-center justify-center text-gray-400 dark:text-gray-500">
           {suffixIcon}
         </div>
       )}
@@ -106,35 +106,26 @@ export function FloatingInput({
   );
 }
 
-export interface FloatingLabelInputProps
-  extends Omit<InputProps, 'placeholder'> {
+export type FloatingLabelInputProps = {
   label: string;
   prefixIcon?: React.ReactNode;
   suffixIcon?: React.ReactNode;
   error?: boolean;
   success?: boolean;
-}
+} & Omit<InputProps, 'placeholder'>;
 
-export const FloatingLabelInput = React.forwardRef<
-  HTMLInputElement,
-  FloatingLabelInputProps
->(
-  (
-    { label, prefixIcon, suffixIcon, error, success, className, ...props },
-    ref
-  ) => {
-    return (
-      <FloatingInput
-        label={label}
-        error={error}
-        success={success}
-        prefixIcon={prefixIcon}
-        suffixIcon={suffixIcon}
-        className={className}
-      >
-        <Input ref={ref} {...props} />
-      </FloatingInput>
-    );
-  }
+export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInputProps>(
+  ({ label, prefixIcon, suffixIcon, error, success, className, ...props }, ref) => (
+    <FloatingInput
+      label={label}
+      error={error}
+      success={success}
+      prefixIcon={prefixIcon}
+      suffixIcon={suffixIcon}
+      className={className}
+    >
+      <Input ref={ref} {...props} />
+    </FloatingInput>
+  ),
 );
 FloatingLabelInput.displayName = 'FloatingLabelInput';

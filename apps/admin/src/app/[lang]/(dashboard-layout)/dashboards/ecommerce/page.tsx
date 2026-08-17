@@ -1,11 +1,7 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { BackofficeOverview, Order, ShopItem } from "@/types"
-
-import { backofficeService } from "@/services/backoffice.service"
-import { catalogService } from "@/services/catalog.service"
-import { ordersService } from "@/services/orders.service"
+import type { Metadata } from "next"
 
 import { ChurnRate } from "./_components/churn-rate"
 import { CustomerInsights } from "./_components/customer-insights"
@@ -15,6 +11,9 @@ import { Overview } from "./_components/overview"
 import { RevenueBySource } from "./_components/revenue-by-source"
 import { SalesTrend } from "./_components/sales-trend"
 import { TopProducts } from "./_components/top-products"
+import { backofficeService } from "@/services/backoffice.service"
+import { catalogService } from "@/services/catalog.service"
+import { ordersService } from "@/services/orders.service"
 
 export const metadata: Metadata = {
   title: "Báo cáo Bán hàng & Doanh thu | Sâm Ngọc Linh Admin",
@@ -22,7 +21,14 @@ export const metadata: Metadata = {
     "Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng, sâm củ và hợp đồng ủy quyền canh tác",
 }
 
-export default async function EcommercePage() {
+interface EcommercePageProps {
+  params: Promise<{
+    lang: string
+  }>
+}
+
+export default async function EcommercePage(props: EcommercePageProps) {
+  await props.params
   let overview: BackofficeOverview | null = null
   let orders: Order[] = []
   let shopItems: ShopItem[] = []
@@ -55,19 +61,20 @@ export default async function EcommercePage() {
             Báo cáo Bán hàng & Doanh thu
           </h1>
           <p className="text-muted-foreground">
-            Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng, sâm củ và hợp đồng ủy quyền canh tác.
+            Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng,
+            sâm củ và hợp đồng ủy quyền canh tác.
           </p>
         </div>
       </div>
       <Overview stats={overview} />
-      <ChurnRate />
+      <ChurnRate overview={overview} />
       <RevenueBySource
         sources={overview?.trafficSources}
         totalRevenue={overview?.totalRevenue}
       />
       <div className="col-span-full grid gap-4 md:grid-cols-4">
         <CustomerInsights overview={overview} />
-        <GenderDistribution />
+        <GenderDistribution overview={overview} />
       </div>
       <SalesTrend
         monthlyRevenue={overview?.monthlyRevenue}

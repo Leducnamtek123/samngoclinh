@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
 import { AddressCardItem } from '@/components/address/AddressCardItem';
+import { Button } from '@/components/ui/button';
 import type { AddressItem } from '@/types';
 
 type AddressSelectorProps = {
@@ -19,9 +19,9 @@ export const AddressSelector = ({
   const t = useTranslations('addressSelector');
 
   return (
-    <div className="space-y-3 border-t border-gray-150 dark:border-gray-800 pt-5">
-      <div className="flex justify-between items-center">
-        <span className="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider block">
+    <div className="border-gray-150 space-y-3 border-t pt-5 dark:border-gray-800">
+      <div className="flex items-center justify-between">
+        <span className="block text-xs font-bold tracking-wider text-gray-800 uppercase dark:text-gray-200">
           {t('title')}
         </span>
         <Button
@@ -29,20 +29,20 @@ export const AddressSelector = ({
           variant="ghost"
           size="sm"
           onClick={onOpenAddAddressModal}
-          className="text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:underline cursor-pointer"
+          className="cursor-pointer text-xs font-bold text-emerald-800 hover:underline dark:text-emerald-400"
         >
           {t('addNewAddress')}
         </Button>
       </div>
 
       {addresses.length === 0 ? (
-        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl text-xs text-amber-800 dark:text-amber-300 font-medium flex justify-between items-center gap-2">
+        <div className="flex items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs font-medium text-amber-800 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-300">
           <span>{t('emptyState.description')}</span>
           <Button
             type="button"
             size="sm"
             onClick={onOpenAddAddressModal}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shrink-0 cursor-pointer"
+            className="shrink-0 cursor-pointer bg-emerald-700 text-xs font-bold text-white hover:bg-emerald-800"
           >
             {t('emptyState.addAddress')}
           </Button>
@@ -55,7 +55,9 @@ export const AddressSelector = ({
               address={addr}
               isSelected={selectedAddressId === addr.id}
               defaultBadgeLabel={t('defaultBadge')}
-              onSelect={(id) => setSelectedAddressId(id)}
+              onSelect={(id) => {
+                setSelectedAddressId(id);
+              }}
             />
           ))}
         </div>

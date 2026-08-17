@@ -1,23 +1,24 @@
-export interface TermPolicyItem {
+export type TermPolicyItem = {
   slug: string;
   title: string;
   shortDesc: string;
   lastUpdated: string;
-  sections: Array<{
+  sections: {
     heading: string;
     content: string[];
-    subSections?: Array<{
+    subSections?: {
       title: string;
       items: string[];
-    }>;
-  }>;
-}
+    }[];
+  }[];
+};
 
-export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
+export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'privacy-policy': {
     slug: 'privacy-policy',
     title: 'Chính sách bảo mật thông tin',
-    shortDesc: 'Quy định về thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng trên hệ thống Sâm Ngọc Linh.',
+    shortDesc:
+      'Quy định về thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng trên hệ thống Sâm Ngọc Linh.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -84,7 +85,8 @@ export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
   'shipping-policy': {
     slug: 'shipping-policy',
     title: 'Chính sách vận chuyển & Giao nhận',
-    shortDesc: 'Quy định chi tiết về phương thức giao hàng, thời gian vận chuyển và quy trình bảo quản đặc biệt đối với Sâm Ngọc Linh.',
+    shortDesc:
+      'Quy định chi tiết về phương thức giao hàng, thời gian vận chuyển và quy trình bảo quản đặc biệt đối với Sâm Ngọc Linh.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -117,7 +119,8 @@ export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
   'inspection-policy': {
     slug: 'inspection-policy',
     title: 'Chính sách kiểm hàng & Đồng kiểm',
-    shortDesc: 'Quy định quyền đồng kiểm hàng hóa khi nhận hàng nhằm bảo vệ quyền lợi tối đa của khách hàng.',
+    shortDesc:
+      'Quy định quyền đồng kiểm hàng hóa khi nhận hàng nhằm bảo vệ quyền lợi tối đa của khách hàng.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -151,7 +154,8 @@ export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
   'payment-policy': {
     slug: 'payment-policy',
     title: 'Chính sách thanh toán',
-    shortDesc: 'Hướng dẫn các phương thức thanh toán an toàn, minh bạch và quy trình xuất hóa đơn GTGT điện tử.',
+    shortDesc:
+      'Hướng dẫn các phương thức thanh toán an toàn, minh bạch và quy trình xuất hóa đơn GTGT điện tử.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -191,7 +195,8 @@ export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
   'return-policy': {
     slug: 'return-policy',
     title: 'Chính sách đổi trả & Hoàn tiền',
-    shortDesc: 'Cam kết bảo vệ quyền lợi tối thượng của khách hàng với chính sách đổi trả minh bạch và bồi thường chất lượng chuẩn Gen.',
+    shortDesc:
+      'Cam kết bảo vệ quyền lợi tối thượng của khách hàng với chính sách đổi trả minh bạch và bồi thường chất lượng chuẩn Gen.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -222,3 +227,112 @@ export const TERMS_POLICIES: Record<string, TermPolicyItem> = {
     ],
   },
 };
+
+export const TERMS_POLICIES_EN: Record<string, TermPolicyItem> = {
+  'privacy-policy': {
+    slug: 'privacy-policy',
+    title: 'Privacy Policy',
+    shortDesc:
+      'Regulations on collecting, using, storing and protecting personal data on the Ngoc Linh Ginseng system.',
+    lastUpdated: '15/08/2026',
+    sections: [
+      {
+        heading: 'I. PURPOSE AND SCOPE OF DATA COLLECTION',
+        content: [
+          'Data collection on the Ngoc Linh Ginseng platform includes: full name, email address, phone number, shipping address, and eKYC verification information for tree ownership contracts.',
+          'This is required information when registering an account, purchasing products, or using digital ginseng care services.',
+          'Users are responsible for safeguarding their account credentials, passwords, and registered email inbox.',
+        ],
+      },
+      {
+        heading: 'II. SCOPE OF INFORMATION USAGE',
+        content: [
+          'We use the collected information for: 1. Processing orders and delivering authentic ginseng products; 2. Managing tree ownership records and issuing digital signature contracts; 3. Sending growth tracking updates and farm camera feeds; 4. Preventing fraudulent activities and securing user accounts.',
+        ],
+      },
+      {
+        heading: 'III. SECURITY COMMITMENT',
+        content: [
+          'Customer personal data is strictly protected under 256-bit SSL encryption, multi-layered firewalls, and regular security audits.',
+        ],
+      },
+    ],
+  },
+  'shipping-policy': {
+    slug: 'shipping-policy',
+    title: 'Shipping & Delivery Policy',
+    shortDesc:
+      'Detailed terms on shipping methods, delivery timeframes, and dedicated packaging for Ngoc Linh Ginseng.',
+    lastUpdated: '15/08/2026',
+    sections: [
+      {
+        heading: 'I. DELIVERY METHODS',
+        content: [
+          '1. Direct pickup at our official showrooms or farms in Nam Tra My, Quang Nam.',
+          '2. Nationwide expedited shipping with 100% transit insurance.',
+          '3. Digital transfer & Farm custody for tree ownership contracts.',
+        ],
+      },
+      {
+        heading: 'II. ESTIMATED TIMEFRAMES',
+        content: [
+          '• Express local delivery: within 2 - 4 hours.',
+          '• Major cities: 1 - 2 business days via air freight.',
+          '• Other provinces: 2 - 4 business days.',
+        ],
+      },
+    ],
+  },
+  'inspection-policy': {
+    slug: 'inspection-policy',
+    title: 'Inspection Policy',
+    shortDesc: '100% right of visual inspection before receiving and completing payment.',
+    lastUpdated: '15/08/2026',
+    sections: [
+      {
+        heading: 'I. RIGHT OF INSPECTION',
+        content: [
+          'All customers have the right to co-inspect the package integrity, seal stickers, and QR traceability codes upon delivery.',
+        ],
+      },
+    ],
+  },
+  'payment-policy': {
+    slug: 'payment-policy',
+    title: 'Payment Policy',
+    shortDesc: 'Guidelines on payment methods, secure processing, and electronic VAT invoicing.',
+    lastUpdated: '15/08/2026',
+    sections: [
+      {
+        heading: 'I. ACCEPTED PAYMENT METHODS',
+        content: [
+          '1. Cash on Delivery (COD) for physical items.',
+          '2. Automatic bank transfer via VietQR.',
+          '3. International credit/debit cards (Visa, MasterCard, JCB) via PCI-DSS certified gateways.',
+        ],
+      },
+    ],
+  },
+  'return-policy': {
+    slug: 'return-policy',
+    title: 'Return & Refund Policy',
+    shortDesc: '7-day hassle-free return and 200% DNA authenticity guarantee.',
+    lastUpdated: '15/08/2026',
+    sections: [
+      {
+        heading: 'I. RETURN CONDITIONS',
+        content: [
+          '1. Free replacement upon delivery if the package or bottle is damaged.',
+          '2. 7-day return window for manufacturing defects with intact seals.',
+          '3. 200% refund guarantee if any sample fails authentic Ngoc Linh ginseng DNA verification.',
+        ],
+      },
+    ],
+  },
+};
+
+export const TERMS_POLICIES = TERMS_POLICIES_VI;
+
+export function getTermsPolicies(locale?: string): Record<string, TermPolicyItem> {
+  return locale === 'en' ? TERMS_POLICIES_EN : TERMS_POLICIES_VI;
+}

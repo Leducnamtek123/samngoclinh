@@ -8,11 +8,14 @@ export async function POST(request: Request) {
     if (!email || !password) {
       return NextResponse.json(
         { message: 'Vui lòng điền đầy đủ email và mật khẩu.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const apiBaseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const apiBaseUrl =
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:3000/api';
 
     // Get default countryId from public country list
     let countryId = '';
@@ -27,8 +30,8 @@ export async function POST(request: Request) {
           countryId = items[0].id;
         }
       }
-    } catch (err) {
-      console.error('Failed to fetch country list for sign up:', err);
+    } catch (error) {
+      console.error('Failed to fetch country list for sign up:', error);
     }
 
     const signUpRes = await fetch(`${apiBaseUrl}/v1/public/user/sign-up`, {
@@ -50,13 +53,13 @@ export async function POST(request: Request) {
 
     if (!signUpRes.ok) {
       const payload = await signUpRes.json().catch(() => null);
-      const errorMsg = typeof payload?.message === 'string'
-        ? payload.message
-        : (Array.isArray(payload?.message) ? payload.message.join(', ') : 'Đăng ký không thành công. Vui lòng kiểm tra lại.');
-      return NextResponse.json(
-        { message: errorMsg },
-        { status: signUpRes.status }
-      );
+      const errorMsg =
+        typeof payload?.message === 'string'
+          ? payload.message
+          : Array.isArray(payload?.message)
+            ? payload.message.join(', ')
+            : 'Đăng ký không thành công. Vui lòng kiểm tra lại.';
+      return NextResponse.json({ message: errorMsg }, { status: signUpRes.status });
     }
 
     await signUpRes.json().catch(() => null);
@@ -65,11 +68,16 @@ export async function POST(request: Request) {
       success: true,
       message: 'Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.',
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign-up route handler error:', error);
     return NextResponse.json(
-      { message: error?.message || 'Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.' },
-      { status: 500 }
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.',
+      },
+      { status: 500 },
     );
   }
 }

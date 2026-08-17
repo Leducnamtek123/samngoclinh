@@ -32,7 +32,10 @@ export async function createArticleAction(payload: Record<string, unknown>) {
   }
 }
 
-export async function updateArticleAction(id: string, payload: Record<string, unknown>) {
+export async function updateArticleAction(
+  id: string,
+  payload: Record<string, unknown>
+) {
   try {
     if (!(await verifyAuth())) {
       return { success: false, error: "Unauthorized. Bạn cần đăng nhập." }
@@ -79,7 +82,10 @@ export async function deleteArticleAction(id: string) {
   }
 }
 
-export async function updateBannersAction(page: string, banners: Array<Record<string, unknown>>) {
+export async function updateBannersAction(
+  page: string,
+  banners: Array<Record<string, unknown>>
+) {
   try {
     if (!(await verifyAuth())) {
       return { success: false, error: "Unauthorized. Bạn cần đăng nhập." }
@@ -90,7 +96,10 @@ export async function updateBannersAction(page: string, banners: Array<Record<st
     })
     if (!res.ok) {
       const err = await res.json()
-      return { success: false, error: err.message || "Lỗi khi cập nhật banner." }
+      return {
+        success: false,
+        error: err.message || "Lỗi khi cập nhật banner.",
+      }
     }
     revalidatePath("/[lang]/content")
     return { success: true }
@@ -111,7 +120,10 @@ export async function updateSettingAction(key: string, value: string) {
     })
     if (!res.ok) {
       const err = await res.json()
-      return { success: false, error: err.message || "Lỗi khi cập nhật cài đặt." }
+      return {
+        success: false,
+        error: err.message || "Lỗi khi cập nhật cài đặt.",
+      }
     }
     revalidatePath("/[lang]/content")
     return { success: true }

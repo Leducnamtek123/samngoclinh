@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   getCartItems,
   addToCart,
@@ -13,7 +13,10 @@ describe('cartUtils', () => {
 
   beforeEach(() => {
     store = {};
-    global.window = global as any;
+    global.window = {
+      location: { origin: 'http://localhost:3000', pathname: '/', search: '' },
+    } as unknown as Window & typeof globalThis;
+    global.fetch = vi.fn().mockResolvedValue(new Response(JSON.stringify({ data: {} })));
     global.localStorage = {
       getItem: (key: string) => store[key] || null,
       setItem: (key: string, value: string) => {
@@ -31,7 +34,7 @@ describe('cartUtils', () => {
   });
 
   it('should initialize with empty cart items', () => {
-    expect(getCartItems()).toEqual([]);
+    expect(getCartItems()).toStrictEqual([]);
     expect(getCartCount()).toBe(0);
   });
 
@@ -39,7 +42,7 @@ describe('cartUtils', () => {
     const item = {
       id: 'P-1',
       name: 'Rượu Sâm Ngọc Linh Premium',
-      price: 1500000,
+      price: 1_500_000,
       image: '/assets/images/product.png',
       category: 'Rượu Sâm',
     };
@@ -57,7 +60,7 @@ describe('cartUtils', () => {
     const item = {
       id: 'P-1',
       name: 'Rượu Sâm Ngọc Linh Premium',
-      price: 1500000,
+      price: 1_500_000,
     };
 
     addToCart(item);
@@ -70,7 +73,7 @@ describe('cartUtils', () => {
   });
 
   it('should update quantity of existing item', () => {
-    const item = { id: 'P-1', name: 'Rượu Sâm', price: 500000 };
+    const item = { id: 'P-1', name: 'Rượu Sâm', price: 500_000 };
     addToCart(item);
 
     updateCartQuantity('P-1', 2);
@@ -81,7 +84,7 @@ describe('cartUtils', () => {
   });
 
   it('should remove item when quantity reaches 0 or remove API called', () => {
-    const item = { id: 'P-1', name: 'Rượu Sâm', price: 500000 };
+    const item = { id: 'P-1', name: 'Rượu Sâm', price: 500_000 };
     addToCart(item);
 
     removeFromCart('P-1');
@@ -95,7 +98,7 @@ describe('cartUtils', () => {
     expect(getCartItems()).toHaveLength(2);
 
     clearCart();
-    expect(getCartItems()).toEqual([]);
+    expect(getCartItems()).toStrictEqual([]);
     expect(getCartCount()).toBe(0);
   });
 });

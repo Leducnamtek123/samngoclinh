@@ -1,43 +1,74 @@
-import { BadgePercent, HandCoins, Users } from "lucide-react"
+import { BadgePercent, FileText, HandCoins, Users } from "lucide-react"
 
-import { overviewData } from "../_data/overview"
+import type { BackofficeOverview } from "@/types"
 
 import {
   DashboardCardActionsDropdown,
   DashboardOverviewCard,
 } from "@/components/dashboards/dashboard-card"
 
-export function Overview() {
+interface OverviewProps {
+  stats?: BackofficeOverview | null
+}
+
+export function Overview({ stats }: OverviewProps) {
+  const totalRevenue = stats?.totalRevenue || 0
+  const totalContracts = stats?.totalContracts || 0
+  const signedContracts = stats?.totalSignedContracts || 0
+  const totalUsers = stats?.totalUsers || 0
+
+  const totalSalesData = {
+    value: totalRevenue,
+    percentageChange: 0.05,
+    period: "Toàn hệ thống",
+  }
+
+  const contractsData = {
+    value: totalContracts,
+    percentageChange: 0.05,
+    period: "Tổng số",
+  }
+
+  const signedContractsData = {
+    value: signedContracts,
+    percentageChange: 0.05,
+    period: "Đã hoàn tất",
+  }
+
+  const totalUsersData = {
+    value: totalUsers,
+    percentageChange: 0.05,
+    period: "Toàn bộ",
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:col-span-2 md:grid-cols-4">
       <DashboardOverviewCard
-        data={overviewData.totalSales}
-        title="Total Sales"
-        period={overviewData.totalSales.period}
+        data={totalSalesData}
+        title="Tổng Doanh Thu Đầu Tư"
+        period={totalSalesData.period}
         action={<DashboardCardActionsDropdown />}
         icon={BadgePercent}
         formatStyle="currency"
       />
       <DashboardOverviewCard
-        data={overviewData.totalProfit}
-        title="Total Profit"
-        period={overviewData.totalProfit.period}
+        data={contractsData}
+        title="Hợp Đồng Khởi Tạo"
+        period={contractsData.period}
         action={<DashboardCardActionsDropdown />}
-        icon={HandCoins}
-        formatStyle="currency"
+        icon={FileText}
       />
       <DashboardOverviewCard
-        data={overviewData.revenueGrowth}
-        title="Revenue Growth"
-        period={overviewData.revenueGrowth.period}
+        data={signedContractsData}
+        title="Hợp Đồng Đã Ký"
+        period={signedContractsData.period}
         action={<DashboardCardActionsDropdown />}
         icon={HandCoins}
-        formatStyle="currency"
       />
       <DashboardOverviewCard
-        data={overviewData.newCustomers}
-        title="New Customers"
-        period={overviewData.newCustomers.period}
+        data={totalUsersData}
+        title="Nhà Đầu Tư & Khách Hàng"
+        period={totalUsersData.period}
         action={<DashboardCardActionsDropdown />}
         icon={Users}
       />

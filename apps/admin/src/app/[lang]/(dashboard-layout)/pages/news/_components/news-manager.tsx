@@ -2,6 +2,8 @@
 
 import { Plus, Search } from "lucide-react"
 
+import type { Article, PaginationMeta } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Article, PaginationMeta } from "@/types"
 import { NewsDialog } from "./news-dialog"
 import { NewsList } from "./news-list"
 import { useNewsManager } from "./use-news-manager"
@@ -28,38 +29,39 @@ interface NewsManagerProps {
   errorMsg?: string
 }
 
-const categoryOptions = [
-  { value: "news", label: "Tin tức" },
-  { value: "event", label: "Sự kiện" },
-  { value: "guide", label: "Hướng dẫn sử dụng" },
-  { value: "faq", label: "Kiến thức & FAQ" },
-]
-
-const categoryNameMap: Record<string, string> = {
-  news: "Tin tức",
-  event: "Sự kiện",
-  guide: "Hướng dẫn sử dụng",
-  faq: "Kiến thức & FAQ",
-}
-
-const statusOptions = [
-  { value: "published", label: "Đã xuất bản" },
-  { value: "draft", label: "Bản nháp" },
-  { value: "inactive", label: "Ngưng hiển thị" },
-]
-
-const statusNameMap: Record<string, string> = {
-  published: "Đã xuất bản",
-  draft: "Bản nháp",
-  inactive: "Ngưng hiển thị",
-}
-
 export function NewsManager({
   initialArticles,
   metadata,
   errorMsg: initialError,
 }: NewsManagerProps) {
   const { t } = useTranslation()
+
+  const categoryOptions = [
+    { value: "news", label: t("content.articles.categories.news") },
+    { value: "event", label: t("content.articles.categories.event") },
+    { value: "guide", label: t("content.articles.categories.guide") },
+    { value: "faq", label: t("content.articles.categories.faq") },
+  ]
+
+  const categoryNameMap: Record<string, string> = {
+    news: t("content.articles.categories.news"),
+    event: t("content.articles.categories.event"),
+    guide: t("content.articles.categories.guide"),
+    faq: t("content.articles.categories.faq"),
+  }
+
+  const statusOptions = [
+    { value: "published", label: t("content.articles.status.published") },
+    { value: "draft", label: t("content.articles.status.draft") },
+    { value: "inactive", label: t("content.articles.status.inactive") },
+  ]
+
+  const statusNameMap: Record<string, string> = {
+    published: t("content.articles.status.published"),
+    draft: t("content.articles.status.draft"),
+    inactive: t("content.articles.status.inactive"),
+  }
+
   const {
     filteredArticles,
     errorMsg,
@@ -90,18 +92,15 @@ export function NewsManager({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
-            Quản lý Tin tức
+            {t("content.articles.title")}
           </h1>
-          <p className="text-xs text-slate-400">
-            Danh sách bài viết tin tức, sự kiện nông trại, cẩm nang kiến thức và
-            FAQ sâm Ngọc Linh
-          </p>
+          <p className="text-xs text-slate-400">{t("content.subtitle")}</p>
         </div>
         <Button
           onClick={handleOpenCreate}
           className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 self-start md:self-auto shadow-sm"
         >
-          <Plus className="h-4 w-4" /> Thêm bài viết mới
+          <Plus className="h-4 w-4" /> {t("content.articles.addArticle")}
         </Button>
       </div>
 
@@ -111,7 +110,7 @@ export function NewsManager({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input
-              placeholder="Tìm kiếm tiêu đề, tóm tắt bài viết..."
+              placeholder={t("content.articles.searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 h-9 text-xs"
@@ -176,10 +175,10 @@ export function NewsManager({
         isOpen={confirmState.isOpen}
         onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={handleDeleteConfirm}
-        title="Xóa bài viết tin tức"
-        description="Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác."
-        confirmLabel="Xác nhận xóa"
-        cancelLabel="Hủy bỏ"
+        title={t("common.confirmations.deleteTitle")}
+        description={t("common.confirmations.deleteDescription")}
+        confirmLabel={t("common.confirmations.confirmText")}
+        cancelLabel={t("common.confirmations.cancelText")}
         type="danger"
         isLoading={confirmState.loading}
       />
@@ -189,7 +188,7 @@ export function NewsManager({
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -197,7 +196,7 @@ export function NewsManager({
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />

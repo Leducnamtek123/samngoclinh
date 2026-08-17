@@ -1,5 +1,10 @@
 export type KycStatus = "pending" | "approved" | "rejected"
-export type ContractStatus = "draft" | "pending_signature" | "signed" | "expired" | "cancelled"
+export type ContractStatus =
+  | "draft"
+  | "pending_signature"
+  | "signed"
+  | "expired"
+  | "cancelled"
 export type ContactStatus = "pending" | "processing" | "responded" | "closed"
 
 export interface KycRequest {
@@ -69,16 +74,23 @@ export interface EContract {
   isReminderSent?: boolean
   reminderSentAt?: string
   terms?: string
-  items?: Array<{ treeCode?: string; treeName?: string; price?: number; quantity?: number }>
+  items?: Array<{
+    treeCode?: string
+    treeName?: string
+    price?: number
+    quantity?: number
+  }>
   partyA?: string
-  partyB?: string | {
-    name?: string
-    phone?: string
-    idNumber?: string
-    address?: string
-    email?: string
-    cccd?: string
-  }
+  partyB?:
+    | string
+    | {
+        name?: string
+        phone?: string
+        idNumber?: string
+        address?: string
+        email?: string
+        cccd?: string
+      }
   metadata?: Record<string, unknown>
   amendments?: ContractAmendment[]
   signatures?: Array<Record<string, unknown>>

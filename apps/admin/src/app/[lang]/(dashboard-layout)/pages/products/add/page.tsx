@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +23,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export default function AddProductPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const params = useParams()
   const locale = params.lang as LocaleType
@@ -67,16 +69,16 @@ export default function AddProductPage() {
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(payload?.message || "Đã xảy ra lỗi khi thêm sản phẩm")
+        setErrorMsg(payload?.message || t("common.status.error"))
       } else {
-        setSuccessMsg("Thêm sâm thành công! Đang chuyển hướng...")
+        setSuccessMsg(t("common.status.success"))
         setTimeout(() => {
           router.push(ensureLocalizedPathname("/pages/products", locale))
         }, 1500)
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg("Không thể kết nối đến máy chủ API")
+      setErrorMsg(t("common.status.error"))
     } finally {
       setLoading(false)
     }
@@ -86,44 +88,39 @@ export default function AddProductPage() {
     <div className="container p-4 md:p-6 mx-auto max-w-2xl space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Thêm sâm Ngọc Linh
+          {t("products.addProduct")}
         </h1>
-        <p className="text-muted-foreground">
-          Thêm một độ tuổi hoặc chủng loại sâm mới vào danh mục sản phẩm tại
-          vườn.
-        </p>
+        <p className="text-muted-foreground">{t("products.subtitle")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Thông tin sâm</CardTitle>
-          <CardDescription>
-            Nhập đầy đủ thông tin bên dưới để khởi tạo sản phẩm.
-          </CardDescription>
+          <CardTitle>{t("products.addProduct")}</CardTitle>
+          <CardDescription>{t("products.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {errorMsg && (
               <Alert variant="destructive">
-                <AlertTitle>Lỗi</AlertTitle>
+                <AlertTitle>{t("common.status.error")}</AlertTitle>
                 <AlertDescription>{errorMsg}</AlertDescription>
               </Alert>
             )}
 
             {successMsg && (
               <Alert className="border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                <AlertTitle>Thành công</AlertTitle>
+                <AlertTitle>{t("common.status.success")}</AlertTitle>
                 <AlertDescription>{successMsg}</AlertDescription>
               </Alert>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="code">Mã sản phẩm (Code)</Label>
+                <Label htmlFor="code">{t("products.categoryForm.code")}</Label>
                 <Input
                   id="code"
                   name="code"
-                  placeholder="Ví dụ: plant-5y"
+                  placeholder="plant-5y"
                   required
                   value={formData.code}
                   onChange={handleChange}
@@ -131,11 +128,11 @@ export default function AddProductPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">Tên hiển thị</Label>
+                <Label htmlFor="name">{t("products.categoryForm.name")}</Label>
                 <Input
                   id="name"
                   name="name"
-                  placeholder="Ví dụ: Cây Sâm Ngọc Linh 5 năm"
+                  placeholder={t("products.categoryForm.name")}
                   required
                   value={formData.name}
                   onChange={handleChange}
@@ -145,7 +142,7 @@ export default function AddProductPage() {
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="ageYear">Tuổi (năm)</Label>
+                <Label htmlFor="ageYear">{t("trees.fields.ageYear")}</Label>
                 <Input
                   id="ageYear"
                   name="ageYear"
@@ -158,7 +155,7 @@ export default function AddProductPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="price">Giá bán (VND)</Label>
+                <Label htmlFor="price">{t("products.fields.price")}</Label>
                 <Input
                   id="price"
                   name="price"
@@ -171,7 +168,7 @@ export default function AddProductPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="stock">Tồn kho ban đầu</Label>
+                <Label htmlFor="stock">{t("products.fields.stock")}</Label>
                 <Input
                   id="stock"
                   name="stock"
@@ -185,12 +182,14 @@ export default function AddProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Mô tả sản phẩm</Label>
+              <Label htmlFor="description">
+                {t("products.categoryForm.description")}
+              </Label>
               <Textarea
                 id="description"
                 name="description"
                 rows={4}
-                placeholder="Nhập mô tả chi tiết về xuất xứ, đặc điểm của sâm..."
+                placeholder={t("products.categoryForm.description")}
                 value={formData.description}
                 onChange={handleChange}
               />
@@ -206,14 +205,16 @@ export default function AddProductPage() {
                   )
                 }
               >
-                Hủy bỏ
+                {t("common.actions.cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-emerald-600 hover:bg-emerald-700"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {loading ? "Đang xử lý..." : "Thêm mới"}
+                {loading
+                  ? t("common.status.processing")
+                  : t("common.actions.add")}
               </Button>
             </div>
           </form>

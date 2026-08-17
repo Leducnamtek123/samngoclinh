@@ -3,38 +3,23 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import {
-  FileText,
-  FileDown,
-  QrCode,
-  Eye,
-  Trash2,
-  UserCheck,
+  AlertTriangle,
   CheckCircle2,
   Clock,
-  AlertTriangle,
-  MoreVertical,
   ExternalLink,
+  Eye,
+  FileDown,
+  FileText,
+  MoreVertical,
+  QrCode,
   Send,
+  Trash2,
+  UserCheck,
 } from "lucide-react"
 
 import type { AdminUser, EContract } from "@/types"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +30,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface ContractsListProps {
   contracts: EContract[]
@@ -58,63 +60,6 @@ const formatVND = (value: number) => {
   return Number(value || 0).toLocaleString("vi-VN") + " đ"
 }
 
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case "draft":
-    case "pending_issue":
-      return (
-        <Badge className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300 font-semibold gap-1 text-[11px]">
-          <FileText className="w-3 h-3" /> Chờ BQL phát hành
-        </Badge>
-      )
-    case "signed":
-      return (
-        <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 font-semibold gap-1 text-[11px]">
-          <CheckCircle2 className="w-3 h-3" /> Đã ký
-        </Badge>
-      )
-    case "pending":
-    case "pending_signature":
-      return (
-        <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 font-semibold gap-1 text-[11px]">
-          <Clock className="w-3 h-3" /> Chờ khách ký
-        </Badge>
-      )
-    case "expired":
-      return (
-        <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-semibold gap-1 text-[11px]">
-          <AlertTriangle className="w-3 h-3" /> Hết hạn
-        </Badge>
-      )
-    case "cancelled":
-      return (
-        <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-300 font-semibold gap-1 text-[11px]">
-          Đã hủy
-        </Badge>
-      )
-    default:
-      return (
-        <Badge variant="outline" className="text-slate-600 font-medium text-[11px]">
-          {status}
-        </Badge>
-      )
-  }
-}
-
-const getContractTypeLabel = (type?: string) => {
-  switch (type) {
-    case "custody":
-    case "purchase_and_care":
-      return "Ký gửi chăm sóc"
-    case "purchase":
-      return "Mua cây / Sở hữu"
-    case "investment":
-      return "Đầu tư vườn sâm"
-    default:
-      return type || "Hợp đồng ký gửi"
-  }
-}
-
 export function ContractsList({
   contracts,
   users,
@@ -122,8 +67,76 @@ export function ContractsList({
   onDelete,
   onIssue,
 }: ContractsListProps) {
+  const { t } = useTranslation()
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api"
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "draft":
+      case "pending_issue":
+        return (
+          <Badge className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300 font-semibold gap-1 text-[11px]">
+            <FileText className="w-3 h-3" /> {t("contracts.status.DRAFT")}
+          </Badge>
+        )
+      case "signed":
+        return (
+          <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 font-semibold gap-1 text-[11px]">
+            <CheckCircle2 className="w-3 h-3" /> {t("contracts.status.SIGNED")}
+          </Badge>
+        )
+      case "pending":
+      case "pending_signature":
+        return (
+          <Badge className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 font-semibold gap-1 text-[11px]">
+            <Clock className="w-3 h-3" /> {t("contracts.status.PENDING_SIGN")}
+          </Badge>
+        )
+      case "expired":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-rose-50 text-rose-700 border-rose-200 font-semibold gap-1 text-[11px]"
+          >
+            <AlertTriangle className="w-3 h-3" />{" "}
+            {t("contracts.status.EXPIRED")}
+          </Badge>
+        )
+      case "cancelled":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-slate-100 text-slate-600 border-slate-300 font-semibold gap-1 text-[11px]"
+          >
+            {t("contracts.status.CANCELLED")}
+          </Badge>
+        )
+      default:
+        return (
+          <Badge
+            variant="outline"
+            className="text-slate-600 font-medium text-[11px]"
+          >
+            {status}
+          </Badge>
+        )
+    }
+  }
+
+  const getContractTypeLabel = (type?: string) => {
+    switch (type) {
+      case "custody":
+      case "purchase_and_care":
+        return t("contracts.types.CULTIVATION_INVESTMENT")
+      case "purchase":
+        return t("contracts.types.TREE_PURCHASE")
+      case "investment":
+        return t("contracts.types.CARE_PACKAGE")
+      default:
+        return type || t("contracts.types.OTHER")
+    }
+  }
 
   return (
     <>
@@ -131,25 +144,25 @@ export function ContractsList({
         <TableHeader className="bg-muted/40">
           <TableRow className="hover:bg-transparent border-b border-border">
             <TableHead className="w-[220px] font-semibold text-xs text-muted-foreground">
-              Mã HĐ & Tiêu đề
+              {t("contracts.fields.code")} & {t("contracts.fields.title")}
             </TableHead>
             <TableHead className="w-[200px] font-semibold text-xs text-muted-foreground">
-              Khách hàng
+              {t("contracts.fields.customer")}
             </TableHead>
             <TableHead className="w-[170px] font-semibold text-xs text-muted-foreground">
-              Nguồn & Loại HĐ
+              {t("contracts.fields.source")} & {t("contracts.fields.type")}
             </TableHead>
             <TableHead className="w-[140px] font-semibold text-xs text-muted-foreground text-right">
-              Giá trị hợp đồng
+              {t("contracts.fields.totalValue")}
             </TableHead>
             <TableHead className="w-[130px] font-semibold text-xs text-muted-foreground text-center">
-              Trạng thái
+              {t("contracts.fields.status")}
             </TableHead>
             <TableHead className="w-[110px] font-semibold text-xs text-muted-foreground">
-              Thời hạn
+              {t("contracts.fields.duration")}
             </TableHead>
             <TableHead className="w-[110px] font-semibold text-xs text-muted-foreground text-right">
-              Thao tác
+              {t("common.actions.actions")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -162,10 +175,7 @@ export function ContractsList({
               >
                 <FileText className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700 mb-2" />
                 <p className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
-                  Không tìm thấy hợp đồng nào
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Thử điều chỉnh lại từ khóa tìm kiếm hoặc bộ lọc trạng thái.
+                  {t("common.table.noResults")}
                 </p>
               </TableCell>
             </TableRow>
@@ -191,8 +201,8 @@ export function ContractsList({
               )
               const webUrl =
                 process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3002"
-              const pdfDownloadUrl = `${apiUrl}/public/contracts/${contractCode}/pdf`
-              const traceUrl = `${webUrl}/trace/contract/${contractCode}`
+              const pdfDownloadUrl = `${apiUrl}/public/contracts/pdf?code=${encodeURIComponent(contractCode)}`
+              const traceUrl = `${webUrl}/vi/trace/contract/${contractCode}`
 
               return (
                 <TableRow
@@ -252,14 +262,16 @@ export function ContractsList({
                           variant="outline"
                           className="bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800 text-[10px] font-medium w-max px-1.5 py-0"
                         >
-                          Đơn #{orderCode || "Tự động"}
+                          {orderCode
+                            ? `#${orderCode}`
+                            : t("contracts.types.TREE_PURCHASE")}
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
                           className="bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 text-[10px] font-medium w-max px-1.5 py-0"
                         >
-                          Thủ công
+                          {t("contracts.createManual")}
                         </Badge>
                       )}
                       <span className="text-[11px] text-muted-foreground truncate max-w-[150px]">
@@ -284,8 +296,8 @@ export function ContractsList({
                         }`}
                       >
                         {contract.paymentStatus === "paid"
-                          ? "Đã thanh toán"
-                          : "Chưa thanh toán"}
+                          ? t("common.status.paid")
+                          : t("common.status.pending")}
                       </span>
                     </div>
                   </TableCell>
@@ -315,7 +327,8 @@ export function ContractsList({
                           onClick={() => onIssue(contract.id)}
                           className="h-8 px-2.5 text-xs gap-1 bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-xs cursor-pointer"
                         >
-                          <Send className="w-3.5 h-3.5" /> Phát hành
+                          <Send className="w-3.5 h-3.5" />{" "}
+                          {t("common.actions.submit")}
                         </Button>
                       )}
 
@@ -325,7 +338,8 @@ export function ContractsList({
                           size="sm"
                           className="h-8 px-2.5 text-xs gap-1 shadow-2xs hover:bg-accent"
                         >
-                          <Eye className="w-3.5 h-3.5" /> Chi tiết
+                          <Eye className="w-3.5 h-3.5" />{" "}
+                          {t("common.actions.view")}
                         </Button>
                       </Link>
 
@@ -350,7 +364,7 @@ export function ContractsList({
                                 className="text-purple-700 dark:text-purple-300 font-semibold flex items-center gap-2 cursor-pointer"
                               >
                                 <FileText className="w-4 h-4" />
-                                Chỉnh sửa thông tin & HĐ
+                                {t("contracts.editContract")}
                               </Link>
                             </DropdownMenuItem>
                           )}
@@ -360,7 +374,7 @@ export function ContractsList({
                               className="text-purple-700 dark:text-purple-300 font-semibold flex items-center gap-2 cursor-pointer"
                             >
                               <Send className="w-4 h-4" />
-                              Phát hành & Gửi khách
+                              {t("common.actions.submit")}
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem asChild>
@@ -371,7 +385,7 @@ export function ContractsList({
                               className="flex items-center gap-2 cursor-pointer"
                             >
                               <FileDown className="w-4 h-4 text-slate-600" />
-                              Tải bản PDF chính thức
+                              {t("common.actions.print")} PDF
                             </a>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
@@ -382,7 +396,7 @@ export function ContractsList({
                               className="flex items-center gap-2 cursor-pointer"
                             >
                               <QrCode className="w-4 h-4 text-emerald-600" />
-                              Tra cứu QR Code Web
+                              {t("common.actions.scan")}
                               <ExternalLink className="w-3 h-3 ml-auto text-muted-foreground" />
                             </a>
                           </DropdownMenuItem>
@@ -392,7 +406,7 @@ export function ContractsList({
                             className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950 flex items-center gap-2 cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
-                            Xóa hợp đồng
+                            {t("common.actions.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -412,13 +426,17 @@ export function ContractsList({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa hợp đồng?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("common.confirmations.deleteTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này sẽ xóa hợp đồng khỏi hệ thống quản lý. Bạn có chắc chắn muốn tiếp tục không?
+              {t("common.confirmations.deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t("common.confirmations.cancelText")}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteTargetId) {
@@ -428,7 +446,7 @@ export function ContractsList({
               }}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Xác nhận xóa
+              {t("common.confirmations.confirmText")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -5,7 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import type { TreeFormValues } from "@/schemas/tree-schema"
+import type { AdminUser } from "@/types"
+import type { Bed } from "./tree-form-fields"
+
 import { treeFormSchema } from "@/schemas/tree-schema"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,8 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Form } from "@/components/ui/form"
-import { TreeFormFields, type Bed } from "./tree-form-fields"
-import type { AdminUser } from "@/types"
+import { TreeFormFields } from "./tree-form-fields"
 
 export type { Bed }
 
@@ -28,7 +31,14 @@ interface TreeDialogProps {
   mode: "create" | "edit"
   formData: TreeFormValues
   beds: Bed[]
-  users: AdminUser[] | Array<{ id: string; name?: string | null; username: string; email?: string }>
+  users:
+    | AdminUser[]
+    | Array<{
+        id: string
+        name?: string | null
+        username: string
+        email?: string
+      }>
   onSubmit: (values: TreeFormValues) => void
   loading: boolean
   error: string

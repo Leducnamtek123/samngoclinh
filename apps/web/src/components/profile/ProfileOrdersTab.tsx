@@ -1,14 +1,16 @@
-import { useEffect } from 'react';
-import { Link } from '@/lib/I18nNavigation';
-import { Button, Badge } from '@/components/ui';
-import { EmptyState, LoadingState, ErrorState } from '@/components/common';
-import { ShoppingBag } from 'lucide-react';
-import { formatVNDPrice } from '@/utils/formatters';
-import { formatLocalDateTime } from '@/utils/datetime';
-import { getOrderStatusInfo } from '@/utils/orderStatus';
-import type { StatusCounts, PaginationMeta } from '@/hooks/useProfileOrders';
+'use client';
 
-import type { Order } from '@/types';
+import { ShoppingBag } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { EmptyState, LoadingState, ErrorState } from '@/components/common';
+import { Button, Badge } from '@/components/ui';
+import type { StatusCounts, PaginationMeta } from '@/hooks/useProfileOrders';
+import { Link } from '@/lib/I18nNavigation';
+import type { Order, OrderItem } from '@/types';
+import { formatLocalDateTime } from '@/utils/datetime';
+import { formatVNDPrice } from '@/utils/formatters';
+import { getOrderStatusInfo } from '@/utils/orderStatus';
 
 type ProfileOrdersTabProps = {
   ordersLoading: boolean;
@@ -38,18 +40,59 @@ export const ProfileOrdersTab = ({
   onPayOrder,
   onRetry,
 }: ProfileOrdersTabProps) => {
+  const t = useTranslations('ordersTab');
+  const tCommon = useTranslations('actions');
+  const tStatus = useTranslations('status');
+
   const tabs = [
-    { id: 'all', label: 'Tất cả', count: statusCounts.all },
-    { id: 'pending', label: 'Chờ thanh toán', count: statusFilter === 'pending' ? Math.max(statusCounts.pending || 0, safeOrders.length) : statusCounts.pending },
-    { id: 'paid', label: 'Đã thanh toán', count: statusFilter === 'paid' ? Math.max(statusCounts.paid || 0, safeOrders.length) : statusCounts.paid },
-    { id: 'shipping', label: 'Đang giao hàng', count: statusFilter === 'shipping' ? Math.max(statusCounts.shipping || 0, safeOrders.length) : statusCounts.shipping },
-    { id: 'completed', label: 'Đã giao / Hoàn thành', count: statusFilter === 'completed' ? Math.max(statusCounts.completed || 0, safeOrders.length) : statusCounts.completed },
-    { id: 'cancelled', label: 'Đã hủy', count: statusFilter === 'cancelled' ? Math.max(statusCounts.cancelled || 0, safeOrders.length) : statusCounts.cancelled },
+    { id: 'all', label: t('all'), count: statusCounts.all },
+    {
+      id: 'pending',
+      label: t('pending'),
+      count:
+        statusFilter === 'pending'
+          ? Math.max(statusCounts.pending || 0, safeOrders.length)
+          : statusCounts.pending,
+    },
+    {
+      id: 'paid',
+      label: tStatus('paid'),
+      count:
+        statusFilter === 'paid'
+          ? Math.max(statusCounts.paid || 0, safeOrders.length)
+          : statusCounts.paid,
+    },
+    {
+      id: 'shipping',
+      label: t('shipping'),
+      count:
+        statusFilter === 'shipping'
+          ? Math.max(statusCounts.shipping || 0, safeOrders.length)
+          : statusCounts.shipping,
+    },
+    {
+      id: 'completed',
+      label: t('completed'),
+      count:
+        statusFilter === 'completed'
+          ? Math.max(statusCounts.completed || 0, safeOrders.length)
+          : statusCounts.completed,
+    },
+    {
+      id: 'cancelled',
+      label: t('cancelled'),
+      count:
+        statusFilter === 'cancelled'
+          ? Math.max(statusCounts.cancelled || 0, safeOrders.length)
+          : statusCounts.cancelled,
+    },
   ];
 
   // Infinite scroll observer setup
   useEffect(() => {
-    if (!hasMore || ordersLoading || !onLoadMore) return;
+    if (!hasMore || ordersLoading || !onLoadMore) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -57,35 +100,42 @@ export const ProfileOrdersTab = ({
           onLoadMore();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
-    const target = document.getElementById('infinite-scroll-trigger');
-    if (target) observer.observe(target);
+    const target = document.querySelector('#infinite-scroll-trigger');
+    if (target) {
+      observer.observe(target);
+    }
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [hasMore, ordersLoading, onLoadMore]);
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold text-gray-900">Lịch sử đơn hàng</h3>
-        <p className="text-xs text-gray-400 font-medium">Theo dõi tiến độ đơn hàng và danh sách các gói sản phẩm sâm Ngọc Linh</p>
+        <h3 className="text-lg font-bold text-gray-900">
+          {t('orderCode', { code: '' }).replace('#', '').trim()}
+        </h3>
+        <p className="text-xs font-medium text-gray-400">{t('noOrders')}</p>
       </div>
 
       {/* Filter Tabs Header */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-gray-200 no-scrollbar">
+      <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-gray-200 pb-2">
         {tabs.map((tab) => {
           const isActive = statusFilter === tab.id;
-          // Shopee Rule: 'all' tab never shows count. Other tabs show count ONLY if > 0.
           const showBadge = tab.id !== 'all' && (tab.count ?? 0) > 0;
 
           return (
             <button
               key={tab.id}
               type="button"
-              onClick={() => onStatusFilterChange(tab.id)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-[color,background-color,box-shadow] flex items-center gap-1.5 cursor-pointer ${
+              onClick={() => {
+                onStatusFilterChange(tab.id);
+              }}
+              className={`flex cursor-pointer items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold whitespace-nowrap transition-[color,background-color,box-shadow] ${
                 isActive
                   ? 'bg-emerald-700 text-white shadow-xs'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -93,9 +143,13 @@ export const ProfileOrdersTab = ({
             >
               <span>{tab.label}</span>
               {showBadge && (
-                <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-black ${
-                  isActive ? 'bg-emerald-800 text-white' : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
-                }`}>
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-black ${
+                    isActive
+                      ? 'bg-emerald-800 text-white'
+                      : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  }`}
+                >
                   ({tab.count})
                 </span>
               )}
@@ -105,21 +159,13 @@ export const ProfileOrdersTab = ({
       </div>
 
       {ordersLoading && safeOrders.length === 0 ? (
-        <LoadingState variant="centered" message="Đang tải lịch sử đơn hàng..." />
+        <LoadingState variant="centered" message={tCommon('loading')} />
       ) : ordersError ? (
-        <ErrorState
-          title="Không thể tải đơn hàng"
-          message={ordersError}
-          onRetry={onRetry}
-        />
+        <ErrorState title={tCommon('error')} message={ordersError} onRetry={onRetry} />
       ) : safeOrders.length === 0 ? (
-        <EmptyState
-          title="Không có đơn hàng"
-          description="Không có đơn hàng nào ở trạng thái này."
-          icon={ShoppingBag}
-        >
+        <EmptyState title={t('noOrders')} description={t('noOrders')} icon={ShoppingBag}>
           <Button asChild variant="default" className="mt-2">
-            <Link href="/ginseng">Ghé Cửa hàng ngay</Link>
+            <Link href="/products">{t('reorder')}</Link>
           </Button>
         </EmptyState>
       ) : (
@@ -128,48 +174,77 @@ export const ProfileOrdersTab = ({
             {safeOrders.map((ord) => {
               const safeItems = Array.isArray(ord?.items) ? ord.items : [];
               const statusInfo = getOrderStatusInfo(ord.status);
-              const finalTotal = ord.totalAmount != null ? Number(ord.totalAmount) : (ord.total != null ? Number(ord.total) : null);
+              const finalTotal =
+                ord.totalAmount == null
+                  ? ord.total == null
+                    ? null
+                    : Number(ord.total)
+                  : Number(ord.totalAmount);
 
               return (
-                <div key={ord.id || ord.code} className="border border-gray-200 rounded-xl p-5 space-y-3 bg-white shadow-2xs hover:shadow-xs transition-shadow">
-                  <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                <div
+                  key={ord.id || ord.code}
+                  className="space-y-3 rounded-xl border border-gray-200 bg-white p-5 shadow-2xs transition-shadow hover:shadow-xs"
+                >
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                     <div>
-                      <span className="font-bold text-gray-900 text-sm">Đơn hàng #{ord.code || ord.id}</span>
-                      <span className="text-xs text-gray-400 block mt-0.5">{formatLocalDateTime(ord.createdAt)}</span>
+                      <span className="text-sm font-bold text-gray-900">
+                        {t('orderCode', { code: ord.code || ord.id || '' })}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-gray-400">
+                        {t('placedAt', { date: formatLocalDateTime(ord.createdAt) })}
+                      </span>
                     </div>
                     <Badge variant="secondary" className={statusInfo.badgeClass}>
                       {statusInfo.label}
                     </Badge>
                   </div>
 
-                  {safeItems.length > 0 && safeItems.map((item: any, idx: number) => (
-                    <div key={item.id || item.productId || item.name || idx} className="flex justify-between items-center text-xs font-medium text-gray-700">
-                      <span>{item.name || 'Sản phẩm'} (x{item.quantity ?? 1})</span>
-                      <span>{item.price != null ? formatVNDPrice(Number(item.price) * Number(item.quantity ?? 1)) : '—'}</span>
-                    </div>
-                  ))}
+                  {safeItems.length > 0 &&
+                    safeItems.map((item: OrderItem, idx: number) => (
+                      <div
+                        key={item.id || item.name || idx}
+                        className="flex items-center justify-between text-xs font-medium text-gray-700"
+                      >
+                        <span>
+                          {item.name || 'Product'} (x{item.quantity ?? 1})
+                        </span>
+                        <span>
+                          {item.price == null
+                            ? '—'
+                            : formatVNDPrice(Number(item.price) * Number(item.quantity ?? 1))}
+                        </span>
+                      </div>
+                    ))}
 
-                  <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-2">
                     <span className="text-xs font-bold text-gray-900">
-                      Tổng tiền: <strong className="text-emerald-800 text-sm font-black">{finalTotal != null ? formatVNDPrice(finalTotal) : '—'}</strong>
+                      {t('totalAmount')}{' '}
+                      <strong className="text-sm font-black text-emerald-800">
+                        {finalTotal == null ? '—' : formatVNDPrice(finalTotal)}
+                      </strong>
                     </span>
                     <div className="flex items-center gap-2">
                       <Button
                         type="button"
                         variant="secondary"
                         size="sm"
-                        onClick={() => onViewDetail(ord)}
+                        onClick={() => {
+                          onViewDetail(ord);
+                        }}
                       >
-                        Chi tiết đơn hàng
+                        {t('viewDetails')}
                       </Button>
                       {statusInfo.canPay && (
                         <Button
                           type="button"
                           variant="emerald"
                           size="sm"
-                          onClick={() => onPayOrder(ord)}
+                          onClick={() => {
+                            onPayOrder(ord);
+                          }}
                         >
-                          Thanh toán
+                          {tCommon('checkout')}
                         </Button>
                       )}
                     </div>
@@ -184,25 +259,25 @@ export const ProfileOrdersTab = ({
             <div id="infinite-scroll-trigger" className="py-4 text-center">
               {ordersLoading ? (
                 <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500">
-                  <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                  <span>Đang tải thêm đơn hàng...</span>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+                  <span>{tCommon('loading')}</span>
                 </div>
               ) : (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={onLoadMore}
-                  className="text-xs font-bold text-emerald-800 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100"
+                  className="border-emerald-200 bg-emerald-50/50 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
                 >
-                  Tải thêm đơn hàng
+                  {tCommon('viewAll')}
                 </Button>
               )}
             </div>
           )}
 
           {!hasMore && safeOrders.length > 0 && (
-            <p className="text-center text-xs text-gray-400 font-medium py-3 border-t border-gray-100">
-              Đã hiển thị tất cả đơn hàng
+            <p className="border-t border-gray-100 py-3 text-center text-xs font-medium text-gray-400">
+              —
             </p>
           )}
         </div>
@@ -210,4 +285,3 @@ export const ProfileOrdersTab = ({
     </div>
   );
 };
-

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import type { TreeFormValues } from "@/schemas/tree-schema"
-import type { AdminUser, Bed, PaginationMeta, Tree } from "@/types"
+import type { AdminUser, Bed, Tree } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -227,7 +227,10 @@ export function useTreesManager({
         name: tree.name || "",
         bedCode: tree.bedCode || tree.bed?.code || "none",
         ownerUserId: tree.userId || (treeRecord.ownerUserId as string) || "",
-        ageYear: tree.ageYears !== undefined ? tree.ageYears : (treeRecord.ageYear as number) ?? 1,
+        ageYear:
+          tree.ageYears !== undefined
+            ? tree.ageYears
+            : ((treeRecord.ageYear as number) ?? 1),
         quantity: (treeRecord.quantity as number) ?? 1,
         healthStatus: tree.healthStatus || "Tốt",
         plantedAt: tree.plantedDate
@@ -243,7 +246,8 @@ export function useTreesManager({
           ? tree.estimatedHarvestDate.substring(0, 10)
           : (treeRecord.expectedHarvestAt as string)?.substring(0, 10) || "",
         priceBought:
-          treeRecord.priceBought !== undefined && treeRecord.priceBought !== null
+          treeRecord.priceBought !== undefined &&
+          treeRecord.priceBought !== null
             ? String(treeRecord.priceBought)
             : "",
         status: tree.status || "active",

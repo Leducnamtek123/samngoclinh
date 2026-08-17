@@ -14,6 +14,7 @@ import { EContract, EnumRoleType } from '@generated/prisma-client';
 import { EContractService } from '@modules/e-contract/services/e-contract.service';
 import { EContractSignRequestDto } from '@modules/e-contract/dtos/request/e-contract.sign.request.dto';
 import { EContractRenewRequestDto } from '@modules/e-contract/dtos/request/e-contract.renew.request.dto';
+import { ContractAmendmentSignRequestDto } from '@modules/e-contract/dtos/request/contract-amendment.sign.request.dto';
 import {
     EContractUserGetDoc,
     EContractUserListDoc,
@@ -35,8 +36,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -53,8 +53,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -72,8 +71,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -94,8 +92,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -115,8 +112,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -135,8 +131,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()
@@ -145,7 +140,7 @@ export class EContractUserController {
     async signMyContractAmendment(
         @Param('amendmentId') amendmentId: string,
         @AuthJwtPayload('userId') userId: string,
-        @Body() body: any,
+        @Body() body: ContractAmendmentSignRequestDto,
         @Req() req: Request
     ): Promise<IResponseReturn<any>> {
         const clientIp = getClientIp(req) ?? undefined;
@@ -156,8 +151,7 @@ export class EContractUserController {
     @RoleProtected(
         EnumRoleType.user,
         EnumRoleType.admin,
-        EnumRoleType.superAdmin,
-        EnumRoleType.provider
+        EnumRoleType.superAdmin
     )
     @UserProtected()
     @AuthJwtAccessProtected()

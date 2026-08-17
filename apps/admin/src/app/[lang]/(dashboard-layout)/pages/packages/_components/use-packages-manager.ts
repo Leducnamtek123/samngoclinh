@@ -1,9 +1,12 @@
 "use client"
 
-import React, { useState } from "react"
+import { useState } from "react"
+
 import type { CarePackage, ProtectionPackage } from "@/types"
+import type React from "react"
 import type { PackageFormData } from "./package-dialog"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { packagesService } from "@/services/packages.service"
 
 interface UsePackagesManagerProps {
@@ -17,6 +20,7 @@ export function usePackagesManager({
   initialProtectionPackages,
   initialError,
 }: UsePackagesManagerProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<"care" | "protection">("care")
   const [carePackages, setCarePackages] =
     useState<CarePackage[]>(initialCarePackages)
@@ -45,17 +49,15 @@ export function usePackagesManager({
   // Consolidated Dialog State
   const [dialogState, setDialogState] = useState<{
     isOpen: boolean
+    mode: "create" | "edit"
+    selectedPackage: CarePackage | ProtectionPackage | null
+    formData: PackageFormData
     loading: boolean
     error: string
-    selectedPackage: CarePackage | ProtectionPackage | null
-    mode: "create" | "edit"
-    formData: PackageFormData
   }>({
     isOpen: false,
-    loading: false,
-    error: "",
-    selectedPackage: null,
     mode: "create",
+    selectedPackage: null,
     formData: {
       code: "",
       name: "",
@@ -65,44 +67,49 @@ export function usePackagesManager({
       description: "",
       status: "active",
     },
+    loading: false,
+    error: "",
   })
 
   const handleOpenCreate = () => {
     setDialogState({
       isOpen: true,
-      loading: false,
-      error: "",
-      selectedPackage: null,
       mode: "create",
+      selectedPackage: null,
       formData: {
         code: "",
         name: "",
-        price: 100000,
+        price: 0,
         durationMonths: 12,
         coverage: "",
         description: "",
         status: "active",
       },
+      loading: false,
+      error: "",
     })
   }
 
   const handleOpenEdit = (pkg: CarePackage | ProtectionPackage) => {
-    const isCare = activeTab === "care"
     setDialogState({
       isOpen: true,
-      loading: false,
-      error: "",
-      selectedPackage: pkg,
       mode: "edit",
+      selectedPackage: pkg,
       formData: {
-        code: pkg.code,
-        name: pkg.name,
-        price: pkg.price,
+        code: pkg.code || "",
+        name: pkg.name || "",
+        price: pkg.price || 0,
         durationMonths: pkg.durationMonths || 12,
-        coverage: isCare ? "" : (pkg as ProtectionPackage).coveragePercentage ? `${(pkg as ProtectionPackage).coveragePercentage}%` : "",
+        coverage:
+          ("coverage" in pkg && typeof pkg.coverage === "string"
+            ? pkg.coverage
+            : "") ||
+          String((pkg as ProtectionPackage).coveragePercentage || ""),
         description: pkg.description || "",
         status: pkg.status || "active",
       },
+      loading: false,
+      error: "",
     })
   }
 
@@ -112,13 +119,13 @@ export function usePackagesManager({
     setErrorMsg("")
     setSuccessMsg("")
 
-    const { formData, mode, selectedPackage } = dialogState
+    const { mode, selectedPackage, formData } = dialogState
 
     if (!formData.code || !formData.name || !formData.price) {
       setDialogState((prev) => ({
         ...prev,
         loading: false,
-        error: "Vui lòng điền đầy đủ các thông tin bắt buộc (*)",
+        error: t("packages.errors.requiredFields"),
       }))
       return
     }
@@ -137,15 +144,18 @@ export function usePackagesManager({
         if (mode === "create") {
           const res = await packagesService.createCarePackage(bodyPayload)
           setCarePackages((prev) => [res.data, ...prev])
-          setSuccessMsg("Tạo gói chăm sóc thành công!")
+          setSuccessMsg(t("packages.toasts.createCareSuccess"))
         } else if (selectedPackage) {
-          const res = await packagesService.updateCarePackage(selectedPackage.id, bodyPayload)
+          const res = await packagesService.updateCarePackage(
+            selectedPackage.id,
+            bodyPayload
+          )
           setCarePackages((prev) =>
             prev.map((item) =>
               item.id === selectedPackage.id ? res.data : item
             )
           )
-          setSuccessMsg("Cập nhật gói chăm sóc thành công!")
+          setSuccessMsg(t("packages.toasts.updateCareSuccess"))
         }
       } else {
         const bodyPayload: Partial<ProtectionPackage> = {
@@ -160,21 +170,27 @@ export function usePackagesManager({
         if (mode === "create") {
           const res = await packagesService.createProtectionPackage(bodyPayload)
           setProtectionPackages((prev) => [res.data, ...prev])
-          setSuccessMsg("Tạo gói bảo hiểm thành công!")
+          setSuccessMsg(t("packages.toasts.createProtectionSuccess"))
         } else if (selectedPackage) {
-          const res = await packagesService.updateProtectionPackage(selectedPackage.id, bodyPayload)
+          const res = await packagesService.updateProtectionPackage(
+            selectedPackage.id,
+            bodyPayload
+          )
           setProtectionPackages((prev) =>
             prev.map((item) =>
               item.id === selectedPackage.id ? res.data : item
             )
           )
-          setSuccessMsg("Cập nhật gói bảo hiểm thành công!")
+          setSuccessMsg(t("packages.toasts.updateProtectionSuccess"))
         }
       }
 
       setDialogState((prev) => ({ ...prev, isOpen: false }))
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Lỗi khi lưu gói dịch vụ"
+      const message =
+        err instanceof Error
+          ? err.message
+          : t("packages.toasts.operationFailed")
       setDialogState((prev) => ({
         ...prev,
         error: message,
@@ -193,14 +209,17 @@ export function usePackagesManager({
       if (type === "care") {
         await packagesService.deleteCarePackage(id)
         setCarePackages((prev) => prev.filter((item) => item.id !== id))
-        setSuccessMsg("Đã xóa gói chăm sóc thành công!")
+        setSuccessMsg(t("packages.toasts.deleteCareSuccess"))
       } else {
         await packagesService.deleteProtectionPackage(id)
         setProtectionPackages((prev) => prev.filter((item) => item.id !== id))
-        setSuccessMsg("Đã xóa gói bảo hiểm thành công!")
+        setSuccessMsg(t("packages.toasts.deleteProtectionSuccess"))
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Lỗi kết nối máy chủ"
+      const message =
+        err instanceof Error
+          ? err.message
+          : t("packages.toasts.operationFailed")
       setErrorMsg(message)
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
@@ -210,8 +229,8 @@ export function usePackagesManager({
   const handleDelete = (id: string, name: string) => {
     setConfirmDialog({
       isOpen: true,
-      title: "Xác nhận xóa gói dịch vụ?",
-      description: `Bạn có chắc chắn muốn xóa "${name}"? Các cây sâm đã đăng ký gói này vẫn tiếp tục duy trì quyền lợi cho đến khi hết hạn.`,
+      title: t("packages.confirmDeleteTitle"),
+      description: t("packages.confirmDeleteDesc", { name }),
       action: () => performDelete(id, activeTab),
       loading: false,
     })

@@ -13,6 +13,7 @@ import {
   Upload,
 } from "lucide-react"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Button } from "@/components/ui/button"
@@ -59,19 +60,30 @@ interface BannersManagerProps {
   errorMsg?: string
 }
 
-const pageOptions = [
-  { value: "home", label: "Trang chủ (Slideshow)" },
-  { value: "products", label: "Trang Trồng sâm" },
-  { value: "ginseng", label: "Trang Cửa hàng" },
-  { value: "campaigns", label: "Trang Khuyến mãi" },
-  { value: "about", label: "Trang Giới thiệu" },
-  { value: "news", label: "Trang Tin tức" },
-]
-
 export function BannersManager({
   initialBanners,
   errorMsg: initialError,
 }: BannersManagerProps) {
+  const { t } = useTranslation()
+
+  const pageOptions = [
+    { value: "home", label: t("content.banners.title") },
+    { value: "products", label: t("products.title") },
+    { value: "ginseng", label: t("products.categories") },
+    { value: "campaigns", label: t("navigation.menu.dashboard") },
+    { value: "about", label: t("navigation.menu.content") },
+    { value: "news", label: t("content.articles.title") },
+  ]
+
+  const pageNameMap: Record<string, string> = {
+    home: t("content.banners.title"),
+    products: t("products.title"),
+    ginseng: t("products.categories"),
+    campaigns: t("navigation.menu.dashboard"),
+    about: t("navigation.menu.content"),
+    news: t("content.articles.title"),
+  }
+
   const {
     banners,
     errorMsg,
@@ -104,29 +116,24 @@ export function BannersManager({
     handleSave,
     handleDeleteConfirm,
     sortedBanners,
-    pageNameMap,
     handleCropComplete,
   } = useBannersManager(initialBanners, initialError)
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">
-            Cấu hình Banners
+            {t("content.banners.title")}
           </h1>
-          <p className="text-muted-foreground text-sm font-semibold">
-            Tùy biến hình ảnh, tiêu đề lớn và nội dung giới thiệu của từng
-            route/trang. Thiết lập nhiều banner trên cùng một route để hiển thị
-            dưới dạng slider.
-          </p>
+          <p className="text-muted-foreground">{t("content.subtitle")}</p>
         </div>
         <Button
           onClick={handleCreateClick}
-          className="bg-[#1C3F24] hover:bg-[#15301B] text-white gap-1.5 font-bold text-xs"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
         >
-          <Plus className="h-4 w-4" />
-          Thêm Banner mới
+          <Plus className="size-4 mr-2" />
+          {t("content.banners.addBanner")}
         </Button>
       </div>
 
@@ -149,6 +156,7 @@ export function BannersManager({
         handleImageUpload={handleImageUpload}
         uploadingImage={uploadingImage}
         dialogLoading={dialogLoading}
+        pageOptions={pageOptions}
       />
 
       <DeleteConfirmDialog
@@ -177,7 +185,7 @@ export function BannersManager({
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -185,7 +193,7 @@ export function BannersManager({
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />
@@ -208,6 +216,7 @@ function BannersTable({
   handleEditClick,
   setDeletingId,
 }: BannersTableProps) {
+  const { t } = useTranslation()
   const [page, setPage] = useState(1)
   const perPage = 10
   const totalPages = Math.ceil(sortedBanners.length / perPage) || 1
@@ -256,7 +265,7 @@ function BannersTable({
                 colSpan={6}
                 className="text-center py-10 text-slate-400 font-semibold"
               >
-                Chưa có cấu hình banner nào. Nhấn "Thêm Banner mới" để bắt đầu!
+                Chưa có cấu hình banner nào. Nhấn &quot;Thêm Banner mới&quot; để bắt đầu!
               </TableCell>
             </TableRow>
           ) : (
@@ -345,6 +354,7 @@ interface BannerDialogProps {
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   uploadingImage: boolean
   dialogLoading: boolean
+  pageOptions?: { value: string; label: string }[]
 }
 
 function BannerDialog({
@@ -359,23 +369,27 @@ function BannerDialog({
   handleImageUpload,
   uploadingImage,
   dialogLoading,
+  pageOptions = [],
 }: BannerDialogProps) {
+  const { t } = useTranslation()
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            {dialogMode === "create" ? "Tạo Banner mới" : "Chỉnh sửa Banner"}
+            {dialogMode === "create"
+              ? t("content.banners.addBanner")
+              : t("common.actions.edit")}
           </DialogTitle>
-          <DialogDescription>
-            Tùy chỉnh tiêu đề, phụ đề và ảnh nền để hiển thị trên route/trang
-            tương ứng.
-          </DialogDescription>
+          <DialogDescription>{t("content.banners.title")}</DialogDescription>
         </DialogHeader>
 
         {dialogError && (
           <Alert variant="destructive" className="py-2.5">
-            <AlertTitle className="text-xs font-bold">Lỗi</AlertTitle>
+            <AlertTitle className="text-xs font-bold">
+              {t("common.status.error")}
+            </AlertTitle>
             <AlertDescription className="text-xs">
               {dialogError}
             </AlertDescription>
@@ -389,7 +403,7 @@ function BannerDialog({
                 htmlFor="pageKey"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Trang hiển thị
+                Route / Page
               </Label>
               <Select
                 value={formData.pageKey}
@@ -399,7 +413,7 @@ function BannerDialog({
                 }}
               >
                 <SelectTrigger className="text-sm font-semibold">
-                  <SelectValue placeholder="Chọn trang" />
+                  <SelectValue placeholder="Page" />
                 </SelectTrigger>
                 <SelectContent>
                   {pageOptions.map((opt) => (
@@ -420,7 +434,7 @@ function BannerDialog({
                 htmlFor="order"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Thứ tự hiển thị (Order)
+                Order
               </Label>
               <Input
                 id="order"
@@ -441,7 +455,7 @@ function BannerDialog({
               htmlFor="title"
               className="text-xs font-bold uppercase text-slate-500"
             >
-              Tiêu đề Banner
+              {t("content.banners.bannerTitle")}
             </Label>
             <Input
               id="title"
@@ -450,7 +464,7 @@ function BannerDialog({
                 setFormData({ ...formData, title: e.target.value })
               }
               required
-              placeholder="Nhập tiêu đề lớn"
+              placeholder={t("content.banners.bannerTitle")}
               className="text-sm font-semibold text-slate-800"
             />
           </div>
@@ -460,7 +474,7 @@ function BannerDialog({
               htmlFor="subtitle"
               className="text-xs font-bold uppercase text-slate-500"
             >
-              Mô tả phụ
+              {t("products.fields.description")}
             </Label>
             <Textarea
               id="subtitle"
@@ -470,14 +484,14 @@ function BannerDialog({
                 setFormData({ ...formData, subtitle: e.target.value })
               }
               required
-              placeholder="Nhập phần mô tả chi tiết hiển thị dưới tiêu đề banner"
+              placeholder={t("products.fields.description")}
               className="text-sm leading-relaxed text-slate-600"
             />
           </div>
 
           <div className="space-y-3">
             <Label className="text-xs font-bold uppercase text-slate-500">
-              Hình ảnh Banner
+              {t("products.fields.image")}
             </Label>
             <div className="flex gap-4 items-center">
               <div className="w-32 h-20 bg-slate-100 rounded-lg border border-slate-200 overflow-hidden relative flex items-center justify-center flex-shrink-0">
@@ -502,7 +516,7 @@ function BannerDialog({
                     onChange={(e) =>
                       setFormData({ ...formData, image: e.target.value })
                     }
-                    placeholder="Đường dẫn URL ảnh hoặc nhấn Tải lên"
+                    placeholder="URL"
                     className="text-xs font-mono"
                   />
                   <div className="relative flex-shrink-0">
@@ -525,13 +539,10 @@ function BannerDialog({
                       ) : (
                         <Upload className="h-3 w-3" />
                       )}
-                      Tải lên
+                      {t("common.actions.import")}
                     </Label>
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground font-semibold">
-                  Độ phân giải rộng khuyến nghị: 1920x400
-                </p>
               </div>
             </div>
           </div>
@@ -543,7 +554,7 @@ function BannerDialog({
               onClick={() => onOpenChange(false)}
               disabled={dialogLoading}
             >
-              Hủy bỏ
+              {t("common.actions.cancel")}
             </Button>
             <Button
               type="submit"
@@ -553,10 +564,10 @@ function BannerDialog({
               {dialogLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Đang lưu...
+                  {t("common.status.processing")}
                 </>
               ) : (
-                "Lưu cấu hình"
+                t("common.actions.save")
               )}
             </Button>
           </DialogFooter>
@@ -579,16 +590,17 @@ function DeleteConfirmDialog({
   handleDeleteConfirm,
   deleteLoading,
 }: DeleteConfirmDialogProps) {
+  const { t } = useTranslation()
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-lg font-bold text-red-600">
-            Xác nhận xóa Banner
+            {t("common.confirmations.deleteTitle")}
           </DialogTitle>
           <DialogDescription className="text-sm">
-            Bạn có chắc chắn muốn xóa cấu hình banner này không? Hành động này
-            không thể hoàn tác.
+            {t("common.confirmations.deleteDescription")}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
@@ -598,7 +610,7 @@ function DeleteConfirmDialog({
             onClick={() => onOpenChange(false)}
             disabled={deleteLoading}
           >
-            Hủy bỏ
+            {t("common.confirmations.cancelText")}
           </Button>
           <Button
             type="button"
@@ -609,10 +621,10 @@ function DeleteConfirmDialog({
             {deleteLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang xóa...
+                {t("common.status.processing")}
               </>
             ) : (
-              "Xác nhận xóa"
+              t("common.confirmations.confirmText")
             )}
           </Button>
         </DialogFooter>

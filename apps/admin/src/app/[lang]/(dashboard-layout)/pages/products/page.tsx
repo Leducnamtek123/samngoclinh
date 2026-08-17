@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { PaginationMeta, ShopItem } from "@/types"
-
-import { catalogService } from "@/services/catalog.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ShopItemsTable } from "./category/_components/shop-items-table"
+import { catalogService } from "@/services/catalog.service"
 
 export const metadata: Metadata = {
   title: "Quản lý sản phẩm thương mại | Sâm Ngọc Linh Admin",
@@ -39,13 +38,19 @@ export default async function ProductsPage({
   let errorMsg = ""
 
   try {
-    const res = await catalogService.getShopItems({ page, perPage, search, status })
+    const res = await catalogService.getShopItems({
+      page,
+      perPage,
+      search,
+      status,
+    })
     if (res.data && Array.isArray(res.data)) {
       shopItems = res.data
       metadata = res.metadata || null
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching shop items:", e)
     errorMsg = message
   }

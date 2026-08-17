@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { Bed, Garden, PaginationMeta } from "@/types"
+import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
 
@@ -67,7 +67,8 @@ export default async function BedsPage({ searchParams }: BedsPageProps) {
       gardens = Array.isArray(gardensPayload.data) ? gardensPayload.data : []
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching cultivation data:", e)
     errorMsg = message
   }

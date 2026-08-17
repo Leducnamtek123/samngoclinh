@@ -1,19 +1,22 @@
 "use client"
 
 import React, { useState } from "react"
+import { useParams } from "next/navigation"
 import { toast } from "sonner"
 import { RefreshCw, UserCheck } from "lucide-react"
-import { useParams } from "next/navigation"
+
+import type { KYCRequest } from "./_components/kyc-table"
+
+import enKyc from "@/data/dictionaries/en/kyc.json"
+import viKyc from "@/data/dictionaries/vi/kyc.json"
 
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RoleGuard } from "@/components/guards/rbac-guard"
-import viKyc from "@/data/dictionaries/vi/kyc.json"
-import enKyc from "@/data/dictionaries/en/kyc.json"
-import { KycTable, type KYCRequest } from "./_components/kyc-table"
 import { KycDetailsDialog } from "./_components/kyc-details-dialog"
+import { KycTable } from "./_components/kyc-table"
+import { RoleGuard } from "@/components/guards/rbac-guard"
 
 const getFullImageUrl = (url?: string) => {
   if (!url) return ""
@@ -84,7 +87,8 @@ export default function KycApprovalsPage() {
       setSelectedKyc(null)
       refetch()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : dict.notifications.approveError
+      const message =
+        error instanceof Error ? error.message : dict.notifications.approveError
       toast.error(message)
     }
   }
@@ -105,7 +109,10 @@ export default function KycApprovalsPage() {
         setRejectReason("")
         refetch()
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : dict.notifications.rejectError
+        const message =
+          error instanceof Error
+            ? error.message
+            : dict.notifications.rejectError
         toast.error(message)
       }
     }
@@ -170,7 +177,8 @@ export default function KycApprovalsPage() {
             onClick={() => refetch()}
             className="gap-2"
           >
-            <RefreshCw className="w-4 h-4" /> {lang === "en" ? "Refresh" : "Làm mới"}
+            <RefreshCw className="w-4 h-4" />{" "}
+            {lang === "en" ? "Refresh" : "Làm mới"}
           </Button>
         </div>
 
@@ -180,9 +188,7 @@ export default function KycApprovalsPage() {
               {dict.requestListTitle}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            {renderContent()}
-          </CardContent>
+          <CardContent>{renderContent()}</CardContent>
         </Card>
 
         {selectedKyc && (

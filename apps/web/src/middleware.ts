@@ -7,13 +7,10 @@ import { routing } from './lib/I18nRouting';
 
 const handleI18nRouting = createMiddleware(routing);
 
-const isProtectedRoute = (pathname: string) => {
-  return /^\/(vi|en)\/(profile|cart|checkout|contracts)(\/|$)/.test(pathname);
-};
+const isProtectedRoute = (pathname: string) =>
+  /^\/(vi|en)\/(profile|cart|checkout|contracts)(\/|$)/.test(pathname);
 
-const isAuthPage = (pathname: string) => {
-  return /^\/(vi|en)\/(sign-in|sign-up)(\/|$)/.test(pathname);
-};
+const isAuthPage = (pathname: string) => /^\/(vi|en)\/(sign-in|sign-up)(\/|$)/.test(pathname);
 
 // Improve security with Arcjet
 const aj = arcjet.withRule(
@@ -37,7 +34,7 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  const pathname = request.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
 
   const getLocale = (path: string) => {
     const match = path.match(/^\/([^/]+)/u);

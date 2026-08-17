@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 
-import { fetchApi } from "@/lib/api"
-
 import { BannersManager } from "./_components/banners-manager"
+import { contentService } from "@/services/content.service"
 
 export const metadata: Metadata = {
   title: "Quản lý Banners | Sâm Ngọc Linh Admin",
@@ -24,16 +23,27 @@ export default async function BannersPage() {
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/admin/banners")
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Failed to load banners"
-    } else {
-      banners = payload.data || []
-    }
-  } catch (e) {
+    const payload = await contentService.getBanners()
+    const rawItems = Array.isArray(payload.data)
+      ? payload.data
+      : (payload.data as { items?: unknown[] })?.items || []
+
+    banners = (rawItems as unknown[]).map((item, idx) => {
+      const b = item as Record<string, unknown>
+      return {
+        id: String(b.id || `banner-${idx}`),
+        pageKey: String(b.pageKey || b.position || "home"),
+        title: String(b.title || ""),
+        subtitle: String(b.subtitle || b.description || ""),
+        image: String(b.image || b.imageUrl || ""),
+        order: Number(b.order ?? b.sortOrder ?? idx),
+      }
+    })
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching banners on server:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (

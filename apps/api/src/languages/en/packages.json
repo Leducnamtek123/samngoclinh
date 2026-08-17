@@ -1,0 +1,7 @@
+{
+    "list": "Successfully retrieved service packages list.",
+    "create": "Successfully created new service package.",
+    "update": "Successfully updated service package.",
+    "delete": "Successfully deleted service package.",
+    "subscribe": "Successfully subscribed to care & protection package."
+}

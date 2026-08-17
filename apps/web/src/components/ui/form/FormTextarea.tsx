@@ -1,15 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
-import { FormItem, FormLabel, FormDescription, FormMessage } from './Form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { Textarea } from '../textarea';
+import { FormItem, FormLabel, FormDescription, FormMessage } from './Form';
 
-export interface FormTextareaProps<
+export type FormTextareaProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'name'> {
-  control: Control<TFieldValues, any>;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  control: Control<TFieldValues>;
   name: TName;
   label?: string;
   description?: string;
@@ -17,11 +18,11 @@ export interface FormTextareaProps<
   required?: boolean;
   characterCounter?: boolean;
   fullWidth?: boolean;
-}
+} & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'name'>;
 
 export function FormTextarea<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -63,24 +64,26 @@ export function FormTextarea<
         placeholder={placeholder}
         onChange={(e) => {
           field.onChange(e);
-          if (onChange) onChange(e);
+          if (onChange) {
+            onChange(e);
+          }
         }}
-        className={`${
+        className={
           hasError
-            ? 'border-red-500 text-red-900 focus-visible:ring-red-500/20 focus-visible:border-red-500'
+            ? 'border-red-500 text-red-900 focus-visible:border-red-500 focus-visible:ring-red-500/20'
             : ''
-        }`}
+        }
         {...props}
       />
 
-      <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <div>
           {(description || helperText) && (
             <FormDescription>{description || helperText}</FormDescription>
           )}
         </div>
         {characterCounter && maxLength && (
-          <span className="font-mono text-[11px] text-gray-400 font-medium">
+          <span className="font-mono text-[11px] font-medium text-gray-400">
             {valueStr.length}/{maxLength}
           </span>
         )}

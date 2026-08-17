@@ -1,19 +1,20 @@
 'use client';
 
-import { FieldPath, FieldValues } from 'react-hook-form';
 import { Phone } from 'lucide-react';
-import { FormInput, FormInputProps } from './FormInput';
+import type { FieldPath, FieldValues } from 'react-hook-form';
+import type { FormInputProps } from './FormInput';
+import { FormInput } from './FormInput';
 
-export interface FormPhoneInputProps<
+export type FormPhoneInputProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<FormInputProps<TFieldValues, TName>, 'type' | 'prefixIcon'> {
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
   showIcon?: boolean;
-}
+} & Omit<FormInputProps<TFieldValues, TName>, 'type' | 'prefixIcon'>;
 
 export function FormPhoneInput<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -27,7 +28,7 @@ export function FormPhoneInput<
       name={name}
       type="tel"
       placeholder={placeholder}
-      prefixIcon={showIcon ? <Phone className="w-4 h-4" /> : undefined}
+      prefixIcon={showIcon ? <Phone className="h-4 w-4" /> : undefined}
       {...props}
     />
   );

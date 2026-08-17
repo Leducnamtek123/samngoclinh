@@ -2,6 +2,10 @@
 
 import React from "react"
 import { Eye } from "lucide-react"
+
+import type { PaginationMeta } from "@/types"
+
+import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Pagination } from "@/components/ui/app-pagination"
 
 export interface KYCRequest {
   id: string
@@ -40,8 +43,6 @@ export interface KYCRequest {
   submittedAt?: string
 }
 
-import type { PaginationMeta } from "@/types"
-
 interface KycTableProps {
   kycList: KYCRequest[]
   metadata: PaginationMeta | null
@@ -67,7 +68,10 @@ export function KycTable({
         <TableHeader>
           <TableRow>
             <TableHead>{dict.columns.user}</TableHead>
-            <TableHead>{dict.columns.documentType || (lang === 'en' ? 'Document Type' : 'Loại giấy tờ')}</TableHead>
+            <TableHead>
+              {dict.columns.documentType ||
+                (lang === "en" ? "Document Type" : "Loại giấy tờ")}
+            </TableHead>
             <TableHead>{dict.columns.idCardNumber}</TableHead>
             <TableHead>{dict.columns.submitDate}</TableHead>
             <TableHead>{dict.columns.status}</TableHead>
@@ -87,15 +91,24 @@ export function KycTable({
                 </TableCell>
                 <TableCell>
                   {docType === "passport" ? (
-                    <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold text-[11px]">
+                    <Badge
+                      variant="outline"
+                      className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold text-[11px]"
+                    >
                       {lang === "en" ? "Passport" : "Hộ chiếu"}
                     </Badge>
                   ) : docType === "driver_license" ? (
-                    <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200 font-bold text-[11px]">
+                    <Badge
+                      variant="outline"
+                      className="bg-sky-50 text-sky-700 border-sky-200 font-bold text-[11px]"
+                    >
                       {lang === "en" ? "Driver's License" : "Bằng lái xe"}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px]">
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold text-[11px]"
+                    >
                       {lang === "en" ? "Citizen ID" : "CCCD"}
                     </Badge>
                   )}
@@ -104,29 +117,24 @@ export function KycTable({
                   {kyc.idNumber || "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {formatDateLocale(
-                    kyc.submittedAt || kyc.createdAt,
-                    lang
-                  )}
+                  {formatDateLocale(kyc.submittedAt || kyc.createdAt, lang)}
                 </TableCell>
                 <TableCell>
                   <Badge
-                    variant={
-                      kyc.status === "APPROVED" ? "default" : "outline"
-                    }
+                    variant={kyc.status === "APPROVED" ? "default" : "outline"}
                     className={
                       kyc.status === "APPROVED"
                         ? "bg-emerald-600 text-white font-bold"
                         : kyc.status === "REJECTED"
-                        ? "bg-rose-100 text-rose-800 border-rose-300 font-bold"
-                        : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
+                          ? "bg-rose-100 text-rose-800 border-rose-300 font-bold"
+                          : "bg-amber-100 text-amber-800 border-amber-300 font-bold"
                     }
                   >
                     {kyc.status === "APPROVED"
                       ? dict.status.approved
                       : kyc.status === "REJECTED"
-                      ? dict.status.rejected
-                      : dict.status.pending}
+                        ? dict.status.rejected
+                        : dict.status.pending}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -144,10 +152,7 @@ export function KycTable({
           })}
         </TableBody>
       </Table>
-      <Pagination
-        metadata={metadata}
-        onPageChange={onPageChange}
-      />
+      <Pagination metadata={metadata} onPageChange={onPageChange} />
     </>
   )
 }

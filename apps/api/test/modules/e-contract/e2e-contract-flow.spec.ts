@@ -72,6 +72,21 @@ describe('Full End-to-End Flow: Digital Signature Vault & 2-Phase Contract Workf
             db.contracts.set(id, updated);
             return updated;
         }),
+        signContract: jest.fn().mockImplementation(async (id: string, signatureUrl: string, pdfUrl: string, metadata?: any) => {
+            const existing = db.contracts.get(id);
+            if (!existing) throw new NotFoundException('Not found');
+            const updated = {
+                ...existing,
+                status: 'signed',
+                signedAt: new Date(),
+                signatureUrl,
+                pdfUrl,
+                metadata: { ...existing.metadata, ...metadata },
+                updatedAt: new Date(),
+            };
+            db.contracts.set(id, updated);
+            return updated;
+        }),
         deleteContract: jest.fn().mockImplementation(async (id: string) => {
             db.contracts.delete(id);
             return true;

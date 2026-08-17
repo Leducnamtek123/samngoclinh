@@ -1,25 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { cultivationService } from '@/services/cultivation.service';
+import type { CultivationBed, CultivationTree } from '@/types';
 
-export function useCultivationTrees(initialData?: any, enabled: boolean = true) {
-  return useQuery({
+export function useCultivationTrees(initialData?: CultivationTree[], enabled: boolean = true) {
+  return useQuery<CultivationTree[]>({
     queryKey: ['cultivation', 'trees'],
-    queryFn: () => fetchApiClient('/user/cultivation/trees').then((res) => res.data || []).catch(() => []),
+    queryFn: async () => await cultivationService.getMyTrees(),
     initialData,
     enabled,
     retry: false,
   });
 }
 
-export function usePublicCultivationBeds(ageYear?: number | string, initialData?: any) {
-  const query = ageYear !== undefined && ageYear !== null ? `?ageYear=${encodeURIComponent(String(ageYear))}` : '';
-  return useQuery({
+export function usePublicCultivationBeds(
+  ageYear?: number | string,
+  initialData?: CultivationBed[],
+) {
+  return useQuery<CultivationBed[]>({
     queryKey: ['public-cultivation-beds', ageYear],
-    queryFn: () =>
-      fetchApiClient(`/public/cultivation/beds${query}`)
-        .then((res) => res.data || [])
-        .catch(() => []),
+    queryFn: async () =>
+      await cultivationService.getPublicBeds(
+        ageYear !== undefined && ageYear !== null ? String(ageYear) : undefined,
+      ),
     initialData,
   });
 }
-

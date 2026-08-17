@@ -2,8 +2,12 @@
 
 import React from "react"
 import Image from "next/image"
-import type { UseFormReturn } from "react-hook-form"
 import { Image as ImageIcon } from "lucide-react"
+
+import type { UseFormReturn } from "react-hook-form"
+import type { ShopItemFormValues } from "./shop-item-schema"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   FormControl,
   FormField,
@@ -20,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import type { ShopItemFormValues } from "./shop-item-schema"
 
 interface ShopItemFormFieldsProps {
   form: UseFormReturn<ShopItemFormValues>
@@ -47,6 +50,8 @@ export function ShopItemFormFields({
   onSelectStatus,
   onImageFileChange,
 }: ShopItemFormFieldsProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FormField
@@ -54,7 +59,7 @@ export function ShopItemFormFields({
         name="code"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Mã sản phẩm (SKU)</FormLabel>
+            <FormLabel>{t("products.categoryForm.code")}</FormLabel>
             <FormControl>
               <Input
                 {...field}
@@ -72,9 +77,9 @@ export function ShopItemFormFields({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Tên sản phẩm</FormLabel>
+            <FormLabel>{t("products.categoryForm.name")}</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Rượu Sâm Ngọc Linh..." />
+              <Input {...field} placeholder={t("products.categoryForm.name")} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -86,7 +91,7 @@ export function ShopItemFormFields({
         name="category"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Danh mục phân loại</FormLabel>
+            <FormLabel>{t("products.categoryForm.parent")}</FormLabel>
             <Select
               value={field.value}
               onValueChange={(val) => {
@@ -96,7 +101,9 @@ export function ShopItemFormFields({
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn danh mục" />
+                  <SelectValue
+                    placeholder={t("products.categoryForm.parent")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -117,7 +124,7 @@ export function ShopItemFormFields({
         name="unit"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Đơn vị tính</FormLabel>
+            <FormLabel>{t("products.fields.unit")}</FormLabel>
             <Select
               value={field.value}
               onValueChange={(val) => {
@@ -127,7 +134,7 @@ export function ShopItemFormFields({
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn đơn vị tính" />
+                  <SelectValue placeholder={t("products.fields.unit")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -148,7 +155,7 @@ export function ShopItemFormFields({
         name="price"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Đơn giá (VND)</FormLabel>
+            <FormLabel>{t("products.fields.price")}</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -167,7 +174,7 @@ export function ShopItemFormFields({
         name="stock"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Số lượng tồn kho</FormLabel>
+            <FormLabel>{t("products.fields.stock")}</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -186,7 +193,7 @@ export function ShopItemFormFields({
         name="status"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel>Trạng thái kinh doanh</FormLabel>
+            <FormLabel>{t("products.fields.status")}</FormLabel>
             <Select
               value={field.value}
               onValueChange={(val) => {
@@ -196,15 +203,15 @@ export function ShopItemFormFields({
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn trạng thái" />
+                  <SelectValue placeholder={t("products.fields.status")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 <SelectItem value="active">
-                  Hoạt động (Được mở bán)
+                  {t("common.status.active")}
                 </SelectItem>
                 <SelectItem value="inactive">
-                  Tạm ngưng hoạt động
+                  {t("common.status.inactive")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -218,11 +225,11 @@ export function ShopItemFormFields({
         name="description"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel>Mô tả chi tiết</FormLabel>
+            <FormLabel>{t("products.categoryForm.description")}</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Nhập thông số hoặc mô tả sản phẩm..."
+                placeholder={t("products.categoryForm.description")}
                 rows={3}
               />
             </FormControl>
@@ -232,7 +239,7 @@ export function ShopItemFormFields({
       />
 
       <div className="md:col-span-2 border-t pt-4 space-y-2">
-        <FormLabel>Hình ảnh sản phẩm</FormLabel>
+        <FormLabel>{t("products.fields.image")}</FormLabel>
         <div className="flex gap-4 items-center">
           <div className="relative size-24 rounded-md overflow-hidden border bg-muted flex items-center justify-center text-muted-foreground">
             {formData.imageUrl || form.watch("imageUrl") ? (
@@ -258,9 +265,6 @@ export function ShopItemFormFields({
                 className="max-w-xs"
               />
             </div>
-            <p className="text-xs text-muted-foreground">
-              Tải lên hình ảnh sản phẩm. Hệ thống sẽ mở khung cắt ảnh tỉ lệ vuông 1:1.
-            </p>
           </div>
         </div>
       </div>

@@ -1,9 +1,10 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { toast } from 'sonner';
 import { useProfileMe } from '@/hooks/queries/useProfile';
 import { usePlantPackages, useCreateQuickOrder } from '@/hooks/queries/useQuickPurchase';
 import type { ShippingAddressFormValues } from '@/lib/validation/schemas';
-import type { Order } from '@/types';
+import type { AddressItem, Order } from '@/types';
 import type { QuickPurchaseItem } from './QuickPurchaseModal';
 
 type UseQuickPurchaseFormProps = {
@@ -34,39 +35,54 @@ export function useQuickPurchaseForm({
   const [userSelectedProtectionId, setUserSelectedProtectionId] = useState<string | null>(null);
   const [agreedTerms, setAgreedTerms] = useState(false);
 
-  const [localAddresses, setLocalAddresses] = useState<any[]>(() => {
+  const [localAddresses, setLocalAddresses] = useState<AddressItem[]>(() => {
     try {
-      const saved = typeof window !== 'undefined' ? localStorage.getItem('user_addresses:v1') : null;
-      return saved ? JSON.parse(saved) : [];
+      const saved =
+        typeof window === 'undefined' ? null : localStorage.getItem('user_addresses:v1');
+      return saved ? (JSON.parse(saved) as AddressItem[]) : [];
     } catch {
       return [];
     }
   });
 
-  const profileAddresses = (profile?.addresses && Array.isArray(profile.addresses))
-    ? profile.addresses.map((a: any) => ({
-        id: a.id,
-        name: a.recipient || a.name || profile.fullName || '',
-        recipient: a.recipient || a.name || profile.fullName || '',
-        phone: a.phone || profile.mobileNumber || '',
-        address: a.detail || a.address || '',
-        detail: a.detail || a.address || '',
-        isDefault: !!a.isDefault,
-      }))
-    : [];
+  const profileAddresses: AddressItem[] =
+    profile?.addresses && Array.isArray(profile.addresses)
+      ? profile.addresses.map((a: AddressItem | Record<string, unknown>) => ({
+          id: String(a.id || ''),
+          name: String(a.recipient || a.name || profile.fullName || ''),
+          recipient: String(a.recipient || a.name || profile.fullName || ''),
+          phone: String(a.phone || profile.mobileNumber || ''),
+          address: String(a.detail || a.address || ''),
+          detail: String(a.detail || a.address || ''),
+          isDefault: !!a.isDefault,
+        }))
+      : [];
 
-  const addresses = Array.from(new Map([...profileAddresses, ...localAddresses].map((a) => [a.id, a])).values());
+  const addresses = [
+    ...new Map([...profileAddresses, ...localAddresses].map((a) => [a.id, a])).values(),
+  ];
 
   const [userSelectedAddressId, setUserSelectedAddressId] = useState<string | null>(null);
-  const defaultAddr = addresses.find((a: any) => a.isDefault) || addresses[0];
+  const defaultAddr = addresses.find((a) => a.isDefault) || addresses[0];
   const selectedAddressId = userSelectedAddressId ?? defaultAddr?.id ?? null;
-  const setSelectedAddressId = (id: string | null) => setUserSelectedAddressId(id);
+  const setSelectedAddressId = (id: string | null) => {
+    setUserSelectedAddressId(id);
+  };
 
-  const selectedCareId = userSelectedCareId ?? (carePackages[0] as any)?.code ?? carePackages[0]?.id ?? '';
-  const setSelectedCareId = (id: string) => setUserSelectedCareId(id);
+  const selectedCareId =
+    userSelectedCareId ?? carePackages[0]?.code ?? carePackages[0]?.id ?? '';
+  const setSelectedCareId = (id: string) => {
+    setUserSelectedCareId(id);
+  };
 
-  const selectedProtectionId = userSelectedProtectionId ?? (protectionPackages[0] as any)?.code ?? protectionPackages[0]?.id ?? '';
-  const setSelectedProtectionId = (id: string) => setUserSelectedProtectionId(id);
+  const selectedProtectionId =
+    userSelectedProtectionId ??
+    protectionPackages[0]?.code ??
+    protectionPackages[0]?.id ??
+    '';
+  const setSelectedProtectionId = (id: string) => {
+    setUserSelectedProtectionId(id);
+  };
 
   const [deliveryType, setDeliveryType] = useState<'shipping' | 'pickup'>('shipping');
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
@@ -89,14 +105,17 @@ export function useQuickPurchaseForm({
     '/images/kon_tum_ginseng.png';
 
   const selectedCareObj =
-    carePackages.find((c: any) => c.code === selectedCareId || c.id === selectedCareId) ||
+    carePackages.find((c) => c.code === selectedCareId || c.id === selectedCareId) ||
     carePackages[0];
-  const careUnitPrice = selectedCareObj ? Number((selectedCareObj as any).price || 0) : 0;
+  const careUnitPrice = selectedCareObj ? Number(selectedCareObj.price || 0) : 0;
 
   const selectedProtectionObj =
-    protectionPackages.find((p: any) => p.code === selectedProtectionId || p.id === selectedProtectionId) ||
-    protectionPackages[0];
-  const protectionUnitPrice = selectedProtectionObj ? Number((selectedProtectionObj as any).price || 0) : 0;
+    protectionPackages.find(
+      (p) => p.code === selectedProtectionId || p.id === selectedProtectionId,
+    ) || protectionPackages[0];
+  const protectionUnitPrice = selectedProtectionObj
+    ? Number(selectedProtectionObj.price || 0)
+    : 0;
 
   const treeBasePrice = unitPrice * quantity;
   const vatTree = Math.round(treeBasePrice * 0.05);
@@ -112,19 +131,39 @@ export function useQuickPurchaseForm({
 
   const productSubtotal = unitPrice * quantity;
   const vatProduct8 = Math.round(productSubtotal * 0.08);
-  const shippingFee = deliveryType === 'shipping' ? 30000 : 0;
+  const shippingFee = deliveryType === 'shipping' ? 30_000 : 0;
   const productGrandTotal = productSubtotal + vatProduct8 + shippingFee;
 
   const grandTotal = mode === 'plant' ? plantGrandTotal : productGrandTotal;
 
-  const handleAddAddressSuccess = (data: ShippingAddressFormValues & { newId?: string }) => {
-    const newAddr = {
-      id: data.newId || Date.now().toString(),
-      name: data.recipientName,
-      recipient: data.recipientName,
-      phone: data.recipientPhone,
-      address: data.shippingAddress,
-      detail: data.shippingAddress,
+  const handleAddAddressSuccess = (
+    data: (ShippingAddressFormValues & { newId?: string }) | Partial<AddressItem>,
+  ) => {
+    const newAddr: AddressItem = {
+      id:
+        (data as AddressItem).id ||
+        ('newId' in data ? data.newId : undefined) ||
+        Date.now().toString(),
+      name:
+        (data as AddressItem).name ||
+        (data as ShippingAddressFormValues).recipientName ||
+        'Customer',
+      recipient:
+        (data as AddressItem).recipient ||
+        (data as ShippingAddressFormValues).recipientName ||
+        'Customer',
+      phone:
+        (data as AddressItem).phone ||
+        (data as ShippingAddressFormValues).recipientPhone ||
+        '',
+      address:
+        (data as AddressItem).address ||
+        (data as ShippingAddressFormValues).shippingAddress ||
+        '',
+      detail:
+        (data as AddressItem).detail ||
+        (data as ShippingAddressFormValues).shippingAddress ||
+        '',
       isDefault: addresses.length === 0,
     };
     const updated = [newAddr, ...localAddresses];
@@ -161,21 +200,26 @@ export function useQuickPurchaseForm({
     const selectedAddrObj = addresses.find((a) => a.id === selectedAddressId);
 
     try {
-      const res: any = await createQuickOrderMutation.mutateAsync({
+      const res = (await createQuickOrderMutation.mutateAsync({
         mode,
         itemId: item?.id || '',
         quantity,
         carePackageId: mode === 'plant' ? selectedCareId : undefined,
         protectionPackageId: mode === 'plant' ? selectedProtectionId : undefined,
-        recipientName: selectedAddrObj?.name || profile?.fullName || 'Khách hàng',
+        recipientName: selectedAddrObj?.name || profile?.fullName || 'Customer',
         recipientPhone: selectedAddrObj?.phone || profile?.mobileNumber || '',
-        shippingAddress: deliveryType === 'shipping' ? (selectedAddrObj ? selectedAddrObj.address : 'Giao hàng tận nơi') : 'Nhận tại vườn',
+        shippingAddress:
+          deliveryType === 'shipping'
+            ? selectedAddrObj
+              ? selectedAddrObj.address || t('shippingLabel')
+              : t('shippingLabel')
+            : t('pickupLabel'),
         deliveryType,
-      });
+      })) as ({ data?: Order; id?: string; code?: string } & Order);
 
       const orderData = res?.data || res;
       if (!orderData?.id && !orderData?.code) {
-        toast.error('Máy chủ không trả về thông tin đơn hàng hợp lệ.');
+        toast.error(t('toastInvalidOrder'));
       } else {
         toast.success(t('toastOrderCreated'));
         onClose();
@@ -184,9 +228,10 @@ export function useQuickPurchaseForm({
           onSuccessPayment(orderData);
         }
       }
-    } catch (err: any) {
-      const serverMsg = err?.response?.data?.message || err?.message || 'Không thể tạo đơn hàng. Vui lòng đăng nhập hoặc thử lại sau!';
-      toast.error(typeof serverMsg === 'string' ? serverMsg : 'Không thể tạo đơn hàng. Vui lòng thử lại sau!');
+    } catch (error: unknown) {
+      const errObj = error as { response?: { data?: { message?: string } }; message?: string };
+      const serverMsg = errObj?.response?.data?.message || errObj?.message || t('toastOrderFailed');
+      toast.error(typeof serverMsg === 'string' ? serverMsg : t('toastOrderFailed'));
     }
     setSubmitting(false);
   };

@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 
-import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
 import type { ApiResponse } from "@/types/common.types"
+import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query"
 
-import { fetchApiData } from "@/lib/api-client"
+import { fetchApiData } from "@/lib/api"
 
 export type { ApiResponse }
 

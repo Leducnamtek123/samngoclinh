@@ -5,7 +5,9 @@ import { Sprout } from "lucide-react"
 
 import type { Bed, Garden } from "@/types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
   DialogContent,
@@ -19,7 +21,6 @@ import {
   ToastCard,
 } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
-import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -70,6 +71,8 @@ export function BedFormDialog({
   gardens,
   handleSaveBed,
 }: BedFormDialogProps) {
+  const { t } = useTranslation()
+
   return (
     <Dialog
       open={dialogState.isOpen}
@@ -81,12 +84,11 @@ export function BedFormDialog({
         <DialogHeader>
           <DialogTitle className="text-base font-bold text-slate-800 dark:text-slate-100">
             {dialogState.mode === "create"
-              ? "Tạo luống sâm mới"
-              : "Chỉnh sửa luống sâm"}
+              ? t("trees.gardens.addGarden")
+              : t("trees.gardens.editGarden")}
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Thiết lập thông tin quy hoạch, kích thước và loại đất cho luống
-            trồng sâm.
+            {t("trees.gardens.dialogDesc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -103,7 +105,7 @@ export function BedFormDialog({
                 htmlFor="gardenCode"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Thuộc khu vườn
+                {t("trees.fields.garden")}
               </Label>
               <Select
                 value={formData.gardenCode}
@@ -112,7 +114,7 @@ export function BedFormDialog({
                 }
               >
                 <SelectTrigger className="text-xs font-semibold">
-                  <SelectValue placeholder="Chọn vườn" />
+                  <SelectValue placeholder={t("trees.fields.garden")} />
                 </SelectTrigger>
                 <SelectContent>
                   {gardens.map((g) => (
@@ -133,7 +135,7 @@ export function BedFormDialog({
                 htmlFor="name"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Tên luống sâm
+                {t("trees.fields.name")}
               </Label>
               <Input
                 id="name"
@@ -141,7 +143,7 @@ export function BedFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                placeholder="Ví dụ: Luống A-01"
+                placeholder={t("trees.fields.name")}
                 required
                 className="text-xs font-medium"
               />
@@ -154,7 +156,7 @@ export function BedFormDialog({
                 htmlFor="ageYear"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Chu kỳ (Năm)
+                {t("trees.fields.ageYear")}
               </Label>
               <Input
                 id="ageYear"
@@ -174,7 +176,7 @@ export function BedFormDialog({
                 htmlFor="treeCount"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Số lượng gốc sâm
+                {t("trees.fields.quantity")}
               </Label>
               <Input
                 id="treeCount"
@@ -197,7 +199,7 @@ export function BedFormDialog({
                 htmlFor="maxTrees"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Tối đa (Sức chứa)
+                Max
               </Label>
               <Input
                 id="maxTrees"
@@ -219,7 +221,7 @@ export function BedFormDialog({
                 htmlFor="width"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Chiều rộng (m)
+                Width (m)
               </Label>
               <Input
                 id="width"
@@ -229,7 +231,7 @@ export function BedFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, width: e.target.value })
                 }
-                placeholder="Ví dụ: 1.5"
+                placeholder="1.5"
                 className="text-xs font-semibold"
               />
             </div>
@@ -239,7 +241,7 @@ export function BedFormDialog({
                 htmlFor="length"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Chiều dài (m)
+                Length (m)
               </Label>
               <Input
                 id="length"
@@ -249,7 +251,7 @@ export function BedFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, length: e.target.value })
                 }
-                placeholder="Ví dụ: 12"
+                placeholder="12"
                 className="text-xs font-semibold"
               />
             </div>
@@ -259,7 +261,7 @@ export function BedFormDialog({
                 htmlFor="soilType"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Loại đất trồng
+                Soil
               </Label>
               <Input
                 id="soilType"
@@ -267,7 +269,7 @@ export function BedFormDialog({
                 onChange={(e) =>
                   setFormData({ ...formData, soilType: e.target.value })
                 }
-                placeholder="Ví dụ: Đất mùn rừng"
+                placeholder="Soil"
                 className="text-xs font-semibold"
               />
             </div>
@@ -279,14 +281,14 @@ export function BedFormDialog({
                 htmlFor="lastWateredAt"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Ngày tưới nước cuối
+                {t("trees.fields.lastCareDate")}
               </Label>
               <DatePicker
                 value={formData.lastWateredAt}
                 onChangeStr={(val) =>
                   setFormData({ ...formData, lastWateredAt: val })
                 }
-                placeholder="Chọn ngày"
+                placeholder={t("trees.placeholders.selectDate")}
               />
             </div>
 
@@ -295,14 +297,14 @@ export function BedFormDialog({
                 htmlFor="lastFertilizedAt"
                 className="text-xs font-bold uppercase text-slate-500"
               >
-                Ngày bón phân cuối
+                {t("trees.fields.nextCareDate")}
               </Label>
               <DatePicker
                 value={formData.lastFertilizedAt}
                 onChangeStr={(val) =>
                   setFormData({ ...formData, lastFertilizedAt: val })
                 }
-                placeholder="Chọn ngày"
+                placeholder={t("trees.placeholders.selectDate")}
               />
             </div>
           </div>
@@ -312,7 +314,7 @@ export function BedFormDialog({
               htmlFor="description"
               className="text-xs font-bold uppercase text-slate-500"
             >
-              Ghi chú mô tả
+              {t("trees.fields.notes")}
             </Label>
             <Input
               id="description"
@@ -320,7 +322,7 @@ export function BedFormDialog({
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              placeholder="Ghi chú thêm về điều kiện khí hậu, kỹ thuật trồng..."
+              placeholder={t("trees.fields.notes")}
               className="text-xs font-semibold"
             />
           </div>
@@ -334,14 +336,16 @@ export function BedFormDialog({
               }
               disabled={dialogState.loading}
             >
-              Hủy bỏ
+              {t("common.actions.cancel")}
             </Button>
             <Button
               type="submit"
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
               disabled={dialogState.loading}
             >
-              {dialogState.loading ? "Đang xử lý..." : "Lưu thông tin"}
+              {dialogState.loading
+                ? t("common.status.processing")
+                : t("common.actions.save")}
             </Button>
           </DialogFooter>
         </form>
@@ -381,6 +385,8 @@ export function BedsOtherDialogs({
   errorMsg,
   setErrorMsg,
 }: BedsOtherDialogsProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <ConfirmationDialog
@@ -405,7 +411,7 @@ export function BedsOtherDialogs({
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <Sprout className="h-5 w-5 text-emerald-600" />
-              Nhãn in QR Code luống sâm
+              {t("qrCode.title")}
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center justify-center p-4 border border-slate-100 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 my-2">
@@ -422,8 +428,7 @@ export function BedsOtherDialogs({
               </div>
             </div>
             <p className="text-[10px] text-center text-slate-400 mt-3 font-semibold">
-              Nhãn QR được dán trực tiếp tại đầu luống trồng nhằm đồng bộ nhật
-              ký di động qua camera.
+              {t("qrCode.subtitle")}
             </p>
           </div>
           <DialogFooter className="flex sm:justify-center gap-2">
@@ -433,19 +438,17 @@ export function BedsOtherDialogs({
               className="flex-1 font-semibold text-xs h-9"
               onClick={() => setIsQrDialogOpen(false)}
             >
-              Đóng
+              {t("common.actions.close")}
             </Button>
             <Button
               type="button"
               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9"
               onClick={() => {
-                setSuccessMsg(
-                  "Đã tải xuống file ảnh nhãn QR Code in ấn thành công!"
-                )
+                setSuccessMsg(t("common.status.success"))
                 setIsQrDialogOpen(false)
               }}
             >
-              Tải xuống nhãn in
+              {t("common.actions.export")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -455,7 +458,7 @@ export function BedsOtherDialogs({
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />
@@ -463,7 +466,7 @@ export function BedsOtherDialogs({
         {errorMsg && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={errorMsg}
             onClose={() => setErrorMsg("")}
           />

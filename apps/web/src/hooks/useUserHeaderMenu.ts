@@ -1,23 +1,29 @@
+import { useLocale, useTranslations } from 'next-intl';
 import { useState, useEffect, useSyncExternalStore } from 'react';
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/lib/I18nNavigation';
-import { getCartCount } from '@/utils/cart';
-import { cartStore } from '@/lib/stores/useCartStore';
-import { useNotificationsList } from '@/hooks/queries/useNotifications';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
-
+import { useNotificationsList } from '@/hooks/queries/useNotifications';
 import { useProfileMe } from '@/hooks/queries/useProfile';
+import type { RawNotification } from '@/services/notification.service';
+import type { UserProfile } from '@/types';
+import { usePathname, useRouter } from '@/lib/I18nNavigation';
+import { cartStore } from '@/lib/stores/useCartStore';
+import { getCartCount } from '@/utils/cart';
 
 const emptySubscribe = () => () => {};
 
 export function useUserHeaderMenu(
   initialProfile: { fullName?: string; email?: string; name?: string } | null,
-  menuRef?: React.RefObject<HTMLDivElement | null>
+  menuRef?: React.RefObject<HTMLDivElement | null>,
 ) {
+  const tNav = useTranslations('nav');
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const cartCount = useSyncExternalStore(cartStore.subscribe, getCartCount, () => 0);
-  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
 
@@ -39,28 +45,30 @@ export function useUserHeaderMenu(
   const router = useRouter();
   const pathname = usePathname();
 
-  const { data: dynamicProfile } = useProfileMe((initialProfile as any) || undefined);
+  const { data: dynamicProfile } = useProfileMe(
+    initialProfile ? (initialProfile as unknown as UserProfile) : undefined,
+  );
   const effectiveProfile = dynamicProfile || initialProfile;
 
   const displayName =
     effectiveProfile?.fullName?.trim() ||
-    (effectiveProfile as any)?.name?.trim() ||
+    effectiveProfile?.name?.trim() ||
     effectiveProfile?.email?.split('@')[0] ||
-    'Khách hàng';
+    tNav('account');
   const email = effectiveProfile?.email || '';
   const initial = displayName.charAt(0).toUpperCase() || 'U';
 
   const { data: notificationsData } = useNotificationsList(true);
   const unreadNotifCount = Array.isArray(notificationsData)
-    ? notificationsData.filter((n: any) => !n.read && !n.isRead).length
+    ? notificationsData.filter((n: RawNotification) => !n.read && !n.isRead).length
     : 0;
 
   const handleSignOut = async () => {
     try {
       await fetch('/api/auth/sign-out', { method: 'POST' });
       window.location.href = `/${locale}`;
-    } catch (e) {
-      console.error('Sign-out error:', e);
+    } catch (error) {
+      console.error('Sign-out error:', error);
       window.location.href = `/${locale}`;
     }
   };
@@ -71,7 +79,9 @@ export function useUserHeaderMenu(
   };
 
   const switchLocale = (newLocale: string) => {
-    if (newLocale === locale) return;
+    if (newLocale === locale) {
+      return;
+    }
     const { search } = window.location;
     router.push(`${pathname}${search}`, { locale: newLocale, scroll: false });
     setIsOpen(false);

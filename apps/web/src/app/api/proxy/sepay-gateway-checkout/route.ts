@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-function htmlEscapeJson(data: any): string {
+function htmlEscapeJson(data: unknown): string {
   return JSON.stringify(data)
-    .replace(/</g, '\\u003c')
-    .replace(/>/g, '\\u003e')
-    .replace(/&/g, '\\u0026');
+    .replaceAll('<', '\\u003c')
+    .replaceAll('>', '\\u003e')
+    .replaceAll('&', '\\u0026');
 }
 
 export async function POST(request: NextRequest) {
@@ -16,15 +17,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const ALLOWED_SEPAY_HOSTS = ['pay.sepay.vn', 'pay-sandbox.sepay.vn', 'my.sepay.vn', 'sepay.vn'];
-    const rawTarget = request.nextUrl.searchParams.get('target') || 'https://pay-sandbox.sepay.vn/checkout';
+    const rawTarget =
+      request.nextUrl.searchParams.get('target') || 'https://pay-sandbox.sepay.vn/checkout';
     let parsedTarget: URL;
     try {
       parsedTarget = new URL(rawTarget);
       if (!ALLOWED_SEPAY_HOSTS.includes(parsedTarget.hostname)) {
-        return NextResponse.json({ error: 'Invalid or untrusted target host' }, { status: 403, headers: corsHeaders });
+        return NextResponse.json(
+          { error: 'Invalid or untrusted target host' },
+          { status: 403, headers: corsHeaders },
+        );
       }
     } catch {
-      return NextResponse.json({ error: 'Invalid target URL' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json(
+        { error: 'Invalid target URL' },
+        { status: 400, headers: corsHeaders },
+      );
     }
 
     const targetUrl = parsedTarget.toString();
@@ -35,9 +43,10 @@ export async function POST(request: NextRequest) {
 
     const reqHeaders: Record<string, string> = {
       'Content-Type': contentType,
-      'User-Agent': request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      'Referer': `${originHost}/`,
-      'Origin': originHost,
+      'User-Agent':
+        request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      Referer: `${originHost}/`,
+      Origin: originHost,
     };
 
     const cookie = request.headers.get('cookie');
@@ -48,7 +57,7 @@ export async function POST(request: NextRequest) {
         .filter((c) => c.startsWith('sepay_') || c.startsWith('PHPSESSID') || c.startsWith('XSRF'))
         .join('; ');
       if (sepayCookies) {
-        reqHeaders['Cookie'] = sepayCookies;
+        reqHeaders.Cookie = sepayCookies;
       }
     }
 
@@ -62,7 +71,9 @@ export async function POST(request: NextRequest) {
     if (sepayRes.status >= 300 && sepayRes.status < 400) {
       const redirectLocation = sepayRes.headers.get('location');
       if (redirectLocation) {
-        return NextResponse.redirect(new URL(redirectLocation, originHost), { status: sepayRes.status });
+        return NextResponse.redirect(new URL(redirectLocation, originHost), {
+          status: sepayRes.status,
+        });
       }
     }
 
@@ -119,14 +130,21 @@ export async function POST(request: NextRequest) {
 `;
 
     // Rewrite stylesheet hrefs and script srcs so fonts load through sepay-api-proxy
-    resHtml = resHtml.replace(/(href|src)=["']((?:https:\/\/pay-sandbox\.sepay\.vn)?\/[^"']*)["']/gi, (match, attr, path) => {
-      if (path.includes('/api/proxy/sepay-api-proxy')) return match;
-      const fullTarget = path.startsWith('http') ? path : `${originHost}${path.startsWith('/') ? '' : '/'}${path}`;
-      return `${attr}="/api/proxy/sepay-api-proxy?target=${encodeURIComponent(fullTarget)}"`;
-    });
+    resHtml = resHtml.replaceAll(
+      /(href|src)=["']((?:https:\/\/pay-sandbox\.sepay\.vn)?\/[^"']*)["']/gi,
+      (match, attr, path) => {
+        if (path.includes('/api/proxy/sepay-api-proxy')) {
+          return match;
+        }
+        const fullTarget = path.startsWith('http')
+          ? path
+          : `${originHost}${path.startsWith('/') ? '' : '/'}${path}`;
+        return `${attr}="/api/proxy/sepay-api-proxy?target=${encodeURIComponent(fullTarget)}"`;
+      },
+    );
 
     // Inject base href tag pointing to sepay-api-proxy and interceptor script
-    const baseTag = `<base href="/api/proxy/sepay-api-proxy?target=${encodeURIComponent(originHost + '/')}" />`;
+    const baseTag = `<base href="/api/proxy/sepay-api-proxy?target=${encodeURIComponent(`${originHost}/`)}" />`;
     const headInjection = `${baseTag}${interceptorScript}`;
 
     if (resHtml.includes('<head>')) {
@@ -145,16 +163,14 @@ export async function POST(request: NextRequest) {
 
     const setCookie = sepayRes.headers.get('set-cookie');
     if (setCookie) {
-      const cleanedSetCookies = setCookie
-        .split(/,(?=[^;]+;)/)
-        .map((c) => {
-          const cleaned = c
-            .replace(/Domain=[^;]+;?/gi, '')
-            .replace(/Secure;?/gi, '')
-            .replace(/Path=[^;]+;?/gi, '')
-            .trim();
-          return `${cleaned}; Path=/; SameSite=Lax`;
-        });
+      const cleanedSetCookies = setCookie.split(/,(?=[^;]+;)/).map((c) => {
+        const cleaned = c
+          .replaceAll(/Domain=[^;]+;?/gi, '')
+          .replaceAll(/Secure;?/gi, '')
+          .replaceAll(/Path=[^;]+;?/gi, '')
+          .trim();
+        return `${cleaned}; Path=/; SameSite=Lax`;
+      });
       cleanedSetCookies.forEach((c) => {
         response.headers.append('Set-Cookie', c);
       });
@@ -163,8 +179,9 @@ export async function POST(request: NextRequest) {
     response.headers.delete('x-frame-options');
     response.headers.delete('content-security-policy');
     return response;
-  } catch (err: any) {
-    return new NextResponse(`Lỗi nạp SePay Gateway: ${err.message}`, {
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    return new NextResponse(`Lỗi nạp SePay Gateway: ${errorMsg}`, {
       status: 500,
       headers: corsHeaders,
     });

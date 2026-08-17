@@ -3,6 +3,8 @@
 import Image from "next/image"
 import { Pencil, Trash2 } from "lucide-react"
 
+import type { PaginationMeta, ShopItem } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
@@ -20,8 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import type { PaginationMeta, ShopItem } from "@/types"
 
 interface ShopItemsListProps {
   filteredItems: ShopItem[]
@@ -116,7 +116,9 @@ export function ShopItemsList({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline">
-                    {item.category ? categoryNameMap[item.category] || item.category : "-"}
+                    {item.category
+                      ? categoryNameMap[item.category] || item.category
+                      : "-"}
                   </Badge>
                 </TableCell>
                 <TableCell>{item.unit}</TableCell>

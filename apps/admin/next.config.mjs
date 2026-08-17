@@ -66,6 +66,20 @@ const nextConfig = {
       },
     ]
   },
+
+  async rewrites() {
+    const apiOrigin = (
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:3000"
+    ).replace(/\/api\/?$/, "");
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: `${apiOrigin}/uploads/:path*`,
+      },
+    ];
+  },
 }
 
 const withMDX = createMDX({

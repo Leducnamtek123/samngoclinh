@@ -3,6 +3,9 @@
 import React from "react"
 import Image from "next/image"
 import { CheckCircle2, PenTool, XCircle } from "lucide-react"
+
+import type { KYCRequest } from "./kyc-table"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,7 +14,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
-import type { KYCRequest } from "./kyc-table"
 
 interface KycDetailsDialogProps {
   selectedKyc: KYCRequest | null
@@ -50,31 +52,43 @@ export function KycDetailsDialog({
         <DialogHeader>
           <DialogTitle>
             {dict.modal.title} -{" "}
-            {selectedKyc.fullName ||
-              selectedKyc.user?.email ||
-              selectedKyc.id}
+            {selectedKyc.fullName || selectedKyc.user?.email || selectedKyc.id}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <div className="grid grid-cols-3 gap-3 text-sm border-b pb-4">
             <div>
-              <span className="text-muted-foreground text-xs block">{dict.modal.fullName}</span>
+              <span className="text-muted-foreground text-xs block">
+                {dict.modal.fullName}
+              </span>
               <p className="font-semibold text-sm">
                 {selectedKyc.fullName || selectedKyc.user?.name || "—"}
               </p>
             </div>
             <div>
-              <span className="text-muted-foreground text-xs block">{dict.modal.documentType || (lang === 'en' ? 'Document Type:' : 'Loại giấy tờ:')}</span>
+              <span className="text-muted-foreground text-xs block">
+                {dict.modal.documentType ||
+                  (lang === "en" ? "Document Type:" : "Loại giấy tờ:")}
+              </span>
               <p className="font-semibold text-sm">
                 {(selectedKyc.idType || selectedKyc.documentType) === "passport"
-                  ? (lang === "en" ? "Passport" : "Hộ chiếu")
-                  : (selectedKyc.idType || selectedKyc.documentType) === "driver_license"
-                  ? (lang === "en" ? "Driver's License" : "Bằng lái xe")
-                  : (lang === "en" ? "Citizen ID (CCCD)" : "Căn cước công dân")}
+                  ? lang === "en"
+                    ? "Passport"
+                    : "Hộ chiếu"
+                  : (selectedKyc.idType || selectedKyc.documentType) ===
+                      "driver_license"
+                    ? lang === "en"
+                      ? "Driver's License"
+                      : "Bằng lái xe"
+                    : lang === "en"
+                      ? "Citizen ID (CCCD)"
+                      : "Căn cước công dân"}
               </p>
             </div>
             <div>
-              <span className="text-muted-foreground text-xs block">{dict.modal.idNumber}</span>
+              <span className="text-muted-foreground text-xs block">
+                {dict.modal.idNumber}
+              </span>
               <p className="font-semibold font-mono text-sm">
                 {selectedKyc.idNumber || "—"}
               </p>
@@ -132,9 +146,14 @@ export function KycDetailsDialog({
                 </div>
               ) : (
                 <div className="w-full h-40 bg-gray-100 dark:bg-slate-800 rounded flex items-center justify-center text-xs text-gray-400 font-medium">
-                  {(selectedKyc.idType || selectedKyc.documentType) === "passport"
-                    ? (lang === "en" ? "Passport Photo" : "Ảnh Hộ Chiếu")
-                    : (lang === "en" ? "Front Side" : "Mặt Trước CCCD")}
+                  {(selectedKyc.idType || selectedKyc.documentType) ===
+                  "passport"
+                    ? lang === "en"
+                      ? "Passport Photo"
+                      : "Ảnh Hộ Chiếu"
+                    : lang === "en"
+                      ? "Front Side"
+                      : "Mặt Trước CCCD"}
                 </div>
               )}
             </div>
@@ -181,7 +200,9 @@ export function KycDetailsDialog({
                   {dict.modal.rejectReasonTitle}
                 </span>
                 <div className="flex flex-wrap gap-1.5 mb-2">
-                  {Object.values((dict.modal?.presets || {}) as Record<string, string>).map((preset: string) => (
+                  {Object.values(
+                    (dict.modal?.presets || {}) as Record<string, string>
+                  ).map((preset: string) => (
                     <button
                       key={preset}
                       type="button"

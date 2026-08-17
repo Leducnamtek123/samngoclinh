@@ -2,13 +2,15 @@
 
 import React from "react"
 import {
-  FileText,
-  Clock,
-  CheckCircle2,
   AlertTriangle,
+  CheckCircle2,
+  Clock,
   FileCheck,
   FileEdit,
+  FileText,
 } from "lucide-react"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Card } from "@/components/ui/card"
 
 interface ContractsStatsCardsProps {
@@ -23,51 +25,53 @@ interface ContractsStatsCardsProps {
 }
 
 export function ContractsStatsCards({ stats }: ContractsStatsCardsProps) {
+  const { t } = useTranslation()
+
   const statItems = [
     {
-      title: "Tổng hợp đồng",
+      title: t("contracts.stats.total"),
       value: stats.total,
-      unit: "văn bản",
+      unit: t("contracts.fields.code"),
       icon: FileText,
       iconColor: "text-slate-600 dark:text-slate-400",
       iconBg: "bg-slate-100 dark:bg-slate-800",
     },
     {
-      title: "Chờ BQL phát hành",
+      title: t("contracts.status.DRAFT"),
       value: stats.draft || 0,
-      unit: "bản nháp",
+      unit: t("contracts.status.DRAFT"),
       icon: FileEdit,
       iconColor: "text-purple-600 dark:text-purple-400",
       iconBg: "bg-purple-100/70 dark:bg-purple-950/40",
     },
     {
-      title: "Chờ khách ký",
+      title: t("contracts.stats.pending"),
       value: stats.pending,
-      unit: "hợp đồng",
+      unit: t("contracts.status.PENDING_SIGN"),
       icon: Clock,
       iconColor: "text-amber-600 dark:text-amber-400",
       iconBg: "bg-amber-100/70 dark:bg-amber-950/40",
     },
     {
-      title: "Đã ký hợp lệ",
+      title: t("contracts.status.SIGNED"),
       value: stats.signed,
-      unit: "có hiệu lực",
+      unit: t("contracts.stats.active"),
       icon: CheckCircle2,
       iconColor: "text-emerald-600 dark:text-emerald-400",
       iconBg: "bg-emerald-100/70 dark:bg-emerald-950/40",
     },
     {
-      title: "Sắp hết hạn (≤30 ngày)",
+      title: t("contracts.stats.expiring"),
       value: stats.expiringSoon,
-      unit: "cần gia hạn",
+      unit: t("contracts.stats.expiring"),
       icon: AlertTriangle,
       iconColor: "text-orange-600 dark:text-orange-400",
       iconBg: "bg-orange-100/70 dark:bg-orange-950/40",
     },
     {
-      title: "Đã hết hạn",
+      title: t("contracts.stats.expired"),
       value: stats.expired,
-      unit: "hết hiệu lực",
+      unit: t("contracts.stats.expired"),
       icon: FileCheck,
       iconColor: "text-slate-500 dark:text-slate-400",
       iconBg: "bg-slate-100 dark:bg-slate-800",
@@ -105,4 +109,3 @@ export function ContractsStatsCards({ stats }: ContractsStatsCardsProps) {
     </div>
   )
 }
-

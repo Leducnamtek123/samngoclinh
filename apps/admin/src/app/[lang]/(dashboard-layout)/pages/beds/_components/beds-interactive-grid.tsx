@@ -22,12 +22,12 @@ import {
   ZoomOut,
 } from "lucide-react"
 
-import type { Bed, Garden, Tree } from "@/types"
-import type { CultivationBedLocation } from "./use-beds-table"
+import type { AdminUser, Bed, CareLog, Garden, Tree } from "@/types"
+import type { CultivationBedLocation, useBedsTable } from "./use-beds-table"
 
 import { fetchApi } from "@/lib/api"
-import { useApiQuery } from "@/hooks/use-api-query"
 
+import { useApiQuery } from "@/hooks/use-api-query"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,9 +47,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import type { useBedsTable } from "./use-beds-table"
-import type { AdminUser, CareLog } from "@/types"
 
 type TableData = ReturnType<typeof useBedsTable>
 
@@ -126,7 +123,9 @@ export function BedsInteractiveGrid({
       <div className="flex-1 flex items-center justify-center h-full text-muted-foreground p-8 text-center bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <div>
           <p className="text-sm font-medium">Chưa chọn luống trồng nào</p>
-          <p className="text-xs text-muted-foreground mt-1">Vui lòng chọn một luống từ danh sách bên trái để xem chi tiết.</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Vui lòng chọn một luống từ danh sách bên trái để xem chi tiết.
+          </p>
         </div>
       </div>
     )
@@ -277,7 +276,12 @@ interface BedsGridToolbarProps {
   setGridCustomerFilter: (f: string) => void
   onlyEmpty: boolean
   setOnlyEmpty: (o: boolean) => void
-  users: Array<{ id: string; name?: string | null; username: string; email?: string }>
+  users: Array<{
+    id: string
+    name?: string | null
+    username: string
+    email?: string
+  }>
   handleBulkWatering: () => void
   handleBulkFertilizing: () => void
 }
@@ -443,6 +447,22 @@ function BedsGridCanvas({
   setGridCols,
   handleGenerateGrid,
 }: BedsGridCanvasProps) {
+  const visibleLocationIds = React.useMemo(
+    () => new Set(filteredLocations.map((fl) => fl.id)),
+    [filteredLocations]
+  )
+
+  const gridDimensions = React.useMemo(() => {
+    if (!locations || locations.length === 0) return { rows: 8, cols: 10 }
+    let maxR = 0
+    let maxC = 0
+    for (const l of locations) {
+      if (l.row > maxR) maxR = l.row
+      if (l.col > maxC) maxC = l.col
+    }
+    return { rows: maxR + 1, cols: maxC + 1 }
+  }, [locations])
+
   return (
     <div className="flex-1 bg-slate-50 dark:bg-slate-950 rounded-xl relative overflow-hidden group select-none shadow-inner border border-slate-200 dark:border-slate-900">
       {locations.length === 0 ? (
@@ -503,15 +523,13 @@ function BedsGridCanvas({
           >
             <div
               style={{
-                gridTemplateRows: `repeat(${Math.max(...locations.map((l) => l.row)) + 1}, minmax(0, 1fr))`,
-                gridTemplateColumns: `repeat(${Math.max(...locations.map((l) => l.col)) + 1}, minmax(0, 1fr))`,
+                gridTemplateRows: `repeat(${gridDimensions.rows}, minmax(0, 1fr))`,
+                gridTemplateColumns: `repeat(${gridDimensions.cols}, minmax(0, 1fr))`,
               }}
               className="grid gap-2 p-12 pointer-events-auto bg-slate-100/50 dark:bg-slate-900/20 rounded-2xl border border-slate-200/80 dark:border-slate-900/60"
             >
               {locations.map((loc) => {
-                const isVisible = filteredLocations.some(
-                  (fl) => fl.id === loc.id
-                )
+                const isVisible = visibleLocationIds.has(loc.id)
                 const tree = getCellTree(loc.treeCode)
                 const isSelected = loc.id === selectedLocationId
 
@@ -715,9 +733,7 @@ function BedsTreesTab({ tableData }: { tableData: TableData }) {
   const { trees, activeBed, getOwnerName } = tableData
   if (!activeBed) return null
 
-  const bedTrees = trees.filter(
-    (t: Tree) => t.bedCode === activeBed.code
-  )
+  const bedTrees = trees.filter((t: Tree) => t.bedCode === activeBed.code)
 
   return (
     <div className="flex-1 bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-xxs">

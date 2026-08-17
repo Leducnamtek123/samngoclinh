@@ -5,6 +5,19 @@
   "editProduct": "Edit Product",
   "categories": "Categories",
   "addCategory": "Add Category",
+  "categoryForm": {
+    "addTitle": "Add New Product Category",
+    "editTitle": "Edit Product Category",
+    "description": "Fill in the required information to manage product category classification.",
+    "code": "Category Code",
+    "name": "Category Name",
+    "slug": "Slug",
+    "desc": "Category Description",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "parent": "Parent Category"
+  },
   "fields": {
     "name": "Product Name",
     "sku": "SKU",

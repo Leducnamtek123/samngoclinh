@@ -68,16 +68,16 @@ export function PackageDialog({
           <DialogTitle>
             {mode === "create"
               ? activeTab === "care"
-                ? "Thêm gói chăm sóc mới"
-                : "Thêm gói bảo hiểm mới"
+                ? t("packages.addCareTitle")
+                : t("packages.addProtectionTitle")
               : activeTab === "care"
-                ? "Chỉnh sửa gói chăm sóc"
-                : "Chỉnh sửa gói bảo hiểm"}
+                ? t("packages.editCareTitle")
+                : t("packages.editProtectionTitle")}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
-              ? "Điền thông tin bên dưới để khởi tạo cấu hình gói dịch vụ cây sâm."
-              : "Cập nhật thông tin và điều khoản của gói dịch vụ."}
+              ? t("packages.createDesc")
+              : t("packages.editDesc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -90,10 +90,10 @@ export function PackageDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-code">Mã gói *</Label>
+              <Label htmlFor="pkg-code">{t("packages.fields.code")}</Label>
               <Input
                 id="pkg-code"
-                placeholder="VD: CARE_VIP_1Y"
+                placeholder={t("packages.placeholders.code")}
                 value={formData.code}
                 onChange={(e) =>
                   onChange((prev) => ({ ...prev, code: e.target.value }))
@@ -103,10 +103,10 @@ export function PackageDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-name">Tên gói *</Label>
+              <Label htmlFor="pkg-name">{t("packages.fields.name")}</Label>
               <Input
                 id="pkg-name"
-                placeholder="VD: Chăm Sóc Toàn Diện 1 Năm"
+                placeholder={t("packages.placeholders.name")}
                 value={formData.name}
                 onChange={(e) =>
                   onChange((prev) => ({ ...prev, name: e.target.value }))
@@ -119,13 +119,13 @@ export function PackageDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-price">Giá gói (VNĐ) *</Label>
+              <Label htmlFor="pkg-price">{t("packages.fields.price")}</Label>
               <Input
                 id="pkg-price"
                 type="number"
                 min="0"
                 step="10000"
-                placeholder="VD: 500000"
+                placeholder={t("packages.placeholders.price")}
                 value={formData.price || ""}
                 onChange={(e) =>
                   onChange((prev) => ({
@@ -138,12 +138,14 @@ export function PackageDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-duration">Thời hạn (Tháng) *</Label>
+              <Label htmlFor="pkg-duration">
+                {t("packages.fields.duration")}
+              </Label>
               <Input
                 id="pkg-duration"
                 type="number"
                 min="1"
-                placeholder="VD: 12"
+                placeholder={t("packages.placeholders.duration")}
                 value={formData.durationMonths || ""}
                 onChange={(e) =>
                   onChange((prev) => ({
@@ -159,10 +161,12 @@ export function PackageDialog({
 
           {activeTab === "protection" && (
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-coverage">Tỷ lệ bảo hiểm / Đền bù</Label>
+              <Label htmlFor="pkg-coverage">
+                {t("packages.fields.coverage")}
+              </Label>
               <Input
                 id="pkg-coverage"
-                placeholder="VD: 100% giá trị cây giống"
+                placeholder={t("packages.placeholders.coverage")}
                 value={formData.coverage}
                 onChange={(e) =>
                   onChange((prev) => ({ ...prev, coverage: e.target.value }))
@@ -173,7 +177,7 @@ export function PackageDialog({
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="pkg-status">Trạng thái</Label>
+            <Label htmlFor="pkg-status">{t("packages.fields.status")}</Label>
             <Select
               value={formData.status}
               onValueChange={(val) =>
@@ -182,21 +186,23 @@ export function PackageDialog({
               disabled={loading}
             >
               <SelectTrigger id="pkg-status">
-                <SelectValue placeholder="Chọn trạng thái" />
+                <SelectValue placeholder={t("packages.selectStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Đang áp dụng (Active)</SelectItem>
-                <SelectItem value="inactive">Tạm dừng (Inactive)</SelectItem>
+                <SelectItem value="active">{t("packages.active")}</SelectItem>
+                <SelectItem value="inactive">
+                  {t("packages.inactive")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="pkg-desc">Mô tả / Quyền lợi chi tiết</Label>
+            <Label htmlFor="pkg-desc">{t("packages.fields.description")}</Label>
             <Textarea
               id="pkg-desc"
               rows={3}
-              placeholder="Mô tả các hạng mục chăm sóc hoặc điều kiện bồi thường..."
+              placeholder={t("packages.placeholders.description")}
               value={formData.description}
               onChange={(e) =>
                 onChange((prev) => ({ ...prev, description: e.target.value }))
@@ -219,7 +225,7 @@ export function PackageDialog({
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              {loading ? "Đang xử lý..." : t("common.save")}
+              {loading ? t("common.processing") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>

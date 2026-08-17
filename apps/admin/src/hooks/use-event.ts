@@ -3,7 +3,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react"
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
 
-export function useEvent<T extends (...args: readonly unknown[]) => unknown>(fn: T): T {
+export function useEvent<T extends (...args: readonly unknown[]) => unknown>(
+  fn: T
+): T {
   const ref = useRef<T>(fn)
 
   useIsomorphicLayoutEffect(() => {

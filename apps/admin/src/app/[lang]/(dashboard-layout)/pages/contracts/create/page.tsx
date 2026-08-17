@@ -1,13 +1,17 @@
 import { Suspense } from "react"
-import type { Metadata } from "next"
-import { fetchApi } from "@/lib/api"
+
 import type { AdminUser, Tree } from "@/types"
+import type { Metadata } from "next"
+
+import { fetchApi } from "@/lib/api"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { CreateContractWizard } from "./_components/create-contract-wizard"
 
 export const metadata: Metadata = {
   title: "Tạo hợp đồng thủ công | Sâm Ngọc Linh Admin",
-  description: "Tạo hợp đồng cho các giao dịch không phát sinh tự động từ đơn hàng.",
+  description:
+    "Tạo hợp đồng cho các giao dịch không phát sinh tự động từ đơn hàng.",
 }
 
 interface CreateContractPageProps {
@@ -31,7 +35,9 @@ export default async function CreateContractPage({
       users = Array.isArray(usersPayload.data) ? usersPayload.data : []
     }
 
-    const treesRes = await fetchApi("/admin/cultivation/trees?page=1&perPage=500")
+    const treesRes = await fetchApi(
+      "/admin/cultivation/trees?page=1&perPage=500"
+    )
     const treesPayload = await treesRes.json()
     if (treesRes.status < 400) {
       trees = Array.isArray(treesPayload.data) ? treesPayload.data : []

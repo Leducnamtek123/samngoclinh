@@ -1,10 +1,13 @@
-import type { PricingPlansType } from "@/components/pricing-plans"
-import type { Metadata } from "next"
-import type { CarePackage, ProtectionPackage } from "@/types"
+import Link from "next/link"
+import { PackageOpen, Plus } from "lucide-react"
 
-import { pricingData } from "./_data/pricing"
-import { packagesService } from "@/services/packages.service"
+import type { PricingPlansType } from "@/components/pricing-plans"
+import type { CarePackage, ProtectionPackage } from "@/types"
+import type { Metadata } from "next"
+
+import { Button } from "@/components/ui/button"
 import { Pricing } from "./_components/pricing"
+import { packagesService } from "@/services/packages.service"
 
 export const metadata: Metadata = {
   title: "Bảng giá gói dịch vụ | Sâm Ngọc Linh Admin",
@@ -12,7 +15,7 @@ export const metadata: Metadata = {
 }
 
 export default async function PricingPage() {
-  let plans: PricingPlansType[] = pricingData
+  const plans: PricingPlansType[] = []
 
   try {
     const [careRes, protRes] = await Promise.all([
@@ -20,15 +23,17 @@ export default async function PricingPage() {
       packagesService.getProtectionPackages({ perPage: 1 }).catch(() => null),
     ])
 
-    const fetchedPlans: PricingPlansType[] = []
-
-    if (careRes?.data && Array.isArray(careRes.data) && careRes.data.length > 0) {
+    if (
+      careRes?.data &&
+      Array.isArray(careRes.data) &&
+      careRes.data.length > 0
+    ) {
       careRes.data.forEach((pkg: CarePackage, idx: number) => {
-        fetchedPlans.push({
+        plans.push({
           title: pkg.name || `Gói chăm sóc ${idx + 1}`,
           description:
             pkg.description || "Gói chăm sóc định kỳ vườn Sâm Ngọc Linh",
-          price: pkg.price || (idx === 0 ? 1500000 : 3500000),
+          price: pkg.price || 0,
           period: "tháng",
           features: [
             "Tưới tiêu & dinh dưỡng tự động",
@@ -42,12 +47,17 @@ export default async function PricingPage() {
       })
     }
 
-    if (protRes?.data && Array.isArray(protRes.data) && protRes.data.length > 0) {
+    if (
+      protRes?.data &&
+      Array.isArray(protRes.data) &&
+      protRes.data.length > 0
+    ) {
       const pkg = protRes.data[0]
-      fetchedPlans.push({
+      plans.push({
         title: pkg.name || "Gói bảo hiểm & bảo vệ toàn diện",
-        description: pkg.description || "Bảo hiểm rủi ro thiên tai & giám sát 24/7",
-        price: pkg.price || 5000000,
+        description:
+          pkg.description || "Bảo hiểm rủi ro thiên tai & giám sát 24/7",
+        price: pkg.price || 0,
         period: "năm",
         features: [
           "Bảo hiểm cây giống 100%",
@@ -59,12 +69,30 @@ export default async function PricingPage() {
         buttonContent: "Quản lý gói",
       })
     }
-
-    if (fetchedPlans.length > 0) {
-      plans = fetchedPlans
-    }
   } catch (e: unknown) {
     console.error("Failed to fetch package pricing from API:", e)
+  }
+
+  if (plans.length === 0) {
+    return (
+      <div className="container mx-auto p-6 flex flex-col items-center justify-center py-16 text-center space-y-4">
+        <div className="h-16 w-16 rounded-full bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center text-emerald-600">
+          <PackageOpen className="h-8 w-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">
+          Chưa có cấu hình bảng giá gói dịch vụ
+        </h2>
+        <p className="text-sm text-muted-foreground max-w-md">
+          Hệ thống hiện tại chưa thiết lập gói chăm sóc hoặc bảo hiểm bảo vệ nào
+          trong cơ sở dữ liệu.
+        </p>
+        <Link href="/pages/packages">
+          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 mt-2">
+            <Plus className="h-4 w-4" /> Tạo gói dịch vụ mới
+          </Button>
+        </Link>
+      </div>
+    )
   }
 
   return <Pricing data={plans} />

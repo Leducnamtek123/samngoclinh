@@ -111,7 +111,9 @@ export function TreesList({
               : "bg-slate-50 text-slate-700 border-slate-200"
           }
         >
-          {tree.status === "active" ? t("trees.status.active") : tree.status || "active"}
+          {tree.status === "active"
+            ? t("trees.status.active")
+            : tree.status || "active"}
         </Badge>
       ),
     },

@@ -2,10 +2,11 @@
 
 import React from "react"
 import { Building2, UserCheck } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 
 import type { AdminUser, EContract } from "@/types"
+
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ContractDetailPartiesCardProps {
   contract: EContract
@@ -33,7 +34,9 @@ export function ContractDetailPartiesCard({
           <span className="font-bold text-slate-900 dark:text-white">
             {contract.partyA || "Công ty Cổ phần Sâm Ngọc Linh"}
           </span>
-          <p className="text-xs text-muted-foreground">Vùng trồng sâm: Nam Trà My, Kon Tum</p>
+          <p className="text-xs text-muted-foreground">
+            Vùng trồng sâm: Nam Trà My, Kon Tum
+          </p>
         </div>
 
         <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl space-y-1.5">
@@ -54,15 +57,23 @@ export function ContractDetailPartiesCard({
                 <UserCheck className="w-3 h-3" /> Đã xác thực eKYC
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px]">
+              <Badge
+                variant="outline"
+                className="text-amber-600 border-amber-300 text-[10px]"
+              >
                 Chưa xác thực eKYC
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{user?.email || "Chưa có email"}</p>
+          <p className="text-xs text-muted-foreground">
+            {user?.email || "Chưa có email"}
+          </p>
           {user?.mobileNumbers?.[0]?.number && (
             <p className="text-xs text-slate-600 dark:text-slate-400">
-              SĐT: <span className="font-semibold">{user.mobileNumbers[0].number}</span>
+              SĐT:{" "}
+              <span className="font-semibold">
+                {user.mobileNumbers[0].number}
+              </span>
             </p>
           )}
         </div>

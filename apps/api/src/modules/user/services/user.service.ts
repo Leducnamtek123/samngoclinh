@@ -1385,7 +1385,7 @@ export class UserService implements IUserService {
             throw new UserNotFoundException();
         } else if (user.isVerified) {
             throw new UserEmailAlreadyVerifiedException();
-        } else if (!user.email || user.email.endsWith('@phone.samngoclinh.local') || user.email.endsWith('@phone.iwefarm.local')) {
+        } else if (!user.email || user.email.endsWith('@phone.samngoclinh.local')) {
             throw new UserNotFoundException();
         }
 
@@ -1480,8 +1480,7 @@ export class UserService implements IUserService {
             !user ||
             user.status !== EnumUserStatus.active ||
             !user.email ||
-            user.email.endsWith('@phone.samngoclinh.local') ||
-            user.email.endsWith('@phone.iwefarm.local')
+            user.email.endsWith('@phone.samngoclinh.local')
         ) {
             return;
         }

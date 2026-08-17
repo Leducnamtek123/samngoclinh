@@ -27,7 +27,7 @@ export function ShippingSettingsManager() {
     let mounted = true
     async function loadSetting() {
       try {
-        const res = await fetchApi("/settings/shipping_fee")
+        const res = await fetchApi("/admin/settings/shipping_fee")
         if (res.ok) {
           const payload = await res.json()
           const val = payload.data?.value || payload.value
@@ -52,7 +52,7 @@ export function ShippingSettingsManager() {
     setSuccess(false)
 
     try {
-      const res = await fetchApi("/settings/shipping_fee", {
+      const res = await fetchApi("/admin/settings/shipping_fee", {
         method: "PUT",
         body: JSON.stringify({ value: String(shippingFee || "30000") }),
       })

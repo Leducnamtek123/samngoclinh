@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response, ResponsePaging } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -10,10 +10,12 @@ import { EContractService } from '@modules/e-contract/services/e-contract.servic
 import { EContractTemplateService, IContractTemplateItem } from '@modules/e-contract/services/e-contract.template.service';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
 import { EContractUpdateRequestDto } from '@modules/e-contract/dtos/request/e-contract.update.request.dto';
+import { ContractAmendmentCreateRequestDto } from '@modules/e-contract/dtos/request/contract-amendment.create.request.dto';
 import {
     EContractAdminCheckExpiryDoc,
     EContractAdminCreateDoc,
     EContractAdminDeleteDoc,
+    EContractAdminGetDoc,
     EContractAdminListDoc,
     EContractAdminUpdateDoc,
 } from '@modules/e-contract/docs/e-contract.admin.doc';
@@ -27,6 +29,8 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
     path: '/contracts',
 })
 export class EContractAdminController {
+    private readonly logger = new Logger(EContractAdminController.name);
+
     constructor(
         private readonly eContractService: EContractService,
         private readonly eContractTemplateService: EContractTemplateService
@@ -127,6 +131,20 @@ export class EContractAdminController {
         return this.eContractService.listContractsPaginated(pagination, status);
     }
 
+    @EContractAdminGetDoc()
+    @Response('eContract.get')
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Get(['/:id', '/detail/:id', '/get/:id'])
+    async getContractDetail(
+        @Param('id') id: string
+    ): Promise<IResponseReturn<EContract>> {
+        this.logger.log(`[getContractDetail] requested id: "${id}"`);
+        return this.eContractService.getContract(id);
+    }
+
     @EContractAdminCreateDoc()
     @Response('eContract.create')
     @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
@@ -211,7 +229,7 @@ export class EContractAdminController {
     @Post('/:id/amendments')
     async createContractAmendment(
         @Param('id') id: string,
-        @Body() body: any
+        @Body() body: ContractAmendmentCreateRequestDto
     ): Promise<IResponseReturn<any>> {
         return this.eContractService.createAmendment(id, body);
     }

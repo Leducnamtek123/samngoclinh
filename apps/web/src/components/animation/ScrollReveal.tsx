@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useEffect, useRef } from 'react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -17,7 +17,7 @@ export type AnimationVariant =
   | 'blur'
   | 'parallax';
 
-interface ScrollRevealProps extends React.HTMLAttributes<HTMLDivElement> {
+type ScrollRevealProps = {
   children: React.ReactNode;
   variant?: AnimationVariant;
   delay?: number; // In seconds (e.g. 0.15)
@@ -28,13 +28,13 @@ interface ScrollRevealProps extends React.HTMLAttributes<HTMLDivElement> {
   speed?: number; // For parallax effect
   as?: React.ElementType;
   className?: string;
-}
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export function ScrollReveal({
   children,
   variant = 'fade-up',
   delay = 0,
-  duration = 1.0,
+  duration = 1,
   distance = 60,
   scaleFrom = 0.92,
   once = true,
@@ -48,7 +48,9 @@ export function ScrollReveal({
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
@@ -56,7 +58,7 @@ export function ScrollReveal({
       return;
     }
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       if (variant === 'parallax') {
         gsap.fromTo(
           el,
@@ -70,7 +72,7 @@ export function ScrollReveal({
               end: 'bottom top',
               scrub: true,
             },
-          }
+          },
         );
         return;
       }
@@ -79,8 +81,8 @@ export function ScrollReveal({
       const fromState: gsap.TweenVars = { opacity: 0 };
       const toState: gsap.TweenVars = {
         opacity: 1,
-        duration: duration,
-        delay: delay,
+        duration,
+        delay,
         ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
@@ -90,38 +92,46 @@ export function ScrollReveal({
       };
 
       switch (variant) {
-        case 'fade-up':
+        case 'fade-up': {
           fromState.y = distance;
           toState.y = 0;
           break;
-        case 'fade-down':
+        }
+        case 'fade-down': {
           fromState.y = -distance;
           toState.y = 0;
           break;
-        case 'fade-left':
+        }
+        case 'fade-left': {
           fromState.x = -distance;
           toState.x = 0;
           break;
-        case 'fade-right':
+        }
+        case 'fade-right': {
           fromState.x = distance;
           toState.x = 0;
           break;
-        case 'scale':
+        }
+        case 'scale': {
           fromState.scale = scaleFrom;
           toState.scale = 1;
           break;
-        case 'blur':
+        }
+        case 'blur': {
           fromState.filter = 'blur(12px)';
           fromState.y = distance * 0.5;
           toState.filter = 'blur(0px)';
           toState.y = 0;
           break;
+        }
       }
 
       gsap.fromTo(el, fromState, toState);
     }, ref);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+    };
   }, [variant, delay, duration, distance, scaleFrom, once, speed]);
 
   return (

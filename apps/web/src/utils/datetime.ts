@@ -11,7 +11,9 @@ const localDateTimeFormatter = new Intl.DateTimeFormat('vi-VN', {
  * Format: DD/MM/YYYY HH:mm (or according to browser locale)
  */
 export function formatLocalDateTime(value?: string | Date | number | null): string {
-  if (!value) return '—';
+  if (!value) {
+    return '—';
+  }
 
   const date = new Date(value);
 

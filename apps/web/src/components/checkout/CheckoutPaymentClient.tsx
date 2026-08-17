@@ -1,35 +1,48 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { fetchApiClient } from '@/lib/ApiClient';
-import { clearCart } from '@/utils/cart';
-import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 import { ShoppingBag, CheckCircle2, CreditCard, PackageCheck } from 'lucide-react';
-import { CartStepProgress } from '@/components/cart/CartStepProgress';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { CartStepPayment } from '@/components/cart/CartStepPayment';
+import { CartStepProgress } from '@/components/cart/CartStepProgress';
 import { LoadingState } from '@/components/common/LoadingState';
+import { paymentService } from '@/services/content.service';
+import { clearCart } from '@/utils/cart';
 
-interface CheckoutPaymentClientProps {
+type CheckoutPaymentClientProps = {
   locale: string;
   orderId: string;
-}
+};
 
-export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClientProps) {
-  const t = useTranslations('cart');
+type SepayVerifyResult = {
+  status?: string;
+  total?: number;
+  code?: string;
+  qrUrl?: string;
+  accountNumber?: string;
+  accountName?: string;
+  bankBrand?: string;
+  data?: SepayVerifyResult;
+};
+
+type OrderPaymentInfo = {
+  orderId: string;
+  orderCode: string;
+  amount: number;
+  qrUrl: string;
+  accountNo: string;
+  accountName: string;
+  bankName: string;
+};
+
+export function CheckoutPaymentClient({ orderId }: CheckoutPaymentClientProps) {
+  const t = useTranslations('checkoutPayment');
+  const locale = useLocale();
   const router = useRouter();
 
-  const [orderInfo, setOrderInfo] = useState<{
-    orderId: string;
-    orderCode: string;
-    amount: number;
-    qrUrl: string;
-    accountNo: string;
-    accountName: string;
-    bankName: string;
-  } | null>(null);
-
+  const [orderInfo, setOrderInfo] = useState<OrderPaymentInfo | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -40,12 +53,12 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
 
     async function loadOrder() {
       try {
-        const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+        const res = (await paymentService.verifySepayOrder(orderId)) as SepayVerifyResult;
         const data = res?.data || res;
 
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
-          toast.success('Đã thanh toán thành công!');
+          toast.success(t('paymentSuccess'));
           // react-doctor-disable-next-line react-doctor/nextjs-no-client-side-redirect
           router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
           return;
@@ -77,7 +90,9 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
           });
         }
       }
-      if (isMounted) setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     }
 
     loadOrder();
@@ -85,24 +100,25 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
     return () => {
       isMounted = false;
     };
-  }, [orderId, locale, router]);
+  }, [orderId, locale, router, t]);
 
-  // SePay Auto Polling & Window Focus listener (Learned from Mobile App AppState listener)
+  // SePay Auto Polling & Window Focus listener
   useEffect(() => {
-    if (!orderId) return;
+    if (!orderId) {
+      return;
+    }
 
     const checkPaymentStatus = async () => {
       try {
-        const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+        const res = (await paymentService.verifySepayOrder(orderId)) as SepayVerifyResult;
         const data = res?.data || res;
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
-          toast.success('Xác nhận thanh toán thành công!');
+          toast.success(t('paymentSuccess'));
+          // react-doctor-disable-next-line react-doctor/nextjs-no-client-side-redirect
           router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
         }
-      } catch {
-        // Silent retry
-      }
+      } catch {}
     };
 
     const interval = setInterval(checkPaymentStatus, 3000);
@@ -112,35 +128,33 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
       clearInterval(interval);
       window.removeEventListener('focus', checkPaymentStatus);
     };
-  }, [orderId, locale, router]);
+  }, [orderId, locale, router, t]);
 
-  const handleCopy = (text: string, fieldName: string) => {
+  const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedField(fieldName);
-    setTimeout(() => setCopiedField(null), 2000);
+    setCopiedField(field);
+    toast.success(t('copied'));
+    setTimeout(() => {
+      setCopiedField(null);
+    }, 2000);
   };
 
-  const handleManualComplete = async () => {
+  const handleManualVerify = async () => {
     setIsVerifying(true);
     try {
-      const res: any = await fetchApiClient(`/public/payment/sepay/verify/${orderId}`);
+      const res = (await paymentService.verifySepayOrder(orderId)) as SepayVerifyResult;
       const data = res?.data || res;
       if (data?.status === 'paid' || data?.status === 'completed') {
         clearCart();
-        toast.success('Xác nhận thanh toán thành công!');
+        toast.success(t('paymentSuccess'));
         router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
       } else {
-        toast.info('Hệ thống chưa ghi nhận giao dịch thành công. Vui lòng kiểm tra lại ứng dụng ngân hàng hoặc chờ trong giây lát.');
+        toast.info(t('pendingPayment'));
       }
     } catch {
-      toast.info('Đang xác minh giao dịch với ngân hàng, vui lòng thử lại sau ít phút.');
+      toast.error(t('verifyFailed'));
     }
     setIsVerifying(false);
-  };
-
-  const handleOpenSepayGateway = () => {
-    const code = orderInfo?.orderCode || orderId;
-    window.location.href = `/api/proxy/public/payment/sepay/pay/${code}`;
   };
 
   const stepsList = [
@@ -150,27 +164,28 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
     { step: 4, label: t('step4'), icon: PackageCheck },
   ];
 
-  if (loading || !orderInfo) {
+  if (loading) {
     return (
-      <div className="w-full bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-        <LoadingState message="Đang tải thông tin thanh toán..." size="lg" />
+      <div className="flex min-h-[60vh] w-full items-center justify-center">
+        <LoadingState variant="centered" message={t('loading')} />
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <div className="min-h-screen w-full bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-10">
         <CartStepProgress currentStep={3} stepsList={stepsList} />
 
-        <CartStepPayment
-          orderInfo={orderInfo}
-          copiedField={copiedField}
-          isVerifying={isVerifying}
-          onCopy={handleCopy}
-          onCompletePayment={handleManualComplete}
-          onOpenSepayGateway={handleOpenSepayGateway}
-        />
+        {orderInfo && (
+          <CartStepPayment
+            orderInfo={orderInfo}
+            copiedField={copiedField}
+            onCopy={handleCopy}
+            onCompletePayment={handleManualVerify}
+            isVerifying={isVerifying}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,24 +1,23 @@
 'use client';
 
-import React, { createContext, useEffect, useState } from 'react';
-import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+import React, { createContext, useEffect, useState, useMemo } from 'react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-
-interface ScrollAnimationContextType {
+type ScrollAnimationContextType = {
   lenis: Lenis | null;
-}
+};
 
 const ScrollAnimationContext = createContext<ScrollAnimationContextType>({ lenis: null });
 
-interface ScrollAnimationProviderProps {
+type ScrollAnimationProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function ScrollAnimationProvider({ children }: ScrollAnimationProviderProps) {
   const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
@@ -33,11 +32,10 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
     // Initialize Lenis Smooth Scroll
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
       smoothWheel: true,
       touchMultiplier: 1.5,
     });
-    // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
     setLenisInstance(lenis);
 
     // Sync Lenis scroll with GSAP ScrollTrigger
@@ -71,8 +69,10 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
     };
   }, []);
 
+  const contextValue = useMemo(() => ({ lenis: lenisInstance }), [lenisInstance]);
+
   return (
-    <ScrollAnimationContext.Provider value={{ lenis: lenisInstance }}>
+    <ScrollAnimationContext.Provider value={contextValue}>
       {children}
     </ScrollAnimationContext.Provider>
   );

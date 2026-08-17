@@ -1,8 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { usersService } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 import type { ChangeEvent } from "react"
 import type { ProfileInfoFormType, UserType } from "../../../types"
@@ -15,6 +18,7 @@ import { PhotoUploadSection } from "./photo-upload-section"
 import { ProfileFieldsSection } from "./profile-fields-section"
 
 export function ProfileInfoForm({ user }: { user?: UserType }) {
+  const router = useRouter()
   const [photoPreview, setPhotoPreview] = useState<string | undefined>(
     user?.avatar
   )
@@ -48,7 +52,7 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
       }
       reader.readAsDataURL(file)
 
-      form.setValue("avatar", file)
+      form.setValue("avatar", file, { shouldDirty: true })
       form.trigger("avatar") // Trigger validation for the "avatar" field
     }
   }
@@ -56,6 +60,48 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
   function handleRemovePhoto() {
     form.resetField("avatar") // Reset the "avatar" field in the form to its initial state
     setPhotoPreview(undefined)
+  }
+
+  async function onSubmit(data: ProfileInfoFormType) {
+    try {
+      const fullName = [data.firstName, data.lastName]
+        .filter(Boolean)
+        .join(" ")
+        .trim()
+
+      await usersService.updateSelfProfile({
+        name: fullName || data.username,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        state: data.state,
+        country: data.country,
+        zipCode: data.zipCode,
+        language: data.language,
+        timeZone: data.timeZone,
+        currency: data.currency,
+        organization: data.organization,
+      })
+
+      if (data.avatar instanceof File) {
+        await usersService.uploadAvatar(data.avatar)
+      }
+
+      toast.success("Lưu thay đổi thông tin tài khoản thành công!")
+      form.reset({
+        ...data,
+        avatar: undefined,
+      })
+      router.refresh()
+    } catch (error: unknown) {
+      console.error("Save profile error:", error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Không thể lưu thông tin tài khoản."
+      )
+    }
   }
 
   return (
@@ -92,5 +138,3 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
     </Form>
   )
 }
-
-async function onSubmit(_data: ProfileInfoFormType) {}

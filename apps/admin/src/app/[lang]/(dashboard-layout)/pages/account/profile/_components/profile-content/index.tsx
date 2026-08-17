@@ -18,11 +18,17 @@ import {
   Users,
 } from "lucide-react"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import type { UserProfileData } from "../../page"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-
-import type { UserProfileData } from "../../page"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 const activityLogs = [
   {
@@ -114,19 +120,35 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
             <div className="flex items-start gap-3">
               <Building2 className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase">Đơn vị công tác</p>
-                <p className="font-bold text-foreground">Hệ thống Nông nghiệp Số Sâm Ngọc Linh</p>
-                <p className="text-xs text-muted-foreground">Trung tâm Quản trị & Điều hành Canh tác</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase">
+                  Đơn vị công tác
+                </p>
+                <p className="font-bold text-foreground">
+                  Hệ thống Nông nghiệp Số Sâm Ngọc Linh
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Trung tâm Quản trị & Điều hành Canh tác
+                </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <Shield className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase">Chức vụ & Quyền hạn</p>
-                <p className="font-bold text-foreground">{role === 'SUPER_ADMIN' ? 'Tổng Quản Trị Hệ Thống (Super Admin)' : 'Quản Lý Vườn Sâm'}</p>
-                <Badge variant="secondary" className="mt-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-none font-bold text-[10px]">
-                  ✓ Toàn quyền Quản trị (All-Access)
+                <p className="text-xs text-muted-foreground font-semibold uppercase">
+                  Chức vụ & Quyền hạn
+                </p>
+                <p className="font-bold text-foreground">
+                  {role === "SUPER_ADMIN"
+                    ? "Tổng Quản Trị Hệ Thống (Super Admin)"
+                    : "Quản Lý Vườn Sâm"}
+                </p>
+                <Badge
+                  variant="secondary"
+                  className="mt-1 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-none font-bold text-[10px] inline-flex items-center gap-1"
+                >
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                  <span>Toàn quyền Quản trị (All-Access)</span>
                 </Badge>
               </div>
             </div>
@@ -134,7 +156,9 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
             <div className="flex items-start gap-3">
               <Mail className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase">Email liên hệ</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase">
+                  Email liên hệ
+                </p>
                 <p className="font-bold text-foreground">{email}</p>
               </div>
             </div>
@@ -142,7 +166,9 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
             <div className="flex items-start gap-3">
               <Phone className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase">Số điện thoại</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase">
+                  Số điện thoại
+                </p>
                 <p className="font-bold text-foreground">{phone}</p>
               </div>
             </div>
@@ -150,7 +176,9 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
             <div className="flex items-start gap-3">
               <Calendar className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase">Ngày kích hoạt</p>
+                <p className="text-xs text-muted-foreground font-semibold uppercase">
+                  Ngày kích hoạt
+                </p>
                 <p className="font-bold text-foreground">01/01/2026</p>
               </div>
             </div>
@@ -167,7 +195,9 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
           </CardHeader>
           <CardContent className="pt-4 space-y-3 text-xs">
             <div className="flex items-center justify-between py-1 border-b border-border/40">
-              <span className="text-muted-foreground">Xác thực 2 yếu tố (2FA)</span>
+              <span className="text-muted-foreground">
+                Xác thực 2 yếu tố (2FA)
+              </span>
               <span className="font-bold text-emerald-600 flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Đã kích hoạt
               </span>
@@ -177,8 +207,13 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
               <span className="font-bold text-foreground">Mức 1 (Tối cao)</span>
             </div>
             <div className="flex items-center justify-between py-1">
-              <span className="text-muted-foreground">Trạng thái tài khoản</span>
-              <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold">
+              <span className="text-muted-foreground">
+                Trạng thái tài khoản
+              </span>
+              <Badge
+                variant="secondary"
+                className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-bold"
+              >
                 Hoạt động bình thường
               </Badge>
             </div>
@@ -200,7 +235,12 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
                 Danh sách các điểm canh tác chính thuộc thẩm quyền quản trị
               </CardDescription>
             </div>
-            <Button asChild variant="outline" size="sm" className="text-xs h-7 rounded-lg">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="text-xs h-7 rounded-lg"
+            >
               <Link href="/pages/gardens">Xem tất cả</Link>
             </Button>
           </CardHeader>
@@ -212,8 +252,13 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-sm text-foreground">{g.name}</h4>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                    <h4 className="font-bold text-sm text-foreground">
+                      {g.name}
+                    </h4>
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] px-1.5 py-0 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                    >
                       {g.status}
                     </Badge>
                   </div>
@@ -223,8 +268,12 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs font-bold text-primary">{g.plantsCount}</p>
-                  <p className="text-[11px] text-muted-foreground">{g.bedsCount} luống sâm</p>
+                  <p className="text-xs font-bold text-primary">
+                    {g.plantsCount}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {g.bedsCount} luống sâm
+                  </p>
                 </div>
               </div>
             ))}
@@ -245,19 +294,26 @@ export function ProfileContent({ user }: { user?: UserProfileData | null }) {
           <CardContent className="pt-4">
             <div className="space-y-4">
               {activityLogs.map((log) => (
-                <div key={log.id} className="flex items-start gap-3 text-xs pb-3 border-b border-border/40 last:border-0 last:pb-0">
+                <div
+                  key={log.id}
+                  className="flex items-start gap-3 text-xs pb-3 border-b border-border/40 last:border-0 last:pb-0"
+                >
                   <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                     {log.icon}
                   </div>
                   <div className="flex-1 min-w-0 space-y-0.5">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="font-bold text-foreground text-sm">{log.title}</p>
+                      <p className="font-bold text-foreground text-sm">
+                        {log.title}
+                      </p>
                       <span className="text-[11px] text-muted-foreground flex items-center gap-1 whitespace-nowrap">
                         <Clock className="w-3 h-3" />
                         {log.time}
                       </span>
                     </div>
-                    <p className="text-muted-foreground leading-relaxed">{log.desc}</p>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {log.desc}
+                    </p>
                   </div>
                 </div>
               ))}

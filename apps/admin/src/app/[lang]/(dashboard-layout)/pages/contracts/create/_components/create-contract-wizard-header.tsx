@@ -3,8 +3,9 @@
 import React from "react"
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, Save, Send } from "lucide-react"
-import { Button } from "@/components/ui/button"
+
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 interface CreateContractWizardHeaderProps {
   lang: string
@@ -38,7 +39,10 @@ export function CreateContractWizardHeader({
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Tạo hợp đồng thủ công
           </h1>
-          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300">
+          <Badge
+            variant="outline"
+            className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300"
+          >
             Tạo thủ công
           </Badge>
         </div>
@@ -65,7 +69,10 @@ export function CreateContractWizardHeader({
             <Send className="w-4 h-4" /> Phát hành hợp đồng
           </Button>
         ) : (
-          <Button onClick={onNext} className="gap-1.5 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900">
+          <Button
+            onClick={onNext}
+            className="gap-1.5 bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900"
+          >
             Tiếp tục <ArrowRight className="w-4 h-4" />
           </Button>
         )}

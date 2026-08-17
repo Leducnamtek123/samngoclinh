@@ -4,20 +4,21 @@ import React from "react"
 import Link from "next/link"
 import {
   ArrowLeft,
+  Bell,
   CheckCircle2,
   Clock,
-  QrCode,
   ExternalLink,
   FileDown,
-  Bell,
-  Trash2,
-  Send,
   FileText,
+  QrCode,
+  Send,
+  Trash2,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 
 import type { EContract } from "@/types"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 interface ContractDetailHeaderProps {
   contract: EContract
@@ -50,7 +51,8 @@ export function ContractDetailHeader({
   onSendReminder,
   onDeleteClick,
 }: ContractDetailHeaderProps) {
-  const isDraft = contract.status === "draft" || contract.status === "pending_issue"
+  const isDraft =
+    contract.status === "draft" || contract.status === "pending_issue"
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
@@ -84,11 +86,17 @@ export function ContractDetailHeader({
           )}
 
           {isOrderSource ? (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300"
+            >
               Đơn hàng {orderCode ? `#${orderCode}` : ""}
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300">
+            <Badge
+              variant="outline"
+              className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300"
+            >
               Tạo thủ công
             </Badge>
           )}
@@ -105,7 +113,8 @@ export function ContractDetailHeader({
             onClick={onEditClick}
             className="gap-1.5 text-foreground border-border hover:bg-muted font-semibold cursor-pointer shadow-2xs"
           >
-            <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Chỉnh sửa thông tin & HĐ
+            <FileText className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />{" "}
+            Chỉnh sửa thông tin & HĐ
           </Button>
         )}
 
@@ -116,7 +125,8 @@ export function ContractDetailHeader({
             disabled={isIssuing}
             className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-xs cursor-pointer"
           >
-            <Send className="w-4 h-4" /> {isIssuing ? "Đang phát hành..." : "Phát hành & Gửi khách ký"}
+            <Send className="w-4 h-4" />{" "}
+            {isIssuing ? "Đang phát hành..." : "Phát hành & Gửi khách ký"}
           </Button>
         )}
 
@@ -127,12 +137,16 @@ export function ContractDetailHeader({
           className="inline-flex"
         >
           <Button variant="outline" size="sm" className="gap-1.5">
-            <QrCode className="w-4 h-4 text-emerald-600" /> Tra cứu QR <ExternalLink className="w-3 h-3 text-muted-foreground" />
+            <QrCode className="w-4 h-4 text-emerald-600" /> Tra cứu QR{" "}
+            <ExternalLink className="w-3 h-3 text-muted-foreground" />
           </Button>
         </a>
 
         <a href={pdfDownloadUrl} target="_blank" rel="noopener noreferrer">
-          <Button size="sm" className="gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900">
+          <Button
+            size="sm"
+            className="gap-1.5 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900"
+          >
             <FileDown className="w-4 h-4" /> Tải bản PDF
           </Button>
         </a>

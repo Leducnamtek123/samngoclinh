@@ -9,7 +9,10 @@ function SessionErrorListener() {
   const { data: session } = useSession()
 
   useEffect(() => {
-    if ((session as { error?: string } | null)?.error === "RefreshAccessTokenError") {
+    if (
+      (session as { error?: string } | null)?.error ===
+      "RefreshAccessTokenError"
+    ) {
       signOut({ callbackUrl: "/sign-in" })
     }
   }, [session])

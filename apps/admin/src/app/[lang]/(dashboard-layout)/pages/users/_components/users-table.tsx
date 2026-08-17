@@ -4,14 +4,13 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 
 import type { ColumnDef } from "@/components/shared/data-table"
+import type { AdminUser, PaginationMeta } from "@/types"
 
 import { useDataTable } from "@/hooks/use-data-table"
 import { useTranslation } from "@/providers/i18n-provider"
 import { ToastCard } from "@/components/ui/feedback-components"
 import { DataTable } from "@/components/shared/data-table"
 import { StatusBadge } from "@/components/shared/status-badge"
-
-import type { AdminUser, PaginationMeta } from "@/types"
 
 interface UsersTableProps {
   initialUsers: AdminUser[]
@@ -81,15 +80,10 @@ export function UsersTable({
       cell: (user) => {
         const rawStatus = (user.status || "active").toLowerCase()
         const translated = t(`users.status.${rawStatus}`)
-        const displayLabel = translated && !translated.startsWith("users.status.")
-          ? translated
-          : rawStatus === "inactive"
-          ? "Chưa kích hoạt"
-          : rawStatus === "active"
-          ? "Hoạt động"
-          : rawStatus === "blocked"
-          ? "Đã khóa"
-          : rawStatus
+        const displayLabel =
+          translated && !translated.startsWith("users.status.")
+            ? translated
+            : t(`common.status.${rawStatus}`) || rawStatus
 
         return <StatusBadge status={rawStatus} label={displayLabel} />
       },

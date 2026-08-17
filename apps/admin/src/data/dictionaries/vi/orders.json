@@ -15,5 +15,40 @@
     "4": "Sâm 4 năm tuổi",
     "5": "Sâm 5 năm tuổi",
     "6": "Sâm > 5 năm tuổi"
+  },
+  "fields": {
+    "orderCode": "Mã đơn hàng",
+    "customer": "Khách hàng",
+    "orderDate": "Ngày đặt",
+    "totalAmount": "Tổng tiền",
+    "deliveryStatus": "Trạng thái vận chuyển"
+  },
+  "deliveryStatus": {
+    "Delivered": "Đã giao hàng",
+    "Shipped": "Đang giao hàng",
+    "In Transit": "Đang vận chuyển",
+    "Processing": "Đang xử lý",
+    "Pending": "Chờ xử lý"
+  },
+  "transactions": {
+    "title": "Quản lý Giao dịch & Thanh toán",
+    "subtitle": "Lịch sử giao dịch biến động số dư ví, nạp/rút điểm và doanh thu hệ thống.",
+    "totalCount": "Tổng số giao dịch",
+    "totalCountDesc": "Giao dịch ghi nhận trên hệ thống",
+    "totalCredit": "Tổng giao dịch Cộng",
+    "totalCreditDesc": "Nạp tiền & Tích lũy",
+    "totalDebit": "Tổng giao dịch Trừ",
+    "totalDebitDesc": "Rút tiền & Rút vốn",
+    "realtimeLog": "Nhật ký Giao dịch Hệ thống (Real-time API)",
+    "realtimeLogDesc": "Danh sách giao dịch nạp, rút và mua gói sâm Ngọc Linh thu thập từ API",
+    "code": "Mã GD",
+    "description": "Mô tả / Nội dung",
+    "type": "Loại",
+    "amount": "Số tiền / Điểm",
+    "balanceAfter": "Số dư sau GD",
+    "status": "Trạng thái",
+    "time": "Thời gian",
+    "credit": "Nạp / Cộng",
+    "debit": "Trừ / Rút"
   }
 }

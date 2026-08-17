@@ -14,7 +14,21 @@
     "articleTitle": "Article Title",
     "author": "Author",
     "publishedDate": "Published Date",
-    "category": "Category"
+    "category": "Category",
+    "allCategories": "All Categories",
+    "allStatus": "All Status",
+    "searchPlaceholder": "Search articles...",
+    "categories": {
+      "news": "News",
+      "event": "Events",
+      "guide": "User Guide",
+      "faq": "Knowledge & FAQ"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "inactive": "Inactive"
+    }
   },
   "contacts": {
     "title": "Contact Requests",
@@ -22,6 +36,23 @@
     "email": "Email",
     "subject": "Subject",
     "message": "Message",
-    "receivedAt": "Received At"
+    "receivedAt": "Received At",
+    "read": "Read",
+    "unread": "Unread"
+  },
+  "templates": {
+    "title": "Contract & Document Templates",
+    "subtitle": "Manage and draft standardized contract templates",
+    "templateName": "Display Template Name",
+    "templateNamePlaceholder": "Template name...",
+    "version": "Version",
+    "versionTooltip": "SemVer format: 1.0.0, 2.1.0,...",
+    "description": "Application Description",
+    "descriptionPlaceholder": "Summary description of this standard document...",
+    "sourceHtml": "Template HTML Source Code",
+    "sourceHtmlHelp": "Supports HTML, inline CSS, and placeholder variables {{...}}",
+    "visualPreview": "Visual Preview (Simulated Data)",
+    "visualPreviewHelp": "Preview viewport when document is rendered to PDF / Digital Signature",
+    "iframeTitle": "Contract template preview"
   }
 }

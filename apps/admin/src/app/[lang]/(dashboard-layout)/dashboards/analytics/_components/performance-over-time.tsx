@@ -2,8 +2,6 @@ import { ChevronDown } from "lucide-react"
 
 import type { AnalyticsDashboardStats } from "../types"
 
-import { performanceOverTimeData } from "../_data/performance-over-time"
-
 import { cn } from "@/lib/utils"
 
 import { buttonVariants } from "@/components/ui/button-variants"
@@ -46,21 +44,19 @@ export function PerformanceOverTime({
 }: {
   stats?: AnalyticsDashboardStats
 }) {
-  const summary = stats?.monthlyRevenue
-    ? {
-        totalVisitors: stats.monthlyRevenue.reduce(
-          (sum: number, r) => sum + r.visitors,
-          0
-        ),
-        totalConversions: stats.monthlyRevenue.reduce(
-          (sum: number, r) => sum + r.conversions,
-          0
-        ),
-      }
-    : performanceOverTimeData.summary
+  const monthlyRevenue = stats?.monthlyRevenue || []
+  const summary = {
+    totalVisitors: monthlyRevenue.reduce(
+      (sum: number, r) => sum + (r.visitors || 0),
+      0
+    ),
+    totalConversions: monthlyRevenue.reduce(
+      (sum: number, r) => sum + (r.conversions || 0),
+      0
+    ),
+  }
 
-  const performance =
-    stats?.monthlyRevenue || performanceOverTimeData.performance
+  const performance = monthlyRevenue
 
   return (
     <DashboardCard

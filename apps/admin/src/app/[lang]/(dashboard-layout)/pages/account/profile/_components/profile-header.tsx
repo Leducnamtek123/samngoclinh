@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ShieldCheck, UserPen, MapPin, Sparkles } from "lucide-react"
+import { MapPin, ShieldCheck, Sparkles, UserPen } from "lucide-react"
 
 import type { LocaleType } from "@/types"
 import type { UserProfileData } from "../page"
@@ -10,8 +10,8 @@ import { cn, getInitials } from "@/lib/utils"
 
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { buttonVariants } from "@/components/ui/button-variants"
 import { Badge } from "@/components/ui/badge"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 export function ProfileHeader({
   locale,
@@ -27,7 +27,10 @@ export function ProfileHeader({
 
   return (
     <section className="bg-card border-b border-border rounded-b-2xl overflow-hidden shadow-xs">
-      <AspectRatio ratio={6 / 1} className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 relative">
+      <AspectRatio
+        ratio={6 / 1}
+        className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 relative"
+      >
         <Image
           src="/images/banners/homepage_banner_1.png"
           fill
@@ -58,18 +61,32 @@ export function ProfileHeader({
             <h1 className="text-2xl font-black text-foreground tracking-tight line-clamp-1">
               {name}
             </h1>
-            <Badge variant="secondary" className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold text-xs flex items-center gap-1">
+            <Badge
+              variant="secondary"
+              className="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold text-xs flex items-center gap-1"
+            >
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{roleName === 'SUPER_ADMIN' ? 'Quản Trị Cấp Cao' : 'Quản Lý Nông Trường'}</span>
+              <span>
+                {roleName === "SUPER_ADMIN"
+                  ? "Quản Trị Cấp Cao"
+                  : "Quản Lý Nông Trường"}
+              </span>
             </Badge>
           </div>
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1 text-xs text-muted-foreground font-medium">
-            <span>Email: <strong className="text-foreground">{email}</strong></span>
+            <span>
+              Email: <strong className="text-foreground">{email}</strong>
+            </span>
             <span className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-emerald-600" />
               <span>Kon Tum & Gia Lai, Việt Nam</span>
             </span>
-            <span>Mã NV: <strong className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">SNL-ADM01</strong></span>
+            <span>
+              Mã NV:{" "}
+              <strong className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                SNL-ADM01
+              </strong>
+            </span>
           </div>
         </div>
 

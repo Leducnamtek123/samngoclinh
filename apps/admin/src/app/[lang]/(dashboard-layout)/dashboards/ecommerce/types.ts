@@ -14,12 +14,12 @@ export interface OverviewType {
 export interface SalesTrendType {
   period: string
   summary: {
-    lowestSales: { date: number; sales: number }
-    highestSales: { date: number; sales: number }
+    lowestSales: { date: number | string; sales: number }
+    highestSales: { date: number | string; sales: number }
     avgSales: number
     totalSales: number
   }
-  salesTrends: Array<{ date: number; sales: number }>
+  salesTrends: Array<{ date: number | string; sales: number }>
 }
 
 export interface TopProductType {

@@ -1,12 +1,13 @@
 "use client"
 
 import React from "react"
-import { ContractDetailPartiesCard } from "./contract-detail-parties-card"
-import { ContractDetailTermsCard } from "./contract-detail-terms-card"
-import { ContractDetailAmendmentsCard } from "./contract-detail-amendments-card"
-import { ContractDetailVerificationCard } from "./contract-detail-verification-card"
 
 import type { AdminUser, EContract } from "@/types"
+
+import { ContractDetailAmendmentsCard } from "./contract-detail-amendments-card"
+import { ContractDetailPartiesCard } from "./contract-detail-parties-card"
+import { ContractDetailTermsCard } from "./contract-detail-terms-card"
+import { ContractDetailVerificationCard } from "./contract-detail-verification-card"
 
 interface ContractDetailMetadataProps {
   contract: EContract

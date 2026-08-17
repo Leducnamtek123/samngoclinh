@@ -12,26 +12,27 @@ interface OverviewProps {
 }
 
 export function Overview({ stats }: OverviewProps) {
-  const totalRevenue = stats?.totalRevenue ?? 150000000
-  const totalOrders = stats?.totalOrders ?? 45
-  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
+  const totalRevenue = stats?.totalRevenue ?? 0
+  const totalOrders = stats?.totalOrders ?? 0
+  const avgOrderValue =
+    totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
 
   const totalSalesData = {
     value: totalRevenue,
-    percentageChange: 0.18,
-    period: "Tháng này",
+    percentageChange: 0.05,
+    period: "Toàn hệ thống",
   }
 
   const revenueSummaryData = {
     value: totalRevenue,
-    percentageChange: 0.15,
+    percentageChange: 0.05,
     period: "Toàn bộ",
   }
 
   const numberOfOrdersData = {
     value: totalOrders,
-    percentageChange: 0.12,
-    period: "Tháng này",
+    percentageChange: 0.05,
+    period: "Toàn hệ thống",
   }
 
   const avgOrderValueData = {

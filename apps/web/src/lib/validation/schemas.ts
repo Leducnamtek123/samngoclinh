@@ -12,9 +12,7 @@ export const emailSchema = z
   .min(1, 'validation.email.required')
   .email('validation.email.invalid');
 
-export const passwordSchema = z
-  .string()
-  .min(6, 'validation.password.min');
+export const passwordSchema = z.string().min(6, 'validation.password.min');
 
 // Checkout / Shipping Address Schema
 export const shippingAddressSchema = z.object({
@@ -42,22 +40,24 @@ export const signInEmailSchema = z.object({
 export type SignInEmailFormValues = z.infer<typeof signInEmailSchema>;
 
 // Sign Up Schema
-export const signUpSchema = z.object({
-  fullName: z
-    .string()
-    .min(2, 'validation.signUp.fullNameMin')
-    .max(100, 'validation.signUp.fullNameMax'),
-  email: emailSchema,
-  phone: phoneSchema,
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, 'validation.password.confirmRequired'),
-  agreeTerms: z.boolean().refine((val) => val === true, {
-    message: 'validation.signUp.agreeTerms',
-  }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'validation.password.mismatch',
-  path: ['confirmPassword'],
-});
+export const signUpSchema = z
+  .object({
+    fullName: z
+      .string()
+      .min(2, 'validation.signUp.fullNameMin')
+      .max(100, 'validation.signUp.fullNameMax'),
+    email: emailSchema,
+    phone: phoneSchema,
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'validation.password.confirmRequired'),
+    agreeTerms: z.boolean().refine((val) => val, {
+      message: 'validation.signUp.agreeTerms',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'validation.password.mismatch',
+    path: ['confirmPassword'],
+  });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
 
@@ -77,14 +77,15 @@ export const profileInfoSchema = z.object({
 export type ProfileInfoFormValues = z.infer<typeof profileInfoSchema>;
 
 // Change Password Schema
-export const changePasswordSchema = z.object({
-  oldPassword: z.string().min(1, 'validation.password.oldRequired'),
-  newPassword: passwordSchema,
-  confirmPassword: z.string().min(1, 'validation.password.confirmNewRequired'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'validation.password.mismatch',
-  path: ['confirmPassword'],
-});
+export const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1, 'validation.password.oldRequired'),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, 'validation.password.confirmNewRequired'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'validation.password.mismatch',
+    path: ['confirmPassword'],
+  });
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
-

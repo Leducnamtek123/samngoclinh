@@ -1,7 +1,5 @@
 import type { AnalyticsDashboardStats } from "../types"
 
-import { trafficSourcesData } from "../_data/traffic-sources"
-
 import {
   DashboardCard,
   DashboardCardActionsDropdown,
@@ -10,12 +8,12 @@ import { TrafficSourcesChart } from "./traffic-sources-chart"
 import { TrafficSourcesTable } from "./traffic-sources-table"
 
 export function TrafficSources({ stats }: { stats?: AnalyticsDashboardStats }) {
-  const sources = stats?.trafficSources || trafficSourcesData.sources
+  const sources = stats?.trafficSources || []
 
   return (
     <DashboardCard
       title="Kênh Phân phối Sâm"
-      period={trafficSourcesData.period}
+      period="Toàn hệ thống"
       action={<DashboardCardActionsDropdown />}
       size="lg"
     >

@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { format, isValid, parseISO } from "date-fns"
-import { vi } from "date-fns/locale/vi"
-import { enUS } from "date-fns/locale/en-US"
-import { CalendarIcon, X } from "lucide-react"
 import { useParams } from "next/navigation"
+import { format, isValid, parseISO } from "date-fns"
+import { enUS } from "date-fns/locale/en-US"
+import { vi } from "date-fns/locale/vi"
+import { CalendarIcon, X } from "lucide-react"
 
 import type { ComponentProps } from "react"
 
@@ -140,4 +140,3 @@ export function DatePicker({
     </Popover>
   )
 }
-

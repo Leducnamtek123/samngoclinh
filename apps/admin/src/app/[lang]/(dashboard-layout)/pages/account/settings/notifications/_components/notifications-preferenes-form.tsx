@@ -8,6 +8,7 @@ import type { NotificationPreferencesFormType } from "../../../types"
 
 import { NotificationPreferencesSchema } from "../_schemas/notifications-preferenes-schema"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/form"
 
 export function NotificationPreferencesForm() {
+  const { t } = useTranslation()
   const form = useForm<NotificationPreferencesFormType>({
     resolver: zodResolver(NotificationPreferencesSchema),
     defaultValues: {
@@ -58,13 +60,15 @@ export function NotificationPreferencesForm() {
           render={({ field }) => (
             <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel className="text-sm font-bold text-foreground">Cảnh báo Bảo mật & Đăng nhập</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.securityTitle")}
+                </FormLabel>
                 <FormDescription className="text-xs text-muted-foreground">
-                  Nhận thông báo khi có đăng nhập từ thiết bị lạ hoặc thay đổi mật khẩu quản trị.
+                  {t("users.notificationsPreferences.securityDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -75,13 +79,15 @@ export function NotificationPreferencesForm() {
           render={({ field }) => (
             <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel className="text-sm font-bold text-foreground">Thông báo Hoạt động Vườn & Đơn hàng</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.communicationTitle")}
+                </FormLabel>
                 <FormDescription className="text-xs text-muted-foreground">
-                  Nhận cập nhật về trạng thái đơn hàng mua sâm, hợp đồng và tiến độ chăm sóc cây.
+                  {t("users.notificationsPreferences.communicationDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -92,13 +98,15 @@ export function NotificationPreferencesForm() {
           render={({ field }) => (
             <FormItem className="flex justify-between items-center gap-8 py-2">
               <div>
-                <FormLabel className="text-sm font-bold text-foreground">Bảo trì Hệ thống & Sự kiện Mở bán</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.maintenanceTitle")}
+                </FormLabel>
                 <FormDescription className="text-xs text-muted-foreground">
-                  Nhận thông báo lịch bảo trì máy chủ và các sự kiện mở bán luống sâm mới.
+                  {t("users.notificationsPreferences.maintenanceDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -109,7 +117,7 @@ export function NotificationPreferencesForm() {
           disabled={isDisabled}
           className="mt-4 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
         >
-          Lưu thay đổi
+          {t("users.notificationsPreferences.saveChanges")}
         </ButtonLoading>
       </form>
     </Form>
@@ -122,13 +130,16 @@ interface ChangeButtonProps {
     name: FieldPath<NotificationPreferencesFormType>
     value: { email: boolean; browser: boolean; sms: boolean }
   }
+  t: (key: string, values?: Record<string, any>) => string
 }
 
-function ChangeButton({ form, field }: ChangeButtonProps) {
+function ChangeButton({ form, field, t }: ChangeButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="text-xs">Thay đổi</Button>
+        <Button variant="outline" size="sm" className="text-xs">
+          {t("users.notificationsPreferences.changeBtn")}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuCheckboxItem
@@ -144,7 +155,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Email
+          {t("users.notificationsPreferences.email")}
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={field.value.browser}
@@ -159,7 +170,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Trình duyệt (Push)
+          {t("users.notificationsPreferences.browser")}
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={field.value.sms}
@@ -174,7 +185,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Tin nhắn SMS
+          {t("users.notificationsPreferences.sms")}
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,13 +1,12 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { CarePackage, ProtectionPackage } from "@/types"
-
-import { packagesService } from "@/services/packages.service"
+import type { Metadata } from "next"
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PackagesManager } from "./_components/packages-manager"
+import { packagesService } from "@/services/packages.service"
 
 export const metadata: Metadata = {
   title: "Cấu hình gói dịch vụ | Sâm Ngọc Linh Admin",
@@ -25,14 +24,23 @@ export default async function PackagesPage() {
       packagesService.getProtectionPackages().catch(() => null),
     ])
 
-    if (careRes?.data && Array.isArray(careRes.data)) {
-      carePackages = careRes.data
+    if (careRes?.data) {
+      if (Array.isArray(careRes.data)) {
+        carePackages = careRes.data
+      } else if (Array.isArray((careRes.data as { items?: CarePackage[] })?.items)) {
+        carePackages = (careRes.data as { items?: CarePackage[] }).items || []
+      }
     }
-    if (protRes?.data && Array.isArray(protRes.data)) {
-      protectionPackages = protRes.data
+    if (protRes?.data) {
+      if (Array.isArray(protRes.data)) {
+        protectionPackages = protRes.data
+      } else if (Array.isArray((protRes.data as { items?: ProtectionPackage[] })?.items)) {
+        protectionPackages = (protRes.data as { items?: ProtectionPackage[] }).items || []
+      }
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching packages:", e)
     errorMsg = message
   }

@@ -28,7 +28,9 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
   }, [savedSignatureUrl]);
 
   useEffect(() => {
-    if (!contractId) return;
+    if (!contractId) {
+      return;
+    }
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -36,25 +38,15 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     };
   }, [contractId]);
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    setHasCanvasDrawn(true);
-    draw(e);
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-    if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d');
-      if (ctx) ctx.beginPath();
-    }
-  };
-
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !canvasRef.current) return;
+    if (!isDrawing || !canvasRef.current) {
+      return;
+    }
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     const rect = canvas.getBoundingClientRect();
     const touch = 'touches' in e && e.touches.length > 0 ? e.touches[0] : null;
@@ -74,6 +66,24 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     ctx.moveTo(x, y);
   };
 
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+  ) => {
+    setIsDrawing(true);
+    setHasCanvasDrawn(true);
+    draw(e);
+  };
+
+  const stopDrawing = () => {
+    setIsDrawing(false);
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.beginPath();
+      }
+    }
+  };
+
   const clearCanvas = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -86,7 +96,9 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
   };
 
   const handleSign = async () => {
-    if (signMutation.isPending || !contractId) return;
+    if (signMutation.isPending || !contractId) {
+      return;
+    }
     setErrorMessage('');
     let signatureData = '';
 
@@ -130,8 +142,12 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
         contractId,
         signatureData,
       });
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Có lỗi xảy ra khi ký hợp đồng. Vui lòng thử lại.');
+    } catch (error: unknown) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Có lỗi xảy ra khi ký hợp đồng. Vui lòng thử lại.',
+      );
     }
   };
 
@@ -139,7 +155,7 @@ export function useEContractModal({ contractId }: UseEContractModalProps) {
     contract?.status?.toLowerCase() === 'signed' ||
     contract?.signedAt ||
     contract?.signatureUrl ||
-    (contract as any)?.userSignatureUrl
+    (contract as { userSignatureUrl?: string })?.userSignatureUrl
   );
 
   return {

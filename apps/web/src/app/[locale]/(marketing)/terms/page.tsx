@@ -1,6 +1,3 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
 import {
   ShieldCheck,
   FileText,
@@ -12,147 +9,128 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Link } from '@/lib/I18nNavigation';
+import { getTermsPolicies } from './terms-data';
 
 type TermsPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: TermsPageProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'termsPage' });
   return {
-    title: 'Chính Sách và Điều Khoản – Sâm Ngọc Linh',
-    description:
-      'Tổng hợp toàn bộ các chính sách bảo mật, vận chuyển, kiểm hàng, thanh toán, đổi trả và quy chế giao dịch của Nền tảng Sâm Ngọc Linh.',
+    title: `${t('title')} – Sâm Ngọc Linh`,
+    description: t('subtitle'),
   };
 }
-
-const POLICY_LIST = [
-  {
-    slug: 'privacy-policy',
-    title: 'Chính sách bảo mật',
-    desc: 'Thu thập, sử dụng, lưu trữ và bảo mật dữ liệu người dùng tuân thủ Nghị định 13/2023/NĐ-CP.',
-    icon: ShieldCheck,
-    badge: 'Bảo mật SSL 256-bit',
-  },
-  {
-    slug: 'shipping-policy',
-    title: 'Chính sách vận chuyển',
-    desc: 'Giao hàng hỏa tốc toàn quốc, bảo hiểm rơi vỡ 100% và quy trình đóng gói sâm tươi giữ ẩm chuyên dụng.',
-    icon: Truck,
-    badge: 'Toàn quốc & Hỏa tốc',
-  },
-  {
-    slug: 'inspection-policy',
-    title: 'Chính sách kiểm hàng',
-    desc: '100% quyền đồng kiểm ngoại quan, kiểm tra tem chống giả và mã QR trước khi thanh toán nhận hàng.',
-    icon: CheckCircle2,
-    badge: '100% Đồng kiểm',
-  },
-  {
-    slug: 'payment-policy',
-    title: 'Chính sách thanh toán',
-    desc: 'Hỗ trợ COD tiền mặt, chuyển khoản VietQR tự động, thanh toán thẻ bảo mật PCI-DSS và xuất hóa đơn VAT.',
-    icon: CreditCard,
-    badge: 'Xuất hóa đơn VAT',
-  },
-  {
-    slug: 'return-policy',
-    title: 'Chính sách đổi trả',
-    desc: 'Đổi trả miễn phí trong 7 ngày đối với sản phẩm lỗi và cam kết bồi hoàn 200% nếu sai chuẩn Gen Sâm.',
-    icon: RotateCcw,
-    badge: 'Bồi hoàn 200% Gen',
-  },
-];
 
 export default async function TermsPage(props: TermsPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'termsPage' });
+  const tNav = await getTranslations({ locale, namespace: 'nav' });
+
+  const policiesData = getTermsPolicies(locale);
+
+  const policyIcons: Record<string, any> = {
+    'privacy-policy': ShieldCheck,
+    'shipping-policy': Truck,
+    'inspection-policy': CheckCircle2,
+    'payment-policy': CreditCard,
+    'return-policy': RotateCcw,
+  };
+
+  const policyList = Object.values(policiesData);
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen w-full bg-slate-50 px-4 py-10 font-sans sm:px-6 sm:py-16 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-8">
         {/* Navigation Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-slate-500">
-          <Link href="/" className="hover:text-emerald-800 transition-colors font-medium">
-            Trang chủ
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-2 text-xs text-slate-500 sm:text-sm"
+        >
+          <Link href="/" className="font-medium transition-colors hover:text-emerald-800">
+            {tNav('home')}
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-900 font-bold">Chính sách &amp; Điều khoản</span>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+          <span className="font-bold text-slate-900">{t('title')}</span>
         </nav>
 
         {/* Header Hero Banner */}
-        <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold tracking-wide">
-            <Sparkles className="w-4 h-4 text-emerald-700" />
-            <span>QUY CHẾ VẬN HÀNH &amp; MINH BẠCH</span>
+        <div className="space-y-4 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm sm:p-10">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold tracking-wide text-emerald-800">
+            <Sparkles className="h-4 w-4 text-emerald-700" />
+            <span>{t('badge')}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-            Chính Sách và Điều Khoản – Sâm Ngọc Linh
+          <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-slate-900 sm:text-3xl md:text-4xl">
+            {t('title')}
           </h1>
-          <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
-            Hệ thống văn bản pháp lý chính thức quy định mọi hoạt động giao dịch mua bán rượu sâm, cây sâm giống, ký gửi chăm sóc và bảo mật thông tin trên nền tảng Sâm Ngọc Linh.
+          <p className="text-sm leading-relaxed font-normal text-slate-600 sm:text-base">
+            {t('subtitle')}
           </p>
         </div>
 
         {/* Highlight Callout Box for e-Contract */}
-        <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-4">
-          <div className="flex items-center gap-2.5 text-emerald-300 font-bold text-sm uppercase tracking-wider">
-            <FileText className="w-5 h-5" />
-            <span>Hợp Đồng Mua Bán, Ký Gửi &amp; Chăm Sóc Cây Sâm Ngọc Linh</span>
+        <div className="space-y-4 rounded-3xl bg-gradient-to-r from-emerald-950 via-emerald-900 to-slate-900 p-6 text-white shadow-xl sm:p-8">
+          <div className="flex items-center gap-2.5 text-sm font-bold tracking-wider text-emerald-300 uppercase">
+            <FileText className="h-5 w-5" />
+            <span>{t('contractCardTitle')}</span>
           </div>
-          <p className="text-sm text-slate-200 leading-relaxed">
-            Hợp đồng số hóa có chữ ký số điện tử pháp lý, cam kết bảo trợ chăm sóc cây sâm, bồi thường rủi ro nông nghiệp và bảo đảm khối lượng củ khi thu hoạch.
-          </p>
+          <p className="text-sm leading-relaxed text-slate-200">{t('contractCardDesc')}</p>
           <div className="pt-2">
             <Link
               href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
               target="_blank"
-              className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm px-5 py-2.5 rounded-xl transition-[background-color,transform] shadow-md active:scale-98"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-2.5 text-sm font-extrabold text-slate-950 shadow-md transition-[background-color,transform] hover:bg-emerald-400 active:scale-98"
             >
-              <span>Xem Văn Bản Mẫu Hợp Đồng Điện Tử</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{t('viewContractSample')}</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
-        {/* List of 5 Main Policy Cards */}
+        {/* List of Main Policy Cards */}
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-slate-900 px-1 flex items-center gap-2">
-            <span>Danh mục các Chính sách &amp; Quy định</span>
-            <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full">5 văn bản</span>
+          <h2 className="flex items-center gap-2 px-1 text-lg font-bold text-slate-900">
+            <span>{t('categoryTitle')}</span>
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
+              {policyList.length} documents
+            </span>
           </h2>
 
           <div className="grid grid-cols-1 gap-4">
-            {POLICY_LIST.map((policy, idx) => {
-              const Icon = policy.icon;
+            {policyList.map((policy, idx) => {
+              const Icon = policyIcons[policy.slug] || FileText;
               return (
                 <Link
                   key={policy.slug}
                   href={`/terms/${policy.slug}`}
-                  className="group bg-white hover:bg-emerald-50/40 border border-slate-200 hover:border-emerald-500/60 rounded-2xl p-5 sm:p-6 transition-[background-color,border-color,box-shadow] duration-200 shadow-sm hover:shadow-md flex items-start sm:items-center justify-between gap-4"
+                  className="group flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-[background-color,border-color,box-shadow] duration-200 hover:border-emerald-500/60 hover:bg-emerald-50/40 hover:shadow-md sm:items-center sm:p-6"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100/80 text-emerald-800 group-hover:bg-emerald-800 group-hover:text-white transition-colors flex items-center justify-center font-bold text-base">
-                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-100/80 text-base font-bold text-emerald-800 transition-colors group-hover:bg-emerald-800 group-hover:text-white sm:h-12 sm:w-12">
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-slate-400 font-bold">{idx + 1}.</span>
-                        <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-800 transition-colors">
+                        <span className="text-xs font-bold text-slate-400">{idx + 1}.</span>
+                        <h3 className="text-base font-bold text-slate-900 transition-colors group-hover:text-emerald-800 sm:text-lg">
                           {policy.title}
                         </h3>
-                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">
-                          {policy.badge}
-                        </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 leading-relaxed">
-                        {policy.desc}
+                      <p className="line-clamp-2 text-xs leading-relaxed text-slate-500 sm:text-sm">
+                        {policy.shortDesc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex-shrink-0 hidden sm:flex items-center text-emerald-700 group-hover:translate-x-1 transition-transform">
-                    <ArrowRight className="w-5 h-5" />
+                  <div className="hidden flex-shrink-0 items-center text-emerald-700 transition-transform group-hover:translate-x-1 sm:flex">
+                    <ArrowRight className="h-5 w-5" />
                   </div>
                 </Link>
               );
@@ -161,9 +139,9 @@ export default async function TermsPage(props: TermsPageProps) {
         </div>
 
         {/* Official Footer Note */}
-        <div className="text-center text-xs text-slate-400 pt-4">
-          <p>© {new Date().getFullYear()} Công ty Cổ phần Sâm Ngọc Linh. Mọi quyền được bảo lưu.</p>
-          <p className="mt-1">Địa chỉ: Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam. Hotline: 0967 234 234</p>
+        <div className="pt-4 text-center text-xs text-slate-400">
+          <p>{t('footerCopyright', { year: new Date().getFullYear() })}</p>
+          <p className="mt-1">{t('footerAddress')}</p>
         </div>
       </div>
     </div>

@@ -15,8 +15,8 @@ import {
   User,
 } from "lucide-react"
 
-import type { CultivationBedLocation } from "./use-beds-table"
 import type { CareLog, Tree } from "@/types"
+import type { CultivationBedLocation } from "./use-beds-table"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -198,9 +198,12 @@ export function BedsRightSidebar({
                         Dự kiến thu hoạch:
                       </span>
                       <span className="font-bold text-emerald-600 font-mono">
-                        {selectedTreeDetails.expectedHarvestAt || selectedTreeDetails.estimatedHarvestDate
+                        {selectedTreeDetails.expectedHarvestAt ||
+                        selectedTreeDetails.estimatedHarvestDate
                           ? new Date(
-                              selectedTreeDetails.expectedHarvestAt || selectedTreeDetails.estimatedHarvestDate || ""
+                              selectedTreeDetails.expectedHarvestAt ||
+                                selectedTreeDetails.estimatedHarvestDate ||
+                                ""
                             ).toLocaleDateString("vi-VN", {
                               timeZone: "Asia/Ho_Chi_Minh",
                             })
@@ -301,9 +304,12 @@ export function BedsRightSidebar({
             <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
               <Sprout className="h-6 w-6 text-emerald-600 dark:text-emerald-400 animate-pulse" />
             </div>
-            <div className="text-xs font-bold text-slate-700 dark:text-slate-200">Chưa chọn vị trí ô đất</div>
+            <div className="text-xs font-bold text-slate-700 dark:text-slate-200">
+              Chưa chọn vị trí ô đất
+            </div>
             <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] leading-relaxed">
-              Nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới để tra cứu hồ sơ và chăm sóc cây sâm.
+              Nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới để tra cứu hồ sơ
+              và chăm sóc cây sâm.
             </p>
           </div>
         )}

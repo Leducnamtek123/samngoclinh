@@ -17,12 +17,11 @@ export interface PointsConversionSetting {
   isActive: boolean
 }
 
-export interface GeneralSetting {
-  siteName: string
-  hotline: string
-  supportEmail: string
-  headquarterAddress: string
-  taxCode?: string
-  maintenanceMode: boolean
-  notificationEmail?: string
+export interface SystemSetting {
+  id?: string
+  key: string
+  value: unknown
+  description?: string | null
+  createdAt?: string | Date
+  updatedAt?: string | Date
 }

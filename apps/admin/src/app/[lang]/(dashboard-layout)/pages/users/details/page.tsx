@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ interface CustomerDetail {
 }
 
 function CustomerDetailsContent() {
+  const { t } = useTranslation()
   const router = useRouter()
   const params = useParams()
   const locale = params.lang as LocaleType
@@ -41,7 +43,7 @@ function CustomerDetailsContent() {
 
   const loadUserDetails = useCallback(async () => {
     if (!userId) {
-      setErrorMsg("Không tìm thấy mã người dùng")
+      setErrorMsg(t("users.details.userIdNotFound"))
       setLoading(false)
       return
     }
@@ -50,17 +52,17 @@ function CustomerDetailsContent() {
       const res = await fetchApi(`/admin/user/get/${userId}`)
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(payload?.message || "Không thể tải chi tiết khách hàng")
+        setErrorMsg(payload?.message || t("users.details.loadError"))
       } else {
         setUser(payload.data)
       }
     } catch (e) {
       console.error(e)
-      setErrorMsg("Không thể kết nối đến máy chủ API")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setLoading(false)
     }
-  }, [userId])
+  }, [userId, t])
 
   useEffect(() => {
     loadUserDetails()
@@ -80,18 +82,14 @@ function CustomerDetailsContent() {
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(
-          payload?.message || "Không thể cập nhật trạng thái khách hàng"
-        )
+        setErrorMsg(payload?.message || t("users.details.updateError"))
       } else {
-        setSuccessMsg(
-          `Đã cập nhật trạng thái người dùng thành công sang "${status}"!`
-        )
+        setSuccessMsg(t("users.details.updateStatusSuccess", { status }))
         await loadUserDetails()
       }
     } catch (e) {
       console.error(e)
-      setErrorMsg("Lỗi khi kết nối đến máy chủ API")
+      setErrorMsg(t("messages.networkError"))
     } finally {
       setUpdating(false)
     }
@@ -104,7 +102,7 @@ function CustomerDetailsContent() {
   if (errorMsg && !user) {
     return (
       <Alert variant="destructive" className="max-w-xl mx-auto">
-        <AlertTitle>Lỗi</AlertTitle>
+        <AlertTitle>{t("common.error")}</AlertTitle>
         <AlertDescription>{errorMsg}</AlertDescription>
       </Alert>
     )
@@ -113,7 +111,7 @@ function CustomerDetailsContent() {
   if (!user) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        Không tìm thấy thông tin khách hàng
+        {t("users.details.notFound")}
       </div>
     )
   }
@@ -124,7 +122,7 @@ function CustomerDetailsContent() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold tracking-tight">
-              Chi tiết tài khoản
+              {t("users.details.title")}
             </h1>
             <Badge
               variant={
@@ -137,7 +135,7 @@ function CustomerDetailsContent() {
             </Badge>
           </div>
           <p className="text-muted-foreground">
-            Mã định danh (ID):{" "}
+            {t("users.details.idLabel")}{" "}
             <span className="font-mono text-sm">{user.id}</span>
           </p>
         </div>
@@ -148,21 +146,21 @@ function CustomerDetailsContent() {
               router.push(ensureLocalizedPathname("/pages/users", locale))
             }
           >
-            Quay lại
+            {t("common.back")}
           </Button>
         </div>
       </div>
 
       {successMsg && (
         <Alert className="border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-          <AlertTitle>Thành công</AlertTitle>
+          <AlertTitle>{t("common.success")}</AlertTitle>
           <AlertDescription>{successMsg}</AlertDescription>
         </Alert>
       )}
 
       {errorMsg && (
         <Alert variant="destructive">
-          <AlertTitle>Lỗi cập nhật</AlertTitle>
+          <AlertTitle>{t("common.error")}</AlertTitle>
           <AlertDescription>{errorMsg}</AlertDescription>
         </Alert>
       )}
@@ -170,21 +168,21 @@ function CustomerDetailsContent() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Thông tin hồ sơ</CardTitle>
+            <CardTitle>{t("users.details.profileInfo")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4 border-b pb-3">
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Tên hiển thị:
+                  {t("users.details.displayName")}
                 </span>
                 <span className="font-semibold text-lg">
-                  {user.name || "Chưa thiết lập"}
+                  {user.name || t("users.details.notSet")}
                 </span>
               </div>
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Tên tài khoản (Username):
+                  {t("users.details.username")}
                 </span>
                 <span className="font-semibold text-lg">{user.username}</span>
               </div>
@@ -193,16 +191,16 @@ function CustomerDetailsContent() {
             <div className="grid grid-cols-2 gap-4 border-b pb-3">
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Địa chỉ Email:
+                  {t("users.details.email")}
                 </span>
                 <span className="font-medium">{user.email}</span>
               </div>
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Số điện thoại:
+                  {t("users.details.phoneNumber")}
                 </span>
                 <span className="font-medium">
-                  {user.phoneNumber || "Chưa thiết lập"}
+                  {user.phoneNumber || t("users.details.notSet")}
                 </span>
               </div>
             </div>
@@ -210,20 +208,22 @@ function CustomerDetailsContent() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Vai trò:
+                  {t("users.details.role")}
                 </span>
                 <Badge
                   variant="outline"
                   className="capitalize text-sm font-semibold"
                 >
                   {typeof user.role === "object" && user.role
-                    ? (user.role as { name?: string; code?: string }).name || (user.role as { name?: string; code?: string }).code || "USER"
+                    ? (user.role as { name?: string; code?: string }).name ||
+                      (user.role as { name?: string; code?: string }).code ||
+                      "USER"
                     : String(user.role || "USER")}
                 </Badge>
               </div>
               <div>
                 <span className="text-sm text-muted-foreground block">
-                  Ngày đăng ký:
+                  {t("users.details.registeredAt")}
                 </span>
                 <span className="font-medium">
                   {new Date(user.createdAt).toLocaleString("vi-VN")}
@@ -236,7 +236,7 @@ function CustomerDetailsContent() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Hành động</CardTitle>
+              <CardTitle>{t("users.details.actions")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {user.status === "ACTIVE" || user.status === "active" ? (
@@ -246,7 +246,7 @@ function CustomerDetailsContent() {
                   variant="destructive"
                   className="w-full font-semibold"
                 >
-                  Khóa tài khoản
+                  {t("users.details.lockAccount")}
                 </Button>
               ) : (
                 <Button
@@ -254,7 +254,7 @@ function CustomerDetailsContent() {
                   onClick={() => handleUpdateStatus("active")}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
                 >
-                  Kích hoạt tài khoản
+                  {t("users.details.unlockAccount")}
                 </Button>
               )}
             </CardContent>

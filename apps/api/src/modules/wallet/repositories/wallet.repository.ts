@@ -1,5 +1,5 @@
 import { DatabaseService } from '@common/database/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
     IWalletSummary,
     IWalletTransactionItem,
@@ -31,10 +31,16 @@ export class WalletRepository {
         };
     }
 
-    async getTransactions(userId: string): Promise<IWalletTransactionItem[]> {
+    async getTransactions(
+        userId: string,
+        limit = 50,
+        skip = 0
+    ): Promise<IWalletTransactionItem[]> {
         const txns = await this.databaseService.walletTransaction.findMany({
             where: { userId },
             orderBy: { occurredAt: 'desc' },
+            take: limit,
+            skip: skip,
             select: {
                 id: true,
                 code: true,
@@ -59,9 +65,14 @@ export class WalletRepository {
         }));
     }
 
-    async listAllTransactions(): Promise<WalletTransaction[]> {
+    async listAllTransactions(
+        limit = 100,
+        skip = 0
+    ): Promise<WalletTransaction[]> {
         return this.databaseService.walletTransaction.findMany({
             orderBy: { occurredAt: 'desc' },
+            take: limit,
+            skip: skip,
         });
     }
 
@@ -72,6 +83,9 @@ export class WalletRepository {
                 wallet = await tx.walletAccount.create({
                     data: { userId, balancePoint: 0, treesOwned: 0 },
                 });
+            }
+            if (amount < 0 && wallet.balancePoint + amount < 0) {
+                throw new BadRequestException('Số dư điểm không đủ để thực hiện khấu trừ.');
             }
             const updatedWallet = await tx.walletAccount.update({
                 where: { id: wallet.id },

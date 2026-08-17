@@ -1,7 +1,7 @@
 /**
  * PUBLIC COMPONENT API
  * Single source of truth barrel export for design system primitives & shared components.
- * 
+ *
  * Usage:
  * import { Button, Input, Dialog, EmptyState, LoadingState, FormInput } from '@/components';
  */
@@ -22,4 +22,3 @@ export * from './address/AddressModal';
 export * from './address/FormAddressPicker';
 export * from './ginseng/GinsengProductCard';
 export * from './profile/UserCard';
-

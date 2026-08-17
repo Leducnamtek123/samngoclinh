@@ -13,26 +13,26 @@ export function SalesTrendSummary({
     <ul className="flex flex-col justify-around gap-4 sm:flex-row">
       <div className="flex flex-wrap justify-around gap-4 md:flex-col">
         <SalesTrendSummaryItem
-          title="Highest Sales"
+          title="Doanh thu cao nhất"
           value={formatCurrency(data.highestSales.sales)}
-          description={`on ${formatDateShort(data.highestSales.date)}`}
+          description={`vào ${data.highestSales.date}`}
         />
         <SalesTrendSummaryItem
-          title="Lowest Sales"
+          title="Doanh thu thấp nhất"
           value={formatCurrency(data.lowestSales.sales)}
-          description={`on ${formatDateShort(data.lowestSales.date)}`}
+          description={`vào ${data.lowestSales.date}`}
         />
       </div>
       <div className="flex flex-wrap justify-around gap-4 md:flex-col">
         <SalesTrendSummaryItem
-          title="Total Sales"
+          title="Tổng doanh thu"
           value={formatCurrency(data.totalSales)}
-          description="for the period"
+          description="toàn kỳ thống kê"
         />
         <SalesTrendSummaryItem
-          title="Avg. Sales"
+          title="Trung bình mỗi kỳ"
           value={formatCurrency(data.avgSales)}
-          description="per day"
+          description="bình quân chu kỳ"
         />
       </div>
     </ul>

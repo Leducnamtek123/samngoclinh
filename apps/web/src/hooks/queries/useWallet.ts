@@ -1,14 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { walletService } from '@/services/wallet.service';
 import type { WalletSummary } from '@/types';
 
 export function useWalletSummary(initialData?: WalletSummary) {
   return useQuery<WalletSummary | null>({
     queryKey: ['wallet', 'summary'],
-    queryFn: () =>
-      fetchApiClient('/user/wallet/summary')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
+    queryFn: async () => await (walletService.getSummary() as Promise<WalletSummary | null>),
     initialData,
   });
 }

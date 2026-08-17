@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
 import { MapPin, Phone, Mail } from 'lucide-react';
-import { Link } from '@/lib/I18nNavigation';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useState } from 'react';
 import { MiniCartDrawer } from '@/components/cart/MiniCartDrawer';
+import { Link } from '@/lib/I18nNavigation';
 
 export const BaseTemplate = (props: {
   leftNav: React.ReactNode;
@@ -12,22 +13,34 @@ export const BaseTemplate = (props: {
   children: React.ReactNode;
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const t = useTranslations('BaseTemplate');
+  const tNav = useTranslations('nav');
+  const tCat = useTranslations('categories');
 
   return (
-    <div className="w-full text-gray-800 antialiased bg-brand-bg min-h-screen flex flex-col font-sans overflow-x-hidden">
+    <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-brand-bg font-sans text-gray-800 antialiased">
       {/* Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/95 border-b border-gray-200/80 backdrop-blur-md shadow-xs">
-        <div className="mx-auto max-w-7xl px-0 h-16 sm:h-20 flex items-center justify-between gap-3">
+      <header className="fixed top-0 right-0 left-0 z-50 w-full border-b border-gray-200/80 bg-white/95 shadow-xs backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-0 sm:h-20">
           {/* Left: Brand Logo & Mobile Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
             {/* Hamburger button for Mobile */}
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Toggle Navigation Menu"
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen);
+              }}
+              className="rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-primary focus:outline-none md:hidden"
+              aria-label={t('main_navigation_label')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -37,31 +50,31 @@ export const BaseTemplate = (props: {
             </button>
 
             {/* Brand Logo */}
-            <Link href="/" className="h-8 inline-flex items-center gap-2 group flex-shrink-0">
+            <Link href="/" className="group inline-flex h-8 flex-shrink-0 items-center gap-2">
               <Image
                 src="/assets/images/logo_ruou_sam.png?v=2"
-                alt="Rượu Sâm Ngọc Linh Logo"
+                alt="Logo"
                 width={32}
                 height={32}
                 unoptimized
-                className="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
+                className="h-7 w-7 flex-shrink-0 object-contain sm:h-8 sm:w-8"
               />
-              <span className="font-bold text-base sm:text-lg md:text-xl lg:text-[22px] tracking-tight text-primary font-display-lg whitespace-nowrap leading-none inline-flex items-center">
-                Rượu Sâm Ngọc Linh
+              <span className="font-display-lg inline-flex items-center text-base leading-none font-bold tracking-tight whitespace-nowrap text-primary sm:text-lg md:text-xl lg:text-[22px]">
+                {t('description')}
               </span>
             </Link>
           </div>
 
           {/* Center: Desktop Menu Links */}
-          <nav className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-4 min-w-0">
-            <ul className="flex items-center gap-4 lg:gap-6 xl:gap-8 font-semibold text-gray-600">
+          <nav className="mx-2 hidden min-w-0 flex-1 items-center justify-center md:flex lg:mx-4">
+            <ul className="flex items-center gap-4 font-semibold text-gray-600 lg:gap-6 xl:gap-8">
               {props.leftNav}
             </ul>
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-            <ul className="flex items-center gap-3 sm:gap-4 text-sm font-semibold">
+          <div className="flex flex-shrink-0 items-center gap-3 sm:gap-4">
+            <ul className="flex items-center gap-3 text-sm font-semibold sm:gap-4">
               {props.rightNav}
             </ul>
           </div>
@@ -69,38 +82,55 @@ export const BaseTemplate = (props: {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 z-50 flex md:hidden">
             {/* Backdrop Overlay */}
             <button
               type="button"
-              aria-label="Đóng menu mobile"
-              className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-colors cursor-pointer border-0 w-full h-full text-left"
-              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={t('main_navigation_label')}
+              className="fixed inset-0 h-full w-full cursor-pointer border-0 bg-black/40 text-left backdrop-blur-xs transition-colors"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+              }}
             />
 
             {/* Slide-out Drawer Content */}
-            <div className="relative w-4/5 max-w-xs bg-white h-full shadow-2xl flex flex-col py-6 px-5 overflow-y-auto z-10 transition-transform duration-200 animate-in slide-in-from-left">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-                <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+            <div className="animate-in slide-in-from-left relative z-10 flex h-full w-4/5 max-w-xs flex-col overflow-y-auto bg-white px-5 py-6 shadow-2xl transition-transform duration-200">
+              <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
+                <Link
+                  href="/"
+                  className="flex items-center gap-2"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
                   <Image
                     src="/assets/images/logo_ruou_sam.png?v=2"
-                    alt="Rượu Sâm Ngọc Linh Logo"
+                    alt="Logo"
                     width={28}
                     height={28}
                     unoptimized
-                    className="w-7 h-7 object-contain"
+                    className="h-7 w-7 object-contain"
                   />
-                  <span className="font-bold text-base text-primary font-display-lg">
-                    Rượu Sâm Ngọc Linh
+                  <span className="font-display-lg text-base font-bold text-primary">
+                    {t('description')}
                   </span>
                 </Link>
                 <button
                   type="button"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  aria-label="Đóng menu"
-                  className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
+                  aria-label={t('main_navigation_label')}
+                  className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -118,44 +148,43 @@ export const BaseTemplate = (props: {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow w-full pt-16 sm:pt-20">
-        {props.children}
-      </main>
+      <main className="w-full flex-grow pt-16 sm:pt-20">{props.children}</main>
 
       {/* Footer */}
-      <footer className="w-full bg-primary text-gray-300 border-t border-gray-800">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 md:gap-10">
+      <footer className="w-full border-t border-gray-800 bg-primary text-gray-300">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 md:gap-10 lg:grid-cols-5">
             {/* Cột 1: Thông tin thương hiệu & Logo Bộ Công Thương */}
-            <div className="sm:col-span-2 lg:col-span-2 space-y-4 sm:space-y-5">
+            <div className="space-y-4 sm:col-span-2 sm:space-y-5 lg:col-span-2">
               <div className="flex items-center gap-2.5">
                 <Image
                   src="/assets/images/logo_ruou_sam.png?v=2"
-                  alt="Rượu Sâm Ngọc Linh Logo"
+                  alt="Logo"
                   width={36}
                   height={36}
                   unoptimized
-                  className="w-9 h-9 object-contain"
+                  className="h-9 w-9 object-contain"
                 />
-                <span className="font-bold text-xl sm:text-2xl text-white tracking-wider font-display-lg block">
-                  Rượu Sâm Ngọc Linh
+                <span className="font-display-lg block text-xl font-bold tracking-wider text-white sm:text-2xl">
+                  {t('company_name')}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-gray-300/90 max-w-md leading-relaxed">
-                © {new Date().getFullYear()} Công ty Cổ phần Sâm Ngọc Linh. Nền tảng số hóa, chuẩn hóa nguồn gen và minh bạch chuỗi cung ứng rượu sâm Ngọc Linh cao cấp tại Việt Nam.
+              <p className="max-w-md text-xs leading-relaxed text-gray-300/90 sm:text-sm">
+                {t('footer_text', { year: new Date().getFullYear(), name: t('company_name') })}{' '}
+                {t('certified_origin')}
               </p>
-              <div className="space-y-2 text-xs sm:text-sm text-gray-400">
+              <div className="space-y-2 text-xs text-gray-400 sm:text-sm">
                 <p className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
-                  <span>Trụ sở: Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam</span>
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
+                  <span>{t('company_address')}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-secondary shrink-0" />
-                  <span>Hotline CSKH: <strong className="text-secondary font-bold">0967 234 234</strong> (24/7)</span>
+                  <Phone className="h-4 w-4 shrink-0 text-secondary" />
+                  <span>{t('company_hotline')}</span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-secondary shrink-0" />
-                  <span>Email: <strong className="text-white font-medium">hotro@samngoclinh.vn</strong></span>
+                  <Mail className="h-4 w-4 shrink-0 text-secondary" />
+                  <span>{t('company_email')}</span>
                 </p>
               </div>
 
@@ -166,11 +195,11 @@ export const BaseTemplate = (props: {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block transition-transform hover:scale-105"
-                  title="Website Thương mại điện tử đã thông báo với Bộ Công Thương"
+                  title="Website E-commerce"
                 >
                   <Image
                     src="/assets/images/logo-da-thong-bao-bo-cong-thuong-mau-xanh.png"
-                    alt="Đã thông báo Bộ Công Thương"
+                    alt="Certification Badge"
                     width={160}
                     height={60}
                     className="h-12 w-auto object-contain drop-shadow-sm"
@@ -181,39 +210,93 @@ export const BaseTemplate = (props: {
 
             {/* Cột 2: Sản phẩm */}
             <div className="space-y-3 sm:space-y-4">
-              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
-                Sản phẩm
+              <h5 className="border-b border-gray-700/60 pb-2 text-sm font-bold tracking-wide text-white uppercase">
+                {tNav('shop')}
               </h5>
-              <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/ginseng">Gói cây giống &amp; Vườn sâm</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/products">Cửa hàng Rượu &amp; Chế phẩm</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh">Hợp đồng điện tử</Link></li>
+              <ul className="space-y-2 text-xs text-gray-400 sm:text-sm">
+                <li>
+                  <Link className="transition-colors hover:text-secondary" href="/ginseng">
+                    {tNav('planting')}
+                  </Link>
+                </li>
+                <li>
+                  <Link className="transition-colors hover:text-secondary" href="/products">
+                    {tNav('shop')}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="transition-colors hover:text-secondary"
+                    href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
+                  >
+                    {tNav('contracts')}
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Cột 3: Chính sách và Điều khoản */}
             <div className="space-y-3 sm:space-y-4">
-              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
-                Chính sách &amp; Điều khoản
+              <h5 className="border-b border-gray-700/60 pb-2 text-sm font-bold tracking-wide text-white uppercase">
+                {t('legal_policies')}
               </h5>
-              <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/terms/privacy-policy">Chính sách bảo mật</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/terms/shipping-policy">Chính sách vận chuyển</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/terms/inspection-policy">Chính sách kiểm hàng</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/terms/payment-policy">Chính sách thanh toán</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/terms/return-policy">Chính sách đổi trả</Link></li>
+              <ul className="space-y-2 text-xs text-gray-400 sm:text-sm">
+                <li>
+                  <Link
+                    className="transition-colors hover:text-secondary"
+                    href="/terms/privacy-policy"
+                  >
+                    {t('privacy_policy')}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="transition-colors hover:text-secondary"
+                    href="/terms/shipping-policy"
+                  >
+                    {t('shipping_policy')}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="transition-colors hover:text-secondary"
+                    href="/terms/inspection-policy"
+                  >
+                    {t('terms_of_service')}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="transition-colors hover:text-secondary"
+                    href="/terms/return-policy"
+                  >
+                    {t('return_policy')}
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Cột 4: Hỗ trợ & Về chúng tôi */}
             <div className="space-y-3 sm:space-y-4">
-              <h5 className="text-white font-bold text-sm tracking-wide uppercase border-b border-gray-700/60 pb-2">
-                Hỗ trợ
+              <h5 className="border-b border-gray-700/60 pb-2 text-sm font-bold tracking-wide text-white uppercase">
+                {t('customer_support')}
               </h5>
-              <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
-                <li><Link className="hover:text-secondary transition-colors" href="/about">Liên hệ &amp; Giới thiệu</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/news">Tin tức &amp; Hoạt động</Link></li>
-                <li><Link className="hover:text-secondary transition-colors" href="/terms">Quy chế hoạt động</Link></li>
+              <ul className="space-y-2 text-xs text-gray-400 sm:text-sm">
+                <li>
+                  <Link className="transition-colors hover:text-secondary" href="/about">
+                    {tNav('about')}
+                  </Link>
+                </li>
+                <li>
+                  <Link className="transition-colors hover:text-secondary" href="/news">
+                    {tCat('news')}
+                  </Link>
+                </li>
+                <li>
+                  <Link className="transition-colors hover:text-secondary" href="/terms">
+                    {tNav('terms')}
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

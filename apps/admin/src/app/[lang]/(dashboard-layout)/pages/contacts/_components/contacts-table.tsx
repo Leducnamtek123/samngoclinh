@@ -4,9 +4,12 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Calendar, Eye, Mail, Phone, Search, User } from "lucide-react"
 
+import type { ContactRequest, PaginationMeta } from "@/types"
+
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -35,8 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import type { ContactRequest, PaginationMeta } from "@/types"
+import { legalService } from "@/services/legal.service"
 
 interface ContactsTableProps {
   initialContacts: ContactRequest[]
@@ -49,6 +51,7 @@ export function ContactsTable({
   metadata,
   errorMsg,
 }: ContactsTableProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -114,30 +117,29 @@ export function ContactsTable({
     return () => clearTimeout(handler)
   }, [searchVal, onSearch])
 
+  const handleReadFilterChange = (val: string) => {
+    router.push(`${pathname}?${createQueryString({ isRead: val })}`)
+  }
+
   const handlePageChange = (newPage: number) => {
     router.push(
       `${pathname}?${createQueryString({ page: newPage.toString() })}`
     )
   }
 
-  const handleReadFilterChange = (val: string) => {
-    router.push(`${pathname}?${createQueryString({ isRead: val })}`)
-  }
-
   const handleViewDetail = async (contact: ContactRequest) => {
     setSelectedContact(contact)
     setIsDialogOpen(true)
-    setDetailLoading(true)
 
     try {
-      const res = await fetchApi(`/admin/contacts/${contact.id}`)
-      const payload = await res.json()
-      if (res.ok && payload.data) {
+      setDetailLoading(true)
+      const res = await legalService.getContactDetail(contact.id)
+      if (res && res.data) {
+        setSelectedContact(res.data)
         setContacts((prev) =>
           prev.map((c) => (c.id === contact.id ? { ...c, isRead: true } : c))
         )
-        setSelectedContact(payload.data)
-        router.refresh() // Refresh page to keep unread counts synced
+        router.refresh()
       }
     } catch (e) {
       console.error("Error loading contact detail:", e)
@@ -153,7 +155,7 @@ export function ContactsTable({
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm tên, email, tiêu đề..."
+            placeholder={t("search.searchPlaceholder")}
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             className="w-full h-10 text-sm pl-9 bg-background border border-input"
@@ -163,12 +165,16 @@ export function ContactsTable({
         <div className="w-full sm:w-48">
           <Select value={isReadFilter} onValueChange={handleReadFilterChange}>
             <SelectTrigger className="h-10 text-sm bg-background border border-input">
-              <SelectValue placeholder="Đọc / Chưa đọc" />
+              <SelectValue placeholder={t("content.contacts.title")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="false">Chưa đọc</SelectItem>
-              <SelectItem value="true">Đã đọc</SelectItem>
+              <SelectItem value="all">
+                {t("common.actions.filterAll")}
+              </SelectItem>
+              <SelectItem value="false">
+                {t("content.contacts.unread")}
+              </SelectItem>
+              <SelectItem value="true">{t("content.contacts.read")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -176,19 +182,21 @@ export function ContactsTable({
 
       {contacts.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground border border-dashed rounded-xl bg-muted/10">
-          Chưa có yêu cầu liên hệ nào được gửi đến.
+          {t("common.table.noResults")}
         </div>
       ) : (
         <div className="border border-border rounded-xl overflow-hidden shadow-xs bg-card">
           <Table>
             <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead>Trạng thái</TableHead>
-                <TableHead>Khách hàng</TableHead>
-                <TableHead>Liên hệ</TableHead>
-                <TableHead>Tiêu đề</TableHead>
-                <TableHead>Ngày gửi</TableHead>
-                <TableHead className="text-right">Thao tác</TableHead>
+                <TableHead>{t("products.fields.status")}</TableHead>
+                <TableHead>{t("orders.fields.customer")}</TableHead>
+                <TableHead>{t("content.contacts.email")}</TableHead>
+                <TableHead>{t("content.contacts.subject")}</TableHead>
+                <TableHead>{t("content.contacts.receivedAt")}</TableHead>
+                <TableHead className="text-right">
+                  {t("common.actions.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -206,7 +214,9 @@ export function ContactsTable({
                           : "bg-blue-500/10 text-blue-600 border-transparent font-semibold"
                       }
                     >
-                      {contact.isRead ? "Đã đọc" : "Chưa đọc"}
+                      {contact.isRead
+                        ? t("content.contacts.read")
+                        : t("content.contacts.unread")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -232,7 +242,7 @@ export function ContactsTable({
                       className="text-emerald-600 hover:text-emerald-700"
                     >
                       <Eye className="size-4 mr-1" />
-                      Chi tiết
+                      {t("common.actions.view")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -251,11 +261,9 @@ export function ContactsTable({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Mail className="size-5 text-emerald-600" />
-              Chi tiết tin nhắn liên hệ
+              {t("content.contacts.title")}
             </DialogTitle>
-            <DialogDescription>
-              Xem nội dung đầy đủ của yêu cầu liên hệ.
-            </DialogDescription>
+            <DialogDescription>{t("content.subtitle")}</DialogDescription>
           </DialogHeader>
 
           {selectedContact && (
@@ -263,7 +271,7 @@ export function ContactsTable({
               <div className="grid grid-cols-2 gap-4 border-b pb-4">
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <User className="size-3" /> Họ tên
+                    <User className="size-3" /> {t("users.fields.fullName")}
                   </span>
                   <p className="text-sm font-semibold">
                     {selectedContact.fullName}
@@ -271,7 +279,8 @@ export function ContactsTable({
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Calendar className="size-3" /> Ngày gửi
+                    <Calendar className="size-3" />{" "}
+                    {t("content.contacts.receivedAt")}
                   </span>
                   <p className="text-sm font-semibold">
                     {formatDate(selectedContact.createdAt)}
@@ -279,7 +288,7 @@ export function ContactsTable({
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Mail className="size-3" /> Email
+                    <Mail className="size-3" /> {t("content.contacts.email")}
                   </span>
                   <p className="text-sm font-semibold break-all">
                     {selectedContact.email}
@@ -287,7 +296,7 @@ export function ContactsTable({
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Phone className="size-3" /> Số điện thoại
+                    <Phone className="size-3" /> {t("users.fields.phone")}
                   </span>
                   <p className="text-sm font-semibold">
                     {selectedContact.phoneNumber}
@@ -297,7 +306,7 @@ export function ContactsTable({
 
               <div className="space-y-2">
                 <span className="text-xs text-muted-foreground font-semibold">
-                  Tiêu đề:
+                  {t("content.contacts.subject")}:
                 </span>
                 <p className="text-sm font-medium bg-muted p-2 rounded-md">
                   {selectedContact.subject}
@@ -306,11 +315,11 @@ export function ContactsTable({
 
               <div className="space-y-2">
                 <span className="text-xs text-muted-foreground font-semibold">
-                  Nội dung tin nhắn:
+                  {t("content.contacts.message")}:
                 </span>
                 <div className="text-sm bg-muted/60 p-3 rounded-md min-h-[100px] whitespace-pre-wrap">
                   {detailLoading
-                    ? "Đang tải chi tiết..."
+                    ? t("common.table.loading")
                     : selectedContact.message}
                 </div>
               </div>
@@ -322,7 +331,7 @@ export function ContactsTable({
               onClick={() => setIsDialogOpen(false)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              Đóng
+              {t("common.actions.close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -333,7 +342,7 @@ export function ContactsTable({
         {localError && (
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={localError}
             onClose={() => setLocalError("")}
           />

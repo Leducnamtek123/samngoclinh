@@ -12,33 +12,38 @@ interface SalesTrendProps {
   totalRevenue?: number
 }
 
-const DEFAULT_SALES_TRENDS = [
-  { date: 1, sales: 85000000 },
-  { date: 2, sales: 120000000 },
-  { date: 3, sales: 145000000 },
-  { date: 4, sales: 110000000 },
-  { date: 5, sales: 162000000 },
-  { date: 6, sales: 195000000 },
-]
-
-export function SalesTrend({ monthlyRevenue, totalRevenue = 150000000 }: SalesTrendProps) {
+export function SalesTrend({
+  monthlyRevenue,
+  totalRevenue = 0,
+}: SalesTrendProps) {
   const trends =
     monthlyRevenue && monthlyRevenue.length > 0
       ? monthlyRevenue.map((m, idx) => ({
-          date: idx + 1,
-          sales: Math.max(m.visitors * 15000, 50000000),
+          date: m.month || `Tháng ${idx + 1}`,
+          sales: m.visitors ? Math.round(m.visitors * 10000) : 0,
         }))
-      : DEFAULT_SALES_TRENDS
+      : []
 
   const salesValues = trends.map((t) => t.sales)
-  const lowest = Math.min(...salesValues)
-  const highest = Math.max(...salesValues)
-  const avg = Math.round(salesValues.reduce((a, b) => a + b, 0) / salesValues.length)
-  const total = totalRevenue || salesValues.reduce((a, b) => a + b, 0)
+  const lowest = salesValues.length > 0 ? Math.min(...salesValues) : 0
+  const highest = salesValues.length > 0 ? Math.max(...salesValues) : 0
+  const avg =
+    salesValues.length > 0
+      ? Math.round(salesValues.reduce((a, b) => a + b, 0) / salesValues.length)
+      : 0
+  const total =
+    totalRevenue ||
+    (salesValues.length > 0 ? salesValues.reduce((a, b) => a + b, 0) : 0)
 
   const summary = {
-    lowestSales: { date: trends.find((t) => t.sales === lowest)?.date || 1, sales: lowest },
-    highestSales: { date: trends.find((t) => t.sales === highest)?.date || 6, sales: highest },
+    lowestSales: {
+      date: trends.find((t) => t.sales === lowest)?.date || "Tháng 1",
+      sales: lowest,
+    },
+    highestSales: {
+      date: trends.find((t) => t.sales === highest)?.date || "Tháng 6",
+      sales: highest,
+    },
     avgSales: avg,
     totalSales: total,
   }

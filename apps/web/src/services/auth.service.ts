@@ -1,26 +1,26 @@
-export interface SignInRequest {
+export type SignInRequest = {
   email: string;
   password?: string;
   type?: 'email' | 'otp';
-}
+};
 
-export interface SignInResponse {
+export type SignInResponse = {
   success: boolean;
   message?: string;
   redirectUrl?: string;
-}
+};
 
-export interface SignUpRequest {
+export type SignUpRequest = {
   name: string;
   email: string;
   phone: string;
   password?: string;
-}
+};
 
-export interface SignUpResponse {
+export type SignUpResponse = {
   success: boolean;
   message?: string;
-}
+};
 
 export async function apiSignIn(payload: SignInRequest): Promise<SignInResponse> {
   const res = await fetch('/api/auth/sign-in', {
@@ -31,10 +31,12 @@ export async function apiSignIn(payload: SignInRequest): Promise<SignInResponse>
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.');
+    throw new Error(
+      data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu.',
+    );
   }
 
-  return res.json();
+  return await res.json();
 }
 
 export async function apiSignUp(payload: SignUpRequest): Promise<SignUpResponse> {
@@ -49,7 +51,7 @@ export async function apiSignUp(payload: SignUpRequest): Promise<SignUpResponse>
     throw new Error(data.message || 'Đăng ký không thành công.');
   }
 
-  return res.json();
+  return await res.json();
 }
 
 export async function apiSignOut(): Promise<void> {

@@ -1,14 +1,27 @@
 "use client"
 
 import React from "react"
-import { Building2, UserCheck, Sparkles } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
+import { Building2, Sparkles, UserCheck } from "lucide-react"
 
 import type { AdminUser, Tree } from "@/types"
+
+import { Badge } from "@/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface CreateContractStep1Props {
   users: AdminUser[]
@@ -60,10 +73,17 @@ export function CreateContractStep1General({
                   {users.map((u) => (
                     <SelectItem key={u.id} value={u.id}>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold">{u.name || u.username}</span>
-                        <span className="text-muted-foreground text-xs">({u.email})</span>
+                        <span className="font-semibold">
+                          {u.name || u.username}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          ({u.email})
+                        </span>
                         {u.isVerified && (
-                          <Badge variant="secondary" className="text-[10px] px-1 py-0 bg-emerald-100 text-emerald-800">
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] px-1 py-0 bg-emerald-100 text-emerald-800"
+                          >
                             eKYC
                           </Badge>
                         )}
@@ -86,15 +106,23 @@ export function CreateContractStep1General({
                         <UserCheck className="w-3 h-3" /> Đã xác thực eKYC
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px]">
+                      <Badge
+                        variant="outline"
+                        className="text-amber-600 border-amber-300 text-[10px]"
+                      >
                         Chưa xác thực eKYC
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">{selectedUser.email}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedUser.email}
+                  </p>
                   {selectedUser.mobileNumbers?.[0]?.number && (
                     <p className="text-xs text-slate-600 dark:text-slate-400">
-                      SĐT: <span className="font-medium">{selectedUser.mobileNumbers[0].number}</span>
+                      SĐT:{" "}
+                      <span className="font-medium">
+                        {selectedUser.mobileNumbers[0].number}
+                      </span>
                     </p>
                   )}
                 </div>
@@ -136,12 +164,17 @@ export function CreateContractStep1General({
 
               <div className="space-y-2">
                 <Label>Loại hợp đồng *</Label>
-                <Select value={contractType} onValueChange={onContractTypeChange}>
+                <Select
+                  value={contractType}
+                  onValueChange={onContractTypeChange}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="purchase_and_care">Mua bán & Ký gửi chăm sóc</SelectItem>
+                    <SelectItem value="purchase_and_care">
+                      Mua bán & Ký gửi chăm sóc
+                    </SelectItem>
                     <SelectItem value="purchase">Mua bán sâm</SelectItem>
                     <SelectItem value="consignment">Ký gửi chăm sóc</SelectItem>
                     <SelectItem value="care">Dịch vụ chăm sóc</SelectItem>
@@ -157,10 +190,15 @@ export function CreateContractStep1General({
                   <SelectValue placeholder="-- Không gắn mã cây cụ thể --" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="none">-- Không gắn mã cây cụ thể --</SelectItem>
+                  <SelectItem value="none">
+                    -- Không gắn mã cây cụ thể --
+                  </SelectItem>
                   {trees.map((t) => (
                     <SelectItem key={t.id} value={t.code}>
-                      {t.code} - {t.name || "Cây sâm"} {t.ageYear || t.ageYears ? `(${t.ageYear || t.ageYears} năm tuổi)` : ""}
+                      {t.code} - {t.name || "Cây sâm"}{" "}
+                      {t.ageYear || t.ageYears
+                        ? `(${t.ageYear || t.ageYears} năm tuổi)`
+                        : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -175,18 +213,24 @@ export function CreateContractStep1General({
         <Card className="bg-slate-50/70 dark:bg-slate-900/50 border-dashed border-slate-300 dark:border-slate-800">
           <CardHeader>
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" /> Lưu ý khi tạo hợp đồng thủ công
+              <Sparkles className="w-4 h-4 text-amber-500" /> Lưu ý khi tạo hợp
+              đồng thủ công
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-slate-600 dark:text-slate-400 space-y-3 leading-relaxed">
             <p>
-              <strong>1. Phát sinh tự động:</strong> Khách mua sâm trực tuyến sẽ được hệ thống tự động tạo hợp đồng khi đơn hàng thanh toán thành công.
+              <strong>1. Phát sinh tự động:</strong> Khách mua sâm trực tuyến sẽ
+              được hệ thống tự động tạo hợp đồng khi đơn hàng thanh toán thành
+              công.
             </p>
             <p>
-              <strong>2. Khách hàng nhận thông báo:</strong> Sau khi phát hành ở trạng thái <em>Chờ ký</em>, khách hàng sẽ thấy văn bản trên tài khoản để ký điện tử.
+              <strong>2. Khách hàng nhận thông báo:</strong> Sau khi phát hành ở
+              trạng thái <em>Chờ ký</em>, khách hàng sẽ thấy văn bản trên tài
+              khoản để ký điện tử.
             </p>
             <p>
-              <strong>3. Chứng thực số:</strong> Sau khi khách ký, hệ thống tự động xác thực và gắn mã tra cứu.
+              <strong>3. Chứng thực số:</strong> Sau khi khách ký, hệ thống tự
+              động xác thực và gắn mã tra cứu.
             </p>
           </CardContent>
         </Card>

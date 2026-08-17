@@ -1,26 +1,37 @@
-## Phase 1: Compiler & Runtime Performance Guardrails
-- [x] **Task 1.1**: Fix React Compiler Immutability Violations (`SignInForm.tsx`, `HomeFeaturedProducts.tsx`)
-- [x] **Task 1.2**: Eliminate Permanent GPU `will-change` & Public Env Leak Flag (`ScrollReveal.tsx`, `Env.ts`)
-- [x] **Task 1.3**: Replace Raw `<img>` with Next.js `<Image>` (`EContractModal.tsx`, `GinsengDetailClient.tsx`, `OrderDetailModal.tsx`, `DigitalSignatureCard.tsx`)
-- [x] 🎯 **Checkpoint 1**: Type check & Phase 1 verification clean
+# Task List: System Standardization & Bug Fixes
 
-## Phase 2: Performance & Data Structure Optimization
-- [x] **Task 2.1**: Hoist `Intl` Formatters & Eliminate In-Render Locale Formatting (`datetime.ts`, `EContractDocumentView.tsx`, `ProfileKycTab.tsx`)
-- [x] **Task 2.2**: Optimize Array Lookups in Loops to O(1) `Set`/`Map` (`CartStepItems.tsx`, `Pagination.tsx`, `ProductFilterSidebar.tsx`)
-- [x] **Task 2.3**: Refactor State Initialized From Mount Effects (`useMapLocationPicker.ts`, `useUserHeaderMenu.ts`)
-- [x] 🎯 **Checkpoint 2**: Type check & Phase 2 verification clean
+## Phase 1: Critical Bug Fixes
+- [x] **Task 1: Fix Tree Allocation Invariant in Orders Service**
+  - File: `apps/api/src/modules/orders/services/orders.service.ts`
+  - Acceptance: `where: { ownerUserId: null, ageYear: ageYear, status: 'active' }` used for tree queries.
+  - Verification: Code verified and typecheck passed.
+- [x] **Task 2: Fix Unused Import in Web Test Contract**
+  - File: `apps/web/tests/contracts/api-services.test.ts`
+  - Acceptance: Unused `vi` import removed.
+  - Verification: `pnpm --filter @samngoclinh/web check:types` passed with code 0.
 
-## Phase 3: Accessibility & Form Control Integrity
-- [x] **Task 3.1**: Associate Form `<label>` Elements with Control Inputs (`ProfileInfoTab.tsx`, `ProfileKycTab.tsx`, `ClaimPlantModal.tsx`, `GinsengCalculator.tsx`, `ProductDetailView.tsx`, `ProfileSettingsTab.tsx`)
-- [x] **Task 3.2**: Keyboard & Interaction Handlers on Clickable Elements (`MiniCartDrawer.tsx`, `AddressModal.tsx`, `CartStepItems.tsx`, `PriceRangeSlider.tsx`)
-- [x] 🎯 **Checkpoint 3**: Type check & Phase 3 verification clean
+## Phase 2: Test Runner & Standardization
+- [x] **Task 3: Lock Jest 29 & Cross-Platform Test Scripts**
+  - File: `apps/api/package.json`
+  - Acceptance: Jest locked to `^29.7.0`, `@types/jest` to `^29.5.14`, test script updated with `cross-env`.
+  - Verification: `pnpm --filter @samngoclinh/api test` executes cleanly (6/6 suites passed).
+- [x] **Task 4: Remove Legacy Brand References**
+  - Files: `apps/api/src/modules/user/services/user.service.ts`, `apps/api/test/modules/e-contract/*.spec.ts`
+  - Acceptance: No occurrences of `iwefarm` or `wefarm.com.vn`.
+  - Verification: Grep search returns 0 matches in `apps/`.
+- [x] **Task 5: Add Negative Balance Guard in Wallet Repository**
+  - File: `apps/api/src/modules/wallet/repositories/wallet.repository.ts`
+  - Acceptance: Rejects debit if `wallet.balancePoint + amount < 0`.
+  - Verification: Typecheck & unit validation.
+- [x] **Task 6: Clean Up `provider-dashboard` Module**
+  - Files: `apps/api/src/modules/provider-dashboard/`
+  - Acceptance: Directory removed, cultivation routes standardized to `modules.admin.cultivation`.
+  - Verification: API build & typecheck passes.
 
-## Phase 4: Dead Code Elimination & Export Hygiene
-- [x] **Task 4.1**: Clean Up Dead / Unused Exports (`date-picker.tsx`, `formatters.ts`, `orderStatus.ts`)
-- [x] **Task 4.2**: Separate Non-Component Exports from Component Files (`ProfileOrdersTab.tsx` -> `orderStatus.ts`, `MemberRankBadge.tsx`)
-- [x] 🎯 **Checkpoint 4**: Type check & Phase 4 verification clean
-
-## Phase 5: State Architecture, Async Safety & Component Decomposition
-- [x] **Task 5.1**: Async Re-Entry Guards & Loading Flag Cleanup (`ProfileInfoTab.tsx`, `useAddressBook.ts`, `ProfileKycTab.tsx`, `VerifyEmailModal.tsx`, `AddressModal.tsx`, `ProfileSettingsTab.tsx`)
-- [x] **Task 5.2**: Refactor Effect-Driven Parent Communication & Direct Navigation (`CheckoutConfirmClient.tsx`)
-- [x] 🎯 **Final Checkpoint**: `pnpm run check:types` passed (exit code 0)
+## Phase 3: Final Verification Checkpoint
+- [x] API Typecheck: `pnpm --filter @samngoclinh/api typecheck` (0 errors)
+- [x] Admin Typecheck: `pnpm --filter @samngoclinh/admin check:types` (0 errors)
+- [x] Web Typecheck: `pnpm --filter @samngoclinh/web check:types` (0 errors)
+- [x] Admin Tests: `pnpm --filter @samngoclinh/admin test` (9/9 passed)
+- [x] Web Tests: `pnpm --filter @samngoclinh/web test` (31/31 passed)
+- [x] API Tests: `pnpm --filter @samngoclinh/api test` (74/74 passed)

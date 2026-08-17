@@ -1,10 +1,9 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
+import { getServerSession } from "next-auth"
 
 import type { NextAuthOptions } from "next-auth"
-import type { Adapter } from "next-auth/adapters"
+import type { JWT } from "next-auth/jwt"
 
 import { API_KEY } from "@/lib/api-key"
-import { db } from "@/lib/prisma"
 
 import CredentialsProvider from "next-auth/providers/credentials"
 
@@ -49,8 +48,6 @@ declare module "next-auth/jwt" {
   }
 }
 
-import type { JWT } from "next-auth/jwt"
-
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const url = `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/refresh`
@@ -66,7 +63,10 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null)
-      throw errorData || new Error(`Token refresh failed with status ${response.status}`)
+      throw (
+        errorData ||
+        new Error(`Token refresh failed with status ${response.status}`)
+      )
     }
 
     const refreshedTokens = await response.json()
@@ -96,7 +96,6 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -130,14 +129,13 @@ export const authOptions: NextAuthOptions = {
               return null
             }
 
+            const rawRole = payload.data.role
             const userRole =
-              payload.data.role?.name ||
-              payload.data.role ||
-              (payload.data.email?.includes("superadmin")
-                ? "SUPER_ADMIN"
-                : payload.data.email?.includes("admin")
-                  ? "ADMIN"
-                  : "USER")
+              typeof rawRole === "object" && rawRole !== null
+                ? (rawRole as { name?: string }).name || "USER"
+                : typeof rawRole === "string" && rawRole.trim() !== ""
+                  ? rawRole
+                  : "USER"
 
             return {
               id: payload.data.id,
@@ -231,14 +229,10 @@ export const authOptions: NextAuthOptions = {
           const rawRole = profilePayload?.data?.role
           const userRole =
             typeof rawRole === "object" && rawRole !== null
-              ? rawRole.name || "USER"
-              : typeof rawRole === "string"
+              ? (rawRole as { name?: string }).name || "USER"
+              : typeof rawRole === "string" && rawRole.trim() !== ""
                 ? rawRole
-                : userEmail?.includes("superadmin")
-                  ? "SUPER_ADMIN"
-                  : userEmail?.includes("admin")
-                    ? "ADMIN"
-                    : "USER"
+                : "USER"
 
           return {
             id: profilePayload?.data?.id || "admin-id",
@@ -314,8 +308,11 @@ export const authOptions: NextAuthOptions = {
 }
 
 if (typeof window === "undefined") {
-  ;(globalThis as unknown as { getServerSessionToken?: () => Promise<string | null> }).getServerSessionToken = async () => {
-    const { getServerSession } = require("next-auth")
+  ;(
+    globalThis as unknown as {
+      getServerSessionToken?: () => Promise<string | null>
+    }
+  ).getServerSessionToken = async () => {
     const session = await getServerSession(authOptions)
     return (session?.user as { accessToken?: string })?.accessToken || null
   }
