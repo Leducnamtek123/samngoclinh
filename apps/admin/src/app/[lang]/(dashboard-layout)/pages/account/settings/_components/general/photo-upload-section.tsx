@@ -65,7 +65,13 @@ export function PhotoUploadSection({
             </FormItem>
           )}
         />
-        <Button type="button" variant="outline" size="sm" className="text-xs text-destructive hover:bg-destructive/10" onClick={handleRemovePhoto}>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="text-xs text-destructive hover:bg-destructive/10"
+          onClick={handleRemovePhoto}
+        >
           Gỡ ảnh
         </Button>
       </div>

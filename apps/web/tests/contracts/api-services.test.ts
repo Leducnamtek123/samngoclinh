@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { catalogService } from '@/services/catalog.service';
-import { ordersService } from '@/services/orders.service';
-import { econtractService } from '@/services/econtract.service';
-import { cultivationService } from '@/services/cultivation.service';
-import { walletService } from '@/services/wallet.service';
-import { notificationService } from '@/services/notification.service';
-import { userService } from '@/services/user.service';
 import { contentService, paymentService, settingsService } from '@/services/content.service';
+import { cultivationService } from '@/services/cultivation.service';
+import { econtractService } from '@/services/econtract.service';
+import { notificationService } from '@/services/notification.service';
+import { ordersService } from '@/services/orders.service';
+import { userService } from '@/services/user.service';
+import { walletService } from '@/services/wallet.service';
 
 describe('Web Domain Services Contract Consistency', () => {
   it('catalogService should have all required contract methods', () => {

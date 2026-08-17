@@ -1,12 +1,19 @@
 "use client"
 
 import React from "react"
-import { ShieldCheck, FileDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { FileDown, ShieldCheck } from "lucide-react"
 
 import type { ContractAmendment, EContract } from "@/types"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 interface ContractDetailAmendmentsCardProps {
   contract: EContract
@@ -21,14 +28,19 @@ export function ContractDetailAmendmentsCard({
   formatVND,
   formatDateVi,
 }: ContractDetailAmendmentsCardProps) {
-  const contractCode = contract.code || contract.contractCode || contract.contractNumber || contract.id
+  const contractCode =
+    contract.code ||
+    contract.contractCode ||
+    contract.contractNumber ||
+    contract.id
 
   return (
     <Card className="border-emerald-200/80 dark:border-emerald-900/60">
       <CardHeader className="pb-3 bg-emerald-50/40 dark:bg-emerald-950/20 rounded-t-xl">
         <CardTitle className="text-base flex items-center justify-between">
           <span className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Phụ lục hợp đồng ({contract.amendments?.length || 0})
+            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Phụ lục hợp
+            đồng ({contract.amendments?.length || 0})
           </span>
         </CardTitle>
         <CardDescription className="text-xs">
@@ -63,7 +75,10 @@ export function ContractDetailAmendmentsCard({
                     • Thời hạn:{" "}
                     <span className="font-medium text-slate-900 dark:text-white">
                       {formatDateVi(amd.previousExpiredAt)} &rarr;{" "}
-                      {formatDateVi(amd.newExpiredAt)} {amd.extendedMonths ? `(+${amd.extendedMonths} tháng)` : ""}
+                      {formatDateVi(amd.newExpiredAt)}{" "}
+                      {amd.extendedMonths
+                        ? `(+${amd.extendedMonths} tháng)`
+                        : ""}
                     </span>
                   </p>
                   <p>
@@ -78,7 +93,10 @@ export function ContractDetailAmendmentsCard({
                     </p>
                   )}
                   {amd.documentHash && (
-                    <p className="text-[10px] font-mono text-slate-500 truncate" title={amd.documentHash}>
+                    <p
+                      className="text-[10px] font-mono text-slate-500 truncate"
+                      title={amd.documentHash}
+                    >
                       • SHA-256: {amd.documentHash.slice(0, 24)}...
                     </p>
                   )}
@@ -90,7 +108,11 @@ export function ContractDetailAmendmentsCard({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Button variant="outline" size="sm" className="h-6 text-[11px] px-2 text-emerald-700">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-[11px] px-2 text-emerald-700"
+                      >
                         <FileDown className="w-3 h-3 mr-1" /> Tải PDF Phụ Lục
                       </Button>
                     </a>

@@ -56,10 +56,11 @@ export default async function ProfileInfoPage() {
             : nameParts[0] || ""
         const lastName =
           nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""
-        const addresses: AddressItem[] = Array.isArray(profile.addresses) ? profile.addresses : []
+        const addresses: AddressItem[] = Array.isArray(profile.addresses)
+          ? profile.addresses
+          : []
         const defaultAddr =
-          addresses.find((a: AddressItem) => a.isDefault) ||
-          addresses[0]
+          addresses.find((a: AddressItem) => a.isDefault) || addresses[0]
 
         user = {
           id: profile.id || "",

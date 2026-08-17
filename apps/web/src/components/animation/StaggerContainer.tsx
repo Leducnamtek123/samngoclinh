@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useEffect, useRef } from 'react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface StaggerContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+type StaggerContainerProps = {
   children: React.ReactNode;
   stagger?: number; // Delay between items in seconds (default: 0.1s = 100ms)
   duration?: number;
@@ -17,7 +17,7 @@ interface StaggerContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   selector?: string; // CSS selector for child items (default: direct children)
   className?: string;
   as?: React.ElementType;
-}
+} & React.HTMLAttributes<HTMLDivElement>;
 
 export function StaggerContainer({
   children,
@@ -35,27 +35,29 @@ export function StaggerContainer({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const items = selector
-      ? container.querySelectorAll(selector)
-      : Array.from(container.children);
+    const items = selector ? container.querySelectorAll(selector) : [...container.children];
 
-    if (items.length === 0) return;
+    if (items.length === 0) {
+      return;
+    }
 
     if (prefersReducedMotion) {
       gsap.set(items, { opacity: 1, x: 0, y: 0, scale: 1 });
       return;
     }
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const fromVars: gsap.TweenVars = { opacity: 0 };
       const toVars: gsap.TweenVars = {
         opacity: 1,
-        duration: duration,
-        stagger: stagger,
+        duration,
+        stagger,
         ease: 'power3.out',
         scrollTrigger: {
           trigger: container,
@@ -65,28 +67,34 @@ export function StaggerContainer({
       };
 
       switch (variant) {
-        case 'fade-up':
+        case 'fade-up': {
           fromVars.y = distance;
           toVars.y = 0;
           break;
-        case 'fade-left':
+        }
+        case 'fade-left': {
           fromVars.x = -distance;
           toVars.x = 0;
           break;
-        case 'fade-right':
+        }
+        case 'fade-right': {
           fromVars.x = distance;
           toVars.x = 0;
           break;
-        case 'scale':
+        }
+        case 'scale': {
           fromVars.scale = 0.92;
           toVars.scale = 1;
           break;
+        }
       }
 
       gsap.fromTo(items, fromVars, toVars);
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+    };
   }, [stagger, duration, variant, distance, selector]);
 
   return (

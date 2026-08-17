@@ -1,4 +1,7 @@
+import { getServerSession } from "next-auth"
+
 import type { NextAuthOptions } from "next-auth"
+import type { JWT } from "next-auth/jwt"
 
 import { API_KEY } from "@/lib/api-key"
 
@@ -45,8 +48,6 @@ declare module "next-auth/jwt" {
   }
 }
 
-import type { JWT } from "next-auth/jwt"
-
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const url = `${process.env.INTERNAL_API_URL || "http://localhost:3000/api"}/v1/shared/user/refresh`
@@ -62,7 +63,10 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null)
-      throw errorData || new Error(`Token refresh failed with status ${response.status}`)
+      throw (
+        errorData ||
+        new Error(`Token refresh failed with status ${response.status}`)
+      )
     }
 
     const refreshedTokens = await response.json()
@@ -304,8 +308,11 @@ export const authOptions: NextAuthOptions = {
 }
 
 if (typeof window === "undefined") {
-  ;(globalThis as unknown as { getServerSessionToken?: () => Promise<string | null> }).getServerSessionToken = async () => {
-    const { getServerSession } = require("next-auth")
+  ;(
+    globalThis as unknown as {
+      getServerSessionToken?: () => Promise<string | null>
+    }
+  ).getServerSessionToken = async () => {
     const session = await getServerSession(authOptions)
     return (session?.user as { accessToken?: string })?.accessToken || null
   }

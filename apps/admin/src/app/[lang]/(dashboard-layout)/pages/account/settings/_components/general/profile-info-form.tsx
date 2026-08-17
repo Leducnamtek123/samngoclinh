@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { usersService } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -10,7 +11,6 @@ import type { ChangeEvent } from "react"
 import type { ProfileInfoFormType, UserType } from "../../../types"
 
 import { ProfileInfoSchema } from "../../_schemas/profile-info-form-schema"
-import { usersService } from "@/services"
 
 import { Button, ButtonLoading } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
@@ -64,7 +64,10 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
 
   async function onSubmit(data: ProfileInfoFormType) {
     try {
-      const fullName = [data.firstName, data.lastName].filter(Boolean).join(" ").trim()
+      const fullName = [data.firstName, data.lastName]
+        .filter(Boolean)
+        .join(" ")
+        .trim()
 
       await usersService.updateSelfProfile({
         name: fullName || data.username,
@@ -93,7 +96,11 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
       router.refresh()
     } catch (error: unknown) {
       console.error("Save profile error:", error)
-      toast.error(error instanceof Error ? error.message : "Không thể lưu thông tin tài khoản.")
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Không thể lưu thông tin tài khoản."
+      )
     }
   }
 

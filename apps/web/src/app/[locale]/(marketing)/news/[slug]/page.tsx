@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import { setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
 
 export const dynamic = 'force-dynamic';
 import { fetchApi } from '@/lib/Api';
@@ -28,7 +28,9 @@ async function getArticleDetail(slug: string) {
   }
 }
 
-async function getRelatedArticles(category: string, currentSlug: string) {
+import type { Article } from '@/types';
+
+async function getRelatedArticles(category: string, currentSlug: string): Promise<Article[]> {
   try {
     const res = await fetchApi('/public/content/articles', {
       next: { revalidate: 60 },
@@ -37,10 +39,8 @@ async function getRelatedArticles(category: string, currentSlug: string) {
       return [];
     }
     const json = await res.json();
-    const all = json.data || [];
-    return all
-      .filter((a: any) => a.category === category && a.slug !== currentSlug)
-      .slice(0, 3);
+    const all: Article[] = json.data || [];
+    return all.filter((a: Article) => a.category === category && a.slug !== currentSlug).slice(0, 3);
   } catch (error) {
     console.error('Error fetching related articles:', error);
     return [];
@@ -49,16 +49,16 @@ async function getRelatedArticles(category: string, currentSlug: string) {
 
 const getCategoryLabel = (category: string, locale: string) => {
   const labelsVi: Record<string, string> = {
-    'news': 'Tin tức',
-    'event': 'Sự kiện',
-    'guide': 'Hướng dẫn sử dụng',
-    'faq': 'Kiến thức'
+    news: 'Tin tức',
+    event: 'Sự kiện',
+    guide: 'Hướng dẫn sử dụng',
+    faq: 'Kiến thức',
   };
   const labelsEn: Record<string, string> = {
-    'news': 'News',
-    'event': 'Events',
-    'guide': 'User Guide',
-    'faq': 'Knowledge'
+    news: 'News',
+    event: 'Events',
+    guide: 'User Guide',
+    faq: 'Knowledge',
   };
   const map = locale === 'en' ? labelsEn : labelsVi;
   return map[category] || category || (locale === 'en' ? 'News' : 'Tin tức');
@@ -97,69 +97,75 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   ];
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen pb-20">
+    <div className="min-h-screen w-full bg-gray-50 pb-20">
       {/* Article Detail Header Container */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-        
+      <div className="mx-auto max-w-4xl px-4 pt-10 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
           href="/news"
-          className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-primary transition-colors mb-6 group"
+          className="group mb-6 inline-flex items-center gap-2 text-xs font-bold text-gray-500 transition-colors hover:text-primary"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={3}
+            stroke="currentColor"
+            className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
           </svg>
           <span>{locale === 'en' ? 'Back to articles' : 'Quay lại danh sách'}</span>
         </Link>
 
         {/* Category & Date Info */}
-        <div className="flex items-center gap-3 mb-4">
-          <span className="bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
+        <div className="mb-4 flex items-center gap-3">
+          <span className="flex items-center gap-1 rounded-full border border-emerald-100/50 bg-[#EAF5ED] px-3 py-1 text-[10px] font-bold text-[#2D7A4D]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2D7A4D]" />
             {getCategoryLabel(article.category, locale)}
           </span>
-          <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-            {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+          <span className="text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+            {article.publishedAt
+              ? new Date(article.publishedAt).toLocaleDateString(
+                  locale === 'en' ? 'en-US' : 'vi-VN',
+                  { day: 'numeric', month: 'long', year: 'numeric' },
+                )
+              : ''}
           </span>
         </div>
 
         {/* Article Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-6">
+        <h1 className="mb-6 text-2xl leading-tight font-extrabold text-gray-900 sm:text-3xl md:text-4xl">
           {article.title}
         </h1>
 
         {/* Author / Source */}
-        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 pb-8 border-b border-gray-150 mb-10">
-          <span>{locale === 'en' ? 'Author:' : 'Tác giả:'} {(article.metadata as any)?.authorName || 'Sâm Ngọc Linh'}</span>
+        <div className="border-gray-150 mb-10 flex items-center gap-2 border-b pb-8 text-xs font-semibold text-gray-500">
+          <span>
+            {locale === 'en' ? 'Author:' : 'Tác giả:'}{' '}
+            {article.metadata?.authorName || 'Sâm Ngọc Linh'}
+          </span>
         </div>
 
         {/* Article Body Content */}
-        <article className="bg-white border border-gray-100 rounded-[32px] p-6 sm:p-10 shadow-sm mb-16">
+        <article className="mb-16 rounded-[32px] border border-gray-100 bg-white p-6 shadow-sm sm:p-10">
           {/* Main Cover Image */}
           {article.coverImage && (
-            <div className="relative w-full h-[400px] rounded-2xl overflow-hidden mb-8">
+            <div className="relative mb-8 h-[400px] w-full overflow-hidden rounded-2xl">
               <Image
                 src={article.coverImage}
                 alt={article.title}
                 fill
                 sizes="100vw"
                 unoptimized
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             </div>
           )}
 
           {/* HTML rendered body content styled carefully */}
           <div
-            className="prose prose-emerald max-w-none text-gray-700 leading-relaxed text-sm sm:text-base space-y-6 
-              [&_p]:mb-4 [&_p]:text-gray-600 [&_p]:leading-relaxed
-              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-8 [&_h2]:mb-4
-              [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_h3]:mt-6 [&_h3]:mb-3
-              [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:mb-4
-              [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2 [&_ol]:mb-4
-              [&_li]:text-gray-600
-              [&_img]:rounded-2xl [&_img]:mx-auto [&_img]:my-6 [&_img]:shadow-sm [&_img]:max-w-full
-              [&_strong]:font-bold [&_strong]:text-gray-900"
+            className="prose prose-emerald max-w-none space-y-6 text-sm leading-relaxed text-gray-700 sm:text-base [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-gray-800 [&_img]:mx-auto [&_img]:my-6 [&_img]:max-w-full [&_img]:rounded-2xl [&_img]:shadow-sm [&_li]:text-gray-600 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_p]:mb-4 [&_p]:leading-relaxed [&_p]:text-gray-600 [&_strong]:font-bold [&_strong]:text-gray-900 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.body || article.summary) }}
           />
         </article>
@@ -167,53 +173,65 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         {/* Related Articles Section */}
         {relatedArticles.length > 0 && (
           <div className="border-t border-gray-200 pt-12">
-            <h3 className="text-xl font-bold text-gray-900 mb-8 text-center">
+            <h3 className="mb-8 text-center text-xl font-bold text-gray-900">
               {locale === 'en' ? 'Related Articles' : 'Bài viết liên quan'}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedArticles.map((rel: any, idx: number) => (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {relatedArticles.map((rel: Article, idx: number) => (
                 <article
                   key={rel.id}
-                  className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col justify-between"
+                  className="flex flex-col justify-between overflow-hidden rounded-3xl border border-gray-100 bg-white transition-shadow duration-300 hover:shadow-lg"
                 >
                   <div>
-                    <div className="h-44 overflow-hidden bg-gray-100 relative p-3">
+                    <div className="relative h-44 overflow-hidden bg-gray-100 p-3">
                       <Link href={`/news/${rel.slug}`}>
                         <Image
-                          className="w-full h-full object-cover rounded-2xl cursor-pointer"
-                          src={rel.image || newsImages[idx % newsImages.length]}
+                          className="h-full w-full cursor-pointer rounded-2xl object-cover"
+                          src={rel.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
                           alt={rel.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                           unoptimized
                         />
                       </Link>
-                      <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
-                        {getCategoryLabel(rel.category, locale)}
+                      <span className="absolute top-6 left-6 flex items-center gap-1 rounded-full border border-emerald-100/50 bg-[#EAF5ED] px-3 py-1 text-[10px] font-bold text-[#2D7A4D]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#2D7A4D]" />
+                        {getCategoryLabel(rel.category || '', locale)}
                       </span>
                     </div>
-                    <div className="p-5 space-y-2.5">
-                      <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                        {rel.publishedAt ? new Date(rel.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
+                    <div className="space-y-2.5 p-5">
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+                        {rel.publishedAt
+                          ? new Date(rel.publishedAt).toLocaleDateString(
+                              locale === 'en' ? 'en-US' : 'vi-VN',
+                              { day: 'numeric', month: 'long', year: 'numeric' },
+                            )
+                          : ''}
                       </div>
                       <Link href={`/news/${rel.slug}`}>
-                        <h4 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2 hover:text-primary transition-colors min-h-[36px] cursor-pointer">
+                        <h4 className="line-clamp-2 min-h-[36px] cursor-pointer text-sm leading-snug font-bold text-gray-900 transition-colors hover:text-primary">
                           {rel.title}
                         </h4>
                       </Link>
                     </div>
                   </div>
-                  <div className="p-5 pt-0 flex items-center justify-between border-t border-gray-50 mt-2">
+                  <div className="mt-2 flex items-center justify-between border-t border-gray-50 p-5 pt-0">
                     <div className="flex items-center gap-1.5 pt-3 text-[10px] font-semibold text-gray-500">
                       <span>{rel.author || 'Sâm Ngọc Linh'}</span>
                     </div>
                     <Link
                       href={`/news/${rel.slug}`}
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-secondary hover:text-secondary-hover pt-3 transition-colors group cursor-pointer"
+                      className="group inline-flex cursor-pointer items-center gap-1 pt-3 text-[11px] font-bold text-secondary transition-colors hover:text-secondary-hover"
                     >
                       <span>{locale === 'en' ? 'Read more' : 'Đọc thêm'}</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>
@@ -223,7 +241,6 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

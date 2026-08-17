@@ -2,8 +2,10 @@
 
 import React from "react"
 import Cropper from "react-easy-crop"
-import type { Area } from "react-easy-crop"
 import { Loader2 } from "lucide-react"
+
+import type { Area } from "react-easy-crop"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

@@ -2,13 +2,29 @@
 
 export const STEPS = [
   { id: 1, title: "Thông tin", desc: "Khách hàng & Loại hợp đồng", icon: null },
-  { id: 2, title: "Điều khoản", desc: "Giá trị & Thời hạn hiệu lực", icon: null },
+  {
+    id: 2,
+    title: "Điều khoản",
+    desc: "Giá trị & Thời hạn hiệu lực",
+    icon: null,
+  },
   { id: 3, title: "Nội dung", desc: "Mẫu văn bản & Xem trước", icon: null },
   { id: 4, title: "Phát hành", desc: "Kiểm tra & Xác nhận gửi", icon: null },
 ]
 
 export function docSoBaChuSo(baChuSo: number): string {
-  const chuSo = ["không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"]
+  const chuSo = [
+    "không",
+    "một",
+    "hai",
+    "ba",
+    "bốn",
+    "năm",
+    "sáu",
+    "bảy",
+    "tám",
+    "chín",
+  ]
   const tram = Math.floor(baChuSo / 100)
   const chuc = Math.floor((baChuSo % 100) / 10)
   const donVi = baChuSo % 10
@@ -92,7 +108,9 @@ export const STANDARD_PLACEHOLDERS = new Set([
 export function extractCustomPlaceholders(html: string): string[] {
   if (!html) return []
   const matches = html.match(/\{\{([A-Z0-9_]+)\}\}/g) || []
-  const allKeys = Array.from(new Set(matches.map((m) => m.replace(/[{}]/g, ""))))
+  const allKeys = Array.from(
+    new Set(matches.map((m) => m.replace(/[{}]/g, "")))
+  )
   return allKeys.filter((k) => !STANDARD_PLACEHOLDERS.has(k))
 }
 

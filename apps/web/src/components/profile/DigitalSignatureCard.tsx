@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import React, { useRef, useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { ButtonLoading } from '@/components/ui/button';
 import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
-import { toast } from 'sonner';
 
 // Subcomponent: Drawing Canvas Area
 function SignatureCanvasDrawArea({
@@ -17,7 +17,9 @@ function SignatureCanvasDrawArea({
   onClear,
 }: {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  onStartDrawing: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+  onStartDrawing: (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+  ) => void;
   onDraw: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
   onStopDrawing: () => void;
   onClear: () => void;
@@ -26,7 +28,7 @@ function SignatureCanvasDrawArea({
 
   return (
     <div className="space-y-3">
-      <div className="border border-gray-200 dark:border-gray-700 rounded-2xl bg-white p-2 relative shadow-xs">
+      <div className="relative rounded-2xl border border-gray-200 bg-white p-2 shadow-xs dark:border-gray-700">
         <canvas
           ref={canvasRef}
           width={600}
@@ -38,7 +40,7 @@ function SignatureCanvasDrawArea({
           onTouchStart={onStartDrawing}
           onTouchMove={onDraw}
           onTouchEnd={onStopDrawing}
-          className="w-full h-48 rounded-xl touch-none cursor-crosshair bg-white"
+          className="h-48 w-full cursor-crosshair touch-none rounded-xl bg-white"
         />
       </div>
 
@@ -46,9 +48,9 @@ function SignatureCanvasDrawArea({
         <button
           type="button"
           onClick={onClear}
-          className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 font-semibold transition-colors cursor-pointer"
+          className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-gray-600 transition-colors hover:text-red-600 dark:text-gray-400"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="h-3.5 w-3.5" />
           <span>{tActions('delete')}</span>
         </button>
       </div>
@@ -68,7 +70,7 @@ function SignatureUploadArea({
 
   return (
     <div className="space-y-3">
-      <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-emerald-600 transition-colors bg-gray-50/50 dark:bg-gray-800/30">
+      <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-6 text-center transition-colors hover:border-emerald-600 dark:border-gray-700 dark:bg-gray-800/30">
         {uploadedImageBase64 ? (
           <div className="space-y-3">
             <Image
@@ -77,17 +79,17 @@ function SignatureUploadArea({
               width={240}
               height={160}
               unoptimized
-              className="max-h-40 w-auto mx-auto rounded-lg object-contain bg-white p-2 border border-gray-200"
+              className="mx-auto max-h-40 w-auto rounded-lg border border-gray-200 bg-white object-contain p-2"
             />
-            <label className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:underline cursor-pointer">
-              <Upload className="w-3.5 h-3.5" />
+            <label className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-bold text-emerald-800 hover:underline dark:text-emerald-400">
+              <Upload className="h-3.5 w-3.5" />
               <span>{tProfile('uploadAvatar')}</span>
               <input type="file" accept="image/*" onChange={onFileUpload} className="hidden" />
             </label>
           </div>
         ) : (
-          <label className="flex flex-col items-center justify-center cursor-pointer py-4 space-y-2">
-            <Upload className="w-8 h-8 text-gray-400" />
+          <label className="flex cursor-pointer flex-col items-center justify-center space-y-2 py-4">
+            <Upload className="h-8 w-8 text-gray-400" />
             <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
               {tProfile('uploadAvatar')}
             </span>
@@ -111,21 +113,21 @@ function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: strin
       : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api').replace(/\/api\/?$/, '')}${savedSignatureUrl.startsWith('/') ? '' : '/'}${savedSignatureUrl}`;
 
   return (
-    <div className="pt-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+    <div className="space-y-2 border-t border-gray-100 pt-4 dark:border-gray-800">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+        <span className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-gray-300">
+          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <span>{t('testSuccess')}</span>
         </span>
       </div>
-      <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl inline-block">
+      <div className="inline-block rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
         <Image
           src={finalUrl}
           alt="Saved Signature"
           width={200}
           height={96}
           unoptimized
-          className="max-h-24 w-auto object-contain bg-white dark:bg-gray-900 p-2 rounded-lg border border-gray-100 dark:border-gray-800"
+          className="max-h-24 w-auto rounded-lg border border-gray-100 bg-white object-contain p-2 dark:border-gray-800 dark:bg-gray-900"
         />
       </div>
     </div>
@@ -145,18 +147,24 @@ export const DigitalSignatureCard: React.FC = () => {
   const hasDrawnRef = useRef(false);
 
   useEffect(() => {
-    if (mode !== 'draw') return;
+    if (mode !== 'draw') {
+      return;
+    }
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, [mode]);
 
   const getEventCoordinates = (
     e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
   ) => {
     const rect = canvas.getBoundingClientRect();
     let clientX = 0;
@@ -173,12 +181,18 @@ export const DigitalSignatureCard: React.FC = () => {
     return { x, y };
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const startDrawing = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+  ) => {
     isDrawingRef.current = true;
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
     const { x, y } = getEventCoordinates(e, canvas);
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -190,11 +204,17 @@ export const DigitalSignatureCard: React.FC = () => {
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawingRef.current) return;
+    if (!isDrawingRef.current) {
+      return;
+    }
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
     const { x, y } = getEventCoordinates(e, canvas);
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -206,9 +226,13 @@ export const DigitalSignatureCard: React.FC = () => {
 
   const handleClear = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     hasDrawnRef.current = false;
@@ -217,7 +241,9 @@ export const DigitalSignatureCard: React.FC = () => {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
     if (!file.type.startsWith('image/')) {
       toast.error(t('imageOnly'));
       return;
@@ -253,20 +279,20 @@ export const DigitalSignatureCard: React.FC = () => {
     try {
       await updateSignatureMutation.mutateAsync(signatureData);
       toast.success(t('testSuccess'));
-    } catch (err: any) {
-      toast.error(err?.message || 'Error');
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Error');
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
+    <div className="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-xs sm:p-7 dark:border-gray-800 dark:bg-gray-900">
       {/* Header */}
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <PenTool className="w-5 h-5 text-emerald-800 dark:text-emerald-400 shrink-0" />
-          <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">{t('title')}</h3>
+          <PenTool className="h-5 w-5 shrink-0 text-emerald-800 dark:text-emerald-400" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('title')}</h3>
         </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
+        <p className="text-xs leading-relaxed font-normal text-gray-500 dark:text-gray-400">
           {t('legalNotice')}
         </p>
       </div>
@@ -275,27 +301,31 @@ export const DigitalSignatureCard: React.FC = () => {
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => setMode('draw')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-[color,background-color,box-shadow] cursor-pointer ${
+          onClick={() => {
+            setMode('draw');
+          }}
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-[color,background-color,box-shadow] ${
             mode === 'draw'
               ? 'bg-primary text-white shadow-xs'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
           }`}
         >
-          <PenTool className="w-3.5 h-3.5" />
+          <PenTool className="h-3.5 w-3.5" />
           <span>Draw</span>
         </button>
 
         <button
           type="button"
-          onClick={() => setMode('upload')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-[color,background-color,box-shadow] cursor-pointer ${
+          onClick={() => {
+            setMode('upload');
+          }}
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-[color,background-color,box-shadow] ${
             mode === 'upload'
               ? 'bg-primary text-white shadow-xs'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300'
           }`}
         >
-          <Upload className="w-3.5 h-3.5" />
+          <Upload className="h-3.5 w-3.5" />
           <span>Upload</span>
         </button>
       </div>
@@ -322,9 +352,9 @@ export const DigitalSignatureCard: React.FC = () => {
           onClick={handleSaveSignature}
           isLoading={updateSignatureMutation.isPending}
           disabled={updateSignatureMutation.isPending}
-          className="bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm"
+          className="flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-primary-hover"
         >
-          <Save className="w-4 h-4" />
+          <Save className="h-4 w-4" />
           <span>{tActions('save')}</span>
         </ButtonLoading>
       </div>

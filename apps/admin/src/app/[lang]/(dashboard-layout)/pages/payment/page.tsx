@@ -5,12 +5,13 @@ import {
   DollarSign,
 } from "lucide-react"
 
-import type { Metadata } from "next"
 import type { LocaleType } from "@/types"
+import type { Metadata } from "next"
 
 import { fetchApi } from "@/lib/api"
 import { getDictionary } from "@/lib/get-dictionary"
 import { createTranslator } from "@/lib/i18n"
+
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -30,8 +31,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Payment & Transactions | Admin",
-  description:
-    "Track transaction history and payments",
+  description: "Track transaction history and payments",
 }
 
 interface TransactionItem {
@@ -126,7 +126,8 @@ export default async function PaymentPage({
               {formatMoney(
                 transactions
                   .filter(
-                    (item) => item.type === "credit" || (item.amount && item.amount > 0)
+                    (item) =>
+                      item.type === "credit" || (item.amount && item.amount > 0)
                   )
                   .reduce((acc, curr) => acc + (curr.amount || 0), 0)
               )}
@@ -149,7 +150,8 @@ export default async function PaymentPage({
               {formatMoney(
                 transactions
                   .filter(
-                    (item) => item.type === "debit" || (item.amount && item.amount < 0)
+                    (item) =>
+                      item.type === "debit" || (item.amount && item.amount < 0)
                   )
                   .reduce((acc, curr) => acc + Math.abs(curr.amount || 0), 0)
               )}
@@ -167,9 +169,7 @@ export default async function PaymentPage({
           <CardTitle>{t("orders.transactions.realtimeLog")}</CardTitle>
           <CardDescription>
             {errorMsg ? (
-              <span className="text-amber-600 font-medium">
-                {errorMsg}
-              </span>
+              <span className="text-amber-600 font-medium">{errorMsg}</span>
             ) : (
               t("orders.transactions.realtimeLogDesc")
             )}
@@ -182,10 +182,16 @@ export default async function PaymentPage({
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("orders.transactions.code")}</TableHead>
-                    <TableHead>{t("orders.transactions.description")}</TableHead>
+                    <TableHead>
+                      {t("orders.transactions.description")}
+                    </TableHead>
                     <TableHead>{t("orders.transactions.type")}</TableHead>
-                    <TableHead className="text-right">{t("orders.transactions.amount")}</TableHead>
-                    <TableHead className="text-right">{t("orders.transactions.balanceAfter")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("orders.transactions.amount")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("orders.transactions.balanceAfter")}
+                    </TableHead>
                     <TableHead>{t("orders.transactions.status")}</TableHead>
                     <TableHead>{t("orders.transactions.time")}</TableHead>
                   </TableRow>
@@ -205,7 +211,9 @@ export default async function PaymentPage({
                             txn.type === "credit" ? "default" : "secondary"
                           }
                         >
-                          {txn.type === "credit" ? t("orders.transactions.credit") : t("orders.transactions.debit")}
+                          {txn.type === "credit"
+                            ? t("orders.transactions.credit")
+                            : t("orders.transactions.debit")}
                         </Badge>
                       </TableCell>
                       <TableCell
@@ -227,7 +235,9 @@ export default async function PaymentPage({
                               : "bg-amber-100 text-amber-800"
                           }
                         >
-                          {txn.status === "success" ? t("common.status.success") : txn.status}
+                          {txn.status === "success"
+                            ? t("common.status.success")
+                            : txn.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">

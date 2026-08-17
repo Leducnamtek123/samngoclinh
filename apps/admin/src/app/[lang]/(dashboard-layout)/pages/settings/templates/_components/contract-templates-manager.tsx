@@ -1,18 +1,14 @@
 "use client"
 
 import React, { useCallback, useEffect, useState } from "react"
-import {
-  Check,
-  Loader2,
-  RefreshCw,
-  Save,
-} from "lucide-react"
+import { Check, Loader2, RefreshCw, Save } from "lucide-react"
 
 import { fetchApi } from "@/lib/api"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { TemplateSidebar } from "./template-sidebar"
 import { TemplateEditorPreview } from "./template-editor-preview"
+import { TemplateSidebar } from "./template-sidebar"
 
 export interface ContractTemplateItem {
   slug: string
@@ -59,7 +55,8 @@ export function ContractTemplatesManager() {
   const [selectedSlug, setSelectedSlug] = useState<string>(
     "hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
   )
-  const [currentTemplate, setCurrentTemplate] = useState<ContractTemplateItem | null>(null)
+  const [currentTemplate, setCurrentTemplate] =
+    useState<ContractTemplateItem | null>(null)
   const [formState, setFormState] = useState<TemplateFormState>({
     htmlContent: "",
     version: "2.0.0",
@@ -90,9 +87,10 @@ export function ContractTemplatesManager() {
       }
       if (res.status < 400 && payload.data) {
         setTemplates(payload.data)
-        const active = payload.data.find(
-          (t: ContractTemplateItem) => t.slug === selectedSlug
-        ) || payload.data[0]
+        const active =
+          payload.data.find(
+            (t: ContractTemplateItem) => t.slug === selectedSlug
+          ) || payload.data[0]
         if (active) {
           setSelectedSlug(active.slug)
           setCurrentTemplate(active)
@@ -235,7 +233,9 @@ export function ContractTemplatesManager() {
             disabled={isLoading}
             className="h-9 gap-1.5 text-xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+            />
             <span>Làm mới</span>
           </Button>
 

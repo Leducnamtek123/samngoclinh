@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { Bed, PaginationMeta, Tree } from "@/types"
-
-import { cultivationService } from "@/services/cultivation.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { TreesTable } from "./_components/trees-table"
+import { cultivationService } from "@/services/cultivation.service"
 
 export const metadata: Metadata = {
   title: "Quản lý cây sâm | Sâm Ngọc Linh Admin",
@@ -40,7 +39,9 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
 
   try {
     const [treesRes, bedsRes] = await Promise.all([
-      cultivationService.getTrees({ page, perPage, search, status }).catch(() => null),
+      cultivationService
+        .getTrees({ page, perPage, search, status })
+        .catch(() => null),
       cultivationService.getBeds({ perPage: 100 }).catch(() => null),
     ])
 
@@ -53,7 +54,8 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
       beds = bedsRes.data
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Unable to connect to server"
+    const message =
+      e instanceof Error ? e.message : "Unable to connect to server"
     console.error("Error fetching trees data on server:", e)
     errorMsg = message
   }

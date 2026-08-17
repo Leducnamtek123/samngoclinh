@@ -1,9 +1,20 @@
+import { Mail } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
-import { Mail } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Input, Button } from '@/components/ui';
-import { useRequestEmailVerification, useConfirmEmailVerification } from '@/hooks/queries/useVerifyEmail';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  Input,
+  Button,
+} from '@/components/ui';
+import {
+  useRequestEmailVerification,
+  useConfirmEmailVerification,
+} from '@/hooks/queries/useVerifyEmail';
 
 type VerifyEmailModalProps = {
   isOpen: boolean;
@@ -21,23 +32,29 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
   const requestMutation = useRequestEmailVerification();
   const confirmMutation = useConfirmEmailVerification();
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const handleSendOtp = async () => {
-    if (requestMutation.isPending) return;
+    if (requestMutation.isPending) {
+      return;
+    }
     setErrorMsg('');
     try {
       await requestMutation.mutateAsync();
       toast.success(t('resendSuccess'));
       setStep('confirm');
-    } catch (err: any) {
-      setErrorMsg(err.message || t('verifyError'));
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : t('verifyError'));
     }
   };
 
   const handleConfirmOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (confirmMutation.isPending) return;
+    if (confirmMutation.isPending) {
+      return;
+    }
     if (!otp || otp.trim().length < 4) {
       setErrorMsg(t('otpLabel'));
       return;
@@ -47,8 +64,8 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
       await confirmMutation.mutateAsync(otp.trim());
       toast.success(t('verifySuccess'));
       onClose();
-    } catch (err: any) {
-      setErrorMsg(err.message || t('verifyError'));
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : t('verifyError'));
     }
   };
 
@@ -56,8 +73,8 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader className="text-center">
-          <div className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-2">
-            <Mail className="w-6 h-6" />
+          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+            <Mail className="h-6 w-6" />
           </div>
           <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
@@ -66,14 +83,14 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
         </DialogHeader>
 
         {errorMsg && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl font-medium">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
             {errorMsg}
           </div>
         )}
 
         {step === 'request' ? (
           <div className="space-y-4 pt-2">
-            <p className="text-xs text-gray-600 dark:text-gray-400 text-center leading-relaxed">
+            <p className="text-center text-xs leading-relaxed text-gray-600 dark:text-gray-400">
               {t('instruction')}
             </p>
             <Button
@@ -88,7 +105,10 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
         ) : (
           <form onSubmit={handleConfirmOtp} className="space-y-4 pt-2">
             <div className="space-y-1.5 text-center">
-              <label htmlFor="otpCodeInput" className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+              <label
+                htmlFor="otpCodeInput"
+                className="block text-xs font-bold tracking-wider text-gray-500 uppercase"
+              >
                 {t('otpLabel')}
               </label>
               <Input
@@ -97,15 +117,19 @@ export const VerifyEmailModal = ({ isOpen, onClose, userEmail }: VerifyEmailModa
                 maxLength={6}
                 value={otp}
                 placeholder={t('otpPlaceholder')}
-                onChange={(e) => setOtp(e.target.value)}
-                className="text-center tracking-[0.5em] text-xl font-bold h-12"
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                }}
+                className="h-12 text-center text-xl font-bold tracking-[0.5em]"
               />
             </div>
             <div className="flex gap-3 pt-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setStep('request')}
+                onClick={() => {
+                  setStep('request');
+                }}
                 className="flex-1"
               >
                 {tActions('cancel')}

@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { fetchApi } from '@/lib/Api';
-import { Env } from '@/lib/Env';
 import { API_KEY } from '@/lib/apiKey';
+import { Env } from '@/lib/Env';
 
 async function refreshTokens(refreshToken: string) {
   const baseUrl = Env.INTERNAL_API_URL || Env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -13,38 +14,39 @@ async function refreshTokens(refreshToken: string) {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
-      'Authorization': `Bearer ${refreshToken}`,
+      Authorization: `Bearer ${refreshToken}`,
     },
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    return null;
+  }
   const json = await res.json();
-  if (json.data?.accessToken) return json.data;
+  if (json.data?.accessToken) {
+    return json.data;
+  }
   return json.data?.tokens || null;
 }
 
-async function handleProxy(
-  request: NextRequest,
-  props: { params: Promise<{ path: string[] }> }
-) {
+async function handleProxy(request: NextRequest, props: { params: Promise<{ path: string[] }> }) {
   const params = await props.params;
   const pathStr = params.path.join('/');
   const searchParams = request.nextUrl.searchParams.toString();
   const endpoint = `/${pathStr}${searchParams ? `?${searchParams}` : ''}`;
 
-  const method = request.method;
+  const { method } = request;
   const rawContentType = request.headers.get('content-type') || '';
-  let body: any;
+  let body: BodyInit | null | undefined;
   const customHeaders: Record<string, string> = {};
 
   if (['POST', 'PUT', 'PATCH'].includes(method)) {
     if (rawContentType.includes('multipart/form-data')) {
-      body = await request.arrayBuffer().catch(() => undefined);
+      body = (await request.arrayBuffer().catch(() => undefined)) ?? undefined;
       if (rawContentType) {
         customHeaders['Content-Type'] = rawContentType;
       }
     } else {
-      body = await request.text().catch(() => undefined);
+      body = (await request.text().catch(() => undefined)) ?? undefined;
       if (rawContentType) {
         customHeaders['Content-Type'] = rawContentType;
       } else if (body) {
@@ -59,8 +61,6 @@ async function handleProxy(
       body,
       headers: customHeaders,
     });
-
-
 
     const cookieStore = await cookies();
     let newTokens = null;
@@ -78,7 +78,7 @@ async function handleProxy(
             body,
             headers: {
               ...customHeaders,
-              'Authorization': `Bearer ${newTokens.accessToken}`,
+              Authorization: `Bearer ${newTokens.accessToken}`,
             },
           });
         } else {
@@ -135,8 +135,7 @@ async function handleProxy(
         headers,
       });
     } else {
-      let data: any = {};
-      data = await res.json().catch(() => ({}));
+      const data = (await res.json().catch(() => ({}))) as unknown;
       response = NextResponse.json(data, { status: res.status });
     }
 
@@ -166,10 +165,10 @@ async function handleProxy(
     }
 
     return response;
-  } catch (e: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { message: e.message || 'Error proxying request' },
-      { status: 500 }
+      { message: error instanceof Error ? error.message : 'Error proxying request' },
+      { status: 500 },
     );
   }
 }

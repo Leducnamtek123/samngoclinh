@@ -1,11 +1,13 @@
 import { Suspense } from "react"
-import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { legalService } from "@/services/legal.service"
-import { usersService } from "@/services/users.service"
+
 import type { AdminUser, EContract } from "@/types"
+import type { Metadata } from "next"
+
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContractDetailView } from "./_components/contract-detail-view"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 
 export const metadata: Metadata = {
   title: "Chi tiết hợp đồng điện tử | Sâm Ngọc Linh Admin",
@@ -35,13 +37,15 @@ export default async function ContractDetailPage({
       contract = res.data
     } else {
       // 2. Fallback search by code if ID was code or custom format
-      const searchRes = await legalService.getContracts({ search: id }).catch(() => null)
+      const searchRes = await legalService
+        .getContracts({ search: id })
+        .catch(() => null)
       if (searchRes?.data) {
         const items: EContract[] = Array.isArray(searchRes.data)
           ? searchRes.data
-          : Array.isArray((searchRes.data as any)?.items)
-          ? (searchRes.data as any).items
-          : []
+          : Array.isArray((searchRes.data as { items?: EContract[] })?.items)
+            ? (searchRes.data as { items?: EContract[] }).items || []
+            : []
         contract =
           items.find(
             (c: EContract) =>
@@ -55,7 +59,9 @@ export default async function ContractDetailPage({
 
     // 3. Fetch user details if contract has a customer
     if (contract?.userId) {
-      const userRes = await usersService.getUserDetail(contract.userId).catch(() => null)
+      const userRes = await usersService
+        .getUserDetail(contract.userId)
+        .catch(() => null)
       if (userRes?.data) {
         user = userRes.data
       }
@@ -65,7 +71,8 @@ export default async function ContractDetailPage({
       errorMsg = "Không tìm thấy hợp đồng với mã định danh này."
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API."
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API."
     console.error("Error loading contract detail:", e)
     errorMsg = message
   }

@@ -14,7 +14,8 @@ interface OverviewProps {
 export function Overview({ stats }: OverviewProps) {
   const totalRevenue = stats?.totalRevenue ?? 0
   const totalOrders = stats?.totalOrders ?? 0
-  const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
+  const avgOrderValue =
+    totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0
 
   const totalSalesData = {
     value: totalRevenue,

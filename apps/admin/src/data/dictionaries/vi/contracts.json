@@ -107,7 +107,16 @@
     "ACTIVE": "Đang hiệu lực",
     "EXPIRED": "Đã hết hạn",
     "CANCELLED": "Đã hủy",
-    "TERMINATED": "Chấm dứt trước hạn"
+    "TERMINATED": "Chấm dứt trước hạn",
+    "draft": "Bản nháp",
+    "pending_issue": "Chờ BQL phát hành",
+    "pending": "Chờ ký",
+    "pending_signature": "Chờ khách ký",
+    "signed": "Đã ký",
+    "active": "Đang hiệu lực",
+    "expired": "Đã hết hạn",
+    "cancelled": "Đã hủy",
+    "terminated": "Chấm dứt trước hạn"
   },
   "types": {
     "CULTIVATION_INVESTMENT": "Mua bán & Ký gửi chăm sóc",

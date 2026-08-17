@@ -1,4 +1,4 @@
-export interface ProductItem {
+export type ProductItem = {
   id: string;
   name: string;
   price: number;
@@ -12,15 +12,14 @@ export interface ProductItem {
   ageYears?: number;
   origin?: string;
   stock?: number;
-}
+};
 
-export interface GinsengPlantItem extends ProductItem {
+export type GinsengPlantItem = {
   gardenName?: string;
   gardenLocation?: string;
   treeCount?: number;
   plantedAt?: string;
-}
+} & ProductItem;
 
 /** @deprecated Use GinsengPlantItem instead */
 export type GinsengTreeItem = GinsengPlantItem;
-

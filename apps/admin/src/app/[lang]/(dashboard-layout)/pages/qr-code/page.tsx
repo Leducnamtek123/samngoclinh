@@ -80,12 +80,9 @@ export default function QrCodeTraceabilityPage() {
   const [page, setPage] = useState(1)
   const perPage = 10
 
-  const {
-    data: response,
-    isLoading,
-    isError,
-    refetch,
-  } = useApiQuery<TreeItem[] | { items?: TreeItem[]; data?: TreeItem[] }>(
+  const { data: response, isLoading, refetch } = useApiQuery<
+    TreeItem[] | { items?: TreeItem[]; data?: TreeItem[] }
+  >(
     ["trees-traceability", page],
     `/admin/cultivation/trees?page=${page}&perPage=${perPage}`
   )
@@ -165,10 +162,14 @@ export default function QrCodeTraceabilityPage() {
           <Button
             variant="outline"
             size="sm"
+            disabled={isLoading}
             onClick={() => refetch()}
             className="gap-2"
           >
-            <RefreshCw className="w-4 h-4" /> {t("common.actions.refresh")}
+            <RefreshCw
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+            />{" "}
+            {t("common.actions.refresh")}
           </Button>
         </div>
 
@@ -280,7 +281,9 @@ export default function QrCodeTraceabilityPage() {
                     <li className="flex items-center justify-between border-b pb-2">
                       <span>{t("trees.fields.plantedDate")}:</span>
                       <span className="font-medium text-foreground">
-                        {formatDateVi(activeTree.plantedAt || activeTree.createdAt)}
+                        {formatDateVi(
+                          activeTree.plantedAt || activeTree.createdAt
+                        )}
                       </span>
                     </li>
                     <li className="flex items-center justify-between">

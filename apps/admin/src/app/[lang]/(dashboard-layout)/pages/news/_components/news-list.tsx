@@ -3,6 +3,9 @@
 import Image from "next/image"
 import { ImageIcon, Pencil, Trash2 } from "lucide-react"
 
+import type { Article, PaginationMeta } from "@/types"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -15,9 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-import type { Article, PaginationMeta } from "@/types"
-import { useTranslation } from "@/providers/i18n-provider"
 
 interface NewsListProps {
   articles: Article[]
@@ -47,10 +47,18 @@ export function NewsList({
           <TableRow>
             <TableHead className="w-16">{t("products.fields.image")}</TableHead>
             <TableHead>{t("content.articles.articleTitle")}</TableHead>
-            <TableHead className="w-32">{t("content.articles.category")}</TableHead>
-            <TableHead className="w-32">{t("products.fields.status")}</TableHead>
-            <TableHead className="w-32">{t("users.fields.createdAt")}</TableHead>
-            <TableHead className="w-24 text-right">{t("common.actions.actions")}</TableHead>
+            <TableHead className="w-32">
+              {t("content.articles.category")}
+            </TableHead>
+            <TableHead className="w-32">
+              {t("products.fields.status")}
+            </TableHead>
+            <TableHead className="w-32">
+              {t("users.fields.createdAt")}
+            </TableHead>
+            <TableHead className="w-24 text-right">
+              {t("common.actions.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -101,7 +109,9 @@ export function NewsList({
                     variant="outline"
                     className="text-[10px] px-2 py-0.5 border-slate-200"
                   >
-                    {art.category ? categoryNameMap[art.category] || art.category : "-"}
+                    {art.category
+                      ? categoryNameMap[art.category] || art.category
+                      : "-"}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -111,8 +121,8 @@ export function NewsList({
                       art.status === "published"
                         ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                         : art.status === "draft"
-                        ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-slate-50 text-slate-600 border-slate-200"
+                          ? "bg-amber-50 text-amber-700 border-amber-200"
+                          : "bg-slate-50 text-slate-600 border-slate-200"
                     }`}
                   >
                     {statusNameMap[art.status] || art.status}

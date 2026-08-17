@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 import { MemberRankBadge } from './MemberRankBadge';
 
 type UserCardProps = {
@@ -21,16 +21,16 @@ export const UserCard: React.FC<UserCardProps> = ({
   const initial = displayName.charAt(0).toUpperCase() || 'U';
 
   return (
-    <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-slate-200/80 dark:border-slate-800 relative overflow-hidden mb-5">
-      <div className="flex items-center gap-3.5 relative z-10">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-800 text-white flex items-center justify-center font-black text-lg shadow-md shadow-emerald-950/20 flex-shrink-0">
+    <div className="relative mb-5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <div className="relative z-10 flex items-center gap-3.5">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-800 text-lg font-black text-white shadow-md shadow-emerald-950/20">
           {initial}
         </div>
-        <div className="overflow-hidden min-w-0 flex-1">
-          <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate leading-tight">
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <h3 className="truncate text-sm leading-tight font-bold text-slate-900 dark:text-slate-100">
             {displayName}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+          <p className="mt-0.5 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
             {email}
           </p>
           <div className="mt-2 flex items-center gap-2">

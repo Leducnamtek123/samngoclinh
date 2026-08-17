@@ -1,7 +1,31 @@
-export type CultivationStatus = "active" | "inactive" | "maintenance" | "harvested" | "archived"
-export type TreeHealthStatus = "healthy" | "good" | "warning" | "critical" | "dormant"
-export type GrowthStage = "seedling" | "young" | "mature" | "flowering" | "ready_to_harvest" | "harvested"
-export type CareActivityType = "watering" | "fertilizing" | "pruning" | "soil_check" | "pest_control" | "inspection" | "harvesting" | "other"
+export type CultivationStatus =
+  | "active"
+  | "inactive"
+  | "maintenance"
+  | "harvested"
+  | "archived"
+export type TreeHealthStatus =
+  | "healthy"
+  | "good"
+  | "warning"
+  | "critical"
+  | "dormant"
+export type GrowthStage =
+  | "seedling"
+  | "young"
+  | "mature"
+  | "flowering"
+  | "ready_to_harvest"
+  | "harvested"
+export type CareActivityType =
+  | "watering"
+  | "fertilizing"
+  | "pruning"
+  | "soil_check"
+  | "pest_control"
+  | "inspection"
+  | "harvesting"
+  | "other"
 
 export interface Garden {
   id: string

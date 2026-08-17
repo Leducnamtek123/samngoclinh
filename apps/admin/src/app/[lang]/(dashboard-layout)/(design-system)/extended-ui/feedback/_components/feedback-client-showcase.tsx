@@ -262,7 +262,7 @@ function ToastSection({ addShowcaseToast }: SectionProps) {
           </div>
         ) : (
           <p className="text-sm text-slate-400">
-            Bấm nút "Toggled Display" để mở lại danh sách Toast
+            Bấm nút &quot;Toggled Display&quot; để mở lại danh sách Toast
           </p>
         )}
       </CardContent>

@@ -304,7 +304,9 @@ function OrderProductsCard({
                     : item.image || item.photo || null
 
               return (
-                <TableRow key={item.code || item.id || item.name || Math.random()}>
+                <TableRow
+                  key={item.code || item.id || item.name || Math.random()}
+                >
                   <TableCell>
                     <div className="w-12 h-12 rounded-lg border border-border overflow-hidden bg-muted/50 flex items-center justify-center shrink-0">
                       {imgUrl ? (

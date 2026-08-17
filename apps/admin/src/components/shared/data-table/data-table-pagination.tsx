@@ -29,7 +29,8 @@ export function DataTablePagination({
   return (
     <div className="flex items-center justify-between px-2 py-4">
       <div className="text-xs text-muted-foreground">
-        Trang {metadata.page} / {metadata.totalPage} (Tổng: {metadata.count ?? metadata.totalData ?? 0})
+        Trang {metadata.page} / {metadata.totalPage} (Tổng:{" "}
+        {metadata.count ?? metadata.totalData ?? 0})
       </div>
       <Pagination
         page={metadata.page}

@@ -233,9 +233,7 @@ export function useContentManager({
       }
       if (editingArticle) {
         setArticles(
-          articles.map((a) =>
-            a.id === editingArticle.id ? updatedArticle : a
-          )
+          articles.map((a) => (a.id === editingArticle.id ? updatedArticle : a))
         )
       } else {
         setArticles([updatedArticle, ...articles])
@@ -304,7 +302,8 @@ export function useContentManager({
         setBannerError(failedResult.error || t("messages.errorOccurred"))
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t("messages.networkError")
+      const message =
+        err instanceof Error ? err.message : t("messages.networkError")
       setBannerError(message)
     } finally {
       setBannerLoading(false)

@@ -8,8 +8,8 @@ export function useUserSignature() {
       try {
         const res = await userService.getSignature();
         return res?.signatureUrl || null;
-      } catch (err) {
-        console.error('Failed to fetch user signature:', err);
+      } catch (error) {
+        console.error('Failed to fetch user signature:', error);
         return null;
       }
     },
@@ -23,7 +23,7 @@ export function useSaveUserSignature() {
   return useMutation({
     mutationFn: async (signatureData: string) => {
       const res = await userService.saveSignature(signatureData);
-      return res?.data?.signatureUrl || signatureData;
+      return res?.signatureUrl || signatureData;
     },
     onSuccess: (savedUrl) => {
       queryClient.setQueryData(['user', 'signature'], savedUrl);

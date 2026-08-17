@@ -1,23 +1,24 @@
-export interface TermPolicyItem {
+export type TermPolicyItem = {
   slug: string;
   title: string;
   shortDesc: string;
   lastUpdated: string;
-  sections: Array<{
+  sections: {
     heading: string;
     content: string[];
-    subSections?: Array<{
+    subSections?: {
       title: string;
       items: string[];
-    }>;
-  }>;
-}
+    }[];
+  }[];
+};
 
 export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'privacy-policy': {
     slug: 'privacy-policy',
     title: 'Chính sách bảo mật thông tin',
-    shortDesc: 'Quy định về thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng trên hệ thống Sâm Ngọc Linh.',
+    shortDesc:
+      'Quy định về thu thập, sử dụng, lưu trữ và bảo vệ dữ liệu cá nhân của khách hàng trên hệ thống Sâm Ngọc Linh.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -84,7 +85,8 @@ export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'shipping-policy': {
     slug: 'shipping-policy',
     title: 'Chính sách vận chuyển & Giao nhận',
-    shortDesc: 'Quy định chi tiết về phương thức giao hàng, thời gian vận chuyển và quy trình bảo quản đặc biệt đối với Sâm Ngọc Linh.',
+    shortDesc:
+      'Quy định chi tiết về phương thức giao hàng, thời gian vận chuyển và quy trình bảo quản đặc biệt đối với Sâm Ngọc Linh.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -117,7 +119,8 @@ export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'inspection-policy': {
     slug: 'inspection-policy',
     title: 'Chính sách kiểm hàng & Đồng kiểm',
-    shortDesc: 'Quy định quyền đồng kiểm hàng hóa khi nhận hàng nhằm bảo vệ quyền lợi tối đa của khách hàng.',
+    shortDesc:
+      'Quy định quyền đồng kiểm hàng hóa khi nhận hàng nhằm bảo vệ quyền lợi tối đa của khách hàng.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -151,7 +154,8 @@ export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'payment-policy': {
     slug: 'payment-policy',
     title: 'Chính sách thanh toán',
-    shortDesc: 'Hướng dẫn các phương thức thanh toán an toàn, minh bạch và quy trình xuất hóa đơn GTGT điện tử.',
+    shortDesc:
+      'Hướng dẫn các phương thức thanh toán an toàn, minh bạch và quy trình xuất hóa đơn GTGT điện tử.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -191,7 +195,8 @@ export const TERMS_POLICIES_VI: Record<string, TermPolicyItem> = {
   'return-policy': {
     slug: 'return-policy',
     title: 'Chính sách đổi trả & Hoàn tiền',
-    shortDesc: 'Cam kết bảo vệ quyền lợi tối thượng của khách hàng với chính sách đổi trả minh bạch và bồi thường chất lượng chuẩn Gen.',
+    shortDesc:
+      'Cam kết bảo vệ quyền lợi tối thượng của khách hàng với chính sách đổi trả minh bạch và bồi thường chất lượng chuẩn Gen.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -227,7 +232,8 @@ export const TERMS_POLICIES_EN: Record<string, TermPolicyItem> = {
   'privacy-policy': {
     slug: 'privacy-policy',
     title: 'Privacy Policy',
-    shortDesc: 'Regulations on collecting, using, storing and protecting personal data on the Ngoc Linh Ginseng system.',
+    shortDesc:
+      'Regulations on collecting, using, storing and protecting personal data on the Ngoc Linh Ginseng system.',
     lastUpdated: '15/08/2026',
     sections: [
       {
@@ -255,7 +261,8 @@ export const TERMS_POLICIES_EN: Record<string, TermPolicyItem> = {
   'shipping-policy': {
     slug: 'shipping-policy',
     title: 'Shipping & Delivery Policy',
-    shortDesc: 'Detailed terms on shipping methods, delivery timeframes, and dedicated packaging for Ngoc Linh Ginseng.',
+    shortDesc:
+      'Detailed terms on shipping methods, delivery timeframes, and dedicated packaging for Ngoc Linh Ginseng.',
     lastUpdated: '15/08/2026',
     sections: [
       {

@@ -71,7 +71,9 @@ export function CarePackagesList({
               <TableHead>{t("packages.fields.duration")}</TableHead>
               <TableHead>{t("packages.fields.price")}</TableHead>
               <TableHead>{t("packages.fields.status")}</TableHead>
-              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+              <TableHead className="text-right">
+                {t("common.actions.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -88,7 +90,9 @@ export function CarePackagesList({
                     </div>
                   )}
                 </TableCell>
-                <TableCell>{pkg.durationMonths} {t("packages.months")}</TableCell>
+                <TableCell>
+                  {pkg.durationMonths} {t("packages.months")}
+                </TableCell>
                 <TableCell className="font-semibold text-emerald-600">
                   {formatVND(pkg.price)}
                 </TableCell>
@@ -178,7 +182,9 @@ export function ProtectionPackagesList({
               <TableHead>{t("packages.fields.coverage")}</TableHead>
               <TableHead>{t("packages.fields.price")}</TableHead>
               <TableHead>{t("packages.fields.status")}</TableHead>
-              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+              <TableHead className="text-right">
+                {t("common.actions.actions")}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -195,9 +201,13 @@ export function ProtectionPackagesList({
                     </div>
                   )}
                 </TableCell>
-                <TableCell>{pkg.durationMonths} {t("packages.months")}</TableCell>
+                <TableCell>
+                  {pkg.durationMonths} {t("packages.months")}
+                </TableCell>
                 <TableCell className="font-medium text-blue-600">
-                  {pkg.coveragePercentage ? `${pkg.coveragePercentage}%` : "100%"}
+                  {pkg.coveragePercentage
+                    ? `${pkg.coveragePercentage}%`
+                    : "100%"}
                 </TableCell>
                 <TableCell className="font-semibold text-emerald-600">
                   {formatVND(pkg.price)}

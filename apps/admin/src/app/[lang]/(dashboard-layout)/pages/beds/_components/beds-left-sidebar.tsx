@@ -14,6 +14,7 @@ import {
 
 import type { Bed, Garden } from "@/types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTranslation } from "@/providers/i18n-provider"
 
 interface BedsLeftSidebarProps {
   leftSidebarOpen: boolean
@@ -126,9 +126,15 @@ export function BedsLeftSidebar({
               <SelectValue placeholder={t("trees.filters.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("trees.filters.allStatus")}</SelectItem>
-              <SelectItem value="active">{t("common.status.active")}</SelectItem>
-              <SelectItem value="inactive">{t("common.status.inactive")}</SelectItem>
+              <SelectItem value="all">
+                {t("trees.filters.allStatus")}
+              </SelectItem>
+              <SelectItem value="active">
+                {t("common.status.active")}
+              </SelectItem>
+              <SelectItem value="inactive">
+                {t("common.status.inactive")}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -196,7 +202,9 @@ export function BedsLeftSidebar({
                       </h3>
                     </div>
                     <Badge
-                      variant={bed.status === "active" ? "default" : "secondary"}
+                      variant={
+                        bed.status === "active" ? "default" : "secondary"
+                      }
                       className={`text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
                         bed.status === "active"
                           ? "bg-emerald-500/10 text-emerald-600 border-transparent"

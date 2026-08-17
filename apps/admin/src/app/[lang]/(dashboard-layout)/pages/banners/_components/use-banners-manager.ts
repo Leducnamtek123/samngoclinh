@@ -222,7 +222,8 @@ export function useBannersManager(
       }
     } catch (err: unknown) {
       console.error(err)
-      const message = err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
+      const message =
+        err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
       setDialogError(message)
     } finally {
       setUploadingImage(false)

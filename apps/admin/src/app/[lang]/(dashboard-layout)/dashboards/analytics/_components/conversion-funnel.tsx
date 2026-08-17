@@ -7,7 +7,11 @@ import {
 import { ConversionFunnelChart } from "./conversion-funnel-chart"
 import { ConversionFunnelList } from "./conversion-funnel-list"
 
-export function ConversionFunnel({ stats }: { stats?: BackofficeOverview | null }) {
+export function ConversionFunnel({
+  stats,
+}: {
+  stats?: BackofficeOverview | null
+}) {
   const users = stats?.totalUsers || 0
   const orders = stats?.totalOrders || 0
   const contracts = stats?.totalContracts || 0

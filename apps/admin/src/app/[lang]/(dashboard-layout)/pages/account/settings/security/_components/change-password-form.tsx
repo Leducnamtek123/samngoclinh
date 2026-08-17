@@ -1,15 +1,15 @@
 "use client"
 
+import { usersService } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import type { ChangePasswordFormType } from "../../../types"
 
 import { ChangePasswordSchema } from "../_schemas/change-password-schema"
-import { usersService } from "@/services"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { ButtonLoading } from "@/components/ui/button"
 import {
   Form,
@@ -48,7 +48,11 @@ export function ChangePasswordForm() {
       })
     } catch (error: unknown) {
       console.error("Change password error:", error)
-      toast.error(error instanceof Error ? error.message : t("users.security.changePasswordError"))
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t("users.security.changePasswordError")
+      )
     }
   }
 
@@ -95,7 +99,10 @@ export function ChangePasswordForm() {
           )}
         />
 
-        <ButtonLoading isLoading={isSubmitting} className="mt-2 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
+        <ButtonLoading
+          isLoading={isSubmitting}
+          className="mt-2 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+        >
           {t("users.security.changePassword")}
         </ButtonLoading>
       </form>

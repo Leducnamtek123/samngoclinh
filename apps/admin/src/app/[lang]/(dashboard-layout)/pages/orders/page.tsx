@@ -1,14 +1,14 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { LocaleType, Order, PaginationMeta } from "@/types"
+import type { Metadata } from "next"
 
-import { ordersService } from "@/services/orders.service"
 import { getDictionary } from "@/lib/get-dictionary"
 import { createTranslator } from "@/lib/i18n"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { OrdersTable } from "./_components/orders-table"
+import { ordersService } from "@/services/orders.service"
 
 interface OrdersPageProps {
   params: Promise<{
@@ -25,7 +25,8 @@ interface OrdersPageProps {
 
 export const metadata: Metadata = {
   title: "Quản lý đơn hàng | Sâm Ngọc Linh Admin",
-  description: "Quản lý và xử lý đơn hàng cây sâm, gói dịch vụ và sản phẩm thương mại",
+  description:
+    "Quản lý và xử lý đơn hàng cây sâm, gói dịch vụ và sản phẩm thương mại",
 }
 
 export default async function OrdersPage({
@@ -61,7 +62,8 @@ export default async function OrdersPage({
       metadata = res.metadata || null
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching orders:", e)
     errorMsg = message
   }
@@ -73,7 +75,8 @@ export default async function OrdersPage({
           {t("navigation.orders")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Quản lý, tra cứu và xử lý toàn bộ đơn hàng cây giống, gói chăm sóc và sản phẩm thương mại
+          Quản lý, tra cứu và xử lý toàn bộ đơn hàng cây giống, gói chăm sóc và
+          sản phẩm thương mại
         </p>
       </div>
 

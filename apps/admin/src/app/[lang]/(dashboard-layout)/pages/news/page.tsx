@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { Article, PaginationMeta } from "@/types"
-
-import { contentService } from "@/services/content.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { NewsManager } from "./_components/news-manager"
+import { contentService } from "@/services/content.service"
 
 export const metadata: Metadata = {
   title: "Quản lý Tin tức | Sâm Ngọc Linh Admin",
@@ -46,12 +45,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
 
     articles = Array.isArray(payload.data)
       ? payload.data
-      : Array.isArray((payload.data as any)?.items)
-      ? (payload.data as any).items
-      : []
+      : Array.isArray((payload.data as { items?: Article[] })?.items)
+        ? (payload.data as { items?: Article[] }).items || []
+        : []
     metadata = payload.metadata || null
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching articles:", e)
     errorMsg = message
   }

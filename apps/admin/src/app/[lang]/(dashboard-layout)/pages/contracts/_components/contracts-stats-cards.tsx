@@ -2,13 +2,14 @@
 
 import React from "react"
 import {
-  FileText,
-  Clock,
-  CheckCircle2,
   AlertTriangle,
+  CheckCircle2,
+  Clock,
   FileCheck,
   FileEdit,
+  FileText,
 } from "lucide-react"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Card } from "@/components/ui/card"
 
@@ -108,4 +109,3 @@ export function ContractsStatsCards({ stats }: ContractsStatsCardsProps) {
     </div>
   )
 }
-

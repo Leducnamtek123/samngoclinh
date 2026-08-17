@@ -28,9 +28,15 @@
     "addedToCart": "Đã thêm \"{name}\" vào giỏ hàng!",
     "heroBadge": "QUỐC BẢO VIỆT NAM – SỐ HÓA CANH TÁC",
     "heroTitle": "Sở Hữu & Bảo Trợ Sâm Ngọc Linh Thượng Hạng",
+    "heroSubtitle": "Nền tảng tiên phong kết hợp bảo tồn sâm tự nhiên tại đỉnh núi Ngọc Linh cùng hợp đồng số hóa minh bạch và định danh tài sản số.",
     "heroDesc": "Nền tảng tiên phong kết hợp bảo tồn sâm tự nhiên tại đỉnh núi Ngọc Linh cùng hợp đồng số hóa minh bạch và định danh tài sản số.",
     "ctaExplore": "Khám Phá Sản Phẩm",
     "ctaPlant": "Trồng Sâm Ngay",
+    "ctaTitle": "Sở Hữu & Bảo Trợ Sâm Ngọc Linh Thượng Hạng",
+    "ctaSubtitle": "Tham gia bảo tồn Quốc bảo Sâm Ngọc Linh cùng hợp đồng số hóa và công nghệ truy xuất nguồn gốc minh bạch.",
+    "exploreProducts": "Khám Phá Sản Phẩm",
+    "exploreTrees": "Khám Phá Cây Sâm",
+    "bannerDefaultSubtitle": "Quốc bảo Sâm Ngọc Linh kết hợp công nghệ số hóa minh bạch.",
     "trustGenuine": "100% Sâm Ngọc Linh Chính Gốc",
     "trustContract": "Hợp Đồng Điện Tử Có Pháp Lý",
     "trustInsurance": "Bảo Hiểm Nông Nghiệp Toàn Diện",
@@ -206,6 +212,11 @@
     "back": "Quay lại",
     "share": "Chia sẻ",
     "copied": "Đã sao chép",
-    "printPdf": "In / Xuất PDF"
+    "printPdf": "In / Xuất PDF",
+    "pending": "Chờ ký số",
+    "pending_issue": "Chờ BQL phát hành",
+    "pending_signature": "Chờ khách ký",
+    "cancelled": "Đã hủy",
+    "active": "Đang hiệu lực"
   }
 }

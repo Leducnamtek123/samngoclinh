@@ -2,6 +2,8 @@
 
 import { Plus } from "lucide-react"
 
+import type { PaginationMeta, ShopItem } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { PaginationMeta, ShopItem } from "@/types"
 import { ShopItemDialog } from "./shop-item-dialog"
 import { ShopItemsList } from "./shop-items-list"
 import { useShopItemsManager } from "./use-shop-items-manager"

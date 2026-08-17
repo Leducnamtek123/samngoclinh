@@ -1,19 +1,19 @@
 'use client';
 
-import * as React from 'react';
-import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
 
-export interface CalendarProps {
+export type CalendarProps = {
   selected?: Date | null;
   onSelect?: (date: Date | null) => void;
   className?: string;
   minDate?: Date;
   maxDate?: Date;
   disabled?: boolean;
-}
+};
 
 const STATIC_YEARS: number[] = Array.from({ length: 96 }, (_, i) => 2035 - i);
 
@@ -28,12 +28,14 @@ export function Calendar({
   const locale = useLocale();
   const tActions = useTranslations('actions');
 
-  const monthNames = React.useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => {
-      const d = new Date(2026, i, 1);
-      return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { month: 'long' });
-    });
-  }, [locale]);
+  const monthNames = React.useMemo(
+    () =>
+      Array.from({ length: 12 }, (_, i) => {
+        const d = new Date(2026, i, 1);
+        return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { month: 'long' });
+      }),
+    [locale],
+  );
 
   const weekDays = React.useMemo(() => {
     if (locale === 'en') {
@@ -79,16 +81,18 @@ export function Calendar({
     const lastDayOfMonth = new Date(viewYear, viewMonth + 1, 0);
 
     let startDay = firstDayOfMonth.getDay() - 1;
-    if (startDay === -1) startDay = 6;
+    if (startDay === -1) {
+      startDay = 6;
+    }
 
     const daysCount = lastDayOfMonth.getDate();
-    const days: Array<{
+    const days: {
       date: Date;
       isCurrentMonth: boolean;
       isSelected: boolean;
       isToday: boolean;
       isDisabled: boolean;
-    }> = [];
+    }[] = [];
 
     // Previous month padding
     const prevMonthLastDay = new Date(viewYear, viewMonth, 0).getDate();
@@ -123,8 +127,12 @@ export function Calendar({
         today.getDate() === d.getDate();
 
       let isDateDisabled = !!disabled;
-      if (minDate && d < minDate) isDateDisabled = true;
-      if (maxDate && d > maxDate) isDateDisabled = true;
+      if (minDate && d < minDate) {
+        isDateDisabled = true;
+      }
+      if (maxDate && d > maxDate) {
+        isDateDisabled = true;
+      }
 
       days.push({
         date: d,
@@ -156,11 +164,15 @@ export function Calendar({
     today.setHours(0, 0, 0, 0);
     setViewYear(today.getFullYear());
     setViewMonth(today.getMonth());
-    if (onSelect) onSelect(today);
+    if (onSelect) {
+      onSelect(today);
+    }
   };
 
   const handleClear = () => {
-    if (onSelect) onSelect(null);
+    if (onSelect) {
+      onSelect(null);
+    }
   };
 
   return (
@@ -171,8 +183,10 @@ export function Calendar({
           <select
             value={viewMonth}
             aria-label="Select month"
-            onChange={(e) => setViewMonth(Number(e.target.value))}
-            className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none capitalize"
+            onChange={(e) => {
+              setViewMonth(Number(e.target.value));
+            }}
+            className="cursor-pointer rounded-lg border-0 bg-gray-100 px-2 py-1 text-xs font-bold text-gray-800 capitalize outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-slate-800 dark:text-gray-200"
           >
             {monthNames.map((name, idx) => (
               <option key={name} value={idx}>
@@ -184,8 +198,10 @@ export function Calendar({
           <select
             value={viewYear}
             aria-label="Select year"
-            onChange={(e) => setViewYear(Number(e.target.value))}
-            className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none"
+            onChange={(e) => {
+              setViewYear(Number(e.target.value));
+            }}
+            className="cursor-pointer rounded-lg border-0 bg-gray-100 px-2 py-1 text-xs font-bold text-gray-800 outline-none focus:ring-1 focus:ring-emerald-500 dark:bg-slate-800 dark:text-gray-200"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -199,18 +215,18 @@ export function Calendar({
           <button
             type="button"
             onClick={handlePrevMonth}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-slate-800 dark:hover:text-gray-100"
             title="Previous month"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-slate-800 dark:hover:text-gray-100"
             title="Next month"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -222,7 +238,7 @@ export function Calendar({
             key={w}
             className={cn(
               'text-[11px] font-bold py-1 text-gray-400 dark:text-gray-500',
-              idx >= 5 && 'text-amber-600/80 dark:text-amber-500/80'
+              idx >= 5 && 'text-amber-600/80 dark:text-amber-500/80',
             )}
           >
             {w}
@@ -232,40 +248,45 @@ export function Calendar({
 
       {/* Days Grid */}
       <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((item) => {
-          return (
-            <button
-              key={item.date.toISOString()}
-              type="button"
-              disabled={item.isDisabled}
-              onClick={() => {
-                if (item.isCurrentMonth && onSelect && !item.isDisabled) {
-                  onSelect(item.date);
-                }
-              }}
-              className={cn(
-                'size-8 text-xs font-semibold rounded-xl flex items-center justify-center transition-colors cursor-pointer relative',
-                !item.isCurrentMonth && 'text-gray-300 dark:text-gray-700 pointer-events-none opacity-40',
-                item.isCurrentMonth && !item.isSelected && !item.isDisabled && 'text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700',
-                item.isToday && !item.isSelected && 'border border-emerald-500 font-bold text-emerald-700 dark:text-emerald-400',
-                item.isSelected && 'bg-emerald-800 text-white font-bold shadow-md shadow-emerald-900/20 hover:bg-emerald-900',
-                item.isDisabled && 'opacity-30 cursor-not-allowed pointer-events-none'
-              )}
-            >
-              {item.date.getDate()}
-            </button>
-          );
-        })}
+        {calendarDays.map((item) => (
+          <button
+            key={item.date.toISOString()}
+            type="button"
+            disabled={item.isDisabled}
+            onClick={() => {
+              if (item.isCurrentMonth && onSelect && !item.isDisabled) {
+                onSelect(item.date);
+              }
+            }}
+            className={cn(
+              'size-8 text-xs font-semibold rounded-xl flex items-center justify-center transition-colors cursor-pointer relative',
+              !item.isCurrentMonth &&
+                'text-gray-300 dark:text-gray-700 pointer-events-none opacity-40',
+              item.isCurrentMonth &&
+                !item.isSelected &&
+                !item.isDisabled &&
+                'text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700',
+              item.isToday &&
+                !item.isSelected &&
+                'border border-emerald-500 font-bold text-emerald-700 dark:text-emerald-400',
+              item.isSelected &&
+                'bg-emerald-800 text-white font-bold shadow-md shadow-emerald-900/20 hover:bg-emerald-900',
+              item.isDisabled && 'opacity-30 cursor-not-allowed pointer-events-none',
+            )}
+          >
+            {item.date.getDate()}
+          </button>
+        ))}
       </div>
 
       {/* Footer shortcut buttons */}
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+      <div className="flex items-center justify-between border-t border-gray-100 pt-2 dark:border-gray-800">
         <Button
           type="button"
           variant="ghost"
           size="sm"
           onClick={handleClear}
-          className="h-7 text-[11px] font-semibold text-gray-500 hover:text-red-600 px-2 cursor-pointer"
+          className="h-7 cursor-pointer px-2 text-[11px] font-semibold text-gray-500 hover:text-red-600"
         >
           {tActions('delete')}
         </Button>
@@ -274,7 +295,7 @@ export function Calendar({
           variant="ghost"
           size="sm"
           onClick={handleSelectToday}
-          className="h-7 text-[11px] font-bold text-emerald-800 dark:text-emerald-400 hover:bg-emerald-50 px-2 cursor-pointer"
+          className="h-7 cursor-pointer px-2 text-[11px] font-bold text-emerald-800 hover:bg-emerald-50 dark:text-emerald-400"
         >
           {locale === 'en' ? 'Today' : 'Hôm nay'}
         </Button>

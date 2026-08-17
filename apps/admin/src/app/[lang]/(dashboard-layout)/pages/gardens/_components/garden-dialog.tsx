@@ -67,7 +67,9 @@ export function GardenDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
               <DialogTitle>
-                {mode === "create" ? t("trees.gardens.addGarden") : t("trees.gardens.editGarden")}
+                {mode === "create"
+                  ? t("trees.gardens.addGarden")
+                  : t("trees.gardens.editGarden")}
               </DialogTitle>
               <DialogDescription>
                 {t("trees.gardens.dialogDesc")}
@@ -102,7 +104,10 @@ export function GardenDialog({
                   <FormItem>
                     <FormLabel>{t("trees.gardens.location")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("trees.gardens.location")} {...field} />
+                      <Input
+                        placeholder={t("trees.gardens.location")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -130,7 +135,10 @@ export function GardenDialog({
                   <FormItem>
                     <FormLabel>{t("users.fields.fullName")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("users.fields.fullName")} {...field} />
+                      <Input
+                        placeholder={t("users.fields.fullName")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -172,7 +180,10 @@ export function GardenDialog({
                   <FormItem className="col-span-2">
                     <FormLabel>{t("trees.gardens.description")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("trees.gardens.description")} {...field} />
+                      <Input
+                        placeholder={t("trees.gardens.description")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

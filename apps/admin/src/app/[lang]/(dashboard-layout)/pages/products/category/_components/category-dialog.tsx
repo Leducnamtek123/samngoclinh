@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import type { ProductCategory } from "./use-categories-manager"
-import { useTranslation } from "@/providers/i18n-provider"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -198,12 +198,18 @@ export function CategoryDialog({
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t("products.categoryForm.status")} />
+                        <SelectValue
+                          placeholder={t("products.categoryForm.status")}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="active">{t("products.categoryForm.active")}</SelectItem>
-                      <SelectItem value="inactive">{t("products.categoryForm.inactive")}</SelectItem>
+                      <SelectItem value="active">
+                        {t("products.categoryForm.active")}
+                      </SelectItem>
+                      <SelectItem value="inactive">
+                        {t("products.categoryForm.inactive")}
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -218,11 +224,7 @@ export function CategoryDialog({
                 <FormItem>
                   <FormLabel>{t("products.categoryForm.desc")}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Mô tả..."
-                      rows={3}
-                    />
+                    <Textarea {...field} placeholder="Mô tả..." rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

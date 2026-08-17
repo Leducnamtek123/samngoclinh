@@ -9,7 +9,7 @@ export function Toaster() {
       richColors
       closeButton
       duration={4000}
-      style={{ zIndex: 99999 }}
+      style={{ zIndex: 99_999 }}
     />
   );
 }

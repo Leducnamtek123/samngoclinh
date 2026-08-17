@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Package } from "lucide-react"
 
 import type { TopProductType } from "../types"
@@ -7,8 +8,6 @@ import type { TopProductType } from "../types"
 import { formatCurrency } from "@/lib/utils"
 
 import { Card } from "@/components/ui/card"
-
-import Link from "next/link"
 
 export function TopProductsItem({
   product,
@@ -20,7 +19,10 @@ export function TopProductsItem({
   const imageSrc = !product.image || hasError ? defaultImage : product.image
 
   return (
-    <Card className="grid overflow-hidden hover:border-emerald-300 transition-colors shadow-none cursor-pointer" asChild>
+    <Card
+      className="grid overflow-hidden hover:border-emerald-300 transition-colors shadow-none cursor-pointer"
+      asChild
+    >
       <li>
         <Link href="/pages/products" className="block">
           <div className="flex items-center gap-4 p-2.5">
@@ -40,8 +42,12 @@ export function TopProductsItem({
             </div>
             <div className="flex flex-col truncate">
               <h3 className="break-all truncate text-sm">
-                <span className="text-emerald-700 font-bold">#{product.order}</span>{" "}
-                <span className="font-semibold text-slate-900 dark:text-slate-100 hover:text-emerald-700 transition-colors">{product.name}</span>
+                <span className="text-emerald-700 font-bold">
+                  #{product.order}
+                </span>{" "}
+                <span className="font-semibold text-slate-900 dark:text-slate-100 hover:text-emerald-700 transition-colors">
+                  {product.name}
+                </span>
               </h3>
               <p className="text-xs text-muted-foreground">
                 Mã SP: #{product.sku || "SNL-PROD"}

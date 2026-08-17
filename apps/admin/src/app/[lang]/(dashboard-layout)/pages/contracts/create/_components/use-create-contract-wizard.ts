@@ -1,20 +1,22 @@
 "use client"
 
-import React, { useState, useEffect, useMemo, useCallback } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useTranslation } from "@/providers/i18n-provider"
 import { toast } from "sonner"
+
+import type { AdminUser, Tree } from "@/types"
+
 import { fetchApi } from "@/lib/api"
+
 import { useApiQuery } from "@/hooks/use-api-query"
+import { useTranslation } from "@/providers/i18n-provider"
 import {
+  docSoLuongCay,
+  docTienBangChu,
   extractCustomPlaceholders,
   formatLocalDate,
   parseLocalDate,
-  docTienBangChu,
-  docSoLuongCay,
 } from "./create-contract-wizard-helpers"
-
-import type { AdminUser, Tree } from "@/types"
 
 interface UseCreateContractWizardProps {
   users: AdminUser[]
@@ -22,7 +24,10 @@ interface UseCreateContractWizardProps {
   lang: string
 }
 
-export function useCreateContractWizard({ users, lang }: UseCreateContractWizardProps) {
+export function useCreateContractWizard({
+  users,
+  lang,
+}: UseCreateContractWizardProps) {
   const { t } = useTranslation()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
@@ -30,10 +35,14 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
 
   // Step 1: Info & Customer details
   const initialUser = users[0]
-  const [selectedUserId, setSelectedUserId] = useState<string>(initialUser?.id || "")
+  const [selectedUserId, setSelectedUserId] = useState<string>(
+    initialUser?.id || ""
+  )
   const [contractType, setContractType] = useState<string>("purchase_and_care")
   const [selectedTreeCode, setSelectedTreeCode] = useState<string>("none")
-  const [title, setTitle] = useState<string>("Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh")
+  const [title, setTitle] = useState<string>(
+    "Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh"
+  )
 
   const [customerName, setCustomerName] = useState<string>(
     initialUser?.name || initialUser?.username || ""
@@ -43,7 +52,9 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   )
   const [customerCccd, setCustomerCccd] = useState<string>("")
   const [customerAddress, setCustomerAddress] = useState<string>("")
-  const [customerEmail, setCustomerEmail] = useState<string>(initialUser?.email || "")
+  const [customerEmail, setCustomerEmail] = useState<string>(
+    initialUser?.email || ""
+  )
   const [treeQuantity, setTreeQuantity] = useState<number>(1)
 
   // Sync with selected user info
@@ -67,7 +78,8 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   const [partyA, setPartyA] = useState<string>("CÔNG TY CỔ PHẦN SÂM NGỌC LINH")
   const [partyB, setPartyB] = useState<string>("")
   const [contractCode] = useState<string>(
-    () => `HĐ-SNL-${new Date().getFullYear()}/${String(Math.floor(Math.random() * 900) + 100)}`
+    () =>
+      `HĐ-SNL-${new Date().getFullYear()}/${String(Math.floor(Math.random() * 900) + 100)}`
   )
   const [expiredAt, setExpiredAt] = useState<string>(() => {
     const d = new Date()
@@ -77,7 +89,9 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   const [customTerms, setCustomTerms] = useState<string>("")
 
   // Dynamic Custom Placeholders (Auto-detected from Template HTML)
-  const [customPlaceholders, setCustomPlaceholders] = useState<Record<string, string>>({})
+  const [customPlaceholders, setCustomPlaceholders] = useState<
+    Record<string, string>
+  >({})
 
   // Step 3: Templates & Direct Content Editor
   const [selectedTemplateSlug, setSelectedTemplateSlug] = useState<string>(
@@ -85,7 +99,9 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   )
   const [renderedPreviewHtml, setRenderedPreviewHtml] = useState<string>("")
   const [isCustomEdited, setIsCustomEdited] = useState<boolean>(false)
-  const [step3ViewMode, setStep3ViewMode] = useState<"preview" | "editor">("preview")
+  const [step3ViewMode, setStep3ViewMode] = useState<"preview" | "editor">(
+    "preview"
+  )
 
   // Fetch Template HTML via React Query
   const { data: templateResponse } = useApiQuery<{ contentHtml?: string }>(
@@ -126,19 +142,30 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   // Helper to re-generate rendered HTML from raw template & current state
   const buildRenderedHtml = useCallback(
     (template: string) => {
-      if (!template) return `<p class='p-6 text-slate-500'>${t("contracts.notifications.loadingTemplate")}</p>`
+      if (!template)
+        return `<p class='p-6 text-slate-500'>${t("contracts.notifications.loadingTemplate")}</p>`
 
-      const cName = customerName.trim() || selectedUser?.name || selectedUser?.username || "Quý Khách Hàng"
-      const cPhone = customerPhone.trim() || selectedUser?.mobileNumbers?.[0]?.number || "090xxxxxxx"
+      const cName =
+        customerName.trim() ||
+        selectedUser?.name ||
+        selectedUser?.username ||
+        "Quý Khách Hàng"
+      const cPhone =
+        customerPhone.trim() ||
+        selectedUser?.mobileNumbers?.[0]?.number ||
+        "090xxxxxxx"
       const cCccd = customerCccd.trim() || "079090001234"
-      const cAddress = customerAddress.trim() || "Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam"
-      const cEmail = customerEmail.trim() || selectedUser?.email || "contact@khachhang.vn"
+      const cAddress =
+        customerAddress.trim() ||
+        "Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam"
+      const cEmail =
+        customerEmail.trim() || selectedUser?.email || "contact@khachhang.vn"
 
       const today = new Date()
-      const todayStr = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`
+      const todayStr = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1).toString().padStart(2, "0")}/${today.getFullYear()}`
       const expDate = parseLocalDate(expiredAt)
       const expDateStr = expDate
-        ? `${expDate.getDate().toString().padStart(2, '0')}/${(expDate.getMonth() + 1).toString().padStart(2, '0')}/${expDate.getFullYear()}`
+        ? `${expDate.getDate().toString().padStart(2, "0")}/${(expDate.getMonth() + 1).toString().padStart(2, "0")}/${expDate.getFullYear()}`
         : "16/08/2028"
 
       const valueFormatted = contractValue.toLocaleString("vi-VN")
@@ -148,20 +175,34 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
       const treeQtyText = docSoLuongCay(treeQuantity)
 
       let result = template
-        .split("{{TEN_KHACH_HANG}}").join(cName)
-        .split("{{CCCD_MST}}").join(cCccd)
-        .split("{{DIA_CHI}}").join(cAddress)
-        .split("{{SO_DIEN_THOAI}}").join(cPhone)
-        .split("{{EMAIL}}").join(cEmail)
-        .split("{{MA_HOP_DONG}}").join(contractCode)
-        .split("{{TONG_GIA_TRI}}").join(valueFormatted)
-        .split("{{TONG_GIA_TRI_CHU}}").join(valueText)
-        .split("{{PHI_CHAM_SOC}}").join(careFeeFormatted)
-        .split("{{PHI_CHAM_SOC_CHU}}").join(careFeeText)
-        .split("{{SO_LUONG_CAY}}").join(String(treeQuantity))
-        .split("{{SO_LUONG_CAY_CHU}}").join(treeQtyText)
-        .split("{{NGAY_KY}}").join(todayStr)
-        .split("{{NGAY_HET_HAN}}").join(expDateStr)
+        .split("{{TEN_KHACH_HANG}}")
+        .join(cName)
+        .split("{{CCCD_MST}}")
+        .join(cCccd)
+        .split("{{DIA_CHI}}")
+        .join(cAddress)
+        .split("{{SO_DIEN_THOAI}}")
+        .join(cPhone)
+        .split("{{EMAIL}}")
+        .join(cEmail)
+        .split("{{MA_HOP_DONG}}")
+        .join(contractCode)
+        .split("{{TONG_GIA_TRI}}")
+        .join(valueFormatted)
+        .split("{{TONG_GIA_TRI_CHU}}")
+        .join(valueText)
+        .split("{{PHI_CHAM_SOC}}")
+        .join(careFeeFormatted)
+        .split("{{PHI_CHAM_SOC_CHU}}")
+        .join(careFeeText)
+        .split("{{SO_LUONG_CAY}}")
+        .join(String(treeQuantity))
+        .split("{{SO_LUONG_CAY_CHU}}")
+        .join(treeQtyText)
+        .split("{{NGAY_KY}}")
+        .join(todayStr)
+        .split("{{NGAY_HET_HAN}}")
+        .join(expDateStr)
 
       // Replace all detected and custom dynamic placeholders
       for (const [key, val] of Object.entries(allPlaceholders)) {
@@ -207,7 +248,8 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
 
   // Validation Checks
   const isStep1Valid = Boolean(selectedUserId && contractType && title.trim())
-  const isStep2Valid = contractValue > 0 && Boolean(expiredAt && partyA && partyB)
+  const isStep2Valid =
+    contractValue > 0 && Boolean(expiredAt && partyA && partyB)
 
   const handleNext = () => {
     if (currentStep === 1 && !isStep1Valid) {
@@ -242,7 +284,9 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
         userId: selectedUserId,
         treeCode: selectedTreeCode !== "none" ? selectedTreeCode : undefined,
         title: title.trim(),
-        content: renderedPreviewHtml || `Hợp đồng ${contractType === "purchase_and_care" ? "Mua bán & Ký gửi Chăm sóc" : "Ký gửi"} Sâm Ngọc Linh lập thủ công cho khách hàng ${customerName || selectedUser?.name || selectedUserId}.`,
+        content:
+          renderedPreviewHtml ||
+          `Hợp đồng ${contractType === "purchase_and_care" ? "Mua bán & Ký gửi Chăm sóc" : "Ký gửi"} Sâm Ngọc Linh lập thủ công cho khách hàng ${customerName || selectedUser?.name || selectedUserId}.`,
         contractValue,
         paymentStatus,
         status: publishStatus,

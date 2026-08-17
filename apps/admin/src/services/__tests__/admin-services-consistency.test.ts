@@ -1,5 +1,8 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
+
 import {
+  apiAdminRegister,
+  apiAdminVerifyEmail,
   catalogService,
   contentService,
   cultivationService,
@@ -8,8 +11,6 @@ import {
   packagesService,
   settingsService,
   usersService,
-  apiAdminRegister,
-  apiAdminVerifyEmail,
 } from "../index"
 
 describe("Admin Domain Services Contract Consistency", () => {

@@ -1,20 +1,21 @@
 'use client';
 
+import { Search } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import Image from 'next/image';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import Image from 'next/image';
-import { useLocale } from 'next-intl';
-import { Search } from 'lucide-react';
+import type { Article } from '@/types';
 import { Link } from '@/lib/I18nNavigation';
-import { Input } from './ui/input';
-import { Checkbox } from './ui/checkbox';
 import { Card, CardContent } from './ui/card';
+import { Checkbox } from './ui/checkbox';
+import { Input } from './ui/input';
 
 type NewsSidebarProps = {
   categories: string[];
   selectedCategory: string;
   searchQuery: string;
-  recentArticles: any[];
+  recentArticles: Article[];
 };
 
 export const NewsSidebar = ({
@@ -39,16 +40,16 @@ export const NewsSidebar = ({
 
   const getCategoryLabel = (category: string) => {
     const labelsVi: Record<string, string> = {
-      'news': 'Tin tức',
-      'event': 'Sự kiện',
-      'guide': 'Hướng dẫn sử dụng',
-      'faq': 'Kiến thức'
+      news: 'Tin tức',
+      event: 'Sự kiện',
+      guide: 'Hướng dẫn sử dụng',
+      faq: 'Kiến thức',
     };
     const labelsEn: Record<string, string> = {
-      'news': 'News',
-      'event': 'Events',
-      'guide': 'User Guide',
-      'faq': 'Knowledge'
+      news: 'News',
+      event: 'Events',
+      guide: 'User Guide',
+      faq: 'Knowledge',
     };
     const map = locale === 'en' ? labelsEn : labelsVi;
     return map[category] || category;
@@ -56,7 +57,7 @@ export const NewsSidebar = ({
 
   const updateQueryParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams?.toString() || '');
-    
+
     // Always reset page to 1 on filter/search change
     params.set('page', '1');
 
@@ -91,40 +92,48 @@ export const NewsSidebar = ({
     <div className="space-y-6">
       {/* Search Input Box */}
       <Card className="rounded-[24px] p-6">
-        <CardContent className="p-0 space-y-4">
-          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+        <CardContent className="space-y-4 p-0">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">
             {locale === 'en' ? 'Search Articles' : 'Tìm kiếm bài viết'}
           </h3>
           <form onSubmit={handleSearchSubmit} className="relative">
             <Input
               type="text"
               value={searchVal}
-              onChange={(e) => setSearchVal(e.target.value)}
+              onChange={(e) => {
+                setSearchVal(e.target.value);
+              }}
               aria-label={locale === 'en' ? 'Search articles' : 'Tìm kiếm bài viết'}
               className="pl-10 text-xs"
             />
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-gray-400" />
           </form>
         </CardContent>
       </Card>
 
       {/* Categories Box */}
       <Card className="rounded-[24px] p-6">
-        <CardContent className="p-0 space-y-4">
-          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+        <CardContent className="space-y-4 p-0">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">
             {locale === 'en' ? 'Categories' : 'Danh mục'}
           </h3>
           <div className="space-y-3.5">
             {/* All */}
             <button
               type="button"
-              onClick={() => handleCategorySelect('')}
-              className="flex items-center gap-3 w-full text-left group cursor-pointer bg-transparent border-0 p-0"
+              onClick={() => {
+                handleCategorySelect('');
+              }}
+              className="group flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left"
             >
               <Checkbox checked={!selectedCategory} />
-              <span className={`text-xs font-semibold ${
-                !selectedCategory ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary'
-              }`}>
+              <span
+                className={`text-xs font-semibold ${
+                  selectedCategory
+                    ? 'text-gray-600 group-hover:text-primary dark:text-gray-400'
+                    : 'font-bold text-primary'
+                }`}
+              >
                 {locale === 'en' ? 'All' : 'Tất cả'}
               </span>
             </button>
@@ -136,13 +145,19 @@ export const NewsSidebar = ({
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => handleCategorySelect(cat)}
-                  className="flex items-center gap-3 w-full text-left group cursor-pointer bg-transparent border-0 p-0"
+                  onClick={() => {
+                    handleCategorySelect(cat);
+                  }}
+                  className="group flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left"
                 >
                   <Checkbox checked={isChecked} />
-                  <span className={`text-xs font-semibold ${
-                    isChecked ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary'
-                  }`}>
+                  <span
+                    className={`text-xs font-semibold ${
+                      isChecked
+                        ? 'font-bold text-primary'
+                        : 'text-gray-600 group-hover:text-primary dark:text-gray-400'
+                    }`}
+                  >
                     {getCategoryLabel(cat)}
                   </span>
                 </button>
@@ -154,20 +169,20 @@ export const NewsSidebar = ({
 
       {/* Recent Articles Box */}
       <Card className="rounded-[24px] p-6">
-        <CardContent className="p-0 space-y-4">
-          <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
+        <CardContent className="space-y-4 p-0">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">
             {locale === 'en' ? 'Recent Articles' : 'Bài viết gần đây'}
           </h3>
           <div className="space-y-4">
-            {recentArticles.map((article: any, idx: number) => (
+            {recentArticles.map((article: Article, idx: number) => (
               <Link
                 key={article.id}
                 href={`/news/${article.slug}`}
-                className="flex items-center gap-3 group"
+                className="group flex items-center gap-3"
               >
-                <div className="relative w-14 h-14 rounded-xl bg-gray-50 dark:bg-gray-800 flex-shrink-0 overflow-hidden">
+                <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-800">
                   <Image
-                    src={article.image || newsImages[idx % newsImages.length]}
+                    src={article.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
                     alt={article.title}
                     fill
                     sizes="56px"
@@ -176,10 +191,14 @@ export const NewsSidebar = ({
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <div className="text-[10px] text-gray-400 font-semibold">
-                    {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN') : ''}
+                  <div className="text-[10px] font-semibold text-gray-400">
+                    {article.publishedAt
+                      ? new Date(article.publishedAt).toLocaleDateString(
+                          locale === 'en' ? 'en-US' : 'vi-VN',
+                        )
+                      : ''}
                   </div>
-                  <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                  <h4 className="line-clamp-2 text-xs leading-snug font-bold text-gray-800 transition-colors group-hover:text-primary dark:text-gray-200">
                     {article.title}
                   </h4>
                 </div>

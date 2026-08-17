@@ -1,10 +1,12 @@
 "use client"
 
-import React, { useState } from "react"
-import { useTranslation } from "@/providers/i18n-provider"
+import { useState } from "react"
+
 import type { CarePackage, ProtectionPackage } from "@/types"
+import type React from "react"
 import type { PackageFormData } from "./package-dialog"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { packagesService } from "@/services/packages.service"
 
 interface UsePackagesManagerProps {
@@ -98,7 +100,11 @@ export function usePackagesManager({
         name: pkg.name || "",
         price: pkg.price || 0,
         durationMonths: pkg.durationMonths || 12,
-        coverage: (pkg as any).coverage || String((pkg as ProtectionPackage).coveragePercentage || ""),
+        coverage:
+          ("coverage" in pkg && typeof pkg.coverage === "string"
+            ? pkg.coverage
+            : "") ||
+          String((pkg as ProtectionPackage).coveragePercentage || ""),
         description: pkg.description || "",
         status: pkg.status || "active",
       },
@@ -140,7 +146,10 @@ export function usePackagesManager({
           setCarePackages((prev) => [res.data, ...prev])
           setSuccessMsg(t("packages.toasts.createCareSuccess"))
         } else if (selectedPackage) {
-          const res = await packagesService.updateCarePackage(selectedPackage.id, bodyPayload)
+          const res = await packagesService.updateCarePackage(
+            selectedPackage.id,
+            bodyPayload
+          )
           setCarePackages((prev) =>
             prev.map((item) =>
               item.id === selectedPackage.id ? res.data : item
@@ -163,7 +172,10 @@ export function usePackagesManager({
           setProtectionPackages((prev) => [res.data, ...prev])
           setSuccessMsg(t("packages.toasts.createProtectionSuccess"))
         } else if (selectedPackage) {
-          const res = await packagesService.updateProtectionPackage(selectedPackage.id, bodyPayload)
+          const res = await packagesService.updateProtectionPackage(
+            selectedPackage.id,
+            bodyPayload
+          )
           setProtectionPackages((prev) =>
             prev.map((item) =>
               item.id === selectedPackage.id ? res.data : item
@@ -175,7 +187,10 @@ export function usePackagesManager({
 
       setDialogState((prev) => ({ ...prev, isOpen: false }))
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t("packages.toasts.operationFailed")
+      const message =
+        err instanceof Error
+          ? err.message
+          : t("packages.toasts.operationFailed")
       setDialogState((prev) => ({
         ...prev,
         error: message,
@@ -201,7 +216,10 @@ export function usePackagesManager({
         setSuccessMsg(t("packages.toasts.deleteProtectionSuccess"))
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t("packages.toasts.operationFailed")
+      const message =
+        err instanceof Error
+          ? err.message
+          : t("packages.toasts.operationFailed")
       setErrorMsg(message)
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))

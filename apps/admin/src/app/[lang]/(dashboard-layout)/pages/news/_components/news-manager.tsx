@@ -2,6 +2,8 @@
 
 import { Plus, Search } from "lucide-react"
 
+import type { Article, PaginationMeta } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Article, PaginationMeta } from "@/types"
 import { NewsDialog } from "./news-dialog"
 import { NewsList } from "./news-list"
 import { useNewsManager } from "./use-news-manager"
@@ -93,9 +94,7 @@ export function NewsManager({
           <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">
             {t("content.articles.title")}
           </h1>
-          <p className="text-xs text-slate-400">
-            {t("content.subtitle")}
-          </p>
+          <p className="text-xs text-slate-400">{t("content.subtitle")}</p>
         </div>
         <Button
           onClick={handleOpenCreate}

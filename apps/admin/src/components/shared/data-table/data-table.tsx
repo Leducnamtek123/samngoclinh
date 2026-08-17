@@ -77,7 +77,10 @@ export function DataTable<T>({
                     col.key ||
                     (typeof col.header === "string" ? col.header : "col-header")
                   return (
-                    <TableHead key={colKey} className={col.headerClassName || ""}>
+                    <TableHead
+                      key={colKey}
+                      className={col.headerClassName || ""}
+                    >
                       {col.header}
                     </TableHead>
                   )

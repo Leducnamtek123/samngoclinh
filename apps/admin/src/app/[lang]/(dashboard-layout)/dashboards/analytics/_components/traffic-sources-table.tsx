@@ -1,5 +1,6 @@
 "use client"
 
+import type { DynamicIconNameType } from "@/types"
 import type { TrafficSourcesType } from "../types"
 
 import {
@@ -33,7 +34,7 @@ export function TrafficSourcesTable({
           <TableRow key={item.name}>
             <TableCell className="w-6" aria-hidden>
               <DynamicIcon
-                name={(item.icon as any) || "Globe"}
+                name={(item.icon as DynamicIconNameType) || "Globe"}
                 style={{ color: item.fill }}
                 className="h-3 w-3 stroke-3"
               />

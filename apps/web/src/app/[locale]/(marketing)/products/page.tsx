@@ -11,7 +11,8 @@ type ProductsPageProps = {
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Cửa Hàng Rượu Sâm & Chế Phẩm Cao Cấp | Sâm Ngọc Linh',
-    description: 'Bộ sưu tập Rượu Sâm Ngọc Linh thượng hạng, củ sâm tươi nguyên khối và các chế phẩm chiết xuất cao cấp.',
+    description:
+      'Bộ sưu tập Rượu Sâm Ngọc Linh thượng hạng, củ sâm tươi nguyên khối và các chế phẩm chiết xuất cao cấp.',
   };
 }
 
@@ -22,8 +23,8 @@ async function getInitialShopItems() {
       const json = await res.json();
       return json.data || [];
     }
-  } catch (e) {
-    console.error('Error fetching initial shop items for products page:', e);
+  } catch (error) {
+    console.error('Error fetching initial shop items for products page:', error);
   }
   return [];
 }
@@ -32,10 +33,7 @@ export default async function ProductsPage(props: ProductsPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const [cookieStore, initialItems] = await Promise.all([
-    cookies(),
-    getInitialShopItems(),
-  ]);
+  const [cookieStore, initialItems] = await Promise.all([cookies(), getInitialShopItems()]);
 
   const isLoggedIn = !!cookieStore.get('user_session')?.value;
 

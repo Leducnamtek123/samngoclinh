@@ -1,10 +1,10 @@
 'use client';
 
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import { PenTool, AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
-import { Input } from '../ui/input';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 type EContractSignaturePadProps = {
   signatureType: 'saved' | 'draw' | 'type';
@@ -15,7 +15,9 @@ type EContractSignaturePadProps = {
   errorMessage: string;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   hasCanvasDrawn: boolean;
-  startDrawing: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
+  startDrawing: (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+  ) => void;
   stopDrawing: () => void;
   draw: (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => void;
   clearCanvas: () => void;
@@ -40,22 +42,24 @@ export const EContractSignaturePad = ({
   const tActions = useTranslations('actions');
 
   return (
-    <div className="border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 bg-slate-50/30 dark:bg-gray-900">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h5 className="font-bold text-slate-900 dark:text-gray-100 text-sm flex items-center gap-2">
-          <PenTool className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
+    <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50/30 p-5 dark:border-gray-800 dark:bg-gray-900">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <h5 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-gray-100">
+          <PenTool className="h-4 w-4 text-emerald-800 dark:text-emerald-400" />
           {t('signTitle')}
         </h5>
-        <div className="flex items-center gap-1.5 bg-slate-200/80 dark:bg-gray-800 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center gap-1.5 rounded-xl bg-slate-200/80 p-1 text-xs font-semibold dark:bg-gray-800">
           {savedSignatureUrl && (
             <Button
               type="button"
               variant={signatureType === 'saved' ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => setSignatureType('saved')}
-              className="h-7 text-xs flex items-center gap-1"
+              onClick={() => {
+                setSignatureType('saved');
+              }}
+              className="flex h-7 items-center gap-1 text-xs"
             >
-              <Sparkles className="w-3 h-3 text-amber-400" />
+              <Sparkles className="h-3 w-3 text-amber-400" />
               {t('savedSignature')}
             </Button>
           )}
@@ -63,7 +67,9 @@ export const EContractSignaturePad = ({
             type="button"
             variant={signatureType === 'draw' ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setSignatureType('draw')}
+            onClick={() => {
+              setSignatureType('draw');
+            }}
             className="h-7 text-xs"
           >
             {t('drawNewSignature')}
@@ -72,7 +78,9 @@ export const EContractSignaturePad = ({
             type="button"
             variant={signatureType === 'type' ? 'default' : 'ghost'}
             size="sm"
-            onClick={() => setSignatureType('type')}
+            onClick={() => {
+              setSignatureType('type');
+            }}
             className="h-7 text-xs"
           >
             {t('typeSignature')}
@@ -81,20 +89,20 @@ export const EContractSignaturePad = ({
       </div>
 
       {errorMessage && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl flex items-center gap-2 font-medium">
-          <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-700">
+          <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-500" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {signatureType === 'saved' && savedSignatureUrl ? (
         <div className="space-y-3">
-          <div className="p-4 bg-white dark:bg-gray-950 border-2 border-emerald-500/80 rounded-2xl flex flex-col items-center justify-center gap-2 shadow-xs">
+          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-emerald-500/80 bg-white p-4 shadow-xs dark:bg-gray-950">
             <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="h-4 w-4" />
               <span>{t('savedSignatureDesc')}</span>
             </div>
-            <div className="relative w-full h-28 max-w-sm flex items-center justify-center p-2 bg-slate-50/50 dark:bg-gray-900 rounded-xl">
+            <div className="relative flex h-28 w-full max-w-sm items-center justify-center rounded-xl bg-slate-50/50 p-2 dark:bg-gray-900">
               <Image
                 src={savedSignatureUrl}
                 alt="Signature"
@@ -107,7 +115,7 @@ export const EContractSignaturePad = ({
         </div>
       ) : signatureType === 'draw' ? (
         <div className="space-y-2">
-          <div className="relative border-2 border-dashed border-slate-300 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-950 overflow-hidden shadow-inner">
+          <div className="relative overflow-hidden rounded-2xl border-2 border-dashed border-slate-300 bg-white shadow-inner dark:border-gray-700 dark:bg-gray-950">
             <canvas
               ref={canvasRef}
               width={600}
@@ -119,17 +127,17 @@ export const EContractSignaturePad = ({
               onTouchStart={startDrawing}
               onTouchEnd={stopDrawing}
               onTouchMove={draw}
-              className="w-full h-36 cursor-crosshair touch-none bg-white dark:bg-gray-950"
+              className="h-36 w-full cursor-crosshair touch-none bg-white dark:bg-gray-950"
             />
             {!hasCanvasDrawn && (
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs font-medium gap-1.5">
-                <PenTool className="w-4 h-4 text-slate-400" />
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5 text-xs font-medium text-slate-400">
+                <PenTool className="h-4 w-4 text-slate-400" />
                 <span>{t('drawNewSignature')}</span>
               </div>
             )}
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[11px] text-slate-500 font-medium">
+            <span className="text-[11px] font-medium text-slate-500">
               {hasCanvasDrawn ? tKyc('uploadSuccess') : t('signTitle')}
             </span>
             <Button
@@ -137,7 +145,7 @@ export const EContractSignaturePad = ({
               variant="ghost"
               size="sm"
               onClick={clearCanvas}
-              className="text-xs text-slate-500 hover:text-red-600 font-semibold p-0 h-auto"
+              className="h-auto p-0 text-xs font-semibold text-slate-500 hover:text-red-600"
             >
               {tActions('delete')}
             </Button>
@@ -147,9 +155,11 @@ export const EContractSignaturePad = ({
         <div className="space-y-2">
           <Input
             value={typedName}
-            onChange={(e) => setTypedName(e.target.value)}
+            onChange={(e) => {
+              setTypedName(e.target.value);
+            }}
             placeholder={tKyc('fullNameLabel')}
-            className="h-11 text-base bg-white dark:bg-gray-950 border-slate-300 font-serif italic text-emerald-800"
+            className="h-11 border-slate-300 bg-white font-serif text-base text-emerald-800 italic dark:bg-gray-950"
           />
         </div>
       )}

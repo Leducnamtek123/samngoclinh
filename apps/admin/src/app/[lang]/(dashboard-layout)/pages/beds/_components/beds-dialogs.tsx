@@ -5,7 +5,9 @@ import { Sprout } from "lucide-react"
 
 import type { Bed, Garden } from "@/types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
   DialogContent,
@@ -19,7 +21,6 @@ import {
   ToastCard,
 } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
-import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -28,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTranslation } from "@/providers/i18n-provider"
 
 export interface BedFormData {
   gardenCode: string
@@ -343,7 +343,9 @@ export function BedFormDialog({
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
               disabled={dialogState.loading}
             >
-              {dialogState.loading ? t("common.status.processing") : t("common.actions.save")}
+              {dialogState.loading
+                ? t("common.status.processing")
+                : t("common.actions.save")}
             </Button>
           </DialogFooter>
         </form>
@@ -442,9 +444,7 @@ export function BedsOtherDialogs({
               type="button"
               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-9"
               onClick={() => {
-                setSuccessMsg(
-                  t("common.status.success")
-                )
+                setSuccessMsg(t("common.status.success"))
                 setIsQrDialogOpen(false)
               }}
             >

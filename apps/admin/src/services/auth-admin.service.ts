@@ -1,4 +1,4 @@
-import { fetchApi, fetchApiJson } from "@/lib/api"
+import { fetchApi } from "@/lib/api"
 
 export interface AdminRegisterRequest {
   firstName: string
@@ -14,7 +14,9 @@ export interface AdminVerifyEmailRequest {
 }
 
 export async function apiAdminRegister(payload: AdminRegisterRequest) {
-  const name = `${payload.lastName || ""} ${payload.firstName || ""}`.trim() || payload.username
+  const name =
+    `${payload.lastName || ""} ${payload.firstName || ""}`.trim() ||
+    payload.username
   const body = {
     email: payload.email,
     name,

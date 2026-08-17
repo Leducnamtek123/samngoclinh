@@ -2,25 +2,26 @@
 
 import React from "react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+
+import type { AdminUser, Tree } from "@/types"
+
 import { Button } from "@/components/ui/button"
-import { CreateContractWizardHeader } from "./create-contract-wizard-header"
-import { CreateContractStepper } from "./create-contract-stepper"
 import { CreateContractStep1General } from "./create-contract-step1-general"
 import { CreateContractStep2Terms } from "./create-contract-step2-terms"
 import { CreateContractStep3Preview } from "./create-contract-step3-preview"
 import { CreateContractStep4Confirm } from "./create-contract-step4-confirm"
-import { useCreateContractWizard } from "./use-create-contract-wizard"
+import { CreateContractStepper } from "./create-contract-stepper"
+import { CreateContractWizardHeader } from "./create-contract-wizard-header"
 import {
   STEPS,
-  docTienBangChu,
   docSoLuongCay,
-  formatPlaceholderLabel,
-  formatLocalDate,
-  parseLocalDate,
+  docTienBangChu,
   formatDateViDisplay,
+  formatLocalDate,
+  formatPlaceholderLabel,
+  parseLocalDate,
 } from "./create-contract-wizard-helpers"
-
-import type { AdminUser, Tree } from "@/types"
+import { useCreateContractWizard } from "./use-create-contract-wizard"
 
 interface CreateContractWizardProps {
   users: AdminUser[]
@@ -28,7 +29,11 @@ interface CreateContractWizardProps {
   lang: string
 }
 
-export function CreateContractWizard({ users, trees, lang }: CreateContractWizardProps) {
+export function CreateContractWizard({
+  users,
+  trees,
+  lang,
+}: CreateContractWizardProps) {
   const {
     currentStep,
     setCurrentStep,

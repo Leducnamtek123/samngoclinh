@@ -102,12 +102,21 @@
   },
   "status": {
     "DRAFT": "Draft",
-    "PENDING_SIGN": "Pending Sign",
+    "PENDING_SIGN": "Pending Signature",
     "SIGNED": "Signed",
     "ACTIVE": "Active",
     "EXPIRED": "Expired",
     "CANCELLED": "Cancelled",
-    "TERMINATED": "Terminated"
+    "TERMINATED": "Terminated",
+    "draft": "Draft",
+    "pending_issue": "Pending Issuance",
+    "pending": "Pending Signature",
+    "pending_signature": "Pending Signature",
+    "signed": "Signed",
+    "active": "Active",
+    "expired": "Expired",
+    "cancelled": "Cancelled",
+    "terminated": "Terminated"
   },
   "types": {
     "CULTIVATION_INVESTMENT": "Purchase & Care Consignment",

@@ -2,8 +2,8 @@
 
 import type { UseFormReturn } from "react-hook-form"
 import type { ProfileInfoFormType } from "../../../types"
-import { useTranslation } from "@/providers/i18n-provider"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   FormControl,
   FormField,
@@ -45,10 +45,7 @@ const COUNTRIES = [
   "Khác",
 ]
 
-const LANGUAGES = [
-  "Tiếng Việt",
-  "English",
-]
+const LANGUAGES = ["Tiếng Việt", "English"]
 
 const TIMEZONES = [
   "GMT+07:00 (Hà Nội, Băng Cốc)",
@@ -58,11 +55,7 @@ const TIMEZONES = [
   "GMT-05:00 (New York, EST)",
 ]
 
-const CURRENCIES = [
-  "VND (₫)",
-  "USD ($)",
-  "EUR (€)",
-]
+const CURRENCIES = ["VND (₫)", "USD ($)", "EUR (€)"]
 
 interface ProfileFieldsSectionProps {
   form: UseFormReturn<ProfileInfoFormType>
@@ -78,9 +71,15 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="firstName"
         render={({ field }) => (
           <FormItem className="grow">
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.firstName")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.firstName")}
+            </FormLabel>
             <FormControl>
-              <Input type="text" placeholder={t("users.profileFields.firstNamePlaceholder")} {...field} />
+              <Input
+                type="text"
+                placeholder={t("users.profileFields.firstNamePlaceholder")}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -91,9 +90,15 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="lastName"
         render={({ field }) => (
           <FormItem className="grow">
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.lastName")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.lastName")}
+            </FormLabel>
             <FormControl>
-              <Input type="text" placeholder={t("users.profileFields.lastNamePlaceholder")} {...field} />
+              <Input
+                type="text"
+                placeholder={t("users.profileFields.lastNamePlaceholder")}
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -104,7 +109,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="username"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.username")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.username")}
+            </FormLabel>
             <FormControl>
               <Input type="text" placeholder="admin_snl" {...field} />
             </FormControl>
@@ -117,9 +124,15 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.email")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.email")}
+            </FormLabel>
             <FormControl>
-              <Input type="email" placeholder="admin@samngoclinh.com" {...field} />
+              <Input
+                type="email"
+                placeholder="admin@samngoclinh.com"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -130,7 +143,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="phoneNumber"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.phone")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.phone")}
+            </FormLabel>
             <FormControl>
               <InputPhone placeholder="0967 234 234" {...field} />
             </FormControl>
@@ -143,11 +158,18 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="state"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.state")}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || "Kon Tum"}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.state")}
+            </FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "Kon Tum"}
+            >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("users.profileFields.selectState")} />
+                  <SelectValue
+                    placeholder={t("users.profileFields.selectState")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -167,11 +189,18 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="country"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.country")}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || "Việt Nam"}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.country")}
+            </FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "Việt Nam"}
+            >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("users.profileFields.selectCountry")} />
+                  <SelectValue
+                    placeholder={t("users.profileFields.selectCountry")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -191,7 +220,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="address"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.address")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.address")}
+            </FormLabel>
             <FormControl>
               <Input type="text" placeholder="Đăk Tô, Kon Tum" {...field} />
             </FormControl>
@@ -204,7 +235,9 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="zipCode"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.zipCode")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.zipCode")}
+            </FormLabel>
             <FormControl>
               <Input type="text" placeholder="600000" {...field} />
             </FormControl>
@@ -217,11 +250,18 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="language"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.language")}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || "Tiếng Việt"}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.language")}
+            </FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "Tiếng Việt"}
+            >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("users.profileFields.selectLanguage")} />
+                  <SelectValue
+                    placeholder={t("users.profileFields.selectLanguage")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -241,11 +281,18 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="timeZone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.timeZone")}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || "GMT+07:00 (Hà Nội, Băng Cốc)"}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.timeZone")}
+            </FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "GMT+07:00 (Hà Nội, Băng Cốc)"}
+            >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("users.profileFields.selectTimeZone")} />
+                  <SelectValue
+                    placeholder={t("users.profileFields.selectTimeZone")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -265,11 +312,18 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="currency"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.currency")}</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value || "VND (₫)"}>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.currency")}
+            </FormLabel>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || "VND (₫)"}
+            >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("users.profileFields.selectCurrency")} />
+                  <SelectValue
+                    placeholder={t("users.profileFields.selectCurrency")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -289,9 +343,15 @@ export function ProfileFieldsSection({ form }: ProfileFieldsSectionProps) {
         name="organization"
         render={({ field }) => (
           <FormItem className="md:col-span-2">
-            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">{t("users.profileFields.organization")}</FormLabel>
+            <FormLabel className="text-xs font-bold uppercase text-muted-foreground">
+              {t("users.profileFields.organization")}
+            </FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Công ty CP Sâm Ngọc Linh Kon Tum" {...field} />
+              <Input
+                type="text"
+                placeholder="Công ty CP Sâm Ngọc Linh Kon Tum"
+                {...field}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

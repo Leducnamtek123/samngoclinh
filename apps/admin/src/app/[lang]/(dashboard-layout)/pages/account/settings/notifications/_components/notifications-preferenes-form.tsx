@@ -2,13 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import type { FieldPath, UseFormReturn } from "react-hook-form"
 import type { NotificationPreferencesFormType } from "../../../types"
 
 import { NotificationPreferencesSchema } from "../_schemas/notifications-preferenes-schema"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import {
   DropdownMenu,

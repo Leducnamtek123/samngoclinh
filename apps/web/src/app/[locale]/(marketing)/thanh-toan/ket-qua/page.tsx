@@ -1,8 +1,8 @@
+import { FileText, PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { Link } from '@/lib/I18nNavigation';
 import { fetchApi } from '@/lib/Api';
-import { FileText, PenTool } from 'lucide-react';
+import { Link } from '@/lib/I18nNavigation';
 import { formatVNDPrice } from '@/utils/formatters';
 
 type PaymentResultPageProps = {
@@ -10,7 +10,9 @@ type PaymentResultPageProps = {
   searchParams: Promise<{ order?: string; status?: string }>;
 };
 
-export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'checkoutResult' });
   return {
@@ -118,28 +120,24 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
             {total > 0 ? (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{t('totalAmount')}</span>
-                <span className="font-bold text-emerald-700">
-                  {formatVNDPrice(total)}
-                </span>
+                <span className="font-bold text-emerald-700">{formatVNDPrice(total)}</span>
               </div>
             ) : null}
           </div>
         ) : null}
 
         {kind === 'success' && (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left space-y-2">
-            <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-              <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-left">
+            <div className="flex items-center gap-2 text-sm font-bold text-emerald-800">
+              <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
               <span>{t('contractActivated')}</span>
             </div>
-            <p className="text-xs text-emerald-700 leading-relaxed">
-              {t('contractActivatedDesc')}
-            </p>
+            <p className="text-xs leading-relaxed text-emerald-700">{t('contractActivatedDesc')}</p>
             <Link
-              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors hover:bg-emerald-700"
+              className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-emerald-700 sm:text-sm"
               href="/profile?tabs=contracts"
             >
-              <PenTool className="w-4 h-4 shrink-0" />
+              <PenTool className="h-4 w-4 shrink-0" />
               <span>{t('viewContractBtn')}</span>
             </Link>
           </div>
@@ -154,7 +152,7 @@ export default async function PaymentResultPage(props: PaymentResultPageProps) {
           </Link>
 
           <Link
-            className="block text-sm font-medium text-gray-500 hover:text-emerald-800 transition-colors pt-1"
+            className="block pt-1 text-sm font-medium text-gray-500 transition-colors hover:text-emerald-800"
             href="/"
           >
             {t('backToHome')}

@@ -1,4 +1,5 @@
-import { Check, type LucideIcon } from 'lucide-react';
+import { Check } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 type Step = {
   step: number;
@@ -11,46 +12,52 @@ type CartStepProgressProps = {
   stepsList: Step[];
 };
 
-export const CartStepProgress = ({ currentStep, stepsList }: CartStepProgressProps) => {
-  return (
-    <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-sm">
-      <div className="flex items-center justify-between max-w-2xl mx-auto relative px-2 sm:px-6">
-        {/* Background Line */}
-        <div className="absolute left-6 right-6 top-5 -translate-y-1/2 h-1 bg-gray-100 z-0 rounded-full"></div>
-        {/* Active Progress Fill Line */}
-        <div 
-          className="absolute left-6 top-5 -translate-y-1/2 h-1 bg-emerald-600 z-0 rounded-full transition-[width] duration-500"
-          style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
-        ></div>
+export const CartStepProgress = ({ currentStep, stepsList }: CartStepProgressProps) => (
+  <div className="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-sm">
+    <div className="relative mx-auto flex max-w-2xl items-center justify-between px-2 sm:px-6">
+      {/* Background Line */}
+      <div className="absolute top-5 right-6 left-6 z-0 h-1 -translate-y-1/2 rounded-full bg-gray-100" />
+      {/* Active Progress Fill Line */}
+      <div
+        className="absolute top-5 left-6 z-0 h-1 -translate-y-1/2 rounded-full bg-emerald-600 transition-[width] duration-500"
+        style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+      />
 
-        {stepsList.map(({ step, label, icon: Icon }) => {
-          const isCompleted = currentStep > step;
-          const isActive = currentStep === step;
+      {stepsList.map(({ step, label, icon: Icon }) => {
+        const isCompleted = currentStep > step;
+        const isActive = currentStep === step;
 
-          return (
-            <div key={step} className="flex flex-col items-center relative z-10 group">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 font-bold text-xs ${
-                  isCompleted
-                    ? 'bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                    : isActive
-                    ? 'bg-emerald-800 border-emerald-800 text-white shadow-lg ring-4 ring-emerald-800/10'
-                    : 'bg-white border-gray-200 text-gray-400'
-                }`}
-              >
-                {isCompleted ? <Check className="w-5 h-5 stroke-[3]" /> : <Icon className="w-4 h-4" />}
-              </div>
-              <span
-                className={`text-[11px] font-bold mt-2.5 uppercase tracking-wider transition-colors ${
-                  isActive ? 'text-emerald-800 font-extrabold' : isCompleted ? 'text-emerald-600 font-bold' : 'text-gray-400'
-                }`}
-              >
-                {label}
-              </span>
+        return (
+          <div key={step} className="group relative z-10 flex flex-col items-center">
+            <div
+              className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-xs font-bold transition-colors duration-300 ${
+                isCompleted
+                  ? 'border-emerald-600 bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                  : isActive
+                    ? 'border-emerald-800 bg-emerald-800 text-white shadow-lg ring-4 ring-emerald-800/10'
+                    : 'border-gray-200 bg-white text-gray-400'
+              }`}
+            >
+              {isCompleted ? (
+                <Check className="h-5 w-5 stroke-[3]" />
+              ) : (
+                <Icon className="h-4 w-4" />
+              )}
             </div>
-          );
-        })}
-      </div>
+            <span
+              className={`mt-2.5 text-[11px] font-bold tracking-wider uppercase transition-colors ${
+                isActive
+                  ? 'font-extrabold text-emerald-800'
+                  : isCompleted
+                    ? 'font-bold text-emerald-600'
+                    : 'text-gray-400'
+              }`}
+            >
+              {label}
+            </span>
+          </div>
+        );
+      })}
     </div>
-  );
-};
+  </div>
+);

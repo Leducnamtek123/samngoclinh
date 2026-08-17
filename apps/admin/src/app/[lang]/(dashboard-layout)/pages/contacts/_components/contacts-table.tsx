@@ -4,10 +4,12 @@ import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Calendar, Eye, Mail, Phone, Search, User } from "lucide-react"
 
+import type { ContactRequest, PaginationMeta } from "@/types"
+
 import { fetchApi } from "@/lib/api"
-import { legalService } from "@/services/legal.service"
 
 import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -36,9 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useTranslation } from "@/providers/i18n-provider"
-
-import type { ContactRequest, PaginationMeta } from "@/types"
+import { legalService } from "@/services/legal.service"
 
 interface ContactsTableProps {
   initialContacts: ContactRequest[]
@@ -168,8 +168,12 @@ export function ContactsTable({
               <SelectValue placeholder={t("content.contacts.title")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t("common.actions.filterAll")}</SelectItem>
-              <SelectItem value="false">{t("content.contacts.unread")}</SelectItem>
+              <SelectItem value="all">
+                {t("common.actions.filterAll")}
+              </SelectItem>
+              <SelectItem value="false">
+                {t("content.contacts.unread")}
+              </SelectItem>
               <SelectItem value="true">{t("content.contacts.read")}</SelectItem>
             </SelectContent>
           </Select>
@@ -190,7 +194,9 @@ export function ContactsTable({
                 <TableHead>{t("content.contacts.email")}</TableHead>
                 <TableHead>{t("content.contacts.subject")}</TableHead>
                 <TableHead>{t("content.contacts.receivedAt")}</TableHead>
-                <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+                <TableHead className="text-right">
+                  {t("common.actions.actions")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -208,7 +214,9 @@ export function ContactsTable({
                           : "bg-blue-500/10 text-blue-600 border-transparent font-semibold"
                       }
                     >
-                      {contact.isRead ? t("content.contacts.read") : t("content.contacts.unread")}
+                      {contact.isRead
+                        ? t("content.contacts.read")
+                        : t("content.contacts.unread")}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -255,9 +263,7 @@ export function ContactsTable({
               <Mail className="size-5 text-emerald-600" />
               {t("content.contacts.title")}
             </DialogTitle>
-            <DialogDescription>
-              {t("content.subtitle")}
-            </DialogDescription>
+            <DialogDescription>{t("content.subtitle")}</DialogDescription>
           </DialogHeader>
 
           {selectedContact && (
@@ -273,7 +279,8 @@ export function ContactsTable({
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Calendar className="size-3" /> {t("content.contacts.receivedAt")}
+                    <Calendar className="size-3" />{" "}
+                    {t("content.contacts.receivedAt")}
                   </span>
                   <p className="text-sm font-semibold">
                     {formatDate(selectedContact.createdAt)}

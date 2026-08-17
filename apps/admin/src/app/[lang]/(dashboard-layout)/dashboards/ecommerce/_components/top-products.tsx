@@ -16,7 +16,10 @@ export function TopProducts({ products }: TopProductsProps) {
       ? products.slice(0, 5).map((p, idx) => ({
           name: p.name,
           sales: { value: p.stock || 0, percentageChange: 0.05 },
-          revenue: { value: (p.price || 0) * (p.stock || 1), percentageChange: 0.05 },
+          revenue: {
+            value: (p.price || 0) * (p.stock || 1),
+            percentageChange: 0.05,
+          },
           order: idx + 1,
           image: p.images?.[0] || "/images/placeholders/product.png",
           sku: p.code || `PROD-${idx + 1}`,

@@ -22,10 +22,7 @@ export default async function ProfilePage(props: ProfilePageProps) {
 
   return (
     <div className="w-full">
-      <ProfileClient
-        locale={locale}
-        initialTab={tabs}
-      />
+      <ProfileClient locale={locale} initialTab={tabs} />
     </div>
   );
 }

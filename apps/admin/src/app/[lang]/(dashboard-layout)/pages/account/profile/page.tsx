@@ -59,7 +59,9 @@ export default async function ProfilePage(props: {
           lastName,
           email: profile.email || "",
           username: profile.username || "",
-          role: profile.role?.name || (typeof profile.role === "string" ? profile.role : "SUPER_ADMIN"),
+          role:
+            profile.role?.name ||
+            (typeof profile.role === "string" ? profile.role : "SUPER_ADMIN"),
           phone: profile.mobileNumbers?.[0]?.number || profile.phone || "",
           address: profile.addresses?.[0]?.detail || "Quảng Nam, Việt Nam",
           country: profile.country?.name || "Việt Nam",

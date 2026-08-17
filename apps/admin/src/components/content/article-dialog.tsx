@@ -1,7 +1,9 @@
 "use client"
 
 import Image from "next/image"
+
 import type { ChangeEvent, FormEvent } from "react"
+
 import { useTranslation } from "@/providers/i18n-provider"
 
 type Article = {
@@ -58,7 +60,9 @@ export function ArticleDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-xl">
         <h3 className="text-base font-bold text-gray-900 border-b border-gray-150 pb-3">
-          {editingArticle ? t("common.actions.edit") : t("content.articles.addArticle")}
+          {editingArticle
+            ? t("common.actions.edit")
+            : t("content.articles.addArticle")}
         </h3>
 
         {error && (
@@ -100,10 +104,18 @@ export function ArticleDialog({
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium bg-white"
               >
-                <option value="news">{t("content.articles.categories.news")}</option>
-                <option value="guide">{t("content.articles.categories.guide")}</option>
-                <option value="faq">{t("content.articles.categories.faq")}</option>
-                <option value="event">{t("content.articles.categories.event")}</option>
+                <option value="news">
+                  {t("content.articles.categories.news")}
+                </option>
+                <option value="guide">
+                  {t("content.articles.categories.guide")}
+                </option>
+                <option value="faq">
+                  {t("content.articles.categories.faq")}
+                </option>
+                <option value="event">
+                  {t("content.articles.categories.event")}
+                </option>
               </select>
             </div>
 
@@ -127,7 +139,9 @@ export function ArticleDialog({
                   htmlFor="article-image-file"
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-lg transition-colors text-xs flex items-center justify-center cursor-pointer min-w-[100px] text-center"
                 >
-                  {uploadingImage ? t("common.table.loading") : t("common.actions.upload")}
+                  {uploadingImage
+                    ? t("common.table.loading")
+                    : t("common.actions.upload")}
                   <input
                     id="article-image-file"
                     type="file"

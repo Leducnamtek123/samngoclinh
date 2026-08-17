@@ -1,27 +1,41 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
 import {
-  FileEdit,
-  User,
   Building2,
   Calendar as CalendarIcon,
-  Sparkles,
-  Eye,
-  FileCode,
   CheckCircle2,
   Copy,
-  Plus,
-  Trash2,
-  RefreshCw,
+  DollarSign,
+  Eye,
+  FileCode,
+  FileEdit,
   Hash,
   HelpCircle,
+  Plus,
+  RefreshCw,
   ShieldCheck,
-  DollarSign,
   Sliders,
+  Sparkles,
+  Trash2,
+  User,
 } from "lucide-react"
-import { toast } from "sonner"
 
+import type { AdminUser, EContract } from "@/types"
+
+import { fetchApi } from "@/lib/api"
+
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
   DialogContent,
@@ -30,16 +44,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { DatePicker } from "@/components/ui/date-picker"
-import { fetchApi } from "@/lib/api"
-
-import type { AdminUser, EContract } from "@/types"
 
 interface ContractEditDialogProps {
   open: boolean
@@ -49,24 +56,78 @@ interface ContractEditDialogProps {
   onSuccess: (updatedContract: EContract) => void
 }
 
-const KNOWN_PLACEHOLDER_LABELS: Record<string, { label: string; desc: string }> = {
-  TEN_KHACH_HANG: { label: "Họ và tên khách hàng (Bên B)", desc: "Tên chủ sở hữu đứng tên hợp đồng" },
-  CCCD_MST: { label: "Số CCCD / CMND / Mã số thuế", desc: "Số định danh cá nhân hoặc mã số thuế bên B" },
-  SO_DIEN_THOAI: { label: "Số điện thoại liên hệ", desc: "Số điện thoại chính của bên B" },
-  EMAIL: { label: "Địa chỉ thư điện tử (Email)", desc: "Email nhận thông báo và bản hợp đồng điện tử" },
-  DIA_CHI: { label: "Địa chỉ thường trú / Liên hệ", desc: "Địa chỉ cư trú ghi trong văn bản pháp lý" },
-  MA_HOP_DONG: { label: "Mã số định danh hợp đồng", desc: "Mã số duy nhất của hợp đồng trên hệ thống" },
-  SO_LUONG_CAY: { label: "Số lượng cây sâm (Bằng số)", desc: "Tổng số lượng cây sâm giao kết" },
-  SO_LUONG_CAY_CHU: { label: "Số lượng cây sâm (Bằng chữ)", desc: "Ví dụ: 01 cây sâm" },
-  TONG_GIA_TRI: { label: "Tổng giá trị hợp đồng (Bằng số)", desc: "Giá trị hợp đồng bằng số (VNĐ)" },
-  TONG_GIA_TRI_CHU: { label: "Tổng giá trị hợp đồng (Bằng chữ)", desc: "Giá trị hợp đồng viết bằng chữ tiếng Việt" },
-  PHI_CHAM_SOC: { label: "Phí ủy thác chăm sóc (Bằng số)", desc: "Phí chăm sóc định kỳ hàng năm (VNĐ)" },
-  PHI_CHAM_SOC_CHU: { label: "Phí ủy thác chăm sóc (Bằng chữ)", desc: "Phí chăm sóc định kỳ viết bằng chữ" },
-  NGAY_KY: { label: "Ngày ký xác thực", desc: "Ngày ký hợp đồng điện tử (Ngày/Tháng/Năm)" },
-  NGAY_HET_HAN: { label: "Ngày hết hạn hợp đồng", desc: "Thời hạn kết thúc hiệu lực của hợp đồng" },
-  DAI_DIEN_BEN_A: { label: "Đại diện Bên A (Doanh nghiệp)", desc: "Đại diện theo pháp luật của Bên A" },
-  TEN_VUON: { label: "Khu vườn trồng sâm", desc: "Tên khu vườn chăm sóc (Vườn Nam Trà My)" },
-  MA_LUONG: { label: "Mã vị trí luống sâm", desc: "Vị trí luống trồng cây sâm trong vườn" },
+const KNOWN_PLACEHOLDER_LABELS: Record<
+  string,
+  { label: string; desc: string }
+> = {
+  TEN_KHACH_HANG: {
+    label: "Họ và tên khách hàng (Bên B)",
+    desc: "Tên chủ sở hữu đứng tên hợp đồng",
+  },
+  CCCD_MST: {
+    label: "Số CCCD / CMND / Mã số thuế",
+    desc: "Số định danh cá nhân hoặc mã số thuế bên B",
+  },
+  SO_DIEN_THOAI: {
+    label: "Số điện thoại liên hệ",
+    desc: "Số điện thoại chính của bên B",
+  },
+  EMAIL: {
+    label: "Địa chỉ thư điện tử (Email)",
+    desc: "Email nhận thông báo và bản hợp đồng điện tử",
+  },
+  DIA_CHI: {
+    label: "Địa chỉ thường trú / Liên hệ",
+    desc: "Địa chỉ cư trú ghi trong văn bản pháp lý",
+  },
+  MA_HOP_DONG: {
+    label: "Mã số định danh hợp đồng",
+    desc: "Mã số duy nhất của hợp đồng trên hệ thống",
+  },
+  SO_LUONG_CAY: {
+    label: "Số lượng cây sâm (Bằng số)",
+    desc: "Tổng số lượng cây sâm giao kết",
+  },
+  SO_LUONG_CAY_CHU: {
+    label: "Số lượng cây sâm (Bằng chữ)",
+    desc: "Ví dụ: 01 cây sâm",
+  },
+  TONG_GIA_TRI: {
+    label: "Tổng giá trị hợp đồng (Bằng số)",
+    desc: "Giá trị hợp đồng bằng số (VNĐ)",
+  },
+  TONG_GIA_TRI_CHU: {
+    label: "Tổng giá trị hợp đồng (Bằng chữ)",
+    desc: "Giá trị hợp đồng viết bằng chữ tiếng Việt",
+  },
+  PHI_CHAM_SOC: {
+    label: "Phí ủy thác chăm sóc (Bằng số)",
+    desc: "Phí chăm sóc định kỳ hàng năm (VNĐ)",
+  },
+  PHI_CHAM_SOC_CHU: {
+    label: "Phí ủy thác chăm sóc (Bằng chữ)",
+    desc: "Phí chăm sóc định kỳ viết bằng chữ",
+  },
+  NGAY_KY: {
+    label: "Ngày ký xác thực",
+    desc: "Ngày ký hợp đồng điện tử (Ngày/Tháng/Năm)",
+  },
+  NGAY_HET_HAN: {
+    label: "Ngày hết hạn hợp đồng",
+    desc: "Thời hạn kết thúc hiệu lực của hợp đồng",
+  },
+  DAI_DIEN_BEN_A: {
+    label: "Đại diện Bên A (Doanh nghiệp)",
+    desc: "Đại diện theo pháp luật của Bên A",
+  },
+  TEN_VUON: {
+    label: "Khu vườn trồng sâm",
+    desc: "Tên khu vườn chăm sóc (Vườn Nam Trà My)",
+  },
+  MA_LUONG: {
+    label: "Mã vị trí luống sâm",
+    desc: "Vị trí luống trồng cây sâm trong vườn",
+  },
 }
 
 export function ContractEditDialog({
@@ -77,7 +138,10 @@ export function ContractEditDialog({
   onSuccess,
 }: ContractEditDialogProps) {
   const meta = (contract.metadata || {}) as Record<string, unknown>
-  const savedVariables = (meta.templateVariables || {}) as Record<string, string>
+  const savedVariables = (meta.templateVariables || {}) as Record<
+    string,
+    string
+  >
 
   // Form State
   const [customerName, setCustomerName] = useState<string>("")
@@ -90,16 +154,22 @@ export function ContractEditDialog({
   const [contractValue, setContractValue] = useState<number>(0)
   const [careFee, setCareFee] = useState<number>(0)
   const [totalPlants, setTotalPlants] = useState<number>(1)
-  const [expiredAtDate, setExpiredAtDate] = useState<Date | undefined>(undefined)
+  const [expiredAtDate, setExpiredAtDate] = useState<Date | undefined>(
+    undefined
+  )
   const [terms, setTerms] = useState<string>("")
   const [content, setContent] = useState<string>("")
 
   // Dynamic Template Variables Map
-  const [customVariables, setCustomVariables] = useState<Record<string, string>>({})
+  const [customVariables, setCustomVariables] = useState<
+    Record<string, string>
+  >({})
   const [newVarKey, setNewVarKey] = useState<string>("")
   const [newVarVal, setNewVarVal] = useState<string>("")
   const [isLoadingTemplate, setIsLoadingTemplate] = useState<boolean>(false)
-  const [activeTab, setActiveTab] = useState<"variables" | "editor" | "preview">("variables")
+  const [activeTab, setActiveTab] = useState<
+    "variables" | "editor" | "preview"
+  >("variables")
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const formatNumberVND = (num: number) =>
@@ -141,14 +211,18 @@ export function ContractEditDialog({
   // Initialize form state
   useEffect(() => {
     if (contract && open) {
-      const partyBStr = typeof contract.partyB === "string" ? contract.partyB : contract.partyB?.name || ""
+      const partyBStr =
+        typeof contract.partyB === "string"
+          ? contract.partyB
+          : contract.partyB?.name || ""
       const initCustomerName =
         (meta.customerName as string) ||
         user?.name ||
         contract.customerName ||
         partyBStr ||
         ""
-      const initCccd = (meta.cccd as string) || user?.identityNumber || user?.cccd || ""
+      const initCccd =
+        (meta.cccd as string) || user?.identityNumber || user?.cccd || ""
       const initPhone =
         (meta.phone as string) ||
         (meta.customerPhone as string) ||
@@ -163,11 +237,10 @@ export function ContractEditDialog({
       const initAddress = (meta.address as string) || user?.address || ""
       const initPartyA = contract.partyA || "CÔNG TY CỔ PHẦN SÂM NGỌC LINH"
       const initTitle = contract.title || ""
-      const initValue = Number(contract.contractValue || contract.totalValue || 0)
-      const initCareFee = Number(
-        meta.careFee ||
-        Math.round(initValue * 0.1)
+      const initValue = Number(
+        contract.contractValue || contract.totalValue || 0
       )
+      const initCareFee = Number(meta.careFee || Math.round(initValue * 0.1))
       const initPlants = Number(meta.totalPlants || contract.items?.length || 1)
 
       setCustomerName(initCustomerName)
@@ -223,7 +296,11 @@ export function ContractEditDialog({
       setActiveTab("variables")
 
       // If content is short/plain text, auto-load official template
-      if (!initialContent || (!initialContent.includes("<!DOCTYPE") && !initialContent.includes("<div class="))) {
+      if (
+        !initialContent ||
+        (!initialContent.includes("<!DOCTYPE") &&
+          !initialContent.includes("<div class="))
+      ) {
         handleLoadOfficialTemplate()
       }
     }
@@ -234,7 +311,9 @@ export function ContractEditDialog({
     if (!content) return []
     const matches = content.match(/\{\{([A-Z0-9_]+)\}\}/g)
     if (!matches) return []
-    const uniqueTags = Array.from(new Set(matches.map((m) => m.replace(/[{}]/g, ""))))
+    const uniqueTags = Array.from(
+      new Set(matches.map((m) => m.replace(/[{}]/g, "")))
+    )
     return uniqueTags
   }, [content])
 
@@ -305,23 +384,67 @@ export function ContractEditDialog({
     const totalValStr = formatNumberVND(contractValue)
     const careFeeStr = formatNumberVND(careFee)
     const signDateStr = formatDateDisplay(contract.signedAt || new Date())
-    const expDateStr = formatDateDisplay(expiredAtDate || contract.expiredAt || "")
+    const expDateStr = formatDateDisplay(
+      expiredAtDate || contract.expiredAt || ""
+    )
 
     result = result
-      .replace(/\{\{TEN_KHACH_HANG\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${customerName || "—"}</span>`)
-      .replace(/\{\{CCCD_MST\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${cccd || "—"}</span>`)
-      .replace(/\{\{SO_DIEN_THOAI\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${phone || "—"}</span>`)
-      .replace(/\{\{EMAIL\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${email || "—"}</span>`)
-      .replace(/\{\{DIA_CHI\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${address || "—"}</span>`)
-      .replace(/\{\{MA_HOP_DONG\}\}/g, `<span style="background-color: #e0e7ff; color: #3730a3; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${code}</span>`)
-      .replace(/\{\{SO_LUONG_CAY\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalPlants || 1}</span>`)
-      .replace(/\{\{SO_LUONG_CAY_CHU\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalPlants || 1} cây sâm</span>`)
-      .replace(/\{\{TONG_GIA_TRI\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalValStr}</span>`)
-      .replace(/\{\{TONG_GIA_TRI_CHU\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalValStr}</span>`)
-      .replace(/\{\{PHI_CHAM_SOC\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${careFeeStr}</span>`)
-      .replace(/\{\{PHI_CHAM_SOC_CHU\}\}/g, `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${careFeeStr}</span>`)
-      .replace(/\{\{NGAY_KY\}\}/g, `<span style="background-color: #f3e8ff; color: #6b21a8; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${signDateStr}</span>`)
-      .replace(/\{\{NGAY_HET_HAN\}\}/g, `<span style="background-color: #f3e8ff; color: #6b21a8; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${expDateStr}</span>`)
+      .replace(
+        /\{\{TEN_KHACH_HANG\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${customerName || "—"}</span>`
+      )
+      .replace(
+        /\{\{CCCD_MST\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${cccd || "—"}</span>`
+      )
+      .replace(
+        /\{\{SO_DIEN_THOAI\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${phone || "—"}</span>`
+      )
+      .replace(
+        /\{\{EMAIL\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${email || "—"}</span>`
+      )
+      .replace(
+        /\{\{DIA_CHI\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${address || "—"}</span>`
+      )
+      .replace(
+        /\{\{MA_HOP_DONG\}\}/g,
+        `<span style="background-color: #e0e7ff; color: #3730a3; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${code}</span>`
+      )
+      .replace(
+        /\{\{SO_LUONG_CAY\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalPlants || 1}</span>`
+      )
+      .replace(
+        /\{\{SO_LUONG_CAY_CHU\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalPlants || 1} cây sâm</span>`
+      )
+      .replace(
+        /\{\{TONG_GIA_TRI\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalValStr}</span>`
+      )
+      .replace(
+        /\{\{TONG_GIA_TRI_CHU\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${totalValStr}</span>`
+      )
+      .replace(
+        /\{\{PHI_CHAM_SOC\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${careFeeStr}</span>`
+      )
+      .replace(
+        /\{\{PHI_CHAM_SOC_CHU\}\}/g,
+        `<span style="background-color: #dcfce7; color: #166534; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${careFeeStr}</span>`
+      )
+      .replace(
+        /\{\{NGAY_KY\}\}/g,
+        `<span style="background-color: #f3e8ff; color: #6b21a8; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${signDateStr}</span>`
+      )
+      .replace(
+        /\{\{NGAY_HET_HAN\}\}/g,
+        `<span style="background-color: #f3e8ff; color: #6b21a8; font-weight: 700; padding: 1px 6px; border-radius: 4px; font-family: 'Inter', sans-serif;">${expDateStr}</span>`
+      )
 
     // Inject Font Inter override
     const fontInject = `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><style>* { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; }</style>`
@@ -332,7 +455,22 @@ export function ContractEditDialog({
     }
 
     return result
-  }, [content, customVariables, contractValue, careFee, totalPlants, customerName, cccd, phone, email, address, expiredAtDate, contract.code, contract.signedAt, contract.expiredAt])
+  }, [
+    content,
+    customVariables,
+    contractValue,
+    careFee,
+    totalPlants,
+    customerName,
+    cccd,
+    phone,
+    email,
+    address,
+    expiredAtDate,
+    contract.code,
+    contract.signedAt,
+    contract.expiredAt,
+  ])
 
   // Apply variables permanently into HTML content
   const handleApplyPermanentReplacement = () => {
@@ -356,15 +494,22 @@ export function ContractEditDialog({
     setIsSubmitting(true)
     try {
       const partyBCombined = `${customerName || customVariables.TEN_KHACH_HANG || ""}${
-        cccd || customVariables.CCCD_MST ? ` (CCCD: ${cccd || customVariables.CCCD_MST})` : ""
+        cccd || customVariables.CCCD_MST
+          ? ` (CCCD: ${cccd || customVariables.CCCD_MST})`
+          : ""
       }${phone || customVariables.SO_DIEN_THOAI ? ` - SĐT: ${phone || customVariables.SO_DIEN_THOAI}` : ""}`
 
       const payload = {
         title,
-        partyA: partyA || customVariables.DAI_DIEN_BEN_A || "CÔNG TY CỔ PHẦN SÂM NGỌC LINH",
+        partyA:
+          partyA ||
+          customVariables.DAI_DIEN_BEN_A ||
+          "CÔNG TY CỔ PHẦN SÂM NGỌC LINH",
         partyB: partyBCombined,
         contractValue: Number(contractValue),
-        expiredAt: expiredAtDate ? expiredAtDate.toISOString() : contract.expiredAt,
+        expiredAt: expiredAtDate
+          ? expiredAtDate.toISOString()
+          : contract.expiredAt,
         terms,
         content,
         metadata: {
@@ -451,13 +596,20 @@ export function ContractEditDialog({
                     <DialogTitle className="text-lg font-bold tracking-tight text-foreground font-sans">
                       Chỉnh sửa Biến số & Mẫu Hợp đồng
                     </DialogTitle>
-                    <Badge variant="outline" className="font-mono text-xs px-2.5 py-0.5 bg-background border-border font-bold text-foreground">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-xs px-2.5 py-0.5 bg-background border-border font-bold text-foreground"
+                    >
                       <Hash className="w-3 h-3 mr-1 text-muted-foreground inline" />
                       {contract.code}
                     </Badge>
                   </div>
                   <DialogDescription className="text-xs text-muted-foreground font-sans mt-0.5">
-                    Sử dụng các component form chuẩn để cập nhật thông tin pháp lý, giá trị cam kết và trường mẫu <code className="font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950 px-1 py-0.5 rounded">{"{{ TÊN_BIẾN }}"}</code>
+                    Sử dụng các component form chuẩn để cập nhật thông tin pháp
+                    lý, giá trị cam kết và trường mẫu{" "}
+                    <code className="font-mono text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-950 px-1 py-0.5 rounded">
+                      {"{{ TÊN_BIẾN }}"}
+                    </code>
                   </DialogDescription>
                 </div>
               </div>
@@ -516,7 +668,9 @@ export function ContractEditDialog({
             disabled={isLoadingTemplate}
             className="h-8 text-xs gap-1.5 text-slate-700 dark:text-slate-200 border-border hover:bg-background cursor-pointer font-sans font-medium"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-emerald-600 ${isLoadingTemplate ? "animate-spin" : ""}`} />
+            <RefreshCw
+              className={`w-3.5 h-3.5 text-emerald-600 ${isLoadingTemplate ? "animate-spin" : ""}`}
+            />
             <span>Nạp mẫu chuẩn từ hệ thống</span>
           </Button>
         </div>
@@ -536,12 +690,16 @@ export function ContractEditDialog({
                       <User className="w-4 h-4 text-emerald-600" />
                       Thông tin pháp lý Bên B (Khách hàng sở hữu)
                     </CardTitle>
-                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
+                    >
                       Tự động liên kết eKYC
                     </Badge>
                   </div>
                   <CardDescription className="text-xs">
-                    Thông tin hiển thị tại khu vực chủ thể bên B và các vị trí ký số của văn bản.
+                    Thông tin hiển thị tại khu vực chủ thể bên B và các vị trí
+                    ký số của văn bản.
                   </CardDescription>
                 </CardHeader>
 
@@ -550,9 +708,12 @@ export function ContractEditDialog({
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-semibold text-foreground">
-                          Họ và tên khách hàng <span className="text-rose-500">*</span>
+                          Họ và tên khách hàng{" "}
+                          <span className="text-rose-500">*</span>
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{TEN_KHACH_HANG}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{TEN_KHACH_HANG}}"}
+                        </code>
                       </div>
                       <Input
                         value={customerName}
@@ -570,7 +731,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Số CMND / CCCD / MST
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{CCCD_MST}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{CCCD_MST}}"}
+                        </code>
                       </div>
                       <Input
                         value={cccd}
@@ -588,7 +751,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Số điện thoại liên hệ
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{SO_DIEN_THOAI}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{SO_DIEN_THOAI}}"}
+                        </code>
                       </div>
                       <Input
                         value={phone}
@@ -606,7 +771,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Địa chỉ Email
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{EMAIL}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{EMAIL}}"}
+                        </code>
                       </div>
                       <Input
                         type="email"
@@ -625,7 +792,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Địa chỉ thường trú / Liên hệ
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{DIA_CHI}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{DIA_CHI}}"}
+                        </code>
                       </div>
                       <Input
                         value={address}
@@ -649,7 +818,8 @@ export function ContractEditDialog({
                     Thông số Hợp đồng & Giá trị Cam kết
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Thiết lập tiêu đề, các mức giá trị và thời hạn hiệu lực của hợp đồng.
+                    Thiết lập tiêu đề, các mức giá trị và thời hạn hiệu lực của
+                    hợp đồng.
                   </CardDescription>
                 </CardHeader>
 
@@ -657,7 +827,8 @@ export function ContractEditDialog({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="col-span-1 sm:col-span-2 space-y-1.5">
                       <Label className="text-xs font-semibold text-foreground">
-                        Tiêu đề hợp đồng <span className="text-rose-500">*</span>
+                        Tiêu đề hợp đồng{" "}
+                        <span className="text-rose-500">*</span>
                       </Label>
                       <Input
                         value={title}
@@ -675,7 +846,10 @@ export function ContractEditDialog({
                         value={expiredAtDate}
                         onValueChange={(d) => {
                           setExpiredAtDate(d)
-                          handleVariableChange("NGAY_HET_HAN", formatDateDisplay(d))
+                          handleVariableChange(
+                            "NGAY_HET_HAN",
+                            formatDateDisplay(d)
+                          )
                         }}
                         placeholder="Chọn ngày hết hạn..."
                         className="h-9 text-xs w-full bg-background"
@@ -687,7 +861,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Tổng giá trị hợp đồng (VNĐ)
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{TONG_GIA_TRI}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{TONG_GIA_TRI}}"}
+                        </code>
                       </div>
                       <Input
                         type="number"
@@ -695,8 +871,14 @@ export function ContractEditDialog({
                         onChange={(e) => {
                           const val = Number(e.target.value)
                           setContractValue(val)
-                          handleVariableChange("TONG_GIA_TRI", formatNumberVND(val))
-                          handleVariableChange("TONG_GIA_TRI_CHU", formatNumberVND(val))
+                          handleVariableChange(
+                            "TONG_GIA_TRI",
+                            formatNumberVND(val)
+                          )
+                          handleVariableChange(
+                            "TONG_GIA_TRI_CHU",
+                            formatNumberVND(val)
+                          )
                         }}
                         className="h-9 text-xs bg-background font-mono"
                       />
@@ -710,7 +892,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Phí ủy thác chăm sóc (VNĐ/năm)
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{PHI_CHAM_SOC}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{PHI_CHAM_SOC}}"}
+                        </code>
                       </div>
                       <Input
                         type="number"
@@ -718,8 +902,14 @@ export function ContractEditDialog({
                         onChange={(e) => {
                           const val = Number(e.target.value)
                           setCareFee(val)
-                          handleVariableChange("PHI_CHAM_SOC", formatNumberVND(val))
-                          handleVariableChange("PHI_CHAM_SOC_CHU", formatNumberVND(val))
+                          handleVariableChange(
+                            "PHI_CHAM_SOC",
+                            formatNumberVND(val)
+                          )
+                          handleVariableChange(
+                            "PHI_CHAM_SOC_CHU",
+                            formatNumberVND(val)
+                          )
                         }}
                         className="h-9 text-xs bg-background font-mono"
                       />
@@ -733,7 +923,9 @@ export function ContractEditDialog({
                         <Label className="text-xs font-semibold text-foreground">
                           Số lượng cây sâm bàn giao
                         </Label>
-                        <code className="text-[10px] font-mono text-muted-foreground">{"{{SO_LUONG_CAY}}"}</code>
+                        <code className="text-[10px] font-mono text-muted-foreground">
+                          {"{{SO_LUONG_CAY}}"}
+                        </code>
                       </div>
                       <Input
                         type="number"
@@ -743,7 +935,10 @@ export function ContractEditDialog({
                           const val = Number(e.target.value)
                           setTotalPlants(val)
                           handleVariableChange("SO_LUONG_CAY", String(val))
-                          handleVariableChange("SO_LUONG_CAY_CHU", `${val} cây sâm`)
+                          handleVariableChange(
+                            "SO_LUONG_CAY_CHU",
+                            `${val} cây sâm`
+                          )
                         }}
                         className="h-9 text-xs bg-background font-mono"
                       />
@@ -775,19 +970,25 @@ export function ContractEditDialog({
                         Các trường biến số mở rộng theo mẫu (Tự động phát hiện)
                       </CardTitle>
                     </div>
-                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] bg-emerald-50 text-emerald-800 border-emerald-200"
+                    >
                       {extraFieldTags.length} trường tùy biến
                     </Badge>
                   </div>
                   <CardDescription className="text-xs">
-                    Các biến số đặc thù được tìm thấy trong mã HTML của mẫu hợp đồng.
+                    Các biến số đặc thù được tìm thấy trong mã HTML của mẫu hợp
+                    đồng.
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="px-5 pb-5 space-y-4">
                   {extraFieldTags.length === 0 ? (
                     <p className="text-xs text-muted-foreground italic py-2">
-                      Mẫu hiện tại đang sử dụng đầy đủ các trường chuẩn pháp lý. Bạn có thể thêm trường tùy biến mới bằng khung bên dưới nếu mẫu HTML có thêm biến riêng.
+                      Mẫu hiện tại đang sử dụng đầy đủ các trường chuẩn pháp lý.
+                      Bạn có thể thêm trường tùy biến mới bằng khung bên dưới
+                      nếu mẫu HTML có thêm biến riêng.
                     </p>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -804,7 +1005,10 @@ export function ContractEditDialog({
                             className="p-3 rounded-lg border border-border bg-muted/20 hover:border-emerald-500/50 transition-colors space-y-1.5"
                           >
                             <div className="flex items-center justify-between gap-1">
-                              <Label className="text-xs font-semibold text-foreground truncate" title={info.label}>
+                              <Label
+                                className="text-xs font-semibold text-foreground truncate"
+                                title={info.label}
+                              >
                                 {info.label}
                               </Label>
                               <code className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-1 py-0.5 rounded">
@@ -815,7 +1019,9 @@ export function ContractEditDialog({
                             <div className="flex items-center gap-1.5">
                               <Input
                                 value={currentValue}
-                                onChange={(e) => handleVariableChange(tagKey, e.target.value)}
+                                onChange={(e) =>
+                                  handleVariableChange(tagKey, e.target.value)
+                                }
                                 placeholder={`Nhập ${info.label.toLowerCase()}...`}
                                 className="h-8 text-xs bg-background"
                               />
@@ -823,7 +1029,9 @@ export function ContractEditDialog({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleDeleteCustomVariable(tagKey)}
+                                onClick={() =>
+                                  handleDeleteCustomVariable(tagKey)
+                                }
                                 className="h-8 w-8 text-slate-400 hover:text-rose-500 shrink-0"
                                 title="Xóa trường này"
                               >
@@ -875,7 +1083,12 @@ export function ContractEditDialog({
                 <div className="flex items-center gap-2 text-muted-foreground font-sans">
                   <HelpCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>
-                    Chèn các thẻ <code className="font-mono font-bold text-foreground">{"{{TÊN_BIẾN}}"}</code> vào bất kỳ vị trí nào trong mã HTML. Hệ thống sẽ tự động bắt và tạo ô nhập liệu ở Thẻ 1.
+                    Chèn các thẻ{" "}
+                    <code className="font-mono font-bold text-foreground">
+                      {"{{TÊN_BIẾN}}"}
+                    </code>{" "}
+                    vào bất kỳ vị trí nào trong mã HTML. Hệ thống sẽ tự động bắt
+                    và tạo ô nhập liệu ở Thẻ 1.
                   </span>
                 </div>
 
@@ -885,12 +1098,16 @@ export function ContractEditDialog({
                   onClick={handleApplyPermanentReplacement}
                   className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1 cursor-pointer font-sans"
                 >
-                  <Sparkles className="w-3.5 h-3.5" /> Điền vĩnh viễn vào văn bản
+                  <Sparkles className="w-3.5 h-3.5" /> Điền vĩnh viễn vào văn
+                  bản
                 </Button>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="contentEditor" className="text-xs font-semibold text-foreground font-sans">
+                <Label
+                  htmlFor="contentEditor"
+                  className="text-xs font-semibold text-foreground font-sans"
+                >
                   Mã nguồn văn bản hợp đồng
                 </Label>
                 <Textarea
@@ -913,7 +1130,10 @@ export function ContractEditDialog({
               <div className="flex items-center justify-between px-4 py-2.5 bg-emerald-50/70 dark:bg-emerald-950/30 rounded-xl border border-emerald-200/80 dark:border-emerald-900 text-xs">
                 <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200 font-medium font-sans">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Văn bản hiển thị thực tế sau khi đã điền đầy đủ các trường biến số {"{{"} {"}}"}:</span>
+                  <span>
+                    Văn bản hiển thị thực tế sau khi đã điền đầy đủ các trường
+                    biến số {"{{"} {"}}"}:
+                  </span>
                 </div>
                 <Badge className="bg-emerald-600 text-white font-sans text-[10px] font-semibold shrink-0">
                   Xem trước trực tiếp

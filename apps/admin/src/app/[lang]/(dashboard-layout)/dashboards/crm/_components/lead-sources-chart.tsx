@@ -67,7 +67,9 @@ export function LeadSourcesChart({
         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
           <Label
             content={(props) => {
-              const viewBox = props.viewBox as { cx?: number; cy?: number } | undefined
+              const viewBox = props.viewBox as
+                | { cx?: number; cy?: number }
+                | undefined
               if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                 return (
                   <text

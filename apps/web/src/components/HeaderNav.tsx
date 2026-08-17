@@ -1,11 +1,11 @@
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { Gift } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/lib/I18nNavigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { fetchApiClient } from '@/lib/ApiClient';
-import { Gift } from 'lucide-react';
+import { Link } from '@/lib/I18nNavigation';
 
 export const HeaderNav = () => {
   const tNav = useTranslations('nav');
@@ -16,7 +16,9 @@ export const HeaderNav = () => {
 
   const getCategoryLabel = (category: string) => {
     try {
-      return tCat(category as any);
+      return tCat.has(category as Parameters<typeof tCat.has>[0])
+        ? tCat(category as Parameters<typeof tCat>[0])
+        : category;
     } catch {
       return category;
     }
@@ -28,13 +30,13 @@ export const HeaderNav = () => {
     const loadCategories = async () => {
       try {
         const data = await fetchApiClient('/public/content/articles');
-        const items = data.data || [];
+        const rawList = Array.isArray(data?.data) ? (data.data as { category?: string }[]) : [];
         const uniqueCategories: string[] = Array.from(
-          new Set(items.flatMap((item: any) => item.category ? [item.category] : []))
-        ) as string[];
+          new Set(rawList.flatMap((item) => (item.category ? [String(item.category)] : []))),
+        );
         setCategories(uniqueCategories);
-      } catch (err) {
-        console.error('Failed to load categories for header nav:', err);
+      } catch (error) {
+        console.error('Failed to load categories for header nav:', error);
       }
     };
     loadCategories();
@@ -45,7 +47,7 @@ export const HeaderNav = () => {
       return href === '/';
     }
     const rawPath = pathname.replace(/^\/(vi|en)/, '') || '/';
-    
+
     if (href === '/') {
       return rawPath === '/';
     }
@@ -61,10 +63,8 @@ export const HeaderNav = () => {
       <li className="flex items-center">
         <Link
           href="/"
-          className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
-            isActive('/')
-              ? 'text-emerald-800 font-bold'
-              : 'text-gray-600 hover:text-emerald-800'
+          className={`inline-flex h-8 items-center justify-center px-1 text-xs leading-none font-semibold whitespace-nowrap transition-colors xl:text-sm ${
+            isActive('/') ? 'font-bold text-emerald-800' : 'text-gray-600 hover:text-emerald-800'
           }`}
         >
           {tNav('home')}
@@ -75,13 +75,13 @@ export const HeaderNav = () => {
       <li className="flex items-center">
         <Link
           href="/campaigns/free-tree"
-          className={`h-8 px-3 rounded-full inline-flex items-center justify-center gap-1.5 text-xs font-bold leading-none transition-colors whitespace-nowrap flex-shrink-0 border ${
+          className={`inline-flex h-8 flex-shrink-0 items-center justify-center gap-1.5 rounded-full border px-3 text-xs leading-none font-bold whitespace-nowrap transition-colors ${
             isActive('/campaigns/free-tree')
-              ? 'bg-[#FEF3C7] border-amber-300 text-[#B45309] shadow-xs'
-              : 'bg-[#FFFBEB] border-amber-200/60 text-[#D97706] hover:bg-[#FEF3C7] hover:border-amber-300 hover:scale-[1.02] active:scale-[0.98]'
+              ? 'border-amber-300 bg-[#FEF3C7] text-[#B45309] shadow-xs'
+              : 'border-amber-200/60 bg-[#FFFBEB] text-[#D97706] hover:scale-[1.02] hover:border-amber-300 hover:bg-[#FEF3C7] active:scale-[0.98]'
           }`}
         >
-          <Gift className="w-3.5 h-3.5 text-[#D97706] flex-shrink-0" />
+          <Gift className="h-3.5 w-3.5 flex-shrink-0 text-[#D97706]" />
           <span className="leading-none">{tNav('promotions')}</span>
         </Link>
       </li>
@@ -90,9 +90,9 @@ export const HeaderNav = () => {
       <li className="flex items-center">
         <Link
           href="/ginseng"
-          className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
+          className={`inline-flex h-8 items-center justify-center px-1 text-xs leading-none font-semibold whitespace-nowrap transition-colors xl:text-sm ${
             isActive('/ginseng')
-              ? 'text-emerald-800 font-bold'
+              ? 'font-bold text-emerald-800'
               : 'text-gray-600 hover:text-emerald-800'
           }`}
         >
@@ -104,9 +104,9 @@ export const HeaderNav = () => {
       <li className="flex items-center">
         <Link
           href="/products"
-          className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
+          className={`inline-flex h-8 items-center justify-center px-1 text-xs leading-none font-semibold whitespace-nowrap transition-colors xl:text-sm ${
             isActive('/products')
-              ? 'text-emerald-800 font-bold'
+              ? 'font-bold text-emerald-800'
               : 'text-gray-600 hover:text-emerald-800'
           }`}
         >
@@ -115,13 +115,11 @@ export const HeaderNav = () => {
       </li>
 
       {/* Thông tin với Dropdown */}
-      <li className="relative group flex items-center">
+      <li className="group relative flex items-center">
         <button
           type="button"
-          className={`h-8 px-1 inline-flex items-center justify-center gap-1 font-semibold text-xs xl:text-sm leading-none cursor-pointer whitespace-nowrap transition-colors ${
-            isNewsActive
-              ? 'text-emerald-800 font-bold'
-              : 'text-gray-600 hover:text-emerald-800'
+          className={`inline-flex h-8 cursor-pointer items-center justify-center gap-1 px-1 text-xs leading-none font-semibold whitespace-nowrap transition-colors xl:text-sm ${
+            isNewsActive ? 'font-bold text-emerald-800' : 'text-gray-600 hover:text-emerald-800'
           }`}
         >
           <span className="leading-none">{tNav('info')}</span>
@@ -131,20 +129,20 @@ export const HeaderNav = () => {
             viewBox="0 0 24 24"
             strokeWidth={2.5}
             stroke="currentColor"
-            className="w-3 h-3 group-hover:rotate-180 transition-transform duration-200 flex-shrink-0"
+            className="h-3 w-3 flex-shrink-0 transition-transform duration-200 group-hover:rotate-180"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
           </svg>
         </button>
 
         {/* Dropdown Menu */}
-        <div className="absolute left-0 top-full mt-1 w-52 rounded-2xl bg-white border border-gray-100 shadow-xl p-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,visibility] duration-200 z-50 flex flex-col gap-1">
+        <div className="invisible absolute top-full left-0 z-50 mt-1 flex w-52 flex-col gap-1 rounded-2xl border border-gray-100 bg-white p-1.5 opacity-0 shadow-xl transition-[opacity,visibility] duration-200 group-hover:visible group-hover:opacity-100">
           <Link
             href="/news"
-            className={`px-3.5 py-2 text-[13px] font-semibold transition-colors duration-150 block whitespace-nowrap ${
+            className={`block px-3.5 py-2 text-[13px] font-semibold whitespace-nowrap transition-colors duration-150 ${
               isNewsActive && !currentCategory
-                ? 'bg-[#EAF5ED] text-[#2D7A4D] font-bold rounded-xl'
-                : 'text-gray-700 hover:bg-emerald-50/50 hover:text-emerald-800 rounded-xl'
+                ? 'rounded-xl bg-[#EAF5ED] font-bold text-[#2D7A4D]'
+                : 'rounded-xl text-gray-700 hover:bg-emerald-50/50 hover:text-emerald-800'
             }`}
           >
             {tNav('all')}
@@ -153,10 +151,10 @@ export const HeaderNav = () => {
             <Link
               key={cat}
               href={`/news?category=${encodeURIComponent(cat)}`}
-              className={`px-3.5 py-2 text-[13px] font-semibold transition-colors duration-150 block whitespace-nowrap ${
+              className={`block px-3.5 py-2 text-[13px] font-semibold whitespace-nowrap transition-colors duration-150 ${
                 isNewsActive && currentCategory === cat
-                  ? 'bg-[#EAF5ED] text-[#2D7A4D] font-bold rounded-xl'
-                  : 'text-gray-700 hover:bg-emerald-50/50 hover:text-emerald-800 rounded-xl'
+                  ? 'rounded-xl bg-[#EAF5ED] font-bold text-[#2D7A4D]'
+                  : 'rounded-xl text-gray-700 hover:bg-emerald-50/50 hover:text-emerald-800'
               }`}
             >
               {getCategoryLabel(cat)}
@@ -169,9 +167,9 @@ export const HeaderNav = () => {
       <li className="flex items-center">
         <Link
           href="/about"
-          className={`h-8 px-1 inline-flex items-center justify-center font-semibold text-xs xl:text-sm leading-none whitespace-nowrap transition-colors ${
+          className={`inline-flex h-8 items-center justify-center px-1 text-xs leading-none font-semibold whitespace-nowrap transition-colors xl:text-sm ${
             isActive('/about')
-              ? 'text-emerald-800 font-bold'
+              ? 'font-bold text-emerald-800'
               : 'text-gray-600 hover:text-emerald-800'
           }`}
         >

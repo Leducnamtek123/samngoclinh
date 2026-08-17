@@ -1,16 +1,24 @@
-import { fetchApiJson } from "@/lib/api"
 import type { ApiResponse, SystemSetting } from "@/types"
 
+import { fetchApiJson } from "@/lib/api"
+
 export const settingsService = {
-  async getSettings(): Promise<ApiResponse<{ items: SystemSetting[] } | SystemSetting[]>> {
-    return fetchApiJson<{ items: SystemSetting[] } | SystemSetting[]>("/admin/settings")
+  async getSettings(): Promise<
+    ApiResponse<{ items: SystemSetting[] } | SystemSetting[]>
+  > {
+    return fetchApiJson<{ items: SystemSetting[] } | SystemSetting[]>(
+      "/admin/settings"
+    )
   },
 
   async getSetting(key: string): Promise<ApiResponse<SystemSetting>> {
     return fetchApiJson<SystemSetting>(`/admin/settings/${key}`)
   },
 
-  async updateSetting(key: string, value: unknown): Promise<ApiResponse<SystemSetting>> {
+  async updateSetting(
+    key: string,
+    value: unknown
+  ): Promise<ApiResponse<SystemSetting>> {
     return fetchApiJson<SystemSetting>(`/admin/settings/${key}`, {
       method: "PUT",
       body: JSON.stringify({ value }),
@@ -25,7 +33,11 @@ export const settingsService = {
     return fetchApiJson<SystemSetting>("/admin/settings/point_rate")
   },
 
-  async getGeneralSettings(): Promise<ApiResponse<{ items: SystemSetting[] } | SystemSetting[]>> {
-    return fetchApiJson<{ items: SystemSetting[] } | SystemSetting[]>("/admin/settings")
+  async getGeneralSettings(): Promise<
+    ApiResponse<{ items: SystemSetting[] } | SystemSetting[]>
+  > {
+    return fetchApiJson<{ items: SystemSetting[] } | SystemSetting[]>(
+      "/admin/settings"
+    )
   },
 }

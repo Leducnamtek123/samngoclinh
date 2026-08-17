@@ -37,8 +37,8 @@ export function CreateContractStepper({
               isActive
                 ? "bg-primary/5 border-primary shadow-xs ring-1 ring-primary/20"
                 : isCompleted
-                ? "bg-slate-50 border-slate-200 dark:bg-slate-900 dark:border-slate-800 hover:border-slate-300"
-                : "bg-white border-slate-200/60 opacity-60 dark:bg-slate-950 dark:border-slate-800"
+                  ? "bg-slate-50 border-slate-200 dark:bg-slate-900 dark:border-slate-800 hover:border-slate-300"
+                  : "bg-white border-slate-200/60 opacity-60 dark:bg-slate-950 dark:border-slate-800"
             }`}
           >
             <div className="flex items-center justify-between">
@@ -47,20 +47,30 @@ export function CreateContractStepper({
                   isActive
                     ? "bg-primary text-primary-foreground"
                     : isCompleted
-                    ? "bg-emerald-600 text-white"
-                    : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                      ? "bg-emerald-600 text-white"
+                      : "bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-400"
                 }`}
               >
-                {isCompleted ? <Check className="w-3 h-3 inline" /> : `0${s.id}`}
+                {isCompleted ? (
+                  <Check className="w-3 h-3 inline" />
+                ) : (
+                  `0${s.id}`
+                )}
               </span>
               {isCompleted && (
-                <span className="text-[10px] text-emerald-600 font-semibold uppercase">Hoàn tất</span>
+                <span className="text-[10px] text-emerald-600 font-semibold uppercase">
+                  Hoàn tất
+                </span>
               )}
             </div>
-            <p className={`mt-2 font-bold text-sm leading-tight ${isActive ? "text-primary" : "text-slate-800 dark:text-slate-200"}`}>
+            <p
+              className={`mt-2 font-bold text-sm leading-tight ${isActive ? "text-primary" : "text-slate-800 dark:text-slate-200"}`}
+            >
               {s.title}
             </p>
-            <p className="text-[11px] text-muted-foreground truncate">{s.desc}</p>
+            <p className="text-[11px] text-muted-foreground truncate">
+              {s.desc}
+            </p>
           </button>
         )
       })}

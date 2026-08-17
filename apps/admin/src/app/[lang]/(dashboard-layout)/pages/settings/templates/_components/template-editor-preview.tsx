@@ -2,13 +2,14 @@
 
 import React from "react"
 import { Code, Eye, FileText, Info, Upload } from "lucide-react"
+
+import type {
+  ContractTemplateItem,
+  TemplateFormState,
+} from "./contract-templates-manager"
+
 import { useTranslation } from "@/providers/i18n-provider"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,7 +20,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import type { ContractTemplateItem, TemplateFormState } from "./contract-templates-manager"
 
 interface TemplateEditorPreviewProps {
   title: string
@@ -29,7 +29,9 @@ interface TemplateEditorPreviewProps {
   currentTemplate: ContractTemplateItem | null
   activeTab: "editor" | "preview"
   setActiveTab: (tab: "editor" | "preview") => void
-  onFormStateChange: (updater: (prev: TemplateFormState) => TemplateFormState) => void
+  onFormStateChange: (
+    updater: (prev: TemplateFormState) => TemplateFormState
+  ) => void
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   getRenderedPreviewHtml: (rawHtml: string) => string
 }
@@ -58,9 +60,16 @@ export function TemplateEditorPreview({
               {title || currentTemplate?.title || t("content.templates.title")}
             </CardTitle>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span>Slug: <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">{currentTemplate?.slug || "new-template"}</code></span>
+              <span>
+                Slug:{" "}
+                <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">
+                  {currentTemplate?.slug || "new-template"}
+                </code>
+              </span>
               <span>•</span>
-              <span>Ver: <strong className="text-foreground">{version}</strong></span>
+              <span>
+                Ver: <strong className="text-foreground">{version}</strong>
+              </span>
             </div>
           </div>
 
@@ -102,11 +111,16 @@ export function TemplateEditorPreview({
           {/* Metadata inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2 space-y-1">
-              <Label className="text-xs font-semibold">{t("content.templates.templateName")}</Label>
+              <Label className="text-xs font-semibold">
+                {t("content.templates.templateName")}
+              </Label>
               <Input
                 value={title}
                 onChange={(e) =>
-                  onFormStateChange((prev) => ({ ...prev, title: e.target.value }))
+                  onFormStateChange((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
                 }
                 placeholder={t("content.templates.templateNamePlaceholder")}
                 className="text-xs h-8"
@@ -114,7 +128,9 @@ export function TemplateEditorPreview({
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold">{t("content.templates.version")}</Label>
+                <Label className="text-xs font-semibold">
+                  {t("content.templates.version")}
+                </Label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -131,14 +147,19 @@ export function TemplateEditorPreview({
               <Input
                 value={version}
                 onChange={(e) =>
-                  onFormStateChange((prev) => ({ ...prev, version: e.target.value }))
+                  onFormStateChange((prev) => ({
+                    ...prev,
+                    version: e.target.value,
+                  }))
                 }
                 placeholder="2.0.0"
                 className="text-xs h-8"
               />
             </div>
             <div className="sm:col-span-3 space-y-1">
-              <Label className="text-xs font-semibold">{t("content.templates.description")}</Label>
+              <Label className="text-xs font-semibold">
+                {t("content.templates.description")}
+              </Label>
               <Input
                 value={description}
                 onChange={(e) =>

@@ -8,10 +8,8 @@ import {
   Users,
 } from "lucide-react"
 
-import type { Metadata } from "next"
 import type { BackofficeOverview } from "@/types"
-
-import { backofficeService } from "@/services/backoffice.service"
+import type { Metadata } from "next"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +22,7 @@ import { Overview } from "./_components/overview"
 import { PerformanceOverTime } from "./_components/performance-over-time"
 import { TrafficSources } from "./_components/traffic-sources"
 import { VisitorsByCountry } from "./_components/visitors-by-country"
+import { backofficeService } from "@/services/backoffice.service"
 
 export const metadata: Metadata = {
   title: "Bảng điều khiển | Sâm Ngọc Linh Admin",
@@ -74,7 +73,8 @@ export default async function AnalyticsPage(props: AnalyticsPageProps) {
       }
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching admin backoffice overview:", e)
     errorMsg = message
   }

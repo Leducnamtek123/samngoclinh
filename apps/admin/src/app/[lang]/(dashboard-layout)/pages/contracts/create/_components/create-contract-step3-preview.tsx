@@ -1,14 +1,28 @@
 "use client"
 
 import React from "react"
-import { FileText, RefreshCw, Eye, Code, Lightbulb, PenTool } from "lucide-react"
+import {
+  Code,
+  Eye,
+  FileText,
+  Lightbulb,
+  PenTool,
+  RefreshCw,
+} from "lucide-react"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { useTranslation } from "@/providers/i18n-provider"
 
 interface CreateContractStep3Props {
   selectedTemplateSlug: string
@@ -54,13 +68,17 @@ export function CreateContractStep3Preview({
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <FileText className="w-4 h-4 text-primary" /> {t("contracts.wizard.step3")}
+              <FileText className="w-4 h-4 text-primary" />{" "}
+              {t("contracts.wizard.step3")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>{t("contracts.wizard.step3Desc")}</Label>
-              <Select value={selectedTemplateSlug} onValueChange={onTemplateChange}>
+              <Select
+                value={selectedTemplateSlug}
+                onValueChange={onTemplateChange}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -81,7 +99,10 @@ export function CreateContractStep3Preview({
                   {t("contracts.fields.type")}:
                 </span>
                 {isCustomEdited && (
-                  <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] bg-amber-50 text-amber-700 border-amber-200"
+                  >
                     {t("common.actions.edit")}
                   </Badge>
                 )}
@@ -89,43 +110,57 @@ export function CreateContractStep3Preview({
 
               <div className="text-xs space-y-1.5 font-mono text-slate-600 dark:text-slate-400">
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("orders.fields.customer")}:</span>
+                  <span className="text-slate-500">
+                    {t("orders.fields.customer")}:
+                  </span>
                   <span className="font-bold text-slate-900 dark:text-white truncate max-w-[150px]">
                     {customerName || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("users.fields.identityNumber")}:</span>
+                  <span className="text-slate-500">
+                    {t("users.fields.identityNumber")}:
+                  </span>
                   <span className="font-bold text-slate-900 dark:text-white">
                     {customerCccd || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("users.fields.phone")}:</span>
+                  <span className="text-slate-500">
+                    {t("users.fields.phone")}:
+                  </span>
                   <span className="font-bold text-slate-900 dark:text-white">
                     {customerPhone || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("contracts.fields.totalValue")}:</span>
+                  <span className="text-slate-500">
+                    {t("contracts.fields.totalValue")}:
+                  </span>
                   <span className="font-bold text-emerald-600">
                     {contractValue.toLocaleString("vi-VN")} đ
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("contracts.fields.careFee")}:</span>
+                  <span className="text-slate-500">
+                    {t("contracts.fields.careFee")}:
+                  </span>
                   <span className="font-bold text-emerald-600">
                     {careFee.toLocaleString("vi-VN")} đ
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5 border-b border-slate-200/60 dark:border-slate-800/60">
-                  <span className="text-slate-500">{t("contracts.fields.tree")}:</span>
+                  <span className="text-slate-500">
+                    {t("contracts.fields.tree")}:
+                  </span>
                   <span className="font-bold text-slate-900 dark:text-white">
                     {treeQuantity}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-0.5">
-                  <span className="text-slate-500">{t("contracts.fields.code")}:</span>
+                  <span className="text-slate-500">
+                    {t("contracts.fields.code")}:
+                  </span>
                   <span className="font-bold text-primary truncate max-w-[150px]">
                     {contractCode}
                   </span>
@@ -140,7 +175,8 @@ export function CreateContractStep3Preview({
                 onClick={onResetToTemplate}
                 className="w-full text-xs gap-1.5"
               >
-                <RefreshCw className="w-3.5 h-3.5" /> {t("common.actions.reset")}
+                <RefreshCw className="w-3.5 h-3.5" />{" "}
+                {t("common.actions.reset")}
               </Button>
             </div>
           </CardContent>
@@ -172,7 +208,8 @@ export function CreateContractStep3Preview({
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
                 }`}
               >
-                <PenTool className="w-3.5 h-3.5" /> <span>{t("common.actions.edit")}</span>
+                <PenTool className="w-3.5 h-3.5" />{" "}
+                <span>{t("common.actions.edit")}</span>
               </button>
             </div>
           </div>

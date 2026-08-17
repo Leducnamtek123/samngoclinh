@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -39,7 +40,9 @@ export function CreateContractIdentityFields({
         <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
           {t("contracts.identity.title")}
         </span>
-        <Badge variant="outline" className="text-[10px]">{t("contracts.identity.autoBadge")}</Badge>
+        <Badge variant="outline" className="text-[10px]">
+          {t("contracts.identity.autoBadge")}
+        </Badge>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1.5">

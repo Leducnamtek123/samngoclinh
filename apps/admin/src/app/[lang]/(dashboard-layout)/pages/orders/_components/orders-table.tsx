@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
 import type { ColumnDef } from "@/components/shared/data-table"
+import type { Order, PaginationMeta } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 
@@ -21,8 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { DataTable } from "@/components/shared/data-table"
-
-import type { Order, PaginationMeta } from "@/types"
 
 interface OrdersTableProps {
   initialOrders: Order[]

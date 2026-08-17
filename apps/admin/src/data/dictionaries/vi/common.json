@@ -37,7 +37,7 @@
     "available": "Có sẵn",
     "inactive": "Không hoạt động",
     "blocked": "Đã khóa",
-    "pending": "Chờ thanh toán",
+    "pending": "Chờ xử lý",
     "paid": "Đã thanh toán",
     "shipping": "Đang giao hàng",
     "completed": "Hoàn thành",
@@ -45,7 +45,7 @@
     "failed": "Thất bại",
     "success": "Thành công",
     "processing": "Đang xử lý",
-    "expired": "Hết hạn",
+    "expired": "Đã hết hạn",
     "draft": "Bản nháp",
     "approved": "Đã duyệt",
     "rejected": "Đã từ chối",
@@ -58,7 +58,15 @@
     "justNow": "Vừa xong",
     "verified": "Đã xác minh",
     "unverified": "Chưa xác minh",
-    "noImage": "Chưa có ảnh"
+    "noImage": "Chưa có ảnh",
+    "pending_issue": "Chờ phát hành",
+    "pending_signature": "Chờ ký",
+    "signed": "Đã ký",
+    "shipped": "Đang giao hàng",
+    "delivered": "Đã giao hàng",
+    "in_transit": "Đang vận chuyển",
+    "unpaid": "Chưa thanh toán",
+    "refunded": "Đã hoàn tiền"
   },
   "table": {
     "rowsPerPage": "Số hàng mỗi trang",
@@ -97,5 +105,11 @@
   "error": "Lỗi",
   "back": "Quay lại",
   "success": "Thành công",
-  "failed": "Thao tác thất bại"
+  "failed": "Thao tác thất bại",
+  "notification": {
+    "success": "Thao tác thành công",
+    "error": "Đã có lỗi xảy ra",
+    "warning": "Cảnh báo",
+    "info": "Thông báo"
+  }
 }

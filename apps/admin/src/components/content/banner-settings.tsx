@@ -1,6 +1,7 @@
 "use client"
 
 import type { FormEvent } from "react"
+
 import { useTranslation } from "@/providers/i18n-provider"
 
 type BannerSettingsProps = {
@@ -234,7 +235,9 @@ export function BannerSettings({
             disabled={bannerLoading}
             className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm text-xs"
           >
-            {bannerLoading ? t("common.table.loading") : t("common.actions.save")}
+            {bannerLoading
+              ? t("common.table.loading")
+              : t("common.actions.save")}
           </button>
         </div>
       </form>

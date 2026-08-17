@@ -21,8 +21,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
     if (payload?.data) {
       initialData = payload.data;
     }
-  } catch (e) {
-    console.warn('[ProductDetailPage] Could not prefetch product:', e);
+  } catch (error) {
+    console.warn('[ProductDetailPage] Could not prefetch product:', error);
   }
 
   return (

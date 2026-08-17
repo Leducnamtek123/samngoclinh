@@ -5,7 +5,7 @@ import type { WalletSummary } from '@/types';
 export function useWalletSummary(initialData?: WalletSummary) {
   return useQuery<WalletSummary | null>({
     queryKey: ['wallet', 'summary'],
-    queryFn: () => walletService.getSummary() as Promise<WalletSummary | null>,
+    queryFn: async () => await (walletService.getSummary() as Promise<WalletSummary | null>),
     initialData,
   });
 }

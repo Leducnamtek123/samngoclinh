@@ -1,4 +1,3 @@
-import { fetchApiJson } from "@/lib/api"
 import type {
   ApiResponse,
   Bed,
@@ -7,6 +6,8 @@ import type {
   QrCodeTraceability,
   Tree,
 } from "@/types"
+
+import { fetchApiJson } from "@/lib/api"
 
 export interface CultivationPaginationParams {
   page?: number | string
@@ -19,14 +20,19 @@ export interface CultivationPaginationParams {
 
 export const cultivationService = {
   // Gardens
-  async getGardens(params?: CultivationPaginationParams): Promise<ApiResponse<Garden[]>> {
+  async getGardens(
+    params?: CultivationPaginationParams
+  ): Promise<ApiResponse<Garden[]>> {
     const query = new URLSearchParams()
     if (params?.page) query.append("page", String(params.page))
     if (params?.perPage) query.append("perPage", String(params.perPage))
     if (params?.search) query.append("search", params.search)
-    if (params?.status && params.status !== "all") query.append("status", params.status)
+    if (params?.status && params.status !== "all")
+      query.append("status", params.status)
 
-    return fetchApiJson<Garden[]>(`/user/cultivation/gardens/paginated?${query.toString()}`)
+    return fetchApiJson<Garden[]>(
+      `/user/cultivation/gardens/paginated?${query.toString()}`
+    )
   },
 
   async getGardenDetail(id: string): Promise<ApiResponse<Garden>> {
@@ -34,47 +40,70 @@ export const cultivationService = {
   },
 
   // Beds
-  async getBeds(params?: CultivationPaginationParams): Promise<ApiResponse<Bed[]>> {
+  async getBeds(
+    params?: CultivationPaginationParams
+  ): Promise<ApiResponse<Bed[]>> {
     const query = new URLSearchParams()
     if (params?.page) query.append("page", String(params.page))
     if (params?.perPage) query.append("perPage", String(params.perPage))
     if (params?.search) query.append("search", params.search)
-    if (params?.status && params.status !== "all") query.append("status", params.status)
-    if (params?.gardenId && params.gardenId !== "all") query.append("gardenId", params.gardenId)
+    if (params?.status && params.status !== "all")
+      query.append("status", params.status)
+    if (params?.gardenId && params.gardenId !== "all")
+      query.append("gardenId", params.gardenId)
 
-    return fetchApiJson<Bed[]>(`/user/cultivation/beds/paginated?${query.toString()}`)
+    return fetchApiJson<Bed[]>(
+      `/user/cultivation/beds/paginated?${query.toString()}`
+    )
   },
 
   // Trees
-  async getTrees(params?: CultivationPaginationParams): Promise<ApiResponse<Tree[]>> {
+  async getTrees(
+    params?: CultivationPaginationParams
+  ): Promise<ApiResponse<Tree[]>> {
     const query = new URLSearchParams()
     if (params?.page) query.append("page", String(params.page))
     if (params?.perPage) query.append("perPage", String(params.perPage))
     if (params?.search) query.append("search", params.search)
-    if (params?.status && params.status !== "all") query.append("status", params.status)
-    if (params?.gardenId && params.gardenId !== "all") query.append("gardenId", params.gardenId)
-    if (params?.bedId && params.bedId !== "all") query.append("bedId", params.bedId)
+    if (params?.status && params.status !== "all")
+      query.append("status", params.status)
+    if (params?.gardenId && params.gardenId !== "all")
+      query.append("gardenId", params.gardenId)
+    if (params?.bedId && params.bedId !== "all")
+      query.append("bedId", params.bedId)
 
     try {
-      const res = await fetchApiJson<Tree[]>(`/admin/cultivation/trees?${query.toString()}`)
+      const res = await fetchApiJson<Tree[]>(
+        `/admin/cultivation/trees?${query.toString()}`
+      )
       if (res?.data) return res
     } catch {}
 
-    return fetchApiJson<Tree[]>(`/user/cultivation/trees/paginated?${query.toString()}`)
+    return fetchApiJson<Tree[]>(
+      `/user/cultivation/trees/paginated?${query.toString()}`
+    )
   },
 
   // Care Logs
-  async getCareLogs(params?: CultivationPaginationParams): Promise<ApiResponse<CareLog[]>> {
+  async getCareLogs(
+    params?: CultivationPaginationParams
+  ): Promise<ApiResponse<CareLog[]>> {
     const query = new URLSearchParams()
     if (params?.page) query.append("page", String(params.page))
     if (params?.perPage) query.append("perPage", String(params.perPage))
     if (params?.search) query.append("search", params.search)
 
-    return fetchApiJson<CareLog[]>(`/user/cultivation/care-logs/paginated?${query.toString()}`)
+    return fetchApiJson<CareLog[]>(
+      `/user/cultivation/care-logs/paginated?${query.toString()}`
+    )
   },
 
   // QR Code Traceability
-  async getQrTraceability(code: string): Promise<ApiResponse<QrCodeTraceability>> {
-    return fetchApiJson<QrCodeTraceability>(`/user/cultivation/trees/qr/${encodeURIComponent(code)}`)
+  async getQrTraceability(
+    code: string
+  ): Promise<ApiResponse<QrCodeTraceability>> {
+    return fetchApiJson<QrCodeTraceability>(
+      `/user/cultivation/trees/qr/${encodeURIComponent(code)}`
+    )
   },
 }

@@ -1,12 +1,12 @@
 'use client';
 
-import * as React from 'react';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
+import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar } from './calendar';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
-export interface DatePickerProps {
+export type DatePickerProps = {
   id?: string;
   value?: string | Date | null;
   onChange?: (val: string) => void;
@@ -16,15 +16,19 @@ export interface DatePickerProps {
   minDate?: Date;
   maxDate?: Date;
   error?: boolean;
-}
+};
 
 /**
  * Formats a Date object or ISO string to `dd/MM/yyyy` for display.
  */
 function formatDateDisplay(value?: string | Date | null): string {
-  if (!value) return '';
+  if (!value) {
+    return '';
+  }
   const d = typeof value === 'string' ? new Date(value) : value;
-  if (isNaN(d.getTime())) return '';
+  if (isNaN(d.getTime())) {
+    return '';
+  }
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const year = d.getFullYear();
@@ -35,7 +39,9 @@ function formatDateDisplay(value?: string | Date | null): string {
  * Formats a Date to `YYYY-MM-DD` for form state / backend.
  */
 function formatDateValue(date: Date | null): string {
-  if (!date) return '';
+  if (!date) {
+    return '';
+  }
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
@@ -56,7 +62,9 @@ export function DatePicker({
   const [open, setOpen] = React.useState(false);
 
   const selectedDate = (() => {
-    if (!value) return null;
+    if (!value) {
+      return null;
+    }
     const d = typeof value === 'string' ? new Date(value) : value;
     return isNaN(d.getTime()) ? null : d;
   })();
@@ -90,17 +98,17 @@ export function DatePicker({
                 ? 'border-red-500 focus:ring-2 focus:ring-red-500/20'
                 : 'border-gray-300 dark:border-gray-700 hover:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600',
               disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
-              className
+              className,
             )}
           >
             <div className="flex items-center gap-2.5 overflow-hidden pr-6">
-              <CalendarIcon className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <CalendarIcon className="h-4 w-4 shrink-0 text-emerald-700 dark:text-emerald-400" />
               {displayString ? (
-                <span className="text-gray-900 dark:text-gray-100 font-bold truncate">
+                <span className="truncate font-bold text-gray-900 dark:text-gray-100">
                   {displayString}
                 </span>
               ) : (
-                <span className="text-gray-400 dark:text-gray-500 font-normal truncate">
+                <span className="truncate font-normal text-gray-400 dark:text-gray-500">
                   {placeholder}
                 </span>
               )}
@@ -113,14 +121,14 @@ export function DatePicker({
             type="button"
             aria-label="Clear date"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-gray-600 transition-colors z-10 cursor-pointer"
+            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-slate-700"
             title="Clear date"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
-      <PopoverContent align="start" className="p-3 w-auto">
+      <PopoverContent align="start" className="w-auto p-3">
         <Calendar
           selected={selectedDate}
           onSelect={handleSelect}

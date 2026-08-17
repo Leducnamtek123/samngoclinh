@@ -21,8 +21,8 @@ export default async function GinsengDetailPage({ params }: PageProps) {
     if (payload?.data) {
       initialData = payload.data;
     }
-  } catch (e) {
-    console.warn('[GinsengDetailPage] Could not prefetch plant:', e);
+  } catch (error) {
+    console.warn('[GinsengDetailPage] Could not prefetch plant:', error);
   }
 
   return (

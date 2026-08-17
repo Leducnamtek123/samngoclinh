@@ -48,7 +48,7 @@ export function remToPx(rem: number) {
   return rem * rootFontSize
 }
 
-function isUrl(text: string) {
+export function isUrl(text: string) {
   return z.string().url().safeParse(text).success
 }
 
@@ -87,7 +87,7 @@ export function formatFileSize(bytes: number, decimals: number = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
-function formatFileType(type: string) {
+export function formatFileType(type: string) {
   return type.slice(0, type.lastIndexOf("/"))
 }
 
@@ -165,7 +165,7 @@ export function formatDate(value?: string | number | Date | null) {
   }
 }
 
-function formatRelativeDate(value?: string | number | Date | null) {
+export function formatRelativeDate(value?: string | number | Date | null) {
   if (!value) return "Chưa có ngày"
 
   try {
@@ -262,10 +262,7 @@ export function formatDistance(value: string | number | Date) {
     .replace(/\b(over|almost|about)\b/g, "")
 }
 
-function formatNumberToCompact(
-  value: number = 0,
-  locales: LocaleType = "en"
-) {
+export function formatNumberToCompact(value: number = 0, locales: LocaleType = "en") {
   const safeValue = typeof value === "number" && !isNaN(value) ? value : 0
   if (locales === "vi") {
     return compactFormatterVi.format(safeValue)
@@ -360,7 +357,7 @@ export function getDiscountedPrice(
   }
 }
 
-function isBeforeToday(date: Date) {
+export function isBeforeToday(date: Date) {
   // Get the start of today
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0))
 

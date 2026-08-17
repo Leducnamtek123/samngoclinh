@@ -75,11 +75,7 @@ export function ChartContainer({
         <ChartStyle id={chartId} config={config} />
         {recharts ? (
           <recharts.ResponsiveContainer>
-            {React.isValidElement(children) ? (
-              children
-            ) : (
-              <div>{children}</div>
-            )}
+            {React.isValidElement(children) ? children : <div>{children}</div>}
           </recharts.ResponsiveContainer>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">

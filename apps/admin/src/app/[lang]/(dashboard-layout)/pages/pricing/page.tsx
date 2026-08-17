@@ -2,12 +2,12 @@ import Link from "next/link"
 import { PackageOpen, Plus } from "lucide-react"
 
 import type { PricingPlansType } from "@/components/pricing-plans"
-import type { Metadata } from "next"
 import type { CarePackage, ProtectionPackage } from "@/types"
+import type { Metadata } from "next"
 
-import { packagesService } from "@/services/packages.service"
 import { Button } from "@/components/ui/button"
 import { Pricing } from "./_components/pricing"
+import { packagesService } from "@/services/packages.service"
 
 export const metadata: Metadata = {
   title: "Bảng giá gói dịch vụ | Sâm Ngọc Linh Admin",
@@ -23,7 +23,11 @@ export default async function PricingPage() {
       packagesService.getProtectionPackages({ perPage: 1 }).catch(() => null),
     ])
 
-    if (careRes?.data && Array.isArray(careRes.data) && careRes.data.length > 0) {
+    if (
+      careRes?.data &&
+      Array.isArray(careRes.data) &&
+      careRes.data.length > 0
+    ) {
       careRes.data.forEach((pkg: CarePackage, idx: number) => {
         plans.push({
           title: pkg.name || `Gói chăm sóc ${idx + 1}`,
@@ -43,11 +47,16 @@ export default async function PricingPage() {
       })
     }
 
-    if (protRes?.data && Array.isArray(protRes.data) && protRes.data.length > 0) {
+    if (
+      protRes?.data &&
+      Array.isArray(protRes.data) &&
+      protRes.data.length > 0
+    ) {
       const pkg = protRes.data[0]
       plans.push({
         title: pkg.name || "Gói bảo hiểm & bảo vệ toàn diện",
-        description: pkg.description || "Bảo hiểm rủi ro thiên tai & giám sát 24/7",
+        description:
+          pkg.description || "Bảo hiểm rủi ro thiên tai & giám sát 24/7",
         price: pkg.price || 0,
         period: "năm",
         features: [
@@ -74,7 +83,8 @@ export default async function PricingPage() {
           Chưa có cấu hình bảng giá gói dịch vụ
         </h2>
         <p className="text-sm text-muted-foreground max-w-md">
-          Hệ thống hiện tại chưa thiết lập gói chăm sóc hoặc bảo hiểm bảo vệ nào trong cơ sở dữ liệu.
+          Hệ thống hiện tại chưa thiết lập gói chăm sóc hoặc bảo hiểm bảo vệ nào
+          trong cơ sở dữ liệu.
         </p>
         <Link href="/pages/packages">
           <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 mt-2">

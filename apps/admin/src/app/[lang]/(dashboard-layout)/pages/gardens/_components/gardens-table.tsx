@@ -2,6 +2,8 @@
 
 import { Plus, Trash2 } from "lucide-react"
 
+import type { Garden, PaginationMeta } from "@/types"
+
 import { Pagination } from "@/components/ui/app-pagination"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,8 +22,6 @@ import { Input } from "@/components/ui/input"
 import { GardenDialog } from "./garden-dialog"
 import { GardensList } from "./gardens-list"
 import { useGardensManager } from "./use-gardens-manager"
-
-import type { Garden, PaginationMeta } from "@/types"
 
 interface GardensTableProps {
   initialGardens: Garden[]

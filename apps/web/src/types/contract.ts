@@ -7,7 +7,7 @@ export type ContractStatus =
   | 'cancelled'
   | string;
 
-export interface EContractItem {
+export type EContractItem = {
   id?: string;
   treeCode: string;
   treeName: string;
@@ -15,12 +15,25 @@ export interface EContractItem {
   gardenCode?: string | null;
   bedCode?: string | null;
   unitPrice?: number;
-}
+};
 
-export interface EContractData {
+export type EContractData = {
   id: string;
   code: string;
   userId?: string;
+  userName?: string;
+  userIdentityNumber?: string;
+  customerIdentity?: string;
+  userAddress?: string;
+  userPhone?: string;
+  userEmail?: string;
+  user?: {
+    id?: string;
+    name?: string;
+    fullName?: string;
+    email?: string;
+    mobileNumbers?: { number: string }[];
+  } | null;
   orderId?: string | null;
   order?: { total?: number; totalAmount?: number; [key: string]: unknown } | null;
   title: string;
@@ -42,6 +55,4 @@ export interface EContractData {
   metadata?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
-}
-
-
+};

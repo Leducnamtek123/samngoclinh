@@ -1,5 +1,5 @@
-import type { InvoiceType } from "../types"
 import type { Order } from "@/types"
+import type { InvoiceType } from "../types"
 
 import { InvoicesTable } from "./invoices-table"
 
@@ -7,7 +7,9 @@ interface InvoicesProps {
   orders?: Order[] | null
 }
 
-function mapOrderStatusToDelivery(status?: string): InvoiceType["deliveryStatus"] {
+function mapOrderStatusToDelivery(
+  status?: string
+): InvoiceType["deliveryStatus"] {
   switch (status?.toLowerCase()) {
     case "completed":
     case "delivered":

@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { Garden, PaginationMeta } from "@/types"
-
-import { cultivationService } from "@/services/cultivation.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { GardensTable } from "./_components/gardens-table"
+import { cultivationService } from "@/services/cultivation.service"
 
 export const metadata: Metadata = {
   title: "Quản lý khu vườn | Sâm Ngọc Linh Admin",
@@ -41,7 +40,8 @@ export default async function GardensPage({ searchParams }: GardensPageProps) {
       metadata = res.metadata || null
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching gardens:", e)
     errorMsg = message
   }

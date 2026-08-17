@@ -1,4 +1,4 @@
-import { Cairo, Inter } from "next/font/google"
+import { Inter } from "next/font/google"
 import { cookies } from "next/headers"
 import { getServerSession } from "next-auth"
 
@@ -62,18 +62,11 @@ export const metadata: Metadata = {
 }
 
 // Define fonts for the application
-// More info: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
 const interFont = Inter({
   subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-inter",
   display: "swap",
-})
-const cairoFont = Cairo({
-  subsets: ["arabic"],
-  weight: ["400", "700"],
-  style: ["normal"],
-  variable: "--font-cairo",
 })
 
 export default async function RootLayout(props: {
@@ -109,10 +102,9 @@ export default async function RootLayout(props: {
         className={cn(
           `theme-${initialTheme}`,
           `radius-${initialRadius}`,
-          "[&:lang(en)]:font-sans [&:lang(vi)]:font-sans font-sans", // Set font styles based on the language
-          "bg-background text-foreground antialiased overscroll-none", // Set background, text, anti-aliasing styles, and overscroll behavior
-          interFont.variable, // Include Inter font variable
-          cairoFont.variable // Include Cairo font variable
+          "[&:lang(en)]:font-sans [&:lang(vi)]:font-sans font-sans",
+          "bg-background text-foreground antialiased overscroll-none",
+          interFont.variable
         )}
       >
         <script
@@ -139,7 +131,12 @@ export default async function RootLayout(props: {
             `,
           }}
         />
-        <Providers locale={lang} direction={direction} session={session} dictionary={await getDictionary(lang)}>
+        <Providers
+          locale={lang}
+          direction={direction}
+          session={session}
+          dictionary={await getDictionary(lang)}
+        >
           {children}
           <Toaster />
           <Sonner />

@@ -119,21 +119,25 @@
     "processing": "Đang xử lý",
     "shipping": "Đang giao hàng",
     "delivered": "Đã giao hàng",
-    "completed": "Hoàn tất",
+    "completed": "Hoàn thành",
     "cancelled": "Đã hủy",
     "refunded": "Đã hoàn tiền",
     "paid": "Đã thanh toán",
     "unpaid": "Chưa thanh toán",
     "failed": "Thất bại",
-    "active": "Đang hoạt động",
+    "active": "Đang hiệu lực",
     "inactive": "Ngừng hoạt động",
     "verified": "Đã xác thực",
     "unverified": "Chưa xác thực",
     "rejected": "Bị từ chối",
     "expired": "Đã hết hạn",
-    "signed": "Đã ký",
+    "signed": "Đã ký kết",
     "unsigned": "Chưa ký",
-    "unknown": "Không xác định"
+    "unknown": "Không xác định",
+    "pending_issue": "Chờ phát hành",
+    "pending_signature": "Chờ ký số",
+    "shipped": "Đang giao hàng",
+    "in_transit": "Đang vận chuyển"
   },
   "memberRank": {
     "standard": "Thành viên Tiêu Chuẩn",
@@ -203,5 +207,11 @@
     "loading": "Đang tải...",
     "searchPlaceholder": "Tìm kiếm sản phẩm, tin tức...",
     "clear": "Xóa tìm kiếm"
+  },
+  "notification": {
+    "success": "Thành công",
+    "error": "Thất bại",
+    "warning": "Cảnh báo",
+    "info": "Thông báo"
   }
 }

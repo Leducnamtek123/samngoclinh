@@ -3,7 +3,7 @@ import { userService } from '@/services/user.service';
 
 export function useRequestEmailVerification() {
   return useMutation({
-    mutationFn: () => userService.requestEmailVerification(),
+    mutationFn: async () => await userService.requestEmailVerification(),
   });
 }
 
@@ -11,7 +11,7 @@ export function useConfirmEmailVerification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (otp: string) => userService.confirmEmailVerification(otp),
+    mutationFn: async (otp: string) => await userService.confirmEmailVerification(otp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
     },

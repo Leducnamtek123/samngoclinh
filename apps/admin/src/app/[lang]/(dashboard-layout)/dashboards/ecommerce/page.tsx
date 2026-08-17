@@ -1,11 +1,7 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { BackofficeOverview, Order, ShopItem } from "@/types"
-
-import { backofficeService } from "@/services/backoffice.service"
-import { catalogService } from "@/services/catalog.service"
-import { ordersService } from "@/services/orders.service"
+import type { Metadata } from "next"
 
 import { ChurnRate } from "./_components/churn-rate"
 import { CustomerInsights } from "./_components/customer-insights"
@@ -15,6 +11,9 @@ import { Overview } from "./_components/overview"
 import { RevenueBySource } from "./_components/revenue-by-source"
 import { SalesTrend } from "./_components/sales-trend"
 import { TopProducts } from "./_components/top-products"
+import { backofficeService } from "@/services/backoffice.service"
+import { catalogService } from "@/services/catalog.service"
+import { ordersService } from "@/services/orders.service"
 
 export const metadata: Metadata = {
   title: "Báo cáo Bán hàng & Doanh thu | Sâm Ngọc Linh Admin",
@@ -62,7 +61,8 @@ export default async function EcommercePage(props: EcommercePageProps) {
             Báo cáo Bán hàng & Doanh thu
           </h1>
           <p className="text-muted-foreground">
-            Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng, sâm củ và hợp đồng ủy quyền canh tác.
+            Thống kê chi tiết doanh số các dòng Rượu Sâm Ngọc Linh thượng hạng,
+            sâm củ và hợp đồng ủy quyền canh tác.
           </p>
         </div>
       </div>

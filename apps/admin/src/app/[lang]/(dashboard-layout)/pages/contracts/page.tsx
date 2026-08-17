@@ -1,14 +1,13 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { AdminUser, EContract, PaginationMeta, Tree } from "@/types"
-
-import { cultivationService } from "@/services/cultivation.service"
-import { legalService } from "@/services/legal.service"
-import { usersService } from "@/services/users.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContractsManager } from "./_components/contracts-manager"
+import { cultivationService } from "@/services/cultivation.service"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 
 export const metadata: Metadata = {
   title: "Quản lý Hợp đồng Điện tử | Sâm Ngọc Linh Admin",
@@ -51,25 +50,27 @@ export default async function ContractsPage({
     if (contractRes) {
       contracts = Array.isArray(contractRes.data)
         ? contractRes.data
-        : Array.isArray((contractRes.data as any)?.items)
-        ? (contractRes.data as any).items
-        : []
-      metadata = contractRes.metadata || (contractRes.data as any)?.metadata || null
+        : Array.isArray((contractRes.data as { items?: EContract[] })?.items)
+          ? (contractRes.data as { items?: EContract[] }).items || []
+          : []
+      metadata =
+        contractRes.metadata || (contractRes.data as { metadata?: typeof metadata })?.metadata || null
     }
 
     if (usersRes?.data) {
       users = Array.isArray(usersRes.data)
         ? usersRes.data
-        : (usersRes.data as any)?.items || []
+        : (usersRes.data as { items?: typeof users })?.items || []
     }
 
     if (treesRes?.data) {
       trees = Array.isArray(treesRes.data)
         ? treesRes.data
-        : (treesRes.data as any)?.items || []
+        : (treesRes.data as { items?: typeof trees })?.items || []
     }
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching contracts data:", e)
     errorMsg = message
   }

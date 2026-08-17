@@ -20,7 +20,7 @@ export interface PointsConversionSetting {
 export interface SystemSetting {
   id?: string
   key: string
-  value: any
+  value: unknown
   description?: string | null
   createdAt?: string | Date
   updatedAt?: string | Date

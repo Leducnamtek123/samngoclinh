@@ -13,6 +13,7 @@ import {
   Upload,
 } from "lucide-react"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Button } from "@/components/ui/button"
@@ -43,7 +44,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
-import { useTranslation } from "@/providers/i18n-provider"
 import { useBannersManager } from "./use-banners-manager"
 
 interface Banner {
@@ -126,9 +126,7 @@ export function BannersManager({
           <h1 className="text-3xl font-bold tracking-tight">
             {t("content.banners.title")}
           </h1>
-          <p className="text-muted-foreground">
-            {t("content.subtitle")}
-          </p>
+          <p className="text-muted-foreground">{t("content.subtitle")}</p>
         </div>
         <Button
           onClick={handleCreateClick}
@@ -267,7 +265,7 @@ function BannersTable({
                 colSpan={6}
                 className="text-center py-10 text-slate-400 font-semibold"
               >
-                Chưa có cấu hình banner nào. Nhấn "Thêm Banner mới" để bắt đầu!
+                Chưa có cấu hình banner nào. Nhấn &quot;Thêm Banner mới&quot; để bắt đầu!
               </TableCell>
             </TableRow>
           ) : (
@@ -380,16 +378,18 @@ function BannerDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            {dialogMode === "create" ? t("content.banners.addBanner") : t("common.actions.edit")}
+            {dialogMode === "create"
+              ? t("content.banners.addBanner")
+              : t("common.actions.edit")}
           </DialogTitle>
-          <DialogDescription>
-            {t("content.banners.title")}
-          </DialogDescription>
+          <DialogDescription>{t("content.banners.title")}</DialogDescription>
         </DialogHeader>
 
         {dialogError && (
           <Alert variant="destructive" className="py-2.5">
-            <AlertTitle className="text-xs font-bold">{t("common.status.error")}</AlertTitle>
+            <AlertTitle className="text-xs font-bold">
+              {t("common.status.error")}
+            </AlertTitle>
             <AlertDescription className="text-xs">
               {dialogError}
             </AlertDescription>

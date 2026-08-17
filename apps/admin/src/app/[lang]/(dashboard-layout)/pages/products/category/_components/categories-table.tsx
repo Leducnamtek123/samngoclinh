@@ -55,9 +55,7 @@ export function CategoriesTable() {
           <h1 className="text-3xl font-bold tracking-tight">
             {t("products.categories")}
           </h1>
-          <p className="text-muted-foreground">
-            {t("products.subtitle")}
-          </p>
+          <p className="text-muted-foreground">{t("products.subtitle")}</p>
         </div>
         <Button onClick={openCreateDialog}>
           <Plus className="size-4 mr-2" />
@@ -89,13 +87,21 @@ export function CategoriesTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[120px]">{t("products.categoryForm.code")}</TableHead>
+                  <TableHead className="w-[120px]">
+                    {t("products.categoryForm.code")}
+                  </TableHead>
                   <TableHead>{t("products.categoryForm.name")}</TableHead>
                   <TableHead>{t("products.categoryForm.slug")}</TableHead>
                   <TableHead>{t("products.categoryForm.desc")}</TableHead>
-                  <TableHead className="text-center">{t("products.title")}</TableHead>
-                  <TableHead className="text-center">{t("products.fields.status")}</TableHead>
-                  <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
+                  <TableHead className="text-center">
+                    {t("products.title")}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t("products.fields.status")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("common.actions.actions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -5,6 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Loader2 } from "lucide-react"
 
+import type { Area, CropState } from "./shop-item-crop-dialog"
+import type { ShopItemFormValues } from "./shop-item-schema"
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -16,13 +19,9 @@ import {
 } from "@/components/ui/dialog"
 import { InlineAlert } from "@/components/ui/feedback-components"
 import { Form } from "@/components/ui/form"
-import {
-  shopItemSchema,
-  type ShopItemFormValues,
-  DEFAULT_UNITS,
-} from "./shop-item-schema"
+import { ShopItemCropDialog } from "./shop-item-crop-dialog"
 import { ShopItemFormFields } from "./shop-item-form-fields"
-import { ShopItemCropDialog, type Area, type CropState } from "./shop-item-crop-dialog"
+import { DEFAULT_UNITS, shopItemSchema } from "./shop-item-schema"
 
 export type { ShopItemFormValues }
 

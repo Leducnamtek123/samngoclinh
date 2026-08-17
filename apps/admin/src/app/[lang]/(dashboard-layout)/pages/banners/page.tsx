@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 
-import { contentService } from "@/services/content.service"
-
 import { BannersManager } from "./_components/banners-manager"
+import { contentService } from "@/services/content.service"
 
 export const metadata: Metadata = {
   title: "Quản lý Banners | Sâm Ngọc Linh Admin",
@@ -25,9 +24,24 @@ export default async function BannersPage() {
 
   try {
     const payload = await contentService.getBanners()
-    banners = (payload.data as any)?.items || (Array.isArray(payload.data) ? payload.data : [])
+    const rawItems = Array.isArray(payload.data)
+      ? payload.data
+      : (payload.data as { items?: unknown[] })?.items || []
+
+    banners = (rawItems as unknown[]).map((item, idx) => {
+      const b = item as Record<string, unknown>
+      return {
+        id: String(b.id || `banner-${idx}`),
+        pageKey: String(b.pageKey || b.position || "home"),
+        title: String(b.title || ""),
+        subtitle: String(b.subtitle || b.description || ""),
+        image: String(b.image || b.imageUrl || ""),
+        order: Number(b.order ?? b.sortOrder ?? idx),
+      }
+    })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching banners on server:", e)
     errorMsg = message
   }

@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import type { GardenFormValues } from "@/schemas/garden-schema"
 
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Garden {
   id: string
@@ -246,7 +246,7 @@ export function useGardensManager({
     setSuccessMsg("")
 
     try {
-      const payloadBody: any = {
+      const payloadBody: Record<string, unknown> = {
         code: data.code,
         name: data.name,
         location: data.location || undefined,
@@ -308,7 +308,10 @@ export function useGardensManager({
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: t("trees.gardens.toasts.deleteError") }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: t("trees.gardens.toasts.deleteError"),
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -326,8 +329,7 @@ export function useGardensManager({
       if (res.status >= 400) {
         const payload = await res.json()
         setErrorMsg(
-          payload?.message ||
-            t("trees.gardens.toasts.deleteErrorBedsExist")
+          payload?.message || t("trees.gardens.toasts.deleteErrorBedsExist")
         )
       } else {
         setGardens((prev) => prev.filter((g) => g.id !== id))
@@ -346,7 +348,10 @@ export function useGardensManager({
     setConfirmDialog({
       isOpen: true,
       title: t("trees.gardens.confirmDeleteTitle"),
-      description: t("trees.gardens.confirmDeleteDesc", { name: garden?.name || "", code: garden?.code || "" }),
+      description: t("trees.gardens.confirmDeleteDesc", {
+        name: garden?.name || "",
+        code: garden?.code || "",
+      }),
       action: () => performDelete(id),
       loading: false,
     })
@@ -383,16 +388,16 @@ export function useGardensManager({
         return prev.filter((g) => !set.has(g.id))
       })
       setSelectedGardenIds([])
-      setSuccessMsg(t("trees.gardens.toasts.bulkDeleteSuccess", { count: successCount }))
+      setSuccessMsg(
+        t("trees.gardens.toasts.bulkDeleteSuccess", { count: successCount })
+      )
       if (failCount > 0) {
         setErrorMsg(
           t("trees.gardens.toasts.bulkDeleteFail", { count: failCount })
         )
       }
     } else {
-      setErrorMsg(
-        t("trees.gardens.toasts.bulkDeleteAllFail")
-      )
+      setErrorMsg(t("trees.gardens.toasts.bulkDeleteAllFail"))
     }
 
     setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
@@ -403,7 +408,9 @@ export function useGardensManager({
     setConfirmDialog({
       isOpen: true,
       title: t("trees.gardens.confirmBulkDeleteTitle"),
-      description: t("trees.gardens.confirmBulkDeleteDesc", { count: selectedGardenIds.length }),
+      description: t("trees.gardens.confirmBulkDeleteDesc", {
+        count: selectedGardenIds.length,
+      }),
       action: () => performBulkDelete(),
       loading: false,
     })

@@ -1,15 +1,17 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import { cookies } from 'next/headers';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { fetchApi } from '@/lib/Api';
-import { Link } from '@/lib/I18nNavigation';
-import { PageBannerSlider } from '@/components/PageBannerSlider';
+import Image from 'next/image';
+import { ScrollReveal, StaggerContainer } from '@/components/animation';
 import { HomeFeaturedProducts } from '@/components/home/HomeFeaturedProducts';
 import { HomeSaponinComparison } from '@/components/home/HomeSaponinComparison';
-import { ScrollReveal, StaggerContainer } from '@/components/animation';
+import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { fetchApi } from '@/lib/Api';
+import { Link } from '@/lib/I18nNavigation';
+import type { Article, Banner } from '@/types';
 
-export const dynamic = 'force-dynamic';
+type TranslationFn = Awaited<ReturnType<typeof getTranslations>>;
+
+export const revalidate = 60;
 
 type IndexPageProps = {
   params: Promise<{ locale: string }>;
@@ -17,16 +19,16 @@ type IndexPageProps = {
 
 const getCategoryLabel = (category: string, locale: string) => {
   const labelsVi: Record<string, string> = {
-    'news': 'Tin tức',
-    'event': 'Sự kiện',
-    'guide': 'Hướng dẫn',
-    'faq': 'Kiến thức'
+    news: 'Tin tức',
+    event: 'Sự kiện',
+    guide: 'Hướng dẫn',
+    faq: 'Kiến thức',
   };
   const labelsEn: Record<string, string> = {
-    'news': 'News',
-    'event': 'Events',
-    'guide': 'Guide',
-    'faq': 'Knowledge'
+    news: 'News',
+    event: 'Events',
+    guide: 'Guide',
+    faq: 'Knowledge',
   };
   const map = locale === 'en' ? labelsEn : labelsVi;
   return map[category] || category || (locale === 'en' ? 'News' : 'Tin tức');
@@ -56,8 +58,8 @@ async function getInitialPlants() {
       const json = await res.json();
       return json.data || [];
     }
-  } catch (e) {
-    console.error('Error fetching initial plants for homepage:', e);
+  } catch (error) {
+    console.error('Error fetching initial plants for homepage:', error);
   }
   return [];
 }
@@ -69,13 +71,13 @@ async function getInitialShopItems() {
       const json = await res.json();
       return json.data || [];
     }
-  } catch (e) {
-    console.error('Error fetching initial shop items for homepage:', e);
+  } catch (error) {
+    console.error('Error fetching initial shop items for homepage:', error);
   }
   return [];
 }
 
-async function getBannerImages() {
+async function getBannerImages(): Promise<string[]> {
   const defaultImages = [
     '/images/banners/homepage_banner_1.png',
     '/images/banners/homepage_banner_2.png',
@@ -89,7 +91,7 @@ async function getBannerImages() {
       const json = await res.json();
       const list = json.data;
       if (Array.isArray(list) && list.length > 0) {
-        return list.map((item: any) => item.image);
+        return list.map((item: Partial<Banner>) => item.image || '').filter(Boolean);
       }
     }
   } catch (error) {
@@ -107,18 +109,18 @@ export async function generateMetadata(props: IndexPageProps): Promise<Metadata>
   };
 }
 
-function AboutSection({ t }: { t: any }) {
+function AboutSection({ t }: { t: TranslationFn }) {
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="relative overflow-hidden bg-white py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          <div className="lg:col-span-5 relative group">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
+          <div className="group relative lg:col-span-5">
             <ScrollReveal variant="fade-left" duration={1.1} distance={60}>
-              <div className="relative aspect-[4/3] sm:aspect-[16/10] lg:aspect-[4/5] rounded-3xl overflow-hidden shadow-xl border border-gray-100 bg-gray-50 max-h-[520px]">
-                <Image 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                  src="/images/kon_tum_ginseng.png" 
-                  alt={t('aboutTitle')} 
+              <div className="relative aspect-[4/3] max-h-[520px] overflow-hidden rounded-3xl border border-gray-100 bg-gray-50 shadow-xl sm:aspect-[16/10] lg:aspect-[4/5]">
+                <Image
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  src="/images/kon_tum_ginseng.png"
+                  alt={t('aboutTitle')}
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"
                   unoptimized
@@ -127,79 +129,151 @@ function AboutSection({ t }: { t: any }) {
             </ScrollReveal>
           </div>
 
-          <div className="lg:col-span-7 space-y-6 text-left">
+          <div className="space-y-6 text-left lg:col-span-7">
             <ScrollReveal variant="fade-up" delay={0.1}>
               <div className="space-y-4">
-                <span className="text-secondary font-bold tracking-widest uppercase text-xs block">
+                <span className="block text-xs font-bold tracking-widest text-secondary uppercase">
                   {t('aboutUsBadge')}
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight font-display-lg">
+                <h2 className="font-display-lg text-3xl leading-tight font-extrabold text-primary sm:text-4xl">
                   {t('aboutTitle')}
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-medium">
+                <p className="text-sm leading-relaxed font-medium text-gray-600 sm:text-base">
                   {t('aboutDesc')}
                 </p>
                 <div>
-                  <Link 
-                    href="/about" 
-                    className="inline-flex items-center gap-2 text-sm font-bold text-secondary hover:text-secondary-hover transition-colors group/link"
+                  <Link
+                    href="/about"
+                    className="group/link inline-flex items-center gap-2 text-sm font-bold text-secondary transition-colors hover:text-secondary-hover"
                   >
                     <span>{t('learnMore')}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/link:translate-x-1 duration-300">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2.5}
+                      stroke="currentColor"
+                      className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                      />
                     </svg>
                   </Link>
                 </div>
               </div>
             </ScrollReveal>
 
-            <StaggerContainer variant="fade-up" stagger={0.1} distance={40} className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17a2 2 0 01-2 2H8M12 3C7 3 3 7 3 12c0 2.5 1.5 5 4 6M12 3c5 0 9 4 9 9c0 2.5-1.5 5-4 6M12 10c-2-2-4-2-6 0M12 14c2-2 4-2 6 0" />
+            <StaggerContainer
+              variant="fade-up"
+              stagger={0.1}
+              distance={40}
+              className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2"
+            >
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 3v17a2 2 0 01-2 2H8M12 3C7 3 3 7 3 12c0 2.5 1.5 5 4 6M12 3c5 0 9 4 9 9c0 2.5-1.5 5-4 6M12 10c-2-2-4-2-6 0M12 14c2-2 4-2 6 0"
+                    />
                   </svg>
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">10+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('yearsExperience')}</p>
+                  <p className="mt-0.5 text-xs leading-snug font-semibold text-gray-500">
+                    {t('yearsExperience')}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                    />
                   </svg>
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">1500m+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('altitude')}</p>
+                  <p className="mt-0.5 text-xs leading-snug font-semibold text-gray-500">
+                    {t('altitude')}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a6 6 0 00-3.44-5.32M15 7.25a3.25 3.25 0 11-6.5 0 3.25 3.25 0 016.5 0zM9 13.72A6.002 6.002 0 003 19.5h12m.002-5.78a6.002 6.002 0 016 5.78H15.002z" />
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M18 18.72a6 6 0 00-3.44-5.32M15 7.25a3.25 3.25 0 11-6.5 0 3.25 3.25 0 016.5 0zM9 13.72A6.002 6.002 0 003 19.5h12m.002-5.78a6.002 6.002 0 016 5.78H15.002z"
+                    />
                   </svg>
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">5000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('happyCustomers')}</p>
+                  <p className="mt-0.5 text-xs leading-snug font-semibold text-gray-500">
+                    {t('happyCustomers')}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-secondary/10 text-secondary flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9V5.25m0 3.75a2.25 2.25 0 0 0 2.25 2.25h0A2.25 2.25 0 0 0 14.25 9V5.25m-4.5 0h4.5m-4.5 0V3h4.5v2.25m-4.5 3.75h4.5M9 11.25v8.25a2.25 2.25 0 0 0 2.25 2.25h5.5A2.25 2.25 0 0 0 19 19.5v-8.25A2.25 2.25 0 0 0 16.75 9h-5.5A2.25 2.25 0 0 0 9 11.25Z" />
+              <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-5">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.75 9V5.25m0 3.75a2.25 2.25 0 0 0 2.25 2.25h0A2.25 2.25 0 0 0 14.25 9V5.25m-4.5 0h4.5m-4.5 0V3h4.5v2.25m-4.5 3.75h4.5M9 11.25v8.25a2.25 2.25 0 0 0 2.25 2.25h5.5A2.25 2.25 0 0 0 19 19.5v-8.25A2.25 2.25 0 0 0 16.75 9h-5.5A2.25 2.25 0 0 0 9 11.25Z"
+                    />
                   </svg>
                 </div>
                 <div>
                   <p className="text-2xl font-extrabold text-primary">100.000+</p>
-                  <p className="text-xs text-gray-500 font-semibold mt-0.5 leading-snug">{t('bottlesSupplied')}</p>
+                  <p className="mt-0.5 text-xs leading-snug font-semibold text-gray-500">
+                    {t('bottlesSupplied')}
+                  </p>
                 </div>
               </div>
             </StaggerContainer>
@@ -210,65 +284,97 @@ function AboutSection({ t }: { t: any }) {
   );
 }
 
-function NewsSection({ t, latestArticles, newsImages, locale }: { t: any; latestArticles: any[]; newsImages: string[]; locale: string }) {
-  if (!latestArticles.length) return null;
+function NewsSection({
+  t,
+  latestArticles,
+  newsImages,
+  locale,
+}: {
+  t: TranslationFn;
+  latestArticles: Article[];
+  newsImages: string[];
+  locale: string;
+}) {
+  if (!latestArticles.length) {
+    return null;
+  }
   return (
-    <section className="py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border-t border-gray-100">
+    <section className="mx-auto max-w-7xl border-t border-gray-100 px-4 py-20 sm:px-6 lg:px-8">
       <ScrollReveal variant="fade-up">
-        <div className="text-center mb-16 space-y-3">
-          <h2 className="text-3xl font-extrabold text-primary font-display-lg">
+        <div className="mb-16 space-y-3 text-center">
+          <h2 className="font-display-lg text-3xl font-extrabold text-primary">
             {t('latestNews')}
           </h2>
-          <p className="text-gray-500 text-sm max-w-2xl mx-auto font-medium">
+          <p className="mx-auto max-w-2xl text-sm font-medium text-gray-500">
             {t('latestNewsDesc')}
           </p>
         </div>
       </ScrollReveal>
 
-      <StaggerContainer variant="fade-up" stagger={0.12} distance={50} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {latestArticles.slice(0, 4).map((article: any, idx: number) => (
-          <article key={article.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden hover:shadow-lg transition-[box-shadow,transform] duration-300 flex flex-col justify-between hover:-translate-y-1">
+      <StaggerContainer
+        variant="fade-up"
+        stagger={0.12}
+        distance={50}
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {latestArticles.slice(0, 4).map((article: Article, idx: number) => (
+          <article
+            key={article.id}
+            className="flex flex-col justify-between overflow-hidden rounded-3xl border border-gray-100 bg-white transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-lg"
+          >
             <div>
-              <div className="h-52 overflow-hidden bg-gray-100 relative p-3">
+              <div className="relative h-52 overflow-hidden bg-gray-100 p-3">
                 <Link href={`/news/${article.slug}`}>
                   <Image
-                    className="w-full h-full object-cover rounded-2xl cursor-pointer hover:scale-105 transition-transform duration-500"
-                    src={article.image || newsImages[idx % newsImages.length]}
+                    className="h-full w-full cursor-pointer rounded-2xl object-cover transition-transform duration-500 hover:scale-105"
+                    src={article.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
                     alt={article.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     unoptimized
                   />
                 </Link>
-                <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
-                  {getCategoryLabel(article.category, locale)}
+                <span className="absolute top-6 left-6 flex items-center gap-1 rounded-full border border-emerald-100/50 bg-[#EAF5ED] px-3 py-1 text-[10px] font-bold text-[#2D7A4D] shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#2D7A4D]" />
+                  {getCategoryLabel(article.category || '', locale)}
                 </span>
               </div>
-              <div className="p-6 space-y-3">
-                <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
+              <div className="space-y-3 p-6">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+                  {article.publishedAt
+                    ? new Date(article.publishedAt).toLocaleDateString(
+                        locale === 'en' ? 'en-US' : 'vi-VN',
+                        { day: 'numeric', month: 'long', year: 'numeric' },
+                      )
+                    : ''}
                 </div>
                 <Link href={`/news/${article.slug}`}>
-                  <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 hover:text-primary transition-colors min-h-[44px] cursor-pointer">
+                  <h3 className="line-clamp-2 min-h-[44px] cursor-pointer text-base leading-snug font-bold text-gray-900 transition-colors hover:text-primary">
                     {article.title}
                   </h3>
                 </Link>
-                <p className="text-gray-500 text-xs line-clamp-3 leading-relaxed">
+                <p className="line-clamp-3 text-xs leading-relaxed text-gray-500">
                   {article.summary}
                 </p>
               </div>
             </div>
-            <div className="p-6 pt-0 flex items-center justify-between border-t border-gray-50 mt-4">
+            <div className="mt-4 flex items-center justify-between border-t border-gray-50 p-6 pt-0">
               <div className="flex items-center gap-1.5 pt-4 text-xs font-semibold text-gray-500">
                 <span>{article.author || 'Sâm Ngọc Linh'}</span>
               </div>
               <Link
                 href={`/news/${article.slug}`}
-                className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-secondary-hover pt-4 transition-colors group cursor-pointer"
+                className="group inline-flex cursor-pointer items-center gap-1 pt-4 text-xs font-bold text-secondary transition-colors hover:text-secondary-hover"
               >
                 <span>{locale === 'en' ? 'Read more' : 'Đọc thêm'}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -277,14 +383,25 @@ function NewsSection({ t, latestArticles, newsImages, locale }: { t: any; latest
         ))}
       </StaggerContainer>
 
-      <ScrollReveal variant="scale" delay={0.2} className="text-center mt-12">
-        <Link 
-          href="/news" 
-          className="inline-flex items-center gap-2 border border-gray-300 hover:border-secondary hover:text-secondary text-primary px-8 py-3 rounded-lg text-sm font-bold transition-colors duration-200"
+      <ScrollReveal variant="scale" delay={0.2} className="mt-12 text-center">
+        <Link
+          href="/news"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-8 py-3 text-sm font-bold text-primary transition-colors duration-200 hover:border-secondary hover:text-secondary"
         >
           <span>{locale === 'en' ? 'View all news' : 'Xem tất cả'}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            stroke="currentColor"
+            className="h-4 w-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+            />
           </svg>
         </Link>
       </ScrollReveal>
@@ -294,108 +411,180 @@ function NewsSection({ t, latestArticles, newsImages, locale }: { t: any; latest
 
 function ContactSection({ locale }: { locale: string }) {
   return (
-    <section className="py-20 bg-white border-t border-gray-100 relative overflow-hidden">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="relative overflow-hidden border-t border-gray-100 bg-white py-20">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ScrollReveal variant="fade-up">
-          <div className="text-center mb-16 space-y-2">
-            <h2 className="text-4xl font-extrabold text-primary font-display-lg pt-1">
+          <div className="mb-16 space-y-2 text-center">
+            <h2 className="font-display-lg pt-1 text-4xl font-extrabold text-primary">
               {locale === 'en' ? 'Contact Us' : 'Liên hệ với chúng tôi'}
             </h2>
-            <p className="text-gray-500 text-sm max-w-2xl mx-auto font-medium">
-              {locale === 'en' ? 'Let us assist you in finding your ideal ginseng products.' : 'Hãy để chúng tôi hỗ trợ bạn tìm được những cây sâm ưng ý nhất'}
+            <p className="mx-auto max-w-2xl text-sm font-medium text-gray-500">
+              {locale === 'en'
+                ? 'Let us assist you in finding your ideal ginseng products.'
+                : 'Hãy để chúng tôi hỗ trợ bạn tìm được những cây sâm ưng ý nhất'}
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal variant="scale" duration={1.1} scaleFrom={0.94}>
-          <div className="max-w-4xl mx-auto bg-gray-50/70 border border-gray-100 rounded-[32px] pt-20 pb-8 px-6 sm:px-12 shadow-xl shadow-gray-900/[0.02] relative">
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border border-gray-100 shadow-md flex items-center justify-center p-3.5 z-20">
-              <Image 
-                src="/assets/images/logo_ruou_sam.png?v=2" 
-                alt="Logo" 
+          <div className="relative mx-auto max-w-4xl rounded-[32px] border border-gray-100 bg-gray-50/70 px-6 pt-20 pb-8 shadow-xl shadow-gray-900/[0.02] sm:px-12">
+            <div className="absolute -top-12 left-1/2 z-20 flex h-24 w-24 -translate-x-1/2 items-center justify-center rounded-full border border-gray-100 bg-white p-3.5 shadow-md">
+              <Image
+                src="/assets/images/logo_ruou_sam.png?v=2"
+                alt="Logo"
                 width={96}
                 height={96}
                 unoptimized
-                className="w-full h-full object-contain"
+                className="h-full w-full object-contain"
               />
             </div>
 
             <div className="relative z-10">
               <div className="text-center">
-                <h3 className="text-[17px] font-black tracking-wide text-emerald-800 uppercase font-display-md">
+                <h3 className="font-display-md text-[17px] font-black tracking-wide text-emerald-800 uppercase">
                   CÔNG TY CỔ PHẦN SÂM NGỌC LINH
                 </h3>
                 <div className="flex items-center justify-center gap-3 py-3">
-                  <div className="h-[1px] w-8 bg-emerald-600/10"></div>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  <div className="h-[1px] w-8 bg-emerald-600/10" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5 text-emerald-600/40"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
                   </svg>
-                  <div className="h-[1px] w-8 bg-emerald-600/10"></div>
+                  <div className="h-[1px] w-8 bg-emerald-600/10" />
                 </div>
               </div>
 
-              <StaggerContainer variant="fade-up" stagger={0.1} className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 flex items-center gap-5 hover:border-emerald-600/20 hover:shadow-sm transition-[border-color,box-shadow] duration-300">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-100/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              <StaggerContainer
+                variant="fade-up"
+                stagger={0.1}
+                className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2"
+              >
+                <div className="flex items-center gap-5 rounded-2xl border border-gray-100 bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-emerald-600/20 hover:shadow-sm">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-emerald-100/30 bg-emerald-50 text-emerald-600">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-5 w-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
+                    <span className="mb-1 block text-[11px] font-black tracking-wider text-emerald-700 uppercase">
                       {locale === 'en' ? 'Address' : 'Địa chỉ'}
                     </span>
-                    <p className="text-sm font-bold text-gray-700 leading-relaxed">
+                    <p className="text-sm leading-relaxed font-bold text-gray-700">
                       Showroom 156 Tây Thạnh, P. Tây Thạnh, TP. Hồ Chí Minh, Việt Nam
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 flex items-center gap-5 hover:border-emerald-600/20 hover:shadow-sm transition-[border-color,box-shadow] duration-300">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-100/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-1.514 2.022a13.978 13.978 0 0 1-5.717-5.717l2.022-1.514c.361-.272.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25z" />
+                <div className="flex items-center gap-5 rounded-2xl border border-gray-100 bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-emerald-600/20 hover:shadow-sm">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-emerald-100/30 bg-emerald-50 text-emerald-600">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-5 w-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-1.514 2.022a13.978 13.978 0 0 1-5.717-5.717l2.022-1.514c.361-.272.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25z"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
+                    <span className="mb-1 block text-[11px] font-black tracking-wider text-emerald-700 uppercase">
                       {locale === 'en' ? 'Phone' : 'Điện thoại'}
                     </span>
-                    <p className="text-sm font-bold text-gray-700 leading-relaxed">
-                      <a href="tel:0967234234" className="hover:text-secondary transition-colors">0967 234 234</a>
+                    <p className="text-sm leading-relaxed font-bold text-gray-700">
+                      <a href="tel:0967234234" className="transition-colors hover:text-secondary">
+                        0967 234 234
+                      </a>
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 flex items-center gap-5 hover:border-emerald-600/20 hover:shadow-sm transition-[border-color,box-shadow] duration-300">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-100/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H9.75m0 18.75h4.5m-4.5 0H8.25m2.25 0V12m4.5 9V3M3.75 6h16.5M3.75 12h16.5m-16.5 6h16.5" />
+                <div className="flex items-center gap-5 rounded-2xl border border-gray-100 bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-emerald-600/20 hover:shadow-sm">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-emerald-100/30 bg-emerald-50 text-emerald-600">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-5 w-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5A3.375 3.375 0 0 0 10.125 2.25H9.75m0 18.75h4.5m-4.5 0H8.25m2.25 0V12m4.5 9V3M3.75 6h16.5M3.75 12h16.5m-16.5 6h16.5"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
+                    <span className="mb-1 block text-[11px] font-black tracking-wider text-emerald-700 uppercase">
                       {locale === 'en' ? 'Business License' : 'Giấy phép kinh doanh'}
                     </span>
-                    <p className="text-sm font-bold text-gray-700 leading-relaxed">
+                    <p className="text-sm leading-relaxed font-bold text-gray-700">
                       Số 0316913632 cấp ngày 22/06/2021 tại Sở Kế hoạch và Đầu tư TP.HCM
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-2xl p-5 flex items-center gap-5 hover:border-emerald-600/20 hover:shadow-sm transition-[border-color,box-shadow] duration-300">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-100/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                <div className="flex items-center gap-5 rounded-2xl border border-gray-100 bg-white p-5 transition-[border-color,box-shadow] duration-300 hover:border-emerald-600/20 hover:shadow-sm">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-emerald-100/30 bg-emerald-50 text-emerald-600">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="h-5 w-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
+                      />
                     </svg>
                   </div>
                   <div>
-                    <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
+                    <span className="mb-1 block text-[11px] font-black tracking-wider text-emerald-700 uppercase">
                       Email
                     </span>
-                    <p className="text-sm font-bold text-gray-700 leading-relaxed">
-                      <a href="mailto:admin@samngoclinh.vn" className="hover:text-secondary transition-colors">admin@samngoclinh.vn</a>
+                    <p className="text-sm leading-relaxed font-bold text-gray-700">
+                      <a
+                        href="mailto:admin@samngoclinh.vn"
+                        className="transition-colors hover:text-secondary"
+                      >
+                        admin@samngoclinh.vn
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -408,39 +597,43 @@ function ContactSection({ locale }: { locale: string }) {
   );
 }
 
-function CtaBanner({ t }: { t: any }) {
+function CtaBanner({ t }: { t: TranslationFn }) {
   return (
-    <section className="bg-gradient-to-r from-emerald-950 via-primary to-emerald-950 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 text-center text-white relative overflow-hidden border-t border-emerald-800/40">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
+    <section className="relative overflow-hidden border-t border-emerald-800/40 bg-gradient-to-r from-emerald-950 via-primary to-emerald-950 px-4 py-16 text-center text-white sm:px-6 sm:py-20 lg:px-8">
+      <div className="pointer-events-none absolute top-1/2 left-1/2 h-[350px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="relative z-10 mx-auto max-w-4xl space-y-6">
         <ScrollReveal variant="fade-up">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-800/60 border border-emerald-600/50 text-emerald-300 text-xs font-black uppercase tracking-wider mb-2">
+          <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-600/50 bg-emerald-800/60 px-3.5 py-1.5 text-xs font-black tracking-wider text-emerald-300 uppercase">
             {t('heroBadge')}
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg mt-2">
+          <h2 className="font-display-lg mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl lg:text-4xl">
             {t('ctaTitle')}
           </h2>
         </ScrollReveal>
         <ScrollReveal variant="fade-up" delay={0.15}>
-          <p className="text-emerald-100/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="mx-auto max-w-2xl text-sm leading-relaxed font-normal text-emerald-100/90 sm:text-base">
             {t('ctaSubtitle')}
           </p>
         </ScrollReveal>
         <ScrollReveal variant="scale" delay={0.3} scaleFrom={0.92} className="pt-2">
           <Link
             href="/products"
-            className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-8 py-3.5 rounded-full shadow-xl hover:shadow-2xl transition-[color,box-shadow,transform] duration-300 hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base cursor-pointer"
+            className="group inline-flex cursor-pointer items-center justify-center rounded-full bg-amber-400 px-8 py-3.5 text-sm font-black text-slate-950 shadow-xl transition-[color,box-shadow,transform] duration-300 hover:scale-[1.02] hover:bg-amber-300 hover:shadow-2xl active:scale-[0.98] sm:text-base"
           >
             <span>{t('exploreProducts')}</span>
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              strokeWidth={2.5} 
-              stroke="currentColor" 
-              className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
             </svg>
           </Link>
         </ScrollReveal>
@@ -454,18 +647,18 @@ export default async function Index(props: IndexPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'homepage' });
 
-  const [articles, bannerImages, initialPlants, initialShopItems, cookieStore] = await Promise.all([
+  const [articles, bannerImages, initialPlants, initialShopItems] = await Promise.all([
     getArticles(),
     getBannerImages(),
     getInitialPlants(),
     getInitialShopItems(),
-    cookies(),
   ]);
 
-  const isLoggedIn = !!cookieStore.get('user_session')?.value;
-
   const latestArticles = (articles || [])
-    .sort((a: any, b: any) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .toSorted(
+      (a: Article, b: Article) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+    )
     .slice(0, 4);
 
   const newsImages = [
@@ -482,13 +675,12 @@ export default async function Index(props: IndexPageProps) {
           <PageBannerSlider images={bannerImages} />
         </div>
       </section>
-      
+
       {/* Featured Products Showcase Section */}
       <HomeFeaturedProducts
         locale={locale}
         initialPlants={initialPlants}
         initialShopItems={initialShopItems}
-        isLoggedIn={isLoggedIn}
       />
 
       {/* Saponin Chemistry Comparison Section */}

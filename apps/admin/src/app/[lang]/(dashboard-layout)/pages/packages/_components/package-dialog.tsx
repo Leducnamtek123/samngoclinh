@@ -138,7 +138,9 @@ export function PackageDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-duration">{t("packages.fields.duration")}</Label>
+              <Label htmlFor="pkg-duration">
+                {t("packages.fields.duration")}
+              </Label>
               <Input
                 id="pkg-duration"
                 type="number"
@@ -159,7 +161,9 @@ export function PackageDialog({
 
           {activeTab === "protection" && (
             <div className="space-y-1.5">
-              <Label htmlFor="pkg-coverage">{t("packages.fields.coverage")}</Label>
+              <Label htmlFor="pkg-coverage">
+                {t("packages.fields.coverage")}
+              </Label>
               <Input
                 id="pkg-coverage"
                 placeholder={t("packages.placeholders.coverage")}
@@ -186,7 +190,9 @@ export function PackageDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="active">{t("packages.active")}</SelectItem>
-                <SelectItem value="inactive">{t("packages.inactive")}</SelectItem>
+                <SelectItem value="inactive">
+                  {t("packages.inactive")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -1,8 +1,11 @@
 "use client"
 
-import { createContext, useContext, useMemo, type ReactNode } from "react"
-import type { LocaleType } from "@/types"
+import { createContext, useContext, useMemo } from "react"
+
 import type { DictionaryType } from "@/lib/get-dictionary"
+import type { LocaleType } from "@/types"
+import type { ReactNode } from "react"
+
 import { createTranslator } from "@/lib/i18n"
 
 export interface DictionaryContextValue {
@@ -30,11 +33,14 @@ export function DictionaryProvider({
     return createTranslator(dictionary || {})
   }, [dictionary])
 
-  const contextValue = useMemo<DictionaryContextValue>(() => ({
-    locale,
-    dictionary: dictionary || null,
-    t,
-  }), [locale, dictionary, t])
+  const contextValue = useMemo<DictionaryContextValue>(
+    () => ({
+      locale,
+      dictionary: dictionary || null,
+      t,
+    }),
+    [locale, dictionary, t]
+  )
 
   return (
     <DictionaryContext.Provider value={contextValue}>

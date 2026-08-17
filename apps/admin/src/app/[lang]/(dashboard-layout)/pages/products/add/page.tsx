@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useTranslation } from "@/providers/i18n-provider"
 
 export default function AddProductPage() {
   const { t } = useTranslation()
@@ -90,17 +90,13 @@ export default function AddProductPage() {
         <h1 className="text-3xl font-bold tracking-tight">
           {t("products.addProduct")}
         </h1>
-        <p className="text-muted-foreground">
-          {t("products.subtitle")}
-        </p>
+        <p className="text-muted-foreground">{t("products.subtitle")}</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>{t("products.addProduct")}</CardTitle>
-          <CardDescription>
-            {t("products.subtitle")}
-          </CardDescription>
+          <CardDescription>{t("products.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -186,7 +182,9 @@ export default function AddProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">{t("products.categoryForm.description")}</Label>
+              <Label htmlFor="description">
+                {t("products.categoryForm.description")}
+              </Label>
               <Textarea
                 id="description"
                 name="description"
@@ -214,7 +212,9 @@ export default function AddProductPage() {
                 disabled={loading}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                {loading ? t("common.status.processing") : t("common.actions.add")}
+                {loading
+                  ? t("common.status.processing")
+                  : t("common.actions.add")}
               </Button>
             </div>
           </form>

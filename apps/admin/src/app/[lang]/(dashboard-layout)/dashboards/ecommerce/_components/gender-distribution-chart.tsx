@@ -56,10 +56,7 @@ export function GenderDistributionChart({
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-2 p-2">
-      <ChartContainer
-        config={{}}
-        className="aspect-square h-36 w-36 mx-auto"
-      >
+      <ChartContainer config={{}} className="aspect-square h-36 w-36 mx-auto">
         <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <ChartTooltip
             cursor={false}
@@ -84,13 +81,18 @@ export function GenderDistributionChart({
 
       <div className="w-full grid grid-cols-1 gap-1 text-xs px-2">
         {chartData.map((item) => (
-          <div key={item.name} className="flex items-center justify-between py-0.5">
+          <div
+            key={item.name}
+            className="flex items-center justify-between py-0.5"
+          >
             <div className="flex items-center gap-1.5 truncate">
               <span
                 className="h-2.5 w-2.5 rounded-full shrink-0"
                 style={{ backgroundColor: item.fill }}
               />
-              <span className="text-muted-foreground truncate">{item.name}</span>
+              <span className="text-muted-foreground truncate">
+                {item.name}
+              </span>
             </div>
             <span className="font-semibold shrink-0">
               {formatPercent(item.percentage)}

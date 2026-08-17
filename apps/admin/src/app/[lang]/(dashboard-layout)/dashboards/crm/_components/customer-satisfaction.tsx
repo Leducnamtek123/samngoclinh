@@ -22,7 +22,8 @@ export function CustomerSatisfaction({ overview }: CustomerSatisfactionProps) {
     {
       name: "Nhà đầu tư Sâm Ngọc Linh",
       email: "investor@samngoclinh.vn",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80",
+      avatar:
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80",
       rating: 5,
       createdAt: new Date(),
       feedbackMessage:

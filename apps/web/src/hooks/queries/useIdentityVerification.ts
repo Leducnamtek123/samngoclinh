@@ -46,18 +46,18 @@ export type SaveIdentityDocumentPayload = {
   fullName?: string;
 };
 
-export function useIdentityVerificationStatus(initialData?: any) {
+export function useIdentityVerificationStatus(initialData?: UserIdentityDocument | null) {
   return useQuery({
     queryKey: ['identity-document'],
-    queryFn: () => userService.getIdentityDocument(),
+    queryFn: async () => await userService.getIdentityDocument(),
     initialData,
   });
 }
 
-export function useIdentityVerificationHistory(initialData?: any) {
+export function useIdentityVerificationHistory(initialData?: UserIdentityDocument[]) {
   return useQuery({
     queryKey: ['identity-document-history'],
-    queryFn: () => userService.getIdentityDocumentHistories(),
+    queryFn: async () => await userService.getIdentityDocumentHistories(),
     initialData,
   });
 }
@@ -66,14 +66,14 @@ export function useSubmitIdentityVerification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: SaveIdentityDocumentPayload | FormData) => {
+    mutationFn: async (payload: SaveIdentityDocumentPayload | FormData) => {
       if (typeof FormData !== 'undefined' && payload instanceof FormData) {
-        return userService.saveIdentityDocument(payload);
+        return await userService.saveIdentityDocument(payload);
       }
 
       const pay = payload as SaveIdentityDocumentPayload;
       if (pay.frontBase64) {
-        return userService.saveIdentityDocument({
+        return await userService.saveIdentityDocument({
           documentType: pay.documentType || 'cccd',
           frontBase64: pay.frontBase64,
           backBase64: pay.backBase64,
@@ -83,7 +83,9 @@ export function useSubmitIdentityVerification() {
       }
 
       const formData = new FormData();
-      if (pay.documentType) formData.append('documentType', pay.documentType);
+      if (pay.documentType) {
+        formData.append('documentType', pay.documentType);
+      }
       if (pay.front) {
         formData.append('front', pay.front);
         formData.append('frontImage', pay.front);
@@ -92,10 +94,14 @@ export function useSubmitIdentityVerification() {
         formData.append('back', pay.back);
         formData.append('backImage', pay.back);
       }
-      if (pay.idCardNumber) formData.append('idCardNumber', pay.idCardNumber);
-      if (pay.fullName) formData.append('fullName', pay.fullName);
+      if (pay.idCardNumber) {
+        formData.append('idCardNumber', pay.idCardNumber);
+      }
+      if (pay.fullName) {
+        formData.append('fullName', pay.fullName);
+      }
 
-      return userService.saveIdentityDocument(formData);
+      return await userService.saveIdentityDocument(formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['identity-document'] });

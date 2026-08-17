@@ -2,8 +2,12 @@
 
 import React from "react"
 import Image from "next/image"
-import type { UseFormReturn } from "react-hook-form"
 import { Image as ImageIcon } from "lucide-react"
+
+import type { UseFormReturn } from "react-hook-form"
+import type { ShopItemFormValues } from "./shop-item-schema"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   FormControl,
   FormField,
@@ -20,8 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { useTranslation } from "@/providers/i18n-provider"
-import type { ShopItemFormValues } from "./shop-item-schema"
 
 interface ShopItemFormFieldsProps {
   form: UseFormReturn<ShopItemFormValues>
@@ -99,7 +101,9 @@ export function ShopItemFormFields({
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("products.categoryForm.parent")} />
+                  <SelectValue
+                    placeholder={t("products.categoryForm.parent")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useTranslation } from "@/providers/i18n-provider"
 
 interface Garden {
   id: string
@@ -120,9 +120,7 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader>
           <CardTitle>{t("trees.gardens.addGarden")}</CardTitle>
-          <CardDescription>
-            {t("trees.gardens.dialogDesc")}
-          </CardDescription>
+          <CardDescription>{t("trees.gardens.dialogDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {successMsg && (

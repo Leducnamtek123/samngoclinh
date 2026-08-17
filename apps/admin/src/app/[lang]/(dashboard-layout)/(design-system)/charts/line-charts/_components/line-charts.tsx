@@ -1,6 +1,7 @@
 "use client"
 
 import type * as RechartsModule from "recharts"
+
 import { useRecharts } from "@/hooks/use-recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -336,7 +337,12 @@ function CustomizedLabelLineChart({ recharts }: { recharts: RechartsType }) {
               type="monotone"
               dataKey="pv"
               stroke="hsl(var(--chart-1))"
-              label={(props: { x?: number; y?: number; stroke?: string; value?: string | number }) => {
+              label={(props: {
+                x?: number
+                y?: number
+                stroke?: string
+                value?: string | number
+              }) => {
                 const { x = 0, y = 0, stroke = "#000", value = "" } = props
 
                 return (

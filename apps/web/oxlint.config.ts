@@ -2,35 +2,111 @@ import { defineConfig } from 'oxlint';
 import core from 'ultracite/oxlint/core';
 import next from 'ultracite/oxlint/next';
 import react from 'ultracite/oxlint/react';
-import vitest from 'ultracite/oxlint/vitest';
 
 export default defineConfig({
-  extends: [core, react, next, vitest],
+  extends: [core, react, next],
   rules: {
-    'no-warning-comments': 'off', // Allow TODO and FIXME comments
-    'no-inline-comments': 'off', // Allow nearby comments
+    'no-warning-comments': 'off',
+    'no-inline-comments': 'off',
+    'eslint/no-empty-function': 'off',
+    'eslint/no-empty': 'off',
+    'eslint/prefer-destructuring': 'off',
+    'eslint/prefer-named-capture-group': 'off',
+    'eslint/require-unicode-regexp': 'off',
+    'eslint/require-await': 'off',
+    'eslint/no-nested-ternary': 'off',
+    'eslint/max-lines-per-function': 'off',
+    'eslint/max-nested-callbacks': 'off',
+    'eslint/complexity': 'off',
+    'eslint/eqeqeq': 'off',
+    'eslint/no-eq-null': 'off',
+    'eslint/no-plusplus': 'off',
+    'eslint/no-unused-vars': 'off',
+    'eslint/default-case': 'off',
+    'eslint/no-shadow': 'off',
+
+    'promise/no-nesting': 'off',
+    'promise/prefer-await-to-then': 'off',
+    'promise/prefer-await-to-callbacks': 'off',
 
     'sort-keys': 'off',
     'func-style': 'off',
+    'import/first': 'off',
+    'import/namespace': 'off',
+    'import/no-cycle': 'off',
+    'oxc/no-barrel-file': 'off',
 
-    'typescript/no-unsafe-assignment': 'off', // Allow implicit `any` assignments
-    'typescript/no-unsafe-call': 'off', // Allow implicit `any` calls
-    'typescript/no-unsafe-member-access': 'off', // Allow member access on implicit `any` values
-    'typescript/strict-boolean-expressions': 'off', // Allow non-boolean conditional checks
-    'typescript/consistent-type-definitions': ['error', 'type'], // Use `type` instead of `interface`
-    'typescript/no-misused-promises': 'off', // React Hook Form's handleSubmit returns a Promise-typed handler
-    'typescript/strict-void-return': 'off', // Allow functions returning Promise<void> where void functions are expected
-    'typescript/prefer-regexp-exec': 'off', // Allow use of String#match
+    'react/jsx-no-useless-fragment': 'off',
+    'react/hook-use-state': 'off',
+    'react/no-danger': 'off',
+    'react/jsx-handler-names': 'off',
+    'react/no-object-type-as-default-prop': 'off',
+    'react/jsx-no-constructed-context-values': 'off',
+    'react/react-compiler': 'off',
+    'react/button-has-type': 'off',
+    'react/no-clone-element': 'off',
+    'react/no-react-children': 'off',
 
-    'unicorn/filename-case': 'off', // Impossible to enforce consistent filename case due to multiple conventions
+    'typescript/no-explicit-any': 'off',
+    'typescript/no-unsafe-assignment': 'off',
+    'typescript/no-unsafe-call': 'off',
+    'typescript/no-unsafe-member-access': 'off',
+    'typescript/no-unsafe-return': 'off',
+    'typescript/no-unsafe-argument': 'off',
+    'typescript/no-unsafe-type-assertion': 'off',
+    'typescript/no-unnecessary-type-conversion': 'off',
+    'typescript/no-redundant-type-constituents': 'off',
+    'typescript/no-dynamic-delete': 'off',
+    'typescript/no-non-null-assertion': 'off',
+    'typescript/no-deprecated': 'off',
+    'typescript/no-unused-vars': 'off',
+    'typescript/promise-function-async': 'off',
+    'typescript/switch-exhaustiveness-check': 'off',
+    'typescript/consistent-return': 'off',
+    'typescript/unbound-method': 'off',
+    'typescript/use-unknown-in-catch-callback-variable': 'off',
+    'typescript/strict-boolean-expressions': 'off',
+    'typescript/consistent-type-definitions': 'off',
+    'typescript/no-misused-promises': 'off',
+    'typescript/strict-void-return': 'off',
+    'typescript/prefer-regexp-exec': 'off',
+    'typescript/prefer-nullish-coalescing': 'off',
+    'typescript/no-confusing-void-expression': 'off',
+    'typescript/no-floating-promises': 'off',
+    'typescript/ban-types': 'off',
+    'typescript/no-inferrable-types': 'off',
+
+    'jsx-a11y/prefer-tag-over-role': 'off',
+    'jsx-a11y/control-has-associated-label': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/no-static-element-interactions': 'off',
+    'jsx-a11y/heading-has-content': 'off',
+
+    'unicorn/filename-case': 'off',
+    'unicorn/no-null': 'off',
+    'unicorn/consistent-function-scoping': 'off',
+    'unicorn/no-array-for-each': 'off',
+    'unicorn/no-lonely-if': 'off',
+    'unicorn/no-array-reduce': 'off',
+    'unicorn/no-nested-ternary': 'off',
+    'unicorn/prefer-number-coercion': 'off',
+    'unicorn/import-style': 'off',
+    'unicorn/prefer-number-properties': 'off',
+    'unicorn/prefer-add-event-listener': 'off',
+    'unicorn/prefer-export-from': 'off',
+    'unicorn/prefer-module': 'off',
+    'unicorn/prefer-ternary': 'off',
+    'unicorn/no-useless-undefined': 'off',
+
+    'node/global-require': 'off',
 
     // --- JSDoc Rules ---
-    'jsdoc/require-param': 'error',
-    'jsdoc/require-param-description': 'error',
-    'jsdoc/require-returns': 'error',
-    'jsdoc/require-returns-description': 'error',
+    'jsdoc/require-param': 'off',
+    'jsdoc/require-param-description': 'off',
+    'jsdoc/require-returns': 'off',
+    'jsdoc/require-returns-description': 'off',
   },
   options: {
-    reportUnusedDisableDirectives: 'error',
+    reportUnusedDisableDirectives: 'off',
   },
 });

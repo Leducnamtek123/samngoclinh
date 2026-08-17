@@ -1,12 +1,11 @@
 import { Suspense } from "react"
 
-import type { Metadata } from "next"
 import type { ContactRequest, PaginationMeta } from "@/types"
-
-import { legalService } from "@/services/legal.service"
+import type { Metadata } from "next"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContactsTable } from "./_components/contacts-table"
+import { legalService } from "@/services/legal.service"
 
 export const metadata: Metadata = {
   title: "Quản lý Liên hệ | Sâm Ngọc Linh Admin",
@@ -49,7 +48,7 @@ export default async function ContactsPage({
 
     contacts = Array.isArray(payload.data)
       ? payload.data
-      : (payload.data as any)?.items || []
+      : (payload.data as { items?: ContactRequest[] })?.items || []
     metadata = payload.metadata || null
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Lỗi khi kết nối máy chủ"

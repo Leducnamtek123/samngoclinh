@@ -1,17 +1,20 @@
 "use client"
 
 import React, { useState } from "react"
-import { Sliders, Trash2, Plus } from "lucide-react"
 import { toast } from "sonner"
+import { Plus, Sliders, Trash2 } from "lucide-react"
+
 import { useTranslation } from "@/providers/i18n-provider"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 
 interface CreateContractCustomPlaceholdersProps {
   customPlaceholders: Record<string, string>
-  onCustomPlaceholdersChange: React.Dispatch<React.SetStateAction<Record<string, string>>>
+  onCustomPlaceholdersChange: React.Dispatch<
+    React.SetStateAction<Record<string, string>>
+  >
   allPlaceholders: Record<string, string>
   formatPlaceholderLabel: (key: string) => string
 }
@@ -38,7 +41,9 @@ export function CreateContractCustomPlaceholders({
     }))
     setNewKeyInput("")
     setNewValInput("")
-    toast.success(t("contracts.customPlaceholders.successAdded", { key: cleanKey }))
+    toast.success(
+      t("contracts.customPlaceholders.successAdded", { key: cleanKey })
+    )
   }
 
   const handleDeletePlaceholder = (key: string) => {
@@ -58,8 +63,13 @@ export function CreateContractCustomPlaceholders({
             {t("contracts.customPlaceholders.sectionTitle")}
           </span>
         </div>
-        <Badge variant="outline" className="text-[10px] bg-purple-100 text-purple-800 border-purple-300">
-          {t("contracts.customPlaceholders.fieldsCount", { count: Object.keys(allPlaceholders).length })}
+        <Badge
+          variant="outline"
+          className="text-[10px] bg-purple-100 text-purple-800 border-purple-300"
+        >
+          {t("contracts.customPlaceholders.fieldsCount", {
+            count: Object.keys(allPlaceholders).length,
+          })}
         </Badge>
       </div>
 
@@ -70,7 +80,10 @@ export function CreateContractCustomPlaceholders({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {Object.entries(customPlaceholders).map(([key, val]) => (
-            <div key={key} className="space-y-1.5 bg-white dark:bg-slate-900 p-3 rounded-lg border border-purple-100 dark:border-purple-950">
+            <div
+              key={key}
+              className="space-y-1.5 bg-white dark:bg-slate-900 p-3 rounded-lg border border-purple-100 dark:border-purple-950"
+            >
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold text-slate-800 dark:text-slate-200">
                   {formatPlaceholderLabel(key)}
@@ -88,7 +101,10 @@ export function CreateContractCustomPlaceholders({
                       [key]: e.target.value,
                     }))
                   }}
-                  placeholder={t("contracts.customPlaceholders.inputPlaceholder", { key })}
+                  placeholder={t(
+                    "contracts.customPlaceholders.inputPlaceholder",
+                    { key }
+                  )}
                   className="text-xs bg-slate-50 dark:bg-slate-950"
                 />
                 <Button
@@ -110,7 +126,11 @@ export function CreateContractCustomPlaceholders({
       <div className="pt-2 border-t border-purple-100 dark:border-purple-900 flex flex-wrap items-center gap-2">
         <Input
           value={newKeyInput}
-          onChange={(e) => setNewKeyInput(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"))}
+          onChange={(e) =>
+            setNewKeyInput(
+              e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "_")
+            )
+          }
           placeholder={t("contracts.customPlaceholders.newKeyPlaceholder")}
           className="w-48 text-xs font-mono bg-white dark:bg-slate-950"
         />
@@ -127,7 +147,8 @@ export function CreateContractCustomPlaceholders({
           onClick={handleAddPlaceholder}
           className="text-xs gap-1 bg-white dark:bg-slate-950 border-purple-200"
         >
-          <Plus className="w-3.5 h-3.5" /> {t("contracts.customPlaceholders.addBtn")}
+          <Plus className="w-3.5 h-3.5" />{" "}
+          {t("contracts.customPlaceholders.addBtn")}
         </Button>
       </div>
     </div>

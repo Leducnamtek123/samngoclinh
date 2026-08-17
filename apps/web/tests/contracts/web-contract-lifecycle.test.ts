@@ -12,7 +12,7 @@ describe('Web Contract Lifecycle & End-to-End Client Service Test Suite', () => 
     userId: 'user-long-123',
     title: 'Hợp đồng Mua bán & Ủy quyền Chăm sóc Cây Sâm',
     status: 'draft',
-    contractValue: 90000000,
+    contractValue: 90_000_000,
     paymentStatus: 'paid',
     partyA: 'Công ty Cổ phần Sâm Ngọc Linh',
     partyB: 'Lê Hoàng Long',
@@ -53,15 +53,19 @@ describe('Web Contract Lifecycle & End-to-End Client Service Test Suite', () => 
   });
 
   it('3. should sign contract with signature data and OTP code', async () => {
-    const signedMock = { ...mockContractData, status: 'signed', signatureUrl: 'data:image/png;base64,mock' };
-    global.fetch = vi.fn().mockImplementation((url: string, options: RequestInit) => {
+    const signedMock = {
+      ...mockContractData,
+      status: 'signed',
+      signatureUrl: 'data:image/png;base64,mock',
+    };
+    global.fetch = vi.fn().mockImplementation(async (url: string, options: RequestInit) => {
       expect(url).toContain('/api/proxy/user/contracts/873500c8-40a9-4682-8407-b47a3352f031/sign');
       expect(options.method).toBe('POST');
       const body = JSON.parse(options.body as string);
       expect(body.signatureData).toBe('data:image/png;base64,mock');
       expect(body.otpCode).toBe('123456');
 
-      return Promise.resolve({
+      return {
         ok: true,
         status: 200,
         json: async () => ({
@@ -69,21 +73,21 @@ describe('Web Contract Lifecycle & End-to-End Client Service Test Suite', () => 
           message: 'Signed successfully',
           data: signedMock,
         }),
-      } as any);
+      } as any;
     });
 
     const res = await econtractService.signContract(
       '873500c8-40a9-4682-8407-b47a3352f031',
       'data:image/png;base64,mock',
-      '123456'
+      '123456',
     );
-    expect(res.data.status).toBe('signed');
+    expect(res.data?.status).toBe('signed');
   });
 
   it('4. should verify contract authenticity via public verification endpoint', async () => {
-    global.fetch = vi.fn().mockImplementation((url: string) => {
+    global.fetch = vi.fn().mockImplementation(async (url: string) => {
       expect(url).toContain('/api/proxy/public/contracts/verify/CTR-SNL-2026%2F7191');
-      return Promise.resolve({
+      return {
         ok: true,
         status: 200,
         json: async () => ({
@@ -94,11 +98,11 @@ describe('Web Contract Lifecycle & End-to-End Client Service Test Suite', () => 
             status: 'signed',
           },
         }),
-      } as any);
+      } as any;
     });
 
     const verification = await econtractService.verifyContract('CTR-SNL-2026/7191');
-    expect(verification.isValid).toBe(true);
+    expect(verification.isValid).toBeTruthy();
     expect(verification.code).toBe('CTR-SNL-2026/7191');
   });
 
@@ -112,6 +116,8 @@ describe('Web Contract Lifecycle & End-to-End Client Service Test Suite', () => 
       }),
     } as any);
 
-    await expect(econtractService.getContract('invalid-id')).rejects.toThrow('Không tìm thấy hợp đồng');
+    await expect(econtractService.getContract('invalid-id')).rejects.toThrow(
+      'Không tìm thấy hợp đồng',
+    );
   });
 });

@@ -13,7 +13,10 @@ interface RevenueBySourceProps {
   totalRevenue?: number
 }
 
-export function RevenueBySource({ sources, totalRevenue = 0 }: RevenueBySourceProps) {
+export function RevenueBySource({
+  sources,
+  totalRevenue = 0,
+}: RevenueBySourceProps) {
   const sumRevenue = totalRevenue || 0
 
   const formattedSources =

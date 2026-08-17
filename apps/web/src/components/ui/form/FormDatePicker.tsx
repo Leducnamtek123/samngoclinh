@@ -1,13 +1,14 @@
 'use client';
 
-import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
+import { useController } from 'react-hook-form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { DatePicker } from '../date-picker';
 import { FormItem, FormDescription, FormMessage } from './Form';
 
-export interface FormDatePickerProps<
+export type FormDatePickerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> {
+> = {
   control: Control<TFieldValues>;
   name: TName;
   label?: string;
@@ -18,7 +19,7 @@ export interface FormDatePickerProps<
   className?: string;
   minDate?: Date;
   maxDate?: Date;
-}
+};
 
 export function FormDatePicker<
   TFieldValues extends FieldValues = FieldValues,
@@ -46,7 +47,10 @@ export function FormDatePicker<
   return (
     <FormItem className="space-y-1.5">
       {label && (
-        <label htmlFor={String(name)} className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+        <label
+          htmlFor={String(name)}
+          className="block text-xs font-bold text-gray-600 uppercase dark:text-gray-400"
+        >
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}

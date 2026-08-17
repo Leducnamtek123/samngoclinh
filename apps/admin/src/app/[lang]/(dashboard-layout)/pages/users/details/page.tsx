@@ -2,13 +2,13 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import type { LocaleType } from "@/types"
 
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -82,13 +82,9 @@ function CustomerDetailsContent() {
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(
-          payload?.message || t("users.details.updateError")
-        )
+        setErrorMsg(payload?.message || t("users.details.updateError"))
       } else {
-        setSuccessMsg(
-          t("users.details.updateStatusSuccess", { status })
-        )
+        setSuccessMsg(t("users.details.updateStatusSuccess", { status }))
         await loadUserDetails()
       }
     } catch (e) {
@@ -219,7 +215,9 @@ function CustomerDetailsContent() {
                   className="capitalize text-sm font-semibold"
                 >
                   {typeof user.role === "object" && user.role
-                    ? (user.role as { name?: string; code?: string }).name || (user.role as { name?: string; code?: string }).code || "USER"
+                    ? (user.role as { name?: string; code?: string }).name ||
+                      (user.role as { name?: string; code?: string }).code ||
+                      "USER"
                     : String(user.role || "USER")}
                 </Badge>
               </div>

@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/card"
 import {
   ConfirmationDialog,
-  ErrorState,
   ToastCard,
 } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
@@ -45,7 +44,6 @@ export function TreesTable({
 }: TreesTableProps) {
   const { t } = useTranslation()
   const {
-    trees,
     filteredTrees,
     users,
     searchVal,
@@ -115,7 +113,9 @@ export function TreesTable({
                 <SelectValue placeholder={t("trees.filters.bed")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("trees.filters.allBeds")}</SelectItem>
+                <SelectItem value="all">
+                  {t("trees.filters.allBeds")}
+                </SelectItem>
                 {beds.map((b) => (
                   <SelectItem key={b.id} value={b.code}>
                     {b.name}
@@ -130,8 +130,12 @@ export function TreesTable({
                 <SelectValue placeholder={t("trees.filters.status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("trees.filters.allStatus")}</SelectItem>
-                <SelectItem value="active">{t("trees.status.active")}</SelectItem>
+                <SelectItem value="all">
+                  {t("trees.filters.allStatus")}
+                </SelectItem>
+                <SelectItem value="active">
+                  {t("trees.status.active")}
+                </SelectItem>
                 <SelectItem value="harvested">
                   {t("trees.status.harvested")}
                 </SelectItem>

@@ -28,9 +28,15 @@
     "addedToCart": "Added \"{name}\" to cart!",
     "heroBadge": "VIETNAM NATIONAL TREASURE – DIGITIZED FARMING",
     "heroTitle": "Own & Patronize Premier Ngoc Linh Ginseng",
+    "heroSubtitle": "Pioneering platform combining natural ginseng conservation on Ngoc Linh peak with transparent electronic contracts and digital asset identities.",
     "heroDesc": "Pioneering platform combining natural ginseng conservation on Ngoc Linh peak with transparent electronic contracts and digital asset identities.",
     "ctaExplore": "Explore Products",
     "ctaPlant": "Plant Ginseng Now",
+    "ctaTitle": "Own & Patronize Premier Ngoc Linh Ginseng",
+    "ctaSubtitle": "Join our transparent cultivation and conservation platform with digital asset certification.",
+    "exploreProducts": "Explore Products",
+    "exploreTrees": "Explore Ginseng Trees",
+    "bannerDefaultSubtitle": "Ngoc Linh Ginseng national treasure preserved with transparent digital blockchain technology.",
     "trustGenuine": "100% Genuine Ngoc Linh Ginseng",
     "trustContract": "Legally Binding E-Contracts",
     "trustInsurance": "Comprehensive Farm Insurance",
@@ -206,6 +212,11 @@
     "back": "Back",
     "share": "Share",
     "copied": "Copied",
-    "printPdf": "Print / Export PDF"
+    "printPdf": "Print / Export PDF",
+    "pending": "Pending Signature",
+    "pending_issue": "Pending Issuance",
+    "pending_signature": "Pending Signature",
+    "cancelled": "Cancelled",
+    "active": "Active"
   }
 }

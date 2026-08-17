@@ -4,10 +4,12 @@ import { ordersService } from '@/services/orders.service';
 
 export type PackageOption = {
   id: string;
+  code?: string;
   name: string;
   price: number;
   description?: string;
   durationMonths?: number;
+  [key: string]: unknown;
 };
 
 export type CreateQuickOrderPayload = {
@@ -60,14 +62,21 @@ export function useCreateQuickOrder() {
       const checkoutPayload = {
         customerName: payload.recipientName || 'Khách hàng',
         customerPhone: payload.recipientPhone || '0901234567',
-        deliveryType: payload.shippingAddress && payload.shippingAddress !== 'Nhận tại vườn' ? 'shipping' : 'pickup',
+        deliveryType:
+          payload.shippingAddress && payload.shippingAddress !== 'Nhận tại vườn'
+            ? 'shipping'
+            : 'pickup',
         shippingAddress: payload.shippingAddress || 'Nhận tại vườn',
         paymentMethod: 'online',
         items: payload.itemId ? [{ productId: payload.itemId, quantity: payload.quantity }] : [],
-        note: payload.notes || (payload.mode === 'plant' ? `Đăng ký trồng sâm (Gói chăm sóc: ${payload.carePackageId || 'default'}, Gói bảo hiểm: ${payload.protectionPackageId || 'default'})` : undefined),
+        note:
+          payload.notes ||
+          (payload.mode === 'plant'
+            ? `Đăng ký trồng sâm (Gói chăm sóc: ${payload.carePackageId || 'default'}, Gói bảo hiểm: ${payload.protectionPackageId || 'default'})`
+            : undefined),
       };
 
-      return ordersService.checkout(checkoutPayload as any);
+      return await ordersService.checkout(checkoutPayload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });

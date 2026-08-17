@@ -4,7 +4,7 @@ import { notificationService } from '@/services/notification.service';
 export function useNotificationsList(enabled = true) {
   return useQuery({
     queryKey: ['notifications', 'list'],
-    queryFn: () => notificationService.getList(),
+    queryFn: async () => await notificationService.getList(),
     enabled,
     staleTime: 1000 * 30, // 30s
   });
@@ -13,9 +13,7 @@ export function useNotificationsList(enabled = true) {
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      return notificationService.markAsRead(id);
-    },
+    mutationFn: async (id: string) => await notificationService.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -25,9 +23,7 @@ export function useMarkNotificationRead() {
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
-      return notificationService.markAllAsRead();
-    },
+    mutationFn: async () => await notificationService.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -37,7 +33,7 @@ export function useMarkAllNotificationsRead() {
 export function useNotificationSettings(enabled = true) {
   return useQuery({
     queryKey: ['notifications', 'settings'],
-    queryFn: () => notificationService.getUserSetting(),
+    queryFn: async () => await notificationService.getUserSetting(),
     enabled,
   });
 }
@@ -45,9 +41,8 @@ export function useNotificationSettings(enabled = true) {
 export function useUpdateNotificationSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: any) => {
-      return notificationService.updateUserSetting(payload);
-    },
+    mutationFn: async (payload: Parameters<typeof notificationService.updateUserSetting>[0]) =>
+      await notificationService.updateUserSetting(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications', 'settings'] });
     },

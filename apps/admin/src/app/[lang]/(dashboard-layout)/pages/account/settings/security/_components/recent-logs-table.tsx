@@ -1,8 +1,8 @@
 "use client"
 
-import { useTranslation } from "@/providers/i18n-provider"
 import { formatDateWithTime } from "@/lib/utils"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   Table,
   TableBody,
@@ -45,7 +45,10 @@ export function RecentLogsTable({ logs = [] }: { logs?: LogItem[] }) {
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
+            <TableCell
+              colSpan={4}
+              className="text-center py-6 text-muted-foreground"
+            >
               {t("users.security.emptyLogs")}
             </TableCell>
           </TableRow>

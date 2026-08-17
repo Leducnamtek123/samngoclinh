@@ -1,8 +1,5 @@
-import type { Metadata } from "next"
 import type { BackofficeOverview, ContactRequest, EContract } from "@/types"
-
-import { backofficeService } from "@/services/backoffice.service"
-import { legalService } from "@/services/legal.service"
+import type { Metadata } from "next"
 
 import { ActiveProjects } from "./_components/active-projects"
 import { ActivityTimeline } from "./_components/activity-timeline"
@@ -13,6 +10,8 @@ import { RevenueTrend } from "./_components/revenue-trend"
 import { SalesByCountry } from "./_components/sales-by-country"
 import { SalesTrend } from "./_components/sales-trend"
 import { TopSalesRepresentatives } from "./_components/top-sales-representatives"
+import { backofficeService } from "@/services/backoffice.service"
+import { legalService } from "@/services/legal.service"
 
 export const metadata: Metadata = {
   title: "CRM & Quan hệ Nhà đầu tư | Sâm Ngọc Linh Admin",
@@ -60,7 +59,8 @@ export default async function CRMPage(props: CRMPageProps) {
             Quản trị Khách hàng & Quan hệ Nhà đầu tư (CRM)
           </h1>
           <p className="text-muted-foreground">
-            Theo dõi hành trình khách hàng VIP, tiến độ hợp đồng điện tử và nhật ký tư vấn đầu tư luống sâm.
+            Theo dõi hành trình khách hàng VIP, tiến độ hợp đồng điện tử và nhật
+            ký tư vấn đầu tư luống sâm.
           </p>
         </div>
       </div>

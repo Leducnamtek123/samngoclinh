@@ -1,13 +1,12 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { ordersService } from '@/services/orders.service';
+import { useState, useCallback, useEffect } from 'react';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
+import { ordersService } from '@/services/orders.service';
+import type { OrderData } from '@/types';
 
 export type StatusCounts = {
   all: number;
   pending: number;
-  pending_verification?: number;
+  pending_verification: number;
   paid: number;
   shipping: number;
   completed: number;
@@ -22,13 +21,13 @@ export type PaginationMeta = {
 };
 
 export function useProfileOrders(activeTab: string) {
-  const [userOrders, setUserOrders] = useState<any[]>([]);
+  const [userOrders, setUserOrders] = useState<OrderData[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [page, setPage] = useState<number>(1);
   const [perPage] = useState<number>(10);
-  
+
   const [statusCounts, setStatusCounts] = useState<StatusCounts>({
     all: 0,
     pending: 0,
@@ -48,7 +47,7 @@ export function useProfileOrders(activeTab: string) {
 
   const [viewingOrderDetail, setViewingOrderDetail] = useState<OrderDetailData | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<any>(null);
+  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<OrderData | null>(null);
 
   const fetchOrders = useCallback(async () => {
     setOrdersLoading(true);
@@ -63,63 +62,101 @@ export function useProfileOrders(activeTab: string) {
       }
 
       const res = await ordersService.getMyOrders(queryParams);
-      
-      const list = Array.isArray(res?.data)
-        ? res.data
-        : Array.isArray(res?.items)
-          ? res.items
-          : [];
+
+      const rawItems = (res as { data?: { items?: OrderData[] } | OrderData[]; items?: OrderData[] });
+      const list: OrderData[] = Array.isArray(rawItems?.data)
+        ? (rawItems.data as OrderData[])
+        : Array.isArray((rawItems?.data as { items?: OrderData[] })?.items)
+          ? (rawItems.data as { items?: OrderData[] }).items || []
+          : Array.isArray(rawItems?.items)
+            ? rawItems.items
+            : [];
 
       if (page === 1) {
         setUserOrders(list);
       } else {
         setUserOrders((prev) => {
           const existingIds = new Set(prev.map((o) => o.id || o.code));
-          const newUnique = list.filter((o: any) => !existingIds.has(o.id || o.code));
+          const newUnique = list.filter((o: OrderData) => !existingIds.has(o.id || o.code));
           return [...prev, ...newUnique];
         });
       }
 
       // Parse status counts metadata from API
-      const rawCounts = res?.metadata?.statusCounts || res?.statusCounts || res?._metadata?.statusCounts || res?.pagination?.statusCounts;
+      const rawCounts =
+        (res?.metadata as { statusCounts?: Partial<StatusCounts> })?.statusCounts ||
+        (res?.data as { statusCounts?: Partial<StatusCounts> })?.statusCounts ||
+        (res as { statusCounts?: Partial<StatusCounts> })?.statusCounts;
+
       if (rawCounts) {
         setStatusCounts({
-          all: Number(rawCounts.all) || 0,
-          pending: Number(rawCounts.pending) || 0,
-          pending_verification: Number(rawCounts.pending_verification) || 0,
-          paid: Number(rawCounts.paid) || 0,
-          shipping: Number(rawCounts.shipping) || 0,
-          completed: Number(rawCounts.completed) || 0,
-          cancelled: Number(rawCounts.cancelled) || 0,
+          all: Number(rawCounts.all ?? list.length),
+          pending: Number(rawCounts.pending ?? 0),
+          pending_verification: Number(rawCounts.pending_verification ?? 0),
+          paid: Number(rawCounts.paid ?? 0),
+          shipping: Number(rawCounts.shipping ?? 0),
+          completed: Number(rawCounts.completed ?? 0),
+          cancelled: Number(rawCounts.cancelled ?? 0),
         });
+      } else if (page === 1 && statusFilter === 'all') {
+        const counts: StatusCounts = {
+          all: list.length,
+          pending: 0,
+          pending_verification: 0,
+          paid: 0,
+          shipping: 0,
+          completed: 0,
+          cancelled: 0,
+        };
+        for (const order of list) {
+          const s = (order.status || '').toLowerCase();
+          if (s === 'pending') counts.pending++;
+          else if (s === 'pending_verification') counts.pending_verification++;
+          else if (s === 'paid') counts.paid++;
+          else if (s === 'shipping' || s === 'delivering' || s === 'shipped') counts.shipping++;
+          else if (s === 'completed' || s === 'delivered') counts.completed++;
+          else if (s === 'cancelled' || s === 'failed') counts.cancelled++;
+        }
+        setStatusCounts(counts);
       }
 
       // Parse pagination metadata from API
-      const meta = res?.metadata || res?.pagination || res?._metadata?.pagination;
-      if (meta) {
+      const rawMeta =
+        (res?.metadata as Partial<PaginationMeta>) ||
+        (res?.data as { pagination?: Partial<PaginationMeta> })?.pagination ||
+        (res as { pagination?: Partial<PaginationMeta> })?.pagination;
+
+      if (rawMeta) {
         setPagination({
-          page: Number(meta.page) || page,
-          limit: Number(meta.perPage || meta.limit) || perPage,
-          total: Number(meta.totalItems || meta.total) || list.length,
-          totalPages: Number(meta.totalPages) || Math.ceil((meta.totalItems || list.length) / perPage) || 1,
+          page: Number(rawMeta.page ?? page),
+          limit: Number(rawMeta.limit ?? perPage),
+          total: Number(rawMeta.total ?? list.length),
+          totalPages: Number(
+            rawMeta.totalPages ?? (Math.ceil((rawMeta.total || list.length) / perPage) || 1),
+          ),
         });
       } else {
         setPagination({
           page,
           limit: perPage,
           total: list.length,
-          totalPages: 1,
+          totalPages: Math.max(1, Math.ceil(list.length / perPage)),
         });
       }
-    } catch (err: any) {
-      setOrdersError(err?.message || 'Không thể tải lịch sử đơn hàng. Vui lòng thử lại.');
-      if (page === 1) setUserOrders([]);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Không thể tải lịch sử đơn hàng. Vui lòng thử lại.';
+      setOrdersError(msg);
+      if (page === 1) {
+        setUserOrders([]);
+      }
     }
     setOrdersLoading(false);
   }, [page, perPage, statusFilter]);
 
   useEffect(() => {
-    if (activeTab !== 'orders') return;
+    if (activeTab !== 'orders') {
+      return;
+    }
     // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
     fetchOrders();
   }, [activeTab, fetchOrders]);
@@ -129,20 +166,20 @@ export function useProfileOrders(activeTab: string) {
     setPage(1);
   };
 
-  const handleViewOrderDetail = async (order: any) => {
+  const handleViewOrderDetail = async (order: OrderData | OrderDetailData) => {
     const orderId = order?.id || order?.code;
     if (!orderId) {
-      setViewingOrderDetail(order);
+      setViewingOrderDetail(order as OrderDetailData);
       return;
     }
     setDetailLoading(true);
     try {
       const res = await ordersService.getOrderDetail(orderId);
-      const detailData = res?.data || res;
+      const detailData = ((res as { data?: OrderDetailData })?.data || res) as OrderDetailData;
       setViewingOrderDetail(detailData);
     } catch {
       // Fallback to list order object if detail endpoint fails
-      setViewingOrderDetail(order);
+      setViewingOrderDetail(order as OrderDetailData);
     }
     setDetailLoading(false);
   };

@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { useTranslations } from 'next-intl';
+import React from 'react';
 
 type AccountHeaderProps = {
   activeTab: string;
@@ -13,43 +13,54 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({ activeTab }) => {
 
   const getTabTitle = (tab: string) => {
     switch (tab) {
-      case 'info':
+      case 'info': {
         return tSidebar('info');
-      case 'orders':
+      }
+      case 'orders': {
         return tSidebar('orders');
+      }
       case 'assets':
-      case 'trees':
+      case 'trees': {
         return tSidebar('trees');
-      case 'address':
+      }
+      case 'address': {
         return tSidebar('addresses');
-      case 'kyc':
+      }
+      case 'kyc': {
         return tSidebar('kyc');
-      case 'contracts':
+      }
+      case 'contracts': {
         return tSidebar('contracts');
-      case 'referral':
+      }
+      case 'referral': {
         return tSidebar('referral');
-      case 'settings':
+      }
+      case 'settings': {
         return tSidebar('settings');
+      }
       case 'change-password':
-      case 'security':
+      case 'security': {
         return tSidebar('security');
-      case 'digital-signature':
+      }
+      case 'digital-signature': {
         return tSidebar('digitalSignature');
-      default:
+      }
+      default: {
         return tNav('profile');
+      }
     }
   };
 
   const title = getTabTitle(activeTab);
 
   return (
-    <div className="mb-6 px-1 flex flex-col gap-1">
+    <div className="mb-6 flex flex-col gap-1 px-1">
       <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 dark:text-emerald-400">
         <span>{tNav('profile')}</span>
         <span className="text-gray-300 dark:text-gray-700">/</span>
-        <span className="text-gray-600 dark:text-gray-400 capitalize">{title}</span>
+        <span className="text-gray-600 capitalize dark:text-gray-400">{title}</span>
       </div>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+      <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
         {title}
       </h1>
     </div>

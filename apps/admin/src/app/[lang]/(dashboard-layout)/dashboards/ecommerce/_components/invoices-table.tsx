@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-table"
 import type { InvoiceType } from "../types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   Card,
   CardContent,
@@ -26,8 +27,14 @@ import {
 } from "@/components/ui/card"
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { InvoiceTableToolbar } from "./invoice-table-toolbar"
 import { getInvoicesTableColumns } from "./invoices-table-columns"
 

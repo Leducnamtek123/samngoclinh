@@ -1,10 +1,12 @@
 "use client"
 
 import React from "react"
-import type { UseFormReturn } from "react-hook-form"
+
 import type { TreeFormValues } from "@/schemas/tree-schema"
 import type { AdminUser, Bed } from "@/types"
+import type { UseFormReturn } from "react-hook-form"
 
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   FormControl,
   FormField,
@@ -13,7 +15,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { DatePicker } from "@/components/ui/date-picker"
 import {
   Select,
   SelectContent,
@@ -28,7 +29,14 @@ interface TreeFormFieldsProps {
   form: UseFormReturn<TreeFormValues>
   mode: "create" | "edit"
   beds: Bed[]
-  users: AdminUser[] | Array<{ id: string; name?: string | null; username: string; email?: string }>
+  users:
+    | AdminUser[]
+    | Array<{
+        id: string
+        name?: string | null
+        username: string
+        email?: string
+      }>
   t: (key: string) => string
 }
 
@@ -64,7 +72,9 @@ export function TreeFormFields({
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("trees.placeholders.selectBed")} />
+                  <SelectValue
+                    placeholder={t("trees.placeholders.selectBed")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -92,7 +102,9 @@ export function TreeFormFields({
             <Select onValueChange={field.onChange} value={field.value || ""}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("trees.placeholders.selectOwner")} />
+                  <SelectValue
+                    placeholder={t("trees.placeholders.selectOwner")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -155,14 +167,20 @@ export function TreeFormFields({
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("trees.placeholders.selectHealthStatus")} />
+                  <SelectValue
+                    placeholder={t("trees.placeholders.selectHealthStatus")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 <SelectItem value="Tốt">{t("trees.health.good")}</SelectItem>
-                <SelectItem value="Bình thường">{t("trees.health.normal")}</SelectItem>
+                <SelectItem value="Bình thường">
+                  {t("trees.health.normal")}
+                </SelectItem>
                 <SelectItem value="Kém">{t("trees.health.poor")}</SelectItem>
-                <SelectItem value="Cần chăm sóc đặc biệt">{t("trees.health.critical")}</SelectItem>
+                <SelectItem value="Cần chăm sóc đặc biệt">
+                  {t("trees.health.critical")}
+                </SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -179,13 +197,21 @@ export function TreeFormFields({
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder={t("trees.placeholders.selectStatus")} />
+                  <SelectValue
+                    placeholder={t("trees.placeholders.selectStatus")}
+                  />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="active">{t("trees.status.active")}</SelectItem>
-                <SelectItem value="harvested">{t("trees.status.harvested")}</SelectItem>
-                <SelectItem value="diseased">{t("trees.status.diseased")}</SelectItem>
+                <SelectItem value="active">
+                  {t("trees.status.active")}
+                </SelectItem>
+                <SelectItem value="harvested">
+                  {t("trees.status.harvested")}
+                </SelectItem>
+                <SelectItem value="diseased">
+                  {t("trees.status.diseased")}
+                </SelectItem>
                 <SelectItem value="dead">{t("trees.status.dead")}</SelectItem>
               </SelectContent>
             </Select>

@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit2, User, Award, Copy } from 'lucide-react';
-import { Button, ButtonLoading } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { Badge } from '@/components/ui/badge';
+import { Button, ButtonLoading } from '@/components/ui/button';
 import { FormDatePicker } from '@/components/ui/form/FormDatePicker';
-import {
-  profileInfoSchema,
-  type ProfileInfoFormValues,
-} from '@/lib/validation/schemas';
+import { profileInfoSchema } from '@/lib/validation/schemas';
+import type { ProfileInfoFormValues } from '@/lib/validation/schemas';
 import type { UserProfile, UserBusiness } from '@/types';
 import { formatBirthDate, formatInputDate } from '@/utils/formatters';
 
@@ -34,13 +32,15 @@ type ProfileInfoTabProps = {
   }) => Promise<boolean>;
 };
 
+import type { UseFormReturn } from 'react-hook-form';
+
 // Subcomponent: Profile Edit Form Fields
 function ProfileEditFormFields({
   form,
   email,
   onValidSave,
 }: {
-  form: any;
+  form: UseFormReturn<ProfileInfoFormValues>;
   email: string;
   onValidSave: (values: ProfileInfoFormValues) => Promise<void>;
 }) {
@@ -48,9 +48,12 @@ function ProfileEditFormFields({
 
   return (
     <form onSubmit={form.handleSubmit(onValidSave)} className="space-y-5 pt-1">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="profile-full-name" className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+          <label
+            htmlFor="profile-full-name"
+            className="block text-xs font-bold text-gray-600 uppercase dark:text-gray-400"
+          >
             {t('fullName')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -58,47 +61,53 @@ function ProfileEditFormFields({
             type="text"
             {...form.register('fullName')}
             placeholder={t('fullNamePlaceholder')}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-sm font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+            className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 transition-colors focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:border-gray-700 dark:bg-slate-800 dark:text-gray-100"
           />
           {form.formState.errors.fullName && (
-            <p className="text-xs font-semibold text-red-500">{form.formState.errors.fullName.message}</p>
+            <p className="text-xs font-semibold text-red-500">
+              {form.formState.errors.fullName.message}
+            </p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">{t('email')}</span>
-          <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-slate-900/50 text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center justify-between">
+          <span className="block text-xs font-bold text-gray-600 uppercase dark:text-gray-400">
+            {t('email')}
+          </span>
+          <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700 dark:border-gray-800 dark:bg-slate-900/50 dark:text-gray-300">
             <span>{email || '—'}</span>
-            <span className="text-[10px] text-gray-400 font-normal italic">—</span>
+            <span className="text-[10px] font-normal text-gray-400 italic">—</span>
           </div>
         </div>
 
         <div className="space-y-1.5">
-          <span className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+          <span className="block text-xs font-bold text-gray-600 uppercase dark:text-gray-400">
             {t('gender')} <span className="text-red-500">*</span>
           </span>
           <div className="flex items-center gap-6 pt-1">
-            <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
               <input
                 type="radio"
                 value="male"
                 {...form.register('gender')}
-                className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
+                className="h-4 w-4 cursor-pointer text-emerald-600 accent-emerald-600 focus:ring-emerald-500"
               />
               <span>{t('male')}</span>
             </label>
-            <label className="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200">
+            <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
               <input
                 type="radio"
                 value="female"
                 {...form.register('gender')}
-                className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
+                className="h-4 w-4 cursor-pointer text-emerald-600 accent-emerald-600 focus:ring-emerald-500"
               />
               <span>{t('female')}</span>
             </label>
           </div>
           {form.formState.errors.gender && (
-            <p className="text-xs font-semibold text-red-500">{form.formState.errors.gender.message}</p>
+            <p className="text-xs font-semibold text-red-500">
+              {form.formState.errors.gender.message}
+            </p>
           )}
         </div>
 
@@ -110,7 +119,10 @@ function ProfileEditFormFields({
         />
 
         <div className="space-y-1.5 md:col-span-2">
-          <label htmlFor="profile-phone" className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400 block">
+          <label
+            htmlFor="profile-phone"
+            className="block text-xs font-bold text-gray-600 uppercase dark:text-gray-400"
+          >
             {t('phone')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -118,10 +130,12 @@ function ProfileEditFormFields({
             type="tel"
             {...form.register('phone')}
             placeholder={t('phonePlaceholder')}
-            className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-sm font-semibold text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+            className="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 transition-colors focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none dark:border-gray-700 dark:bg-slate-800 dark:text-gray-100"
           />
           {form.formState.errors.phone && (
-            <p className="text-xs font-semibold text-red-500">{form.formState.errors.phone.message}</p>
+            <p className="text-xs font-semibold text-red-500">
+              {form.formState.errors.phone.message}
+            </p>
           )}
         </div>
       </div>
@@ -150,26 +164,39 @@ function ProfileViewDetailsGrid({
   const tCommon = useTranslations('status');
 
   const getGenderText = (gender?: string) => {
-    if (gender === 'female' || gender === 'Nữ') return t('female');
-    if (gender === 'male' || gender === 'Nam') return t('male');
+    if (gender === 'female' || gender === 'Nữ') {
+      return t('female');
+    }
+    if (gender === 'male' || gender === 'Nam') {
+      return t('male');
+    }
     return t('other');
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
-      <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-900/50 border border-gray-100 dark:border-gray-800 space-y-1">
-        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">{t('fullName')}</span>
+    <div className="grid grid-cols-1 gap-5 pt-1 md:grid-cols-2">
+      <div className="space-y-1 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-slate-900/50">
+        <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+          {t('fullName')}
+        </span>
         <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-          {cleanName || <span className="text-gray-400 font-normal italic">—</span>}
+          {cleanName || <span className="font-normal text-gray-400 italic">—</span>}
         </p>
       </div>
 
-      <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-900/50 border border-gray-100 dark:border-gray-800 space-y-1">
-        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">{t('email')}</span>
+      <div className="space-y-1 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-slate-900/50">
+        <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+          {t('email')}
+        </span>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{email || '—'}</p>
+          <p className="truncate text-sm font-bold text-gray-900 dark:text-gray-100">
+            {email || '—'}
+          </p>
           {isEmailVerified ? (
-            <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] shrink-0 font-bold">
+            <Badge
+              variant="secondary"
+              className="shrink-0 border-emerald-200 bg-emerald-50 text-[10px] font-bold text-emerald-700"
+            >
               {tCommon('verified')}
             </Badge>
           ) : (
@@ -177,7 +204,7 @@ function ProfileViewDetailsGrid({
               variant="ghost"
               size="sm"
               onClick={onVerifyEmailClick}
-              className="h-6 text-[10px] bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shrink-0 font-bold cursor-pointer"
+              className="h-6 shrink-0 cursor-pointer border border-amber-200 bg-amber-50 text-[10px] font-bold text-amber-800 hover:bg-amber-100"
             >
               {tAuth('verifyBtn')}
             </Button>
@@ -185,24 +212,32 @@ function ProfileViewDetailsGrid({
         </div>
       </div>
 
-      <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-900/50 border border-gray-100 dark:border-gray-800 space-y-1">
-        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">{t('gender')}</span>
+      <div className="space-y-1 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-slate-900/50">
+        <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+          {t('gender')}
+        </span>
         <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
           {getGenderText(profile?.gender)}
         </p>
       </div>
 
-      <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-900/50 border border-gray-100 dark:border-gray-800 space-y-1">
-        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">{t('birthDate')}</span>
+      <div className="space-y-1 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-slate-900/50">
+        <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+          {t('birthDate')}
+        </span>
         <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-          {formatBirthDate(profile?.birthDate) || <span className="text-gray-400 font-normal italic">—</span>}
+          {formatBirthDate(profile?.birthDate) || (
+            <span className="font-normal text-gray-400 italic">—</span>
+          )}
         </p>
       </div>
 
-      <div className="p-4 rounded-2xl bg-gray-50/80 dark:bg-slate-900/50 border border-gray-100 dark:border-gray-800 space-y-1 md:col-span-2">
-        <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider block">{t('phone')}</span>
+      <div className="space-y-1 rounded-2xl border border-gray-100 bg-gray-50/80 p-4 md:col-span-2 dark:border-gray-800 dark:bg-slate-900/50">
+        <span className="block text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+          {t('phone')}
+        </span>
         <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-          {currentPhone || <span className="text-gray-400 font-normal italic">—</span>}
+          {currentPhone || <span className="font-normal text-gray-400 italic">—</span>}
         </p>
       </div>
     </div>
@@ -221,28 +256,28 @@ function ProfileReferralBanner({
   const tActions = useTranslations('actions');
 
   return (
-    <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/20 border border-emerald-200/80 dark:border-emerald-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+    <div className="flex flex-col justify-between gap-4 rounded-2xl border border-emerald-200/80 bg-gradient-to-r from-emerald-50 to-teal-50 p-5 shadow-2xs sm:flex-row sm:items-center dark:border-emerald-800/40 dark:from-emerald-950/30 dark:to-teal-950/20">
       <div className="space-y-0.5">
-        <span className="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-          <Award className="w-4 h-4 text-emerald-600" />
+        <span className="flex items-center gap-1.5 text-xs font-black tracking-wider text-emerald-800 uppercase dark:text-emerald-300">
+          <Award className="h-4 w-4 text-emerald-600" />
           {t('myCode')}
         </span>
-        <p className="text-xs text-gray-600 dark:text-gray-400">
-          {t('subtitle')}
-        </p>
+        <p className="text-xs text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="px-4 py-2 bg-white dark:bg-slate-900 rounded-xl font-mono font-black text-emerald-800 dark:text-emerald-300 text-sm border border-emerald-300 shadow-xs">
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="rounded-xl border border-emerald-300 bg-white px-4 py-2 font-mono text-sm font-black text-emerald-800 shadow-xs dark:bg-slate-900 dark:text-emerald-300">
           {referralCode}
         </div>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => onCopyText(referralCode, t('myCode'))}
-          className="flex items-center gap-1 bg-white hover:bg-emerald-50 text-emerald-800 border-emerald-300 cursor-pointer"
+          onClick={() => {
+            onCopyText(referralCode, t('myCode'));
+          }}
+          className="flex cursor-pointer items-center gap-1 border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50"
         >
-          <Copy className="w-3.5 h-3.5" />
+          <Copy className="h-3.5 w-3.5" />
           <span>{tActions('copy')}</span>
         </Button>
       </div>
@@ -270,7 +305,8 @@ export const ProfileInfoTab = ({
 
   const cleanName = (fullName === '—' ? '' : fullName) || profile?.name || '';
   const currentPhone = profile?.mobileNumbers?.[0]?.number || business?.phone || editPhone || '';
-  const initialGender = profile?.gender === 'female' || profile?.gender === 'Nữ' ? 'female' : 'male';
+  const initialGender =
+    profile?.gender === 'female' || profile?.gender === 'Nữ' ? 'female' : 'male';
 
   const form = useForm<ProfileInfoFormValues>({
     resolver: zodResolver(profileInfoSchema),
@@ -308,7 +344,9 @@ export const ProfileInfoTab = ({
   };
 
   const onValidSave = async (values: ProfileInfoFormValues) => {
-    if (isSaving) return;
+    if (isSaving) {
+      return;
+    }
     if (onSaveProfile) {
       setIsSaving(true);
       try {
@@ -321,8 +359,8 @@ export const ProfileInfoTab = ({
         if (ok) {
           setIsEditing(false);
         }
-      } catch (err) {
-        console.error('Save profile error:', err);
+      } catch (error) {
+        console.error('Save profile error:', error);
       }
       setIsSaving(false);
     } else {
@@ -332,13 +370,13 @@ export const ProfileInfoTab = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 dark:border-gray-800 pb-4">
+      <div className="flex flex-col justify-between gap-3 border-b border-gray-100 pb-4 sm:flex-row sm:items-center dark:border-gray-800">
         <div>
-          <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <User className="w-5 h-5 text-emerald-700" />
+          <h3 className="flex items-center gap-2 text-xl font-extrabold text-gray-900 dark:text-gray-100">
+            <User className="h-5 w-5 text-emerald-700" />
             <span>{t('personalInfo')}</span>
           </h3>
-          <p className="text-xs text-gray-400 font-medium mt-0.5">
+          <p className="mt-0.5 text-xs font-medium text-gray-400">
             {isEditing ? t('subtitle') : t('subtitle')}
           </p>
         </div>
@@ -360,7 +398,7 @@ export const ProfileInfoTab = ({
                 size="sm"
                 isLoading={isSaving}
                 onClick={form.handleSubmit(onValidSave)}
-                className="bg-emerald-800 hover:bg-emerald-900 text-white cursor-pointer text-xs"
+                className="cursor-pointer bg-emerald-800 text-xs text-white hover:bg-emerald-900"
               >
                 {t('saveChanges')}
               </ButtonLoading>
@@ -370,9 +408,9 @@ export const ProfileInfoTab = ({
               variant="outline"
               size="sm"
               onClick={handleStartEdit}
-              className="flex items-center gap-1.5 cursor-pointer text-xs border-gray-300 hover:border-emerald-600 hover:text-emerald-700"
+              className="flex cursor-pointer items-center gap-1.5 border-gray-300 text-xs hover:border-emerald-600 hover:text-emerald-700"
             >
-              <Edit2 className="w-3.5 h-3.5" />
+              <Edit2 className="h-3.5 w-3.5" />
               <span>{tActions('edit')}</span>
             </Button>
           )}

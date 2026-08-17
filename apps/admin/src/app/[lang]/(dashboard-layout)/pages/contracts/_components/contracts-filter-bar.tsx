@@ -1,11 +1,18 @@
 "use client"
 
 import React from "react"
-import { Search, RefreshCw } from "lucide-react"
+import { RefreshCw, Search } from "lucide-react"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface ContractsFilterBarProps {
   searchQuery: string
@@ -31,7 +38,11 @@ export function ContractsFilterBar({
   onReset,
 }: ContractsFilterBarProps) {
   const { t } = useTranslation()
-  const isFiltered = searchQuery || statusFilter !== "all" || sourceFilter !== "all" || paymentFilter !== "all"
+  const isFiltered =
+    searchQuery ||
+    statusFilter !== "all" ||
+    sourceFilter !== "all" ||
+    paymentFilter !== "all"
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -54,12 +65,22 @@ export function ContractsFilterBar({
             <SelectValue placeholder={t("contracts.filters.status")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("contracts.filters.allStatus")}</SelectItem>
+            <SelectItem value="all">
+              {t("contracts.filters.allStatus")}
+            </SelectItem>
             <SelectItem value="draft">{t("contracts.status.DRAFT")}</SelectItem>
-            <SelectItem value="pending">{t("contracts.status.PENDING_SIGN")}</SelectItem>
-            <SelectItem value="signed">{t("contracts.status.SIGNED")}</SelectItem>
-            <SelectItem value="expired">{t("contracts.status.EXPIRED")}</SelectItem>
-            <SelectItem value="cancelled">{t("contracts.status.CANCELLED")}</SelectItem>
+            <SelectItem value="pending">
+              {t("contracts.status.PENDING_SIGN")}
+            </SelectItem>
+            <SelectItem value="signed">
+              {t("contracts.status.SIGNED")}
+            </SelectItem>
+            <SelectItem value="expired">
+              {t("contracts.status.EXPIRED")}
+            </SelectItem>
+            <SelectItem value="cancelled">
+              {t("contracts.status.CANCELLED")}
+            </SelectItem>
           </SelectContent>
         </Select>
 
@@ -69,9 +90,15 @@ export function ContractsFilterBar({
             <SelectValue placeholder={t("contracts.filters.source")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("contracts.filters.allSource")}</SelectItem>
-            <SelectItem value="order">{t("contracts.types.TREE_PURCHASE")}</SelectItem>
-            <SelectItem value="manual">{t("contracts.createManual")}</SelectItem>
+            <SelectItem value="all">
+              {t("contracts.filters.allSource")}
+            </SelectItem>
+            <SelectItem value="order">
+              {t("contracts.types.TREE_PURCHASE")}
+            </SelectItem>
+            <SelectItem value="manual">
+              {t("contracts.createManual")}
+            </SelectItem>
           </SelectContent>
         </Select>
 
@@ -81,7 +108,9 @@ export function ContractsFilterBar({
             <SelectValue placeholder={t("contracts.filters.payment")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{t("contracts.filters.allPayment")}</SelectItem>
+            <SelectItem value="all">
+              {t("contracts.filters.allPayment")}
+            </SelectItem>
             <SelectItem value="paid">{t("common.status.paid")}</SelectItem>
             <SelectItem value="unpaid">{t("common.status.pending")}</SelectItem>
           </SelectContent>
@@ -94,7 +123,8 @@ export function ContractsFilterBar({
             onClick={onReset}
             className="h-9 text-xs text-muted-foreground hover:text-foreground"
           >
-            <RefreshCw className="w-3.5 h-3.5 mr-1" /> {t("common.actions.reset")}
+            <RefreshCw className="w-3.5 h-3.5 mr-1" />{" "}
+            {t("common.actions.reset")}
           </Button>
         )}
       </div>

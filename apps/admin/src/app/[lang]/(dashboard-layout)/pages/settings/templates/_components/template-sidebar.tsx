@@ -2,20 +2,17 @@
 
 import React from "react"
 import { Check, Code, Copy, Info } from "lucide-react"
+
+import type { ContractTemplateItem } from "./contract-templates-manager"
+
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import type { ContractTemplateItem } from "./contract-templates-manager"
 
 interface TemplateSidebarProps {
   templates: ContractTemplateItem[]
@@ -121,7 +118,9 @@ export function TemplateSidebar({
                       <Copy className="w-3.5 h-3.5 text-muted-foreground opacity-60" />
                     )}
                   </div>
-                  <p className="text-[11px] text-foreground font-medium">{ph.label}</p>
+                  <p className="text-[11px] text-foreground font-medium">
+                    {ph.label}
+                  </p>
                 </button>
               ))}
             </CardContent>

@@ -58,7 +58,15 @@
     "justNow": "Just now",
     "verified": "Verified",
     "unverified": "Unverified",
-    "noImage": "No image"
+    "noImage": "No image",
+    "pending_issue": "Pending Issue",
+    "pending_signature": "Pending Signature",
+    "signed": "Signed",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "in_transit": "In Transit",
+    "unpaid": "Unpaid",
+    "refunded": "Refunded"
   },
   "table": {
     "rowsPerPage": "Rows per page",
@@ -97,5 +105,11 @@
   "error": "Error",
   "back": "Back",
   "success": "Success",
-  "failed": "Operation failed"
+  "failed": "Operation failed",
+  "notification": {
+    "success": "Operation successful",
+    "error": "An error occurred",
+    "warning": "Warning",
+    "info": "Information"
+  }
 }

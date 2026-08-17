@@ -17,7 +17,7 @@ export type TreeHealthStatus =
   | 'POOR'
   | string;
 
-export interface CultivationTree {
+export type CultivationTree = {
   id: string;
   code: string;
   name?: string;
@@ -42,27 +42,31 @@ export interface CultivationTree {
   createdAt?: string;
   updatedAt?: string;
   metadata?: Record<string, unknown>;
-}
+};
 
 export type Tree = CultivationTree;
 
-export interface CultivationBed {
+export type CultivationBed = {
   id: string;
   code: string;
   name?: string;
   gardenId?: string | null;
   gardenCode?: string | null;
+  gardenName?: string | null;
+  gardenLocation?: string | null;
   capacity: number;
   currentCount?: number;
   treeCount?: number;
+  ageYear?: number;
+  plantedAt?: string | null;
   status: string;
   createdAt?: string;
   updatedAt?: string;
-}
+};
 
 export type Bed = CultivationBed;
 
-export interface CultivationGarden {
+export type CultivationGarden = {
   id: string;
   code: string;
   name: string;
@@ -74,11 +78,11 @@ export interface CultivationGarden {
   images?: string[];
   createdAt?: string;
   updatedAt?: string;
-}
+};
 
 export type Garden = CultivationGarden;
 
-export interface CultivationCareLog {
+export type CultivationCareLog = {
   id: string;
   treeId: string;
   treeCode?: string;
@@ -90,11 +94,11 @@ export interface CultivationCareLog {
   performedBy?: string;
   loggedAt?: string;
   createdAt?: string;
-}
+};
 
 export type CareLog = CultivationCareLog;
 
-export interface QrCodeTraceability {
+export type QrCodeTraceability = {
   code: string;
   tree?: CultivationTree;
   garden?: CultivationGarden;
@@ -102,4 +106,25 @@ export interface QrCodeTraceability {
   careLogs?: CultivationCareLog[];
   origin?: string;
   verifiedAt?: string;
-}
+};
+
+export type CarePackage = {
+  id?: string;
+  code?: string;
+  name?: string;
+  price?: number;
+  description?: string;
+  durationMonths?: number;
+  [key: string]: unknown;
+};
+
+export type ProtectionPackage = {
+  id?: string;
+  code?: string;
+  name?: string;
+  price?: number;
+  description?: string;
+  coverageRate?: number;
+  [key: string]: unknown;
+};
+

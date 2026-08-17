@@ -1,10 +1,10 @@
 "use client"
 
 import { Pencil, Trash2 } from "lucide-react"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import type { ColumnDef } from "@/components/shared/data-table"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTable } from "@/components/shared/data-table"
@@ -100,14 +100,21 @@ export function GardensList({
     {
       header: t("trees.gardens.totalTrees"),
       className: "font-medium",
-      cell: (garden) => t("trees.gardens.treesUnit", { count: garden.totalTrees.toLocaleString("vi-VN") }),
+      cell: (garden) =>
+        t("trees.gardens.treesUnit", {
+          count: garden.totalTrees.toLocaleString("vi-VN"),
+        }),
     },
     {
       header: t("trees.gardens.status"),
       cell: (garden) => (
         <StatusBadge
           status={garden.status}
-          label={garden.status === "active" ? t("trees.gardens.active") : garden.status}
+          label={
+            garden.status === "active"
+              ? t("trees.gardens.active")
+              : garden.status
+          }
         />
       ),
     },

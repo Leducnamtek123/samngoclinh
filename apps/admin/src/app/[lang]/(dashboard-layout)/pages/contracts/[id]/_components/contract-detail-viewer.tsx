@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { ShieldCheck, Loader2 } from "lucide-react"
+import { Loader2, ShieldCheck } from "lucide-react"
 
 interface ContractDetailViewerProps {
   isLoadingTemplate: boolean

@@ -1,35 +1,48 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import {
-  FileText,
-  Plus,
-  Bell,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
-  FileCheck,
-  Search,
-  RefreshCw,
-  Filter,
-} from "lucide-react"
 import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Pagination } from "@/components/ui/app-pagination"
-import { ContractsList } from "./contracts-list"
-import { ContractsStatsCards } from "./contracts-stats-cards"
-import { ContractsFilterBar } from "./contracts-filter-bar"
-import { fetchApi } from "@/lib/api"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  AlertTriangle,
+  Bell,
+  CheckCircle2,
+  Clock,
+  FileCheck,
+  FileText,
+  Filter,
+  Plus,
+  RefreshCw,
+  Search,
+} from "lucide-react"
 
 import type { AdminUser, EContract, PaginationMeta, Tree } from "@/types"
+
+import { fetchApi } from "@/lib/api"
+
+import { useTranslation } from "@/providers/i18n-provider"
+import { Pagination } from "@/components/ui/app-pagination"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ContractsFilterBar } from "./contracts-filter-bar"
+import { ContractsList } from "./contracts-list"
+import { ContractsStatsCards } from "./contracts-stats-cards"
 
 interface ContractsManagerProps {
   initialContracts: EContract[]
@@ -106,27 +119,34 @@ export function ContractsManager({
         c.code?.toLowerCase().includes(query) ||
         c.contractCode?.toLowerCase().includes(query) ||
         c.title?.toLowerCase().includes(query) ||
-        (typeof c.partyB === "string" && c.partyB.toLowerCase().includes(query)) ||
-        (typeof c.partyB === "object" && c.partyB?.name?.toLowerCase().includes(query)) ||
+        (typeof c.partyB === "string" &&
+          c.partyB.toLowerCase().includes(query)) ||
+        (typeof c.partyB === "object" &&
+          c.partyB?.name?.toLowerCase().includes(query)) ||
         c.customerName?.toLowerCase().includes(query)
 
       // Status
       const matchesStatus =
         statusFilter === "all" ||
         c.status === statusFilter ||
-        (statusFilter === "draft" && (c.status === "draft" || c.status === "pending_issue")) ||
-        (statusFilter === "pending" && (c.status === "pending" || c.status === "pending_signature"))
+        (statusFilter === "draft" &&
+          (c.status === "draft" || c.status === "pending_issue")) ||
+        (statusFilter === "pending" &&
+          (c.status === "pending" || c.status === "pending_signature"))
 
       // Source (Order vs Manual)
       const meta = (c.metadata || {}) as Record<string, unknown>
-      const isOrder = Boolean(meta.orderId || meta.orderCode || c.contractType === "purchase_and_care")
+      const isOrder = Boolean(
+        meta.orderId || meta.orderCode || c.contractType === "purchase_and_care"
+      )
       const matchesSource =
         sourceFilter === "all" ||
         (sourceFilter === "order" && isOrder) ||
         (sourceFilter === "manual" && !isOrder)
 
       // Payment
-      const matchesPayment = paymentFilter === "all" || c.paymentStatus === paymentFilter
+      const matchesPayment =
+        paymentFilter === "all" || c.paymentStatus === paymentFilter
 
       return matchesSearch && matchesStatus && matchesSource && matchesPayment
     })
@@ -136,11 +156,15 @@ export function ContractsManager({
   const handleCheckExpiry = async () => {
     setIsCheckingExpiry(true)
     try {
-      const res = await fetchApi("/admin/contracts/check-expiry", { method: "POST" })
+      const res = await fetchApi("/admin/contracts/check-expiry", {
+        method: "POST",
+      })
       const payload = await res.json()
       if (res.status < 400 && payload.data) {
         toast.success(
-          t("contracts.notifications.checkExpiredSuccess", { count: payload.data.count })
+          t("contracts.notifications.checkExpiredSuccess", {
+            count: payload.data.count,
+          })
         )
       } else {
         toast.error(t("contracts.notifications.checkExpiredError"))
@@ -177,8 +201,12 @@ export function ContractsManager({
           prev.map((c) => (c.id === id ? { ...c, status: "pending" } : c))
         )
       }
-    } catch (err: any) {
-      toast.error(err?.message || t("contracts.notifications.publishError"))
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : t("contracts.notifications.publishError")
+      toast.error(msg)
     }
   }
 
@@ -220,7 +248,10 @@ export function ContractsManager({
 
           {/* Explicit Manual Create Button */}
           <Link href={`/${lang}/pages/contracts/create`}>
-            <Button size="sm" className="gap-1.5 bg-primary text-primary-foreground font-semibold shadow-xs">
+            <Button
+              size="sm"
+              className="gap-1.5 bg-primary text-primary-foreground font-semibold shadow-xs"
+            >
               <Plus className="w-4 h-4" /> Tạo hợp đồng thủ công
             </Button>
           </Link>

@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react"
 import { Check, Info, Loader2, Save, Sliders } from "lucide-react"
-import { useTranslation } from "@/providers/i18n-provider"
 
 import { fetchApi } from "@/lib/api"
+import type { SystemSetting } from "@/types"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -17,7 +18,7 @@ import {
 
 export function GeneralSettingsManager() {
   const { t } = useTranslation()
-  const [settingsList, setSettingsList] = useState<any[]>([])
+  const [settingsList, setSettingsList] = useState<SystemSetting[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [savingKey, setSavingKey] = useState<string | null>(null)
   const [successKey, setSuccessKey] = useState<string | null>(null)
@@ -47,13 +48,13 @@ export function GeneralSettingsManager() {
     }
   }, [])
 
-  const handleUpdate = async (key: string, value: string) => {
+  const handleUpdate = async (key: string, value: unknown) => {
     setSavingKey(key)
     try {
       const res = await fetchApi(`/admin/settings/${key}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value }),
+        body: JSON.stringify({ value: typeof value === "string" ? value : String(value ?? "") }),
       })
       if (res.ok) {
         setSuccessKey(key)
@@ -110,10 +111,13 @@ export function GeneralSettingsManager() {
                       {item.key}
                     </p>
                     <p className="text-xs text-muted-foreground font-medium">
-                      {item.description || t("common.generalSettings.defaultParamDesc")}
+                      {item.description ||
+                        t("common.generalSettings.defaultParamDesc")}
                     </p>
                     <p className="text-xs font-semibold text-emerald-600">
-                      {t("common.generalSettings.currentValue", { value: item.value })}
+                      {t("common.generalSettings.currentValue", {
+                        value: String(item.value ?? ""),
+                      })}
                     </p>
                   </div>
                   <Button

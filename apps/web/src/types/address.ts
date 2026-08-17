@@ -1,4 +1,4 @@
-export interface AddressItem {
+export type AddressItem = {
   id: string;
   name?: string;
   recipient?: string;
@@ -7,7 +7,7 @@ export interface AddressItem {
   detail?: string;
   isDefault: boolean;
   label?: string;
-}
+};
 
 export type ShippingAddressFormValues = {
   recipientName: string;

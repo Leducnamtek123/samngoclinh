@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
-export interface LoadingStateProps {
+export type LoadingStateProps = {
   /** Optional message displayed next to or below spinner */
   message?: string;
   /** Size of the spinner: sm (16px), md (24px), lg (36px), xl (48px) */
@@ -13,7 +13,7 @@ export interface LoadingStateProps {
   variant?: 'inline' | 'centered' | 'overlay';
   /** Additional custom container styling */
   className?: string;
-}
+};
 
 const iconSizes = {
   sm: 'h-4 w-4',
@@ -32,7 +32,9 @@ export function LoadingState({
   const displayMessage = message ?? t('loading');
   if (variant === 'inline') {
     return (
-      <div className={cn('inline-flex items-center gap-2 text-muted-foreground text-sm', className)}>
+      <div
+        className={cn('inline-flex items-center gap-2 text-muted-foreground text-sm', className)}
+      >
         <Loader2 className={cn('animate-spin shrink-0 text-primary', iconSizes[size])} />
         {displayMessage && <span>{displayMessage}</span>}
       </div>
@@ -41,17 +43,31 @@ export function LoadingState({
 
   if (variant === 'overlay') {
     return (
-      <div className={cn('absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-4', className)}>
+      <div
+        className={cn(
+          'absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-4',
+          className,
+        )}
+      >
         <Loader2 className={cn('animate-spin text-primary mb-2', iconSizes[size])} />
-        {displayMessage && <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>}
+        {displayMessage && (
+          <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>
+        )}
       </div>
     );
   }
 
   return (
-    <div className={cn('flex flex-col items-center justify-center p-8 min-h-[160px] w-full text-center', className)}>
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center p-8 min-h-[160px] w-full text-center',
+        className,
+      )}
+    >
       <Loader2 className={cn('animate-spin text-primary mb-3', iconSizes[size])} />
-      {displayMessage && <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>}
+      {displayMessage && (
+        <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>
+      )}
     </div>
   );
 }

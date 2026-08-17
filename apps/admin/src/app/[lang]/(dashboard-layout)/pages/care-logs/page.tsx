@@ -4,8 +4,11 @@ import React, { useState } from "react"
 import { toast } from "sonner"
 import { Droplets, Plus, RefreshCw, Sprout, Thermometer } from "lucide-react"
 
+import type { PaginationMeta } from "@/types"
+
 import { useApiMutation } from "@/hooks/use-api-mutation"
 import { useApiQuery } from "@/hooks/use-api-query"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Pagination } from "@/components/ui/app-pagination"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,8 +32,6 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { RoleGuard } from "@/components/guards/rbac-guard"
-import { useTranslation } from "@/providers/i18n-provider"
-import type { PaginationMeta } from "@/types"
 
 interface CareLog {
   id: string
@@ -97,7 +98,10 @@ export default function CareLogsPage() {
     : Array.isArray((rawData as { items?: CareLog[] })?.items)
       ? (rawData as { items: CareLog[] }).items
       : []
-  const metadata = response?.metadata || (rawData as { metadata?: PaginationMeta })?.metadata || null
+  const metadata =
+    response?.metadata ||
+    (rawData as { metadata?: PaginationMeta })?.metadata ||
+    null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -117,7 +121,8 @@ export default function CareLogsPage() {
       setIsOpen(false)
       refetch()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : t("trees.careLogs.submitError")
+      const message =
+        error instanceof Error ? error.message : t("trees.careLogs.submitError")
       toast.error(message)
     }
   }
@@ -242,7 +247,9 @@ export default function CareLogsPage() {
                       className="bg-emerald-600 hover:bg-emerald-700 text-white"
                       disabled={mutation.isPending}
                     >
-                      {mutation.isPending ? t("common.status.processing") : t("common.actions.save")}
+                      {mutation.isPending
+                        ? t("common.status.processing")
+                        : t("common.actions.save")}
                     </Button>
                   </div>
                 </form>
@@ -275,9 +282,15 @@ export default function CareLogsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>{t("trees.careLogs.treeCode")} / {t("trees.careLogs.bedCode")}</TableHead>
+                      <TableHead>
+                        {t("trees.careLogs.treeCode")} /{" "}
+                        {t("trees.careLogs.bedCode")}
+                      </TableHead>
                       <TableHead>{t("trees.careLogs.activity")}</TableHead>
-                      <TableHead>{t("trees.careLogs.temperature")} & {t("trees.careLogs.humidity")}</TableHead>
+                      <TableHead>
+                        {t("trees.careLogs.temperature")} &{" "}
+                        {t("trees.careLogs.humidity")}
+                      </TableHead>
                       <TableHead>{t("trees.careLogs.description")}</TableHead>
                       <TableHead>{t("trees.careLogs.date")}</TableHead>
                     </TableRow>
@@ -296,9 +309,7 @@ export default function CareLogsPage() {
                             variant="secondary"
                             className="bg-emerald-100 text-emerald-800 border-emerald-200"
                           >
-                            {log.action ||
-                              log.activityType ||
-                              "Chăm sóc"}
+                            {log.action || log.activityType || "Chăm sóc"}
                           </Badge>
                         </TableCell>
                         <TableCell>

@@ -4,15 +4,16 @@
 
 @theme {
   --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --color-primary: #1C3F24;
-  --color-primary-hover: #122B18;
-  --color-secondary: #16A34A;
-  --color-secondary-hover: #15803D;
-  --color-accent-amber: #D97706;
-  --color-accent-amber-hover: #B45309;
-  --color-brand-bg: #FCF9F8;
-  --color-brand-surface: #FFFFFF;
+  --font-display:
+    var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-primary: #1c3f24;
+  --color-primary-hover: #122b18;
+  --color-secondary: #16a34a;
+  --color-secondary-hover: #15803d;
+  --color-accent-amber: #d97706;
+  --color-accent-amber-hover: #b45309;
+  --color-brand-bg: #fcf9f8;
+  --color-brand-surface: #ffffff;
 
   /* Pure shadcn UI Tailwind v4 theme color tokens */
   --color-background: #ffffff;
@@ -29,11 +30,12 @@
   --color-destructive-foreground: #ffffff;
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
-  --color-ring: #1C3F24;
+  --color-ring: #1c3f24;
 }
 
 /* Lenis Smooth Scroll styles */
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -66,7 +68,7 @@ html.lenis, html.lenis body {
   footer,
   nav,
   .no-print,
-  [data-lenis-prevent="nav"],
+  [data-lenis-prevent='nav'],
   button.no-print,
   a.no-print {
     display: none !important;
@@ -106,4 +108,3 @@ html.lenis, html.lenis body {
     border-radius: 0 !important;
   }
 }
-

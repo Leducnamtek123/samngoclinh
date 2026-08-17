@@ -1,15 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
-import { FormItem, FormDescription, FormMessage } from './Form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { Checkbox } from '../checkbox';
+import { FormItem, FormDescription, FormMessage } from './Form';
 
-export interface FormCheckboxProps<
+export type FormCheckboxProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> {
-  control: Control<TFieldValues, any>;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  control: Control<TFieldValues>;
   name: TName;
   label?: React.ReactNode;
   description?: string;
@@ -18,11 +19,11 @@ export interface FormCheckboxProps<
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
-}
+};
 
 export function FormCheckbox<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -53,7 +54,9 @@ export function FormCheckbox<
           name={field.name}
           checked={isChecked}
           disabled={disabled}
-          onCheckedChange={(checked) => field.onChange(checked)}
+          onCheckedChange={(checked) => {
+            field.onChange(checked);
+          }}
           className="shrink-0"
         />
 
@@ -61,10 +64,10 @@ export function FormCheckbox<
           {(label || children) && (
             <label
               htmlFor={checkboxId}
-              className="text-xs sm:text-sm font-semibold text-foreground cursor-pointer select-none leading-none"
+              className="cursor-pointer text-xs leading-none font-semibold text-foreground select-none sm:text-sm"
             >
               {label || children}
-              {required && <span className="text-destructive ml-1 font-extrabold">*</span>}
+              {required && <span className="ml-1 font-extrabold text-destructive">*</span>}
             </label>
           )}
 

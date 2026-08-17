@@ -3,10 +3,14 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, AlertCircle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import type { AdminUser, EContract } from "@/types"
+
+import { fetchApi } from "@/lib/api"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,16 +21,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { fetchApi } from "@/lib/api"
-import { useTranslation } from "@/providers/i18n-provider"
-import { legalService } from "@/services/legal.service"
-import { usersService } from "@/services/users.service"
+import { Button } from "@/components/ui/button"
 import { ContractDetailHeader } from "./contract-detail-header"
 import { ContractDetailMetadata } from "./contract-detail-metadata"
 import { ContractDetailViewer } from "./contract-detail-viewer"
 import { ContractEditDialog } from "./contract-edit-dialog"
-
-import type { AdminUser, EContract } from "@/types"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 
 interface ContractDetailViewProps {
   contract: EContract | null
@@ -36,7 +37,8 @@ interface ContractDetailViewProps {
   errorMsg?: string
 }
 
-const formatVND = (val: number) => Number(val || 0).toLocaleString("vi-VN") + " VNĐ"
+const formatVND = (val: number) =>
+  Number(val || 0).toLocaleString("vi-VN") + " VNĐ"
 
 const formatDateVi = (dateStr?: string | Date) => {
   if (!dateStr) return "—"
@@ -63,9 +65,11 @@ export function ContractDetailView({
   const router = useRouter()
   const [contract, setContract] = useState<EContract | null>(initialContract)
   const [user, setUser] = useState<AdminUser | null>(initialUser)
-  const [isLoading, setIsLoading] = useState<boolean>(!initialContract && Boolean(requestedId))
+  const [isLoading, setIsLoading] = useState<boolean>(
+    !initialContract && Boolean(requestedId)
+  )
   const [fetchError, setFetchError] = useState<string>(
-    initialContract ? "" : requestedId ? "" : (errorMsg || "")
+    initialContract ? "" : requestedId ? "" : errorMsg || ""
   )
   const [copiedHash, setCopiedHash] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -96,19 +100,25 @@ export function ContractDetailView({
             setContract(res.data)
             setFetchError("")
             if (res.data.userId && !user) {
-              const uRes = await usersService.getUserDetail(res.data.userId).catch(() => null)
+              const uRes = await usersService
+                .getUserDetail(res.data.userId)
+                .catch(() => null)
               if (isMounted && uRes?.data) {
                 setUser(uRes.data)
               }
             }
           } else {
-            const searchRes = await legalService.getContracts({ search: requestedId }).catch(() => null)
+            const searchRes = await legalService
+              .getContracts({ search: requestedId })
+              .catch(() => null)
             if (!isMounted) return
-            const items: EContract[] = Array.isArray(searchRes?.data)
-              ? searchRes.data
-              : Array.isArray((searchRes?.data as any)?.items)
-              ? (searchRes?.data as any).items
-              : []
+            const rawData = searchRes?.data
+            const rawItems = (rawData as { items?: EContract[] } | undefined)?.items
+            const items: EContract[] = Array.isArray(rawData)
+              ? rawData
+              : Array.isArray(rawItems)
+                ? rawItems
+                : []
             const found = items.find(
               (c: EContract) =>
                 c.id === requestedId ||
@@ -120,7 +130,9 @@ export function ContractDetailView({
               setContract(found)
               setFetchError("")
               if (found.userId && !user) {
-                const uRes = await usersService.getUserDetail(found.userId).catch(() => null)
+                const uRes = await usersService
+                  .getUserDetail(found.userId)
+                  .catch(() => null)
                 if (isMounted && uRes?.data) {
                   setUser(uRes.data)
                 }
@@ -187,7 +199,9 @@ export function ContractDetailView({
       (contractMeta.customerName as string) ||
       user?.name ||
       contract.customerName ||
-      (typeof contract.partyB === "string" ? contract.partyB : contract.partyB?.name) ||
+      (typeof contract.partyB === "string"
+        ? contract.partyB
+        : contract.partyB?.name) ||
       "Khách hàng"
     const cccd =
       (contractMeta.cccd as string) ||
@@ -249,7 +263,10 @@ export function ContractDetailView({
       .replace(/\{\{NGAY_KY\}\}/g, signDate)
       .replace(/\{\{NGAY_HET_HAN\}\}/g, expireDate)
 
-    const templateVars = (contractMeta.templateVariables || {}) as Record<string, string>
+    const templateVars = (contractMeta.templateVariables || {}) as Record<
+      string,
+      string
+    >
     for (const [key, val] of Object.entries(templateVars)) {
       if (val) {
         const regex = new RegExp(`\\{\\{${key}\\}\\}`, "g")
@@ -271,7 +288,9 @@ export function ContractDetailView({
     return (
       <div className="py-24 text-center space-y-4">
         <Loader2 className="w-10 h-10 animate-spin mx-auto text-primary" />
-        <p className="text-sm font-medium text-muted-foreground">{t("common.status.processing")}</p>
+        <p className="text-sm font-medium text-muted-foreground">
+          {t("common.status.processing")}
+        </p>
       </div>
     )
   }
@@ -280,13 +299,16 @@ export function ContractDetailView({
     return (
       <div className="py-16 text-center space-y-4 max-w-lg mx-auto bg-card rounded-2xl border border-border/60 p-8 shadow-sm">
         <AlertCircle className="w-12 h-12 mx-auto text-amber-500" />
-        <h2 className="text-xl font-bold text-foreground">{t("common.table.noResults")}</h2>
+        <h2 className="text-xl font-bold text-foreground">
+          {t("common.table.noResults")}
+        </h2>
         <p className="text-sm text-muted-foreground">
           {fetchError || t("common.table.noResults")}
         </p>
         {requestedId && (
           <div className="inline-block bg-muted/70 px-3 py-1.5 rounded-lg border border-border/80 font-mono text-xs text-muted-foreground break-all">
-            {t("contracts.fields.code")}: <span className="font-semibold text-foreground">{requestedId}</span>
+            {t("contracts.fields.code")}:{" "}
+            <span className="font-semibold text-foreground">{requestedId}</span>
           </div>
         )}
         <div className="pt-2 flex items-center justify-center gap-3">
@@ -301,12 +323,17 @@ export function ContractDetailView({
   }
 
   const meta = (contract.metadata || {}) as Record<string, unknown>
-  const contractCode = contract.code || contract.contractCode || contract.contractNumber || ""
+  const contractCode =
+    contract.code || contract.contractCode || contract.contractNumber || ""
   const orderCode =
     (meta.orderCode as string) ||
-    (contractCode.startsWith("CTR-") ? contractCode.replace("CTR-", "ORD-") : null)
+    (contractCode.startsWith("CTR-")
+      ? contractCode.replace("CTR-", "ORD-")
+      : null)
   const isOrderSource = Boolean(
-    meta.orderId || meta.orderCode || contract.contractType === "purchase_and_care"
+    meta.orderId ||
+      meta.orderCode ||
+      contract.contractType === "purchase_and_care"
   )
   const isSigned = contract.status === "signed"
   const isEkyc = Boolean(user?.isVerified || meta.ekycVerified)
@@ -329,9 +356,13 @@ export function ContractDetailView({
   const handleSendReminder = async () => {
     setIsSendingReminder(true)
     try {
-      const res = await fetchApi("/admin/contracts/check-expiry", { method: "POST" })
+      const res = await fetchApi("/admin/contracts/check-expiry", {
+        method: "POST",
+      })
       if (res.status < 400) {
-        toast.success(`Đã gửi thông báo nhắc nhở ký hợp đồng đến ${user?.email || "khách hàng"}.`)
+        toast.success(
+          `Đã gửi thông báo nhắc nhở ký hợp đồng đến ${user?.email || "khách hàng"}.`
+        )
       } else {
         toast.error("Không thể gửi thông báo lúc này.")
       }
@@ -346,9 +377,13 @@ export function ContractDetailView({
     if (!contract) return
     setIsIssuing(true)
     try {
-      const res = await fetchApi(`/admin/contracts/${contract.id}/issue`, { method: "POST" })
+      const res = await fetchApi(`/admin/contracts/${contract.id}/issue`, {
+        method: "POST",
+      })
       if (res.status < 400) {
-        toast.success("Phát hành hợp đồng và gửi thông báo cho khách hàng thành công!")
+        toast.success(
+          "Phát hành hợp đồng và gửi thông báo cho khách hàng thành công!"
+        )
         setContract({ ...contract, status: "pending" })
       } else {
         toast.error("Không thể phát hành hợp đồng.")
@@ -363,7 +398,9 @@ export function ContractDetailView({
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
-      const res = await fetchApi(`/admin/contracts/${contract.id}`, { method: "DELETE" })
+      const res = await fetchApi(`/admin/contracts/${contract.id}`, {
+        method: "DELETE",
+      })
       if (res.status < 400) {
         toast.success("Đã xóa hợp đồng thành công.")
         router.push(`/${lang}/pages/contracts`)
@@ -438,7 +475,9 @@ export function ContractDetailView({
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa hợp đồng này?</AlertDialogTitle>
             <AlertDialogDescription>
-              Hành động này sẽ xóa vĩnh viễn hợp đồng <strong>{contractCode}</strong> khỏi cơ sở dữ liệu. Thao tác này không thể hoàn tác.
+              Hành động này sẽ xóa vĩnh viễn hợp đồng{" "}
+              <strong>{contractCode}</strong> khỏi cơ sở dữ liệu. Thao tác này
+              không thể hoàn tác.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

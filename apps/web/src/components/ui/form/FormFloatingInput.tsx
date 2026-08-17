@@ -1,23 +1,25 @@
 'use client';
 
-import * as React from 'react';
-import { useController, type Control, type FieldPath, type FieldValues } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
-import { FormItem, FormDescription, FormMessage } from './Form';
+import * as React from 'react';
+import { useController } from 'react-hook-form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { FloatingInput } from '../floating-input';
-import { Input, type InputProps } from '../input';
+import { Input } from '../input';
+import type { InputProps } from '../input';
+import { FormItem, FormDescription, FormMessage } from './Form';
 
-export interface FormFloatingInputProps<
+export type FormFloatingInputProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<InputProps, 'name' | 'control'> {
+> = {
   control: Control<TFieldValues>;
   name: TName;
   label: string;
   description?: string;
   prefixIcon?: React.ReactNode;
   suffixIcon?: React.ReactNode;
-}
+} & Omit<InputProps, 'name' | 'control'>;
 
 export function FormFloatingInput<
   TFieldValues extends FieldValues = FieldValues,
@@ -51,12 +53,14 @@ export function FormFloatingInput<
     <button
       type="button"
       tabIndex={-1}
-      onClick={() => setShowPassword((prev) => !prev)}
+      onClick={() => {
+        setShowPassword((prev) => !prev);
+      }}
       disabled={disabled}
-      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-md transition-colors cursor-pointer"
+      className="cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
       title={showPassword ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu'}
     >
-      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
     </button>
   ) : null;
 

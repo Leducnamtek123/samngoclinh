@@ -1,15 +1,16 @@
 'use client';
 
-import { useSyncExternalStore, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { fetchApiClient } from '@/lib/ApiClient';
-import { useProfileMe } from '@/hooks/queries/useProfile';
-import { cartStore } from '@/lib/stores/useCartStore';
-import { updateCartQuantity, removeFromCart, type CartItem } from '@/utils/cart';
-import { useTranslations } from 'next-intl';
 import { ShoppingBag, CheckCircle2, CreditCard, PackageCheck } from 'lucide-react';
-import { CartStepProgress } from './cart/CartStepProgress';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useSyncExternalStore, useEffect } from 'react';
+import { useProfileMe } from '@/hooks/queries/useProfile';
+import { fetchApiClient } from '@/lib/ApiClient';
+import { cartStore } from '@/lib/stores/useCartStore';
+import { updateCartQuantity, removeFromCart } from '@/utils/cart';
+import type { CartItem } from '@/utils/cart';
 import { CartStepItems } from './cart/CartStepItems';
+import { CartStepProgress } from './cart/CartStepProgress';
 
 const emptyCartItems: CartItem[] = [];
 
@@ -17,7 +18,11 @@ export const CartClient = ({ locale }: { locale: string }) => {
   const t = useTranslations('cart');
   const router = useRouter();
 
-  const items = useSyncExternalStore(cartStore.subscribe, cartStore.getSnapshot, () => emptyCartItems);
+  const items = useSyncExternalStore(
+    cartStore.subscribe,
+    cartStore.getSnapshot,
+    () => emptyCartItems,
+  );
   const { data: profile } = useProfileMe();
 
   // Fetch backend cart when profile is loaded
@@ -26,13 +31,24 @@ export const CartClient = ({ locale }: { locale: string }) => {
       fetchApiClient('/user/cart')
         .then((res) => {
           if (res.data?.items && Array.isArray(res.data.items)) {
-            const apiItems: CartItem[] = res.data.items.map((it: any) => ({
-              id: it.productId || it.id,
-              name: it.productName || it.name || 'Sản phẩm Sâm Ngọc Linh',
-              price: Number(it.price) || 0,
-              quantity: Number(it.quantity) || 1,
-              image: it.imageUrl || it.image,
-            }));
+            const apiItems: CartItem[] = res.data.items.map(
+              (it: {
+                productId?: string;
+                id?: string;
+                productName?: string;
+                name?: string;
+                price?: number | string;
+                quantity?: number | string;
+                imageUrl?: string;
+                image?: string;
+              }) => ({
+                id: it.productId || it.id || '',
+                name: it.productName || it.name || 'Sản phẩm Sâm Ngọc Linh',
+                price: Number(it.price) || 0,
+                quantity: Number(it.quantity) || 1,
+                image: it.imageUrl || it.image,
+              }),
+            );
             if (apiItems.length > 0) {
               cartStore.setItems(apiItems);
             }
@@ -60,8 +76,8 @@ export const CartClient = ({ locale }: { locale: string }) => {
   ];
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <div className="min-h-screen w-full bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl space-y-10">
         <CartStepProgress currentStep={1} stepsList={stepsList} />
 
         <CartStepItems

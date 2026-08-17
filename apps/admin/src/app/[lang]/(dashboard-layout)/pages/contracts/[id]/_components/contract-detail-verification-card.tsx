@@ -2,12 +2,20 @@
 
 import React from "react"
 import Image from "next/image"
-import { ShieldCheck, Check, Copy, Clock, FileEdit, CheckCircle2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useTranslation } from "@/providers/i18n-provider"
+import {
+  Check,
+  CheckCircle2,
+  Clock,
+  Copy,
+  FileEdit,
+  ShieldCheck,
+} from "lucide-react"
 
 import type { EContract } from "@/types"
+
+import { useTranslation } from "@/providers/i18n-provider"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ContractDetailVerificationCardProps {
   contract: EContract
@@ -29,8 +37,10 @@ export function ContractDetailVerificationCard({
   onCopyHash,
 }: ContractDetailVerificationCardProps) {
   const { t } = useTranslation()
-  const isDraft = contract.status === "draft" || contract.status === "pending_issue"
-  const isPending = contract.status === "pending" || contract.status === "pending_signature"
+  const isDraft =
+    contract.status === "draft" || contract.status === "pending_issue"
+  const isPending =
+    contract.status === "pending" || contract.status === "pending_signature"
 
   return (
     <>
@@ -38,7 +48,8 @@ export function ContractDetailVerificationCard({
       <Card className="border-border/80 shadow-xs">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <Clock className="w-4 h-4 text-emerald-600" /> {t("contracts.contractDetails")}
+            <Clock className="w-4 h-4 text-emerald-600" />{" "}
+            {t("contracts.contractDetails")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -49,10 +60,17 @@ export function ContractDetailVerificationCard({
                 <Check className="w-2.5 h-2.5 text-white" />
               </div>
               <div>
-                <h5 className="font-bold text-xs text-slate-900 dark:text-white">{t("contracts.wizard.step1")}</h5>
+                <h5 className="font-bold text-xs text-slate-900 dark:text-white">
+                  {t("contracts.wizard.step1")}
+                </h5>
                 <p className="text-[11px] text-muted-foreground">
-                  {new Date(contract.createdAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} •{" "}
-                  {isOrderSource ? t("orders.tabs.product") : t("navigation.menu.dashboard")}
+                  {new Date(contract.createdAt).toLocaleString("vi-VN", {
+                    timeZone: "Asia/Ho_Chi_Minh",
+                  })}{" "}
+                  •{" "}
+                  {isOrderSource
+                    ? t("orders.tabs.product")
+                    : t("navigation.menu.dashboard")}
                 </p>
               </div>
             </div>
@@ -89,8 +107,8 @@ export function ContractDetailVerificationCard({
                   isSigned
                     ? "bg-emerald-600 text-white"
                     : isPending
-                    ? "bg-amber-500 text-white"
-                    : "bg-slate-300 dark:bg-slate-700 text-slate-500"
+                      ? "bg-amber-500 text-white"
+                      : "bg-slate-300 dark:bg-slate-700 text-slate-500"
                 }`}
               >
                 {isSigned ? (
@@ -122,7 +140,11 @@ export function ContractDetailVerificationCard({
                     : "bg-slate-300 dark:bg-slate-700 text-slate-500"
                 }`}
               >
-                {isSigned ? <CheckCircle2 className="w-2.5 h-2.5 text-white" /> : <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-400" />}
+                {isSigned ? (
+                  <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                ) : (
+                  <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-slate-400" />
+                )}
               </div>
               <div>
                 <h5 className="font-bold text-xs text-slate-900 dark:text-white">
@@ -152,13 +174,24 @@ export function ContractDetailVerificationCard({
         </CardHeader>
         <CardContent className="space-y-3 text-xs">
           <div>
-            <span className="text-muted-foreground block text-[11px]">SHA-256:</span>
+            <span className="text-muted-foreground block text-[11px]">
+              SHA-256:
+            </span>
             <div className="flex items-center gap-2 mt-1">
               <code className="font-mono text-[10px] bg-slate-200 dark:bg-slate-800 p-1.5 rounded break-all flex-1">
                 {documentHash}
               </code>
-              <Button variant="ghost" size="icon" onClick={onCopyHash} className="h-7 w-7 cursor-pointer">
-                {copiedHash ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onCopyHash}
+                className="h-7 w-7 cursor-pointer"
+              >
+                {copiedHash ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
               </Button>
             </div>
           </div>

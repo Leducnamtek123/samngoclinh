@@ -1,21 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { useTranslations } from 'next-intl';
-import { Link } from '@/lib/I18nNavigation';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { User, Mail, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
-import {
-  Form,
-  FormPhoneInput,
-  FormCheckbox,
-  FormFloatingInput,
-} from '@/components/ui/form';
-import { ButtonLoading } from '@/components/ui/button';
-import { signUpSchema, type SignUpFormValues } from '@/lib/validation/schemas';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { ButtonLoading } from '@/components/ui/button';
+import { Form, FormPhoneInput, FormCheckbox, FormFloatingInput } from '@/components/ui/form';
+import { Link } from '@/lib/I18nNavigation';
+import { signUpSchema } from '@/lib/validation/schemas';
+import type { SignUpFormValues } from '@/lib/validation/schemas';
 import { apiSignUp } from '@/services/auth.service';
 
 export default function SignUpForm() {
@@ -54,21 +50,21 @@ export default function SignUpForm() {
       setTimeout(() => {
         router.push('/sign-in');
       }, 1500);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : t('signUpFailed');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : t('signUpFailed');
       setError(msg);
     }
     setLoading(false);
   };
 
   return (
-    <div className="w-full min-h-[calc(100vh-120px)] bg-brand-bg flex items-center justify-center py-8 sm:py-16 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-5xl bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+    <div className="flex min-h-[calc(100vh-120px)] w-full items-center justify-center bg-brand-bg px-4 py-8 sm:px-6 sm:py-16 lg:px-8">
+      <div className="grid w-full max-w-5xl grid-cols-1 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl lg:grid-cols-12 dark:border-gray-800 dark:bg-slate-900">
         {/* Left Side: Brand Story & Heritage Panel */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-emerald-950 via-[#122B18] to-slate-950 p-8 sm:p-10 text-white flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="space-y-6 relative z-10">
+        <div className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-emerald-950 via-[#122B18] to-slate-950 p-8 text-white sm:p-10 lg:col-span-5">
+          <div className="pointer-events-none absolute top-0 right-0 h-80 w-80 rounded-full bg-amber-400/10 blur-3xl" />
+
+          <div className="relative z-10 space-y-6">
             <Link href="/" className="inline-flex items-center gap-3">
               <Image
                 src="/assets/images/logo_ruou_sam.png?v=2"
@@ -79,51 +75,53 @@ export default function SignUpForm() {
                 className="h-12 w-12 object-contain"
               />
               <div>
-                <span className="font-display font-black text-lg tracking-tight block text-white">Sâm Ngọc Linh</span>
-                <span className="text-[10px] text-amber-300 uppercase tracking-widest block font-bold">{t('brandTagline')}</span>
+                <span className="block font-display text-lg font-black tracking-tight text-white">
+                  Sâm Ngọc Linh
+                </span>
+                <span className="block text-[10px] font-bold tracking-widest text-amber-300 uppercase">
+                  {t('brandTagline')}
+                </span>
               </div>
             </Link>
 
             <div className="space-y-3 pt-6">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 border border-emerald-600/60 text-emerald-200 text-xs font-bold">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/60 bg-emerald-800/80 px-3 py-1 text-xs font-bold text-emerald-200">
                 {t('title')}
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white font-display leading-tight">
+              <h2 className="font-display text-2xl leading-tight font-black text-white sm:text-3xl">
                 {t('subtitle')}
               </h2>
-              <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed font-normal">
+              <p className="text-xs leading-relaxed font-normal text-emerald-100/80 sm:text-sm">
                 {t('meta_description')}
               </p>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-emerald-800/60 space-y-2 relative z-10 text-xs text-emerald-200/70">
+          <div className="relative z-10 space-y-2 border-t border-emerald-800/60 pt-8 text-xs text-emerald-200/70">
             <p className="font-semibold text-white">{t('securityBadge')}</p>
             <p className="text-[11px] leading-relaxed">{t('securityDesc')}</p>
           </div>
         </div>
 
         {/* Right Side: Form Inputs */}
-        <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-6">
+        <div className="flex flex-col justify-center space-y-6 p-8 sm:p-12 lg:col-span-7">
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 font-display">
+            <h1 className="font-display text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl dark:text-gray-100">
               {t('title')}
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 font-normal">
-              {t('subtitle')}
-            </p>
+            <p className="text-xs font-normal text-gray-500 sm:text-sm">{t('subtitle')}</p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-medium flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-xs font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-medium text-emerald-700">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
               <span>{success}</span>
             </div>
           )}
@@ -135,7 +133,7 @@ export default function SignUpForm() {
               label={t('fullNameLabel')}
               placeholder={t('fullNamePlaceholder')}
               required
-              prefixIcon={<User className="w-4 h-4" />}
+              prefixIcon={<User className="h-4 w-4" />}
             />
 
             <FormFloatingInput
@@ -145,7 +143,7 @@ export default function SignUpForm() {
               label={t('emailLabel')}
               placeholder={t('emailPlaceholder')}
               required
-              prefixIcon={<Mail className="w-4 h-4" />}
+              prefixIcon={<Mail className="h-4 w-4" />}
             />
 
             <FormPhoneInput
@@ -163,7 +161,7 @@ export default function SignUpForm() {
               label={t('passwordLabel')}
               placeholder={t('passwordPlaceholder')}
               required
-              prefixIcon={<Lock className="w-4 h-4" />}
+              prefixIcon={<Lock className="h-4 w-4" />}
             />
 
             <FormFloatingInput
@@ -173,18 +171,26 @@ export default function SignUpForm() {
               label={t('confirmPasswordLabel')}
               placeholder={t('confirmPasswordPlaceholder')}
               required
-              prefixIcon={<Lock className="w-4 h-4" />}
+              prefixIcon={<Lock className="h-4 w-4" />}
             />
 
             <div className="pt-1">
               <FormCheckbox control={form.control} name="agreeTerms">
-                <span className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                <span className="text-xs leading-relaxed text-gray-600 dark:text-gray-400">
                   {t('agreeTermsPrefix')}{' '}
-                  <Link href="/terms/terms-of-service" target="_blank" className="text-emerald-700 font-semibold hover:underline">
+                  <Link
+                    href="/terms/terms-of-service"
+                    target="_blank"
+                    className="font-semibold text-emerald-700 hover:underline"
+                  >
                     {t('termsOfService')}
                   </Link>{' '}
                   {t('andWord')}{' '}
-                  <Link href="/terms/privacy-policy" target="_blank" className="text-emerald-700 font-semibold hover:underline">
+                  <Link
+                    href="/terms/privacy-policy"
+                    target="_blank"
+                    className="font-semibold text-emerald-700 hover:underline"
+                  >
                     {t('privacyPolicy')}
                   </Link>
                 </span>
@@ -195,19 +201,21 @@ export default function SignUpForm() {
               type="submit"
               isLoading={loading}
               variant="default"
-              className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md transition-[transform,background-color] active:scale-[0.98] cursor-pointer"
+              className="w-full cursor-pointer rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-md transition-[transform,background-color] hover:bg-primary-hover active:scale-[0.98]"
             >
               {t('submitBtn')}
             </ButtonLoading>
           </Form>
 
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-800 text-center space-y-3">
-            <p className="text-xs text-gray-500 font-normal">{t('hasAccount')}</p>
+          <div className="space-y-3 border-t border-gray-100 pt-6 text-center dark:border-gray-800">
+            <p className="text-xs font-normal text-gray-500">{t('hasAccount')}</p>
             <ButtonLoading
               type="button"
               variant="outline"
-              className="w-full py-3 rounded-xl border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-800 transition-[transform,background-color] active:scale-[0.98]"
-              onClick={() => router.push('/sign-in')}
+              className="w-full rounded-xl border-gray-200 py-3 text-xs font-bold text-gray-800 transition-[transform,background-color] hover:bg-gray-50 active:scale-[0.98]"
+              onClick={() => {
+                router.push('/sign-in');
+              }}
             >
               {t('signInNow')}
             </ButtonLoading>

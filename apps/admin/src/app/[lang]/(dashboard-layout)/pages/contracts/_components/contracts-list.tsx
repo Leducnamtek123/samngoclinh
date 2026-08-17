@@ -3,39 +3,23 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import {
-  FileText,
-  FileDown,
-  QrCode,
-  Eye,
-  Trash2,
-  UserCheck,
+  AlertTriangle,
   CheckCircle2,
   Clock,
-  AlertTriangle,
-  MoreVertical,
   ExternalLink,
+  Eye,
+  FileDown,
+  FileText,
+  MoreVertical,
+  QrCode,
   Send,
+  Trash2,
+  UserCheck,
 } from "lucide-react"
 
 import type { AdminUser, EContract } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +30,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 interface ContractsListProps {
   contracts: EContract[]
@@ -94,19 +95,29 @@ export function ContractsList({
         )
       case "expired":
         return (
-          <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-semibold gap-1 text-[11px]">
-            <AlertTriangle className="w-3 h-3" /> {t("contracts.status.EXPIRED")}
+          <Badge
+            variant="outline"
+            className="bg-rose-50 text-rose-700 border-rose-200 font-semibold gap-1 text-[11px]"
+          >
+            <AlertTriangle className="w-3 h-3" />{" "}
+            {t("contracts.status.EXPIRED")}
           </Badge>
         )
       case "cancelled":
         return (
-          <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-300 font-semibold gap-1 text-[11px]">
+          <Badge
+            variant="outline"
+            className="bg-slate-100 text-slate-600 border-slate-300 font-semibold gap-1 text-[11px]"
+          >
             {t("contracts.status.CANCELLED")}
           </Badge>
         )
       default:
         return (
-          <Badge variant="outline" className="text-slate-600 font-medium text-[11px]">
+          <Badge
+            variant="outline"
+            className="text-slate-600 font-medium text-[11px]"
+          >
             {status}
           </Badge>
         )
@@ -251,7 +262,9 @@ export function ContractsList({
                           variant="outline"
                           className="bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800 text-[10px] font-medium w-max px-1.5 py-0"
                         >
-                          {orderCode ? `#${orderCode}` : t("contracts.types.TREE_PURCHASE")}
+                          {orderCode
+                            ? `#${orderCode}`
+                            : t("contracts.types.TREE_PURCHASE")}
                         </Badge>
                       ) : (
                         <Badge
@@ -314,7 +327,8 @@ export function ContractsList({
                           onClick={() => onIssue(contract.id)}
                           className="h-8 px-2.5 text-xs gap-1 bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-xs cursor-pointer"
                         >
-                          <Send className="w-3.5 h-3.5" /> {t("common.actions.submit")}
+                          <Send className="w-3.5 h-3.5" />{" "}
+                          {t("common.actions.submit")}
                         </Button>
                       )}
 
@@ -324,7 +338,8 @@ export function ContractsList({
                           size="sm"
                           className="h-8 px-2.5 text-xs gap-1 shadow-2xs hover:bg-accent"
                         >
-                          <Eye className="w-3.5 h-3.5" /> {t("common.actions.view")}
+                          <Eye className="w-3.5 h-3.5" />{" "}
+                          {t("common.actions.view")}
                         </Button>
                       </Link>
 
@@ -411,13 +426,17 @@ export function ContractsList({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("common.confirmations.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("common.confirmations.deleteTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t("common.confirmations.deleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("common.confirmations.cancelText")}</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t("common.confirmations.cancelText")}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteTargetId) {

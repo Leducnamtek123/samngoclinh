@@ -40,4 +40,3 @@ export async function fetchApiClient(endpoint: string, options: RequestInit = {}
   const data = await res.json().catch(() => ({}));
   return data;
 }
-

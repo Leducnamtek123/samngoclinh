@@ -133,7 +133,11 @@
     "expired": "Expired",
     "signed": "Signed",
     "unsigned": "Unsigned",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "pending_issue": "Pending Issue",
+    "pending_signature": "Pending Signature",
+    "shipped": "Shipped",
+    "in_transit": "In Transit"
   },
   "memberRank": {
     "standard": "Standard Member",
@@ -203,5 +207,11 @@
     "loading": "Loading...",
     "searchPlaceholder": "Search products, news...",
     "clear": "Clear search"
+  },
+  "notification": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
   }
 }
