@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   User,
   ShoppingBag,
@@ -11,6 +12,7 @@ import {
   Gift,
   Settings,
   KeyRound,
+  PenTool,
 } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 import { UserCard } from './UserCard';
@@ -34,65 +36,73 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
   treesCount,
   contractsCount,
 }) => {
+  const tSidebar = useTranslations('accountSidebar');
+  const tNav = useTranslations('nav');
+
   const accountNavGroups = [
     {
-      title: 'Tài khoản & Giao dịch',
+      title: tNav('my_account'),
       items: [
         {
           id: 'info',
-          label: 'Hồ sơ cá nhân',
+          label: tSidebar('info'),
           icon: <User className="w-4 h-4" />,
         },
         {
           id: 'orders',
-          label: 'Lịch sử đơn hàng',
+          label: tSidebar('orders'),
           icon: <ShoppingBag className="w-4 h-4" />,
         },
         {
           id: 'assets',
-          label: 'Tài sản cây sâm',
+          label: tSidebar('trees'),
           icon: <Sprout className="w-4 h-4" />,
           badge: treesCount,
         },
         {
           id: 'address',
-          label: 'Sổ địa chỉ',
+          label: tSidebar('addresses'),
           icon: <MapPin className="w-4 h-4" />,
         },
       ],
     },
     {
-      title: 'Bảo mật & Cấu hình',
+      title: tNav('security'),
       items: [
         {
           id: 'kyc',
-          label: 'Xác minh KYC',
+          label: tSidebar('kyc'),
           icon: <ShieldCheck className="w-4 h-4" />,
         },
         {
           id: 'contracts',
-          label: 'Hợp đồng điện tử',
+          label: tSidebar('contracts'),
           icon: <FileText className="w-4 h-4" />,
           badge: contractsCount,
         },
         {
+          id: 'digital-signature',
+          label: tSidebar('digitalSignature'),
+          icon: <PenTool className="w-4 h-4" />,
+        },
+        {
           id: 'change-password',
-          label: 'Đổi mật khẩu',
+          label: tSidebar('security'),
           icon: <KeyRound className="w-4 h-4" />,
         },
         {
           id: 'settings',
-          label: 'Cài đặt hệ thống',
+          label: tSidebar('settings'),
           icon: <Settings className="w-4 h-4" />,
         },
       ],
     },
     {
-      title: 'Khuyến mãi & Bạn bè',
+      title: tNav('promotions'),
       items: [
         {
           id: 'referral',
-          label: 'Mã giới thiệu',
+          label: tSidebar('referral'),
           icon: <Gift className="w-4 h-4" />,
         },
       ],

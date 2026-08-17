@@ -1,3 +1,6 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Filter } from 'lucide-react';
 import { PriceRangeSlider } from '@/components/common/PriceRangeSlider';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -24,7 +27,7 @@ export type ProductFilterSidebarProps = {
 };
 
 export const ProductFilterSidebar = ({
-  title = 'Bộ Lọc Sản Phẩm',
+  title,
   categories,
   selectedCategory,
   onSelectCategory,
@@ -41,6 +44,9 @@ export const ProductFilterSidebar = ({
   hasActiveFilters,
   onClearFilters,
 }: ProductFilterSidebarProps) => {
+  const t = useTranslations('products');
+  const tActions = useTranslations('actions');
+
   const selectedAgeSet = new Set(selectedAges || []);
 
   return (
@@ -50,7 +56,7 @@ export const ProductFilterSidebar = ({
           <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
             <h3 className="font-extrabold text-gray-900 dark:text-gray-100 text-base uppercase tracking-tight flex items-center gap-2">
               <Filter className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
-              <span>{title}</span>
+              <span>{title || t('filterTitle')}</span>
             </h3>
             {hasActiveFilters && (
               <Button
@@ -60,7 +66,7 @@ export const ProductFilterSidebar = ({
                 onClick={onClearFilters}
                 className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 font-bold cursor-pointer"
               >
-                Xóa lọc
+                {tActions('clearFilters')}
               </Button>
             )}
           </div>
@@ -69,7 +75,7 @@ export const ProductFilterSidebar = ({
           {categories && categories.length > 0 && onSelectCategory && (
             <div className="space-y-3">
               <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">
-                Danh Mục Sản Phẩm
+                {t('categories')}
               </span>
               <div className="space-y-1.5">
                 <Button
@@ -79,7 +85,7 @@ export const ProductFilterSidebar = ({
                   onClick={() => onSelectCategory(null)}
                   className="w-full justify-start text-xs font-bold"
                 >
-                  Tất cả danh mục
+                  {t('allProducts')}
                 </Button>
                 {categories.map((cat) => (
                   <Button
@@ -101,7 +107,7 @@ export const ProductFilterSidebar = ({
           {ageOptions && ageOptions.length > 0 && onAgeToggle && (
             <div className="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
               <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">
-                Độ Tuổi Cây Sâm
+                {t('filterByAge')}
               </span>
               <div className="space-y-2.5">
                 {ageOptions.map((age) => (
@@ -126,7 +132,7 @@ export const ProductFilterSidebar = ({
           {/* Filter by Price Range */}
           <div className="space-y-3 border-t border-gray-100 dark:border-gray-800 pt-5">
             <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">
-              Khoảng Giá (VND)
+              {t('priceRange')}
             </span>
             <PriceRangeSlider
               min={minLimit}

@@ -1,5 +1,8 @@
+'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
 import type { CartItem } from '@/utils/cart';
@@ -7,6 +10,7 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type CartStepItemsProps = {
   items: CartItem[];
@@ -20,11 +24,15 @@ type CartStepItemsProps = {
 export const CartStepItems = ({
   items,
   totalAmount: _totalAmount,
-  t,
+  t: _propT,
   onUpdateQuantity,
   onRemoveItem,
   onNextStep,
 }: CartStepItemsProps) => {
+  const tCart = useTranslations('cart');
+  const tActions = useTranslations('actions');
+  const tConfirm = useTranslations('confirmModal');
+
   const [removingItemId, setRemovingItemId] = useState<string | null>(null);
   const [unselectedIds, setUnselectedIds] = useState<string[]>([]);
   const unselectedSet = new Set(unselectedIds);
@@ -54,7 +62,7 @@ export const CartStepItems = ({
 
   const handleProceedNext = () => {
     if (selectedItems.length === 0) {
-      toast.error('Vui lòng chọn ít nhất 1 sản phẩm để tiến hành thanh toán!');
+      toast.error(tCart('itemCount'));
       return;
     }
     onNextStep(selectedItems);
@@ -65,7 +73,7 @@ export const CartStepItems = ({
       onRemoveItem(removingItemId);
       setUnselectedIds((prev) => prev.filter((id) => id !== removingItemId));
       setRemovingItemId(null);
-      toast.success('Đã xóa sản phẩm khỏi giỏ hàng!');
+      toast.success(tCart('removedFromCart'));
     }
   };
 
@@ -79,10 +87,10 @@ export const CartStepItems = ({
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Giỏ hàng của bạn đang trống"
-        description="Hãy chọn các sản phẩm Rượu Sâm Ngọc Linh cao cấp để thêm vào giỏ hàng."
+        title={tCart('emptyCart')}
+        description={tCart('emptyCart')}
         icon={ShoppingBag}
-        actionLabel="Khám phá cửa hàng sâm"
+        actionLabel={tCart('continueShopping')}
         onAction={() => {
           if (typeof window !== 'undefined') window.location.href = '/products';
         }}
@@ -100,14 +108,14 @@ export const CartStepItems = ({
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
-                aria-label="Chọn tất cả sản phẩm"
+                aria-label={tCart('selectAll')}
                 checked={allSelected}
                 onChange={handleToggleSelectAll}
                 className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
               />
               <h2 className="font-extrabold text-gray-900 text-lg flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-emerald-700" />
-                <span>Sản phẩm trong giỏ ({selectedItems.length}/{items.length})</span>
+                <span>{tCart('itemsInCart', { count: selectedItems.length })} ({selectedItems.length}/{items.length})</span>
               </h2>
             </div>
             <button
@@ -115,7 +123,7 @@ export const CartStepItems = ({
               onClick={handleToggleSelectAll}
               className="text-xs font-bold text-emerald-700 hover:underline cursor-pointer"
             >
-              {allSelected ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+              {allSelected ? tCart('deselectAll') : tCart('selectAll')}
             </button>
           </div>
 
@@ -129,7 +137,7 @@ export const CartStepItems = ({
                   {/* Checkbox */}
                   <input
                     type="checkbox"
-                    aria-label={`Chọn sản phẩm ${item.name}`}
+                    aria-label={`${tCart('selectAll')}: ${item.name}`}
                     checked={isSelected}
                     onChange={() => handleToggleSelect(item.id)}
                     className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer shrink-0"
@@ -159,7 +167,7 @@ export const CartStepItems = ({
                       {item.name}
                     </Link>
                     <p className="text-xs font-black text-emerald-700">
-                      {item.price.toLocaleString('vi-VN')} đ
+                      {formatVNDPrice(item.price)}
                     </p>
                   </div>
 
@@ -196,7 +204,7 @@ export const CartStepItems = ({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-label={`Xóa ${item.name} khỏi giỏ hàng`}
+                    aria-label={`Remove ${item.name}`}
                     onClick={() => setRemovingItemId(item.id)}
                     className="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                   >
@@ -209,20 +217,20 @@ export const CartStepItems = ({
         </div>
 
         <div className="lg:col-span-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-xs space-y-6">
-          <h3 className="font-extrabold text-gray-900 text-base border-b border-gray-100 pb-3">Tạm tính ({selectedItems.length} sản phẩm)</h3>
+          <h3 className="font-extrabold text-gray-900 text-base border-b border-gray-100 pb-3">{tCart('subtotal')} ({selectedItems.length})</h3>
 
           <div className="space-y-3">
             <div className="flex justify-between text-xs font-semibold text-gray-600">
-              <span>{t('subtotal')}</span>
-              <span>{selectedTotalAmount.toLocaleString('vi-VN')} đ</span>
+              <span>{tCart('subtotal')}</span>
+              <span>{formatVNDPrice(selectedTotalAmount)}</span>
             </div>
             <div className="flex justify-between text-xs font-semibold text-gray-600">
-              <span>{t('shipping')}</span>
-              <span className="text-emerald-700 font-bold">{t('free')}</span>
+              <span>{tCart('shippingFee')}</span>
+              <span className="text-emerald-700 font-bold">{tCart('freeShipping')}</span>
             </div>
             <div className="flex justify-between text-base font-extrabold text-gray-900 pt-3 border-t border-gray-100">
-              <span>{t('total')}</span>
-              <span className="text-emerald-800 font-black">{selectedTotalAmount.toLocaleString('vi-VN')} đ</span>
+              <span>{tCart('total')}</span>
+              <span className="text-emerald-800 font-black">{formatVNDPrice(selectedTotalAmount)}</span>
             </div>
           </div>
 
@@ -231,7 +239,7 @@ export const CartStepItems = ({
             onClick={handleProceedNext}
             className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-xs transition-colors shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>Xác nhận ({selectedItems.length})</span>
+            <span>{tCart('checkout')} ({selectedItems.length})</span>
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -240,10 +248,10 @@ export const CartStepItems = ({
       {/* ConfirmModal for removing cart item */}
       <ConfirmModal
         isOpen={!!removingItemId}
-        title="Xóa sản phẩm khỏi giỏ hàng?"
-        description="Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?"
-        cancelText="Hủy"
-        confirmText="Xóa sản phẩm"
+        title={tConfirm('title')}
+        description={tConfirm('description')}
+        cancelText={tActions('cancel')}
+        confirmText={tActions('delete')}
         isDestructive={true}
         onConfirm={handleConfirmRemove}
         onCancel={() => setRemovingItemId(null)}

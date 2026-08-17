@@ -81,15 +81,10 @@ export function UsersTable({
       cell: (user) => {
         const rawStatus = (user.status || "active").toLowerCase()
         const translated = t(`users.status.${rawStatus}`)
-        const displayLabel = translated && !translated.startsWith("users.status.")
-          ? translated
-          : rawStatus === "inactive"
-          ? "Chưa kích hoạt"
-          : rawStatus === "active"
-          ? "Hoạt động"
-          : rawStatus === "blocked"
-          ? "Đã khóa"
-          : rawStatus
+        const displayLabel =
+          translated && !translated.startsWith("users.status.")
+            ? translated
+            : t(`common.status.${rawStatus}`) || rawStatus
 
         return <StatusBadge status={rawStatus} label={displayLabel} />
       },

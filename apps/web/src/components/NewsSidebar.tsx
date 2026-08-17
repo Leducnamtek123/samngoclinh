@@ -3,22 +3,12 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
 import { Search } from 'lucide-react';
 import { Link } from '@/lib/I18nNavigation';
 import { Input } from './ui/input';
 import { Checkbox } from './ui/checkbox';
 import { Card, CardContent } from './ui/card';
-
-const categoryLabels: Record<string, string> = {
-  'news': 'Tin tức',
-  'event': 'Sự kiện',
-  'guide': 'Hướng dẫn sử dụng app',
-  'faq': 'Kiến thức'
-};
-
-const getCategoryLabel = (category: string) => {
-  return categoryLabels[category] || category;
-};
 
 type NewsSidebarProps = {
   categories: string[];
@@ -33,6 +23,8 @@ export const NewsSidebar = ({
   searchQuery,
   recentArticles,
 }: NewsSidebarProps) => {
+  const locale = useLocale();
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -44,6 +36,23 @@ export const NewsSidebar = ({
     setPrevSearchQuery(searchQuery);
     setSearchVal(searchQuery);
   }
+
+  const getCategoryLabel = (category: string) => {
+    const labelsVi: Record<string, string> = {
+      'news': 'Tin tức',
+      'event': 'Sự kiện',
+      'guide': 'Hướng dẫn sử dụng',
+      'faq': 'Kiến thức'
+    };
+    const labelsEn: Record<string, string> = {
+      'news': 'News',
+      'event': 'Events',
+      'guide': 'User Guide',
+      'faq': 'Knowledge'
+    };
+    const map = locale === 'en' ? labelsEn : labelsVi;
+    return map[category] || category;
+  };
 
   const updateQueryParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams?.toString() || '');
@@ -84,14 +93,14 @@ export const NewsSidebar = ({
       <Card className="rounded-[24px] p-6">
         <CardContent className="p-0 space-y-4">
           <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
-            Tìm kiếm bài viết
+            {locale === 'en' ? 'Search Articles' : 'Tìm kiếm bài viết'}
           </h3>
           <form onSubmit={handleSearchSubmit} className="relative">
             <Input
               type="text"
               value={searchVal}
               onChange={(e) => setSearchVal(e.target.value)}
-              aria-label="Tìm kiếm bài viết"
+              aria-label={locale === 'en' ? 'Search articles' : 'Tìm kiếm bài viết'}
               className="pl-10 text-xs"
             />
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -103,10 +112,10 @@ export const NewsSidebar = ({
       <Card className="rounded-[24px] p-6">
         <CardContent className="p-0 space-y-4">
           <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
-            Danh mục
+            {locale === 'en' ? 'Categories' : 'Danh mục'}
           </h3>
           <div className="space-y-3.5">
-            {/* Tất cả */}
+            {/* All */}
             <button
               type="button"
               onClick={() => handleCategorySelect('')}
@@ -116,7 +125,7 @@ export const NewsSidebar = ({
               <span className={`text-xs font-semibold ${
                 !selectedCategory ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 group-hover:text-primary'
               }`}>
-                Tất cả
+                {locale === 'en' ? 'All' : 'Tất cả'}
               </span>
             </button>
 
@@ -147,7 +156,7 @@ export const NewsSidebar = ({
       <Card className="rounded-[24px] p-6">
         <CardContent className="p-0 space-y-4">
           <h3 className="text-gray-900 dark:text-gray-100 font-extrabold text-sm">
-            Bài viết gần đây
+            {locale === 'en' ? 'Recent Articles' : 'Bài viết gần đây'}
           </h3>
           <div className="space-y-4">
             {recentArticles.map((article: any, idx: number) => (
@@ -168,7 +177,7 @@ export const NewsSidebar = ({
                 </div>
                 <div className="space-y-0.5">
                   <div className="text-[10px] text-gray-400 font-semibold">
-                    {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : ''}
+                    {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN') : ''}
                   </div>
                   <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                     {article.title}

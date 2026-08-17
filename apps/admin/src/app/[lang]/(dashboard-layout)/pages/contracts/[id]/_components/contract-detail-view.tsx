@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, AlertCircle } from "lucide-react"
+import { ArrowLeft, AlertCircle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { fetchApi } from "@/lib/api"
+import { useTranslation } from "@/providers/i18n-provider"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 import { ContractDetailHeader } from "./contract-detail-header"
 import { ContractDetailMetadata } from "./contract-detail-metadata"
 import { ContractDetailViewer } from "./contract-detail-viewer"
@@ -29,6 +32,7 @@ interface ContractDetailViewProps {
   contract: EContract | null
   user: AdminUser | null
   lang?: string
+  requestedId?: string
   errorMsg?: string
 }
 
@@ -50,12 +54,19 @@ const formatDateVi = (dateStr?: string | Date) => {
 
 export function ContractDetailView({
   contract: initialContract,
-  user,
+  user: initialUser,
   lang,
+  requestedId,
   errorMsg,
 }: ContractDetailViewProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [contract, setContract] = useState<EContract | null>(initialContract)
+  const [user, setUser] = useState<AdminUser | null>(initialUser)
+  const [isLoading, setIsLoading] = useState<boolean>(!initialContract && Boolean(requestedId))
+  const [fetchError, setFetchError] = useState<string>(
+    initialContract ? "" : requestedId ? "" : (errorMsg || "")
+  )
   const [copiedHash, setCopiedHash] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -66,8 +77,73 @@ export function ContractDetailView({
   const [isLoadingTemplate, setIsLoadingTemplate] = useState<boolean>(true)
 
   React.useEffect(() => {
-    setContract(initialContract)
-  }, [initialContract])
+    if (initialContract) {
+      setContract(initialContract)
+      setFetchError("")
+      setIsLoading(false)
+      return
+    }
+
+    if (requestedId) {
+      let isMounted = true
+      setIsLoading(true)
+
+      legalService
+        .getContractDetail(requestedId)
+        .then(async (res) => {
+          if (!isMounted) return
+          if (res?.data) {
+            setContract(res.data)
+            setFetchError("")
+            if (res.data.userId && !user) {
+              const uRes = await usersService.getUserDetail(res.data.userId).catch(() => null)
+              if (isMounted && uRes?.data) {
+                setUser(uRes.data)
+              }
+            }
+          } else {
+            const searchRes = await legalService.getContracts({ search: requestedId }).catch(() => null)
+            if (!isMounted) return
+            const items: EContract[] = Array.isArray(searchRes?.data)
+              ? searchRes.data
+              : Array.isArray((searchRes?.data as any)?.items)
+              ? (searchRes?.data as any).items
+              : []
+            const found = items.find(
+              (c: EContract) =>
+                c.id === requestedId ||
+                c.code === requestedId ||
+                c.contractCode === requestedId ||
+                c.contractNumber === requestedId
+            )
+            if (found) {
+              setContract(found)
+              setFetchError("")
+              if (found.userId && !user) {
+                const uRes = await usersService.getUserDetail(found.userId).catch(() => null)
+                if (isMounted && uRes?.data) {
+                  setUser(uRes.data)
+                }
+              }
+            } else {
+              setFetchError(t("common.table.noResults"))
+            }
+          }
+        })
+        .catch((err) => {
+          if (!isMounted) return
+          console.warn("Client fetch contract detail fallback:", err)
+          setFetchError(err?.message || t("common.table.noResults"))
+        })
+        .finally(() => {
+          if (isMounted) setIsLoading(false)
+        })
+
+      return () => {
+        isMounted = false
+      }
+    }
+  }, [initialContract, requestedId, t, user])
 
   React.useEffect(() => {
     async function loadDynamicTemplate() {
@@ -191,17 +267,35 @@ export function ContractDetailView({
     return result
   }, [contract, user, templateHtml])
 
-  if (errorMsg || !contract) {
+  if (isLoading) {
     return (
-      <div className="py-16 text-center space-y-4">
-        <AlertCircle className="w-12 h-12 mx-auto text-red-500" />
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Không tìm thấy hợp đồng</h2>
-        <p className="text-muted-foreground">{errorMsg || "Hợp đồng không tồn tại hoặc đã bị xóa."}</p>
-        <Link href={`/${lang}/pages/contracts`}>
-          <Button variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Quay lại danh sách hợp đồng
-          </Button>
-        </Link>
+      <div className="py-24 text-center space-y-4">
+        <Loader2 className="w-10 h-10 animate-spin mx-auto text-primary" />
+        <p className="text-sm font-medium text-muted-foreground">{t("common.status.processing")}</p>
+      </div>
+    )
+  }
+
+  if (fetchError || !contract) {
+    return (
+      <div className="py-16 text-center space-y-4 max-w-lg mx-auto bg-card rounded-2xl border border-border/60 p-8 shadow-sm">
+        <AlertCircle className="w-12 h-12 mx-auto text-amber-500" />
+        <h2 className="text-xl font-bold text-foreground">{t("common.table.noResults")}</h2>
+        <p className="text-sm text-muted-foreground">
+          {fetchError || t("common.table.noResults")}
+        </p>
+        {requestedId && (
+          <div className="inline-block bg-muted/70 px-3 py-1.5 rounded-lg border border-border/80 font-mono text-xs text-muted-foreground break-all">
+            {t("contracts.fields.code")}: <span className="font-semibold text-foreground">{requestedId}</span>
+          </div>
+        )}
+        <div className="pt-2 flex items-center justify-center gap-3">
+          <Link href={`/${lang || "vi"}/pages/contracts`}>
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" /> {t("common.actions.back")}
+            </Button>
+          </Link>
+        </div>
       </div>
     )
   }

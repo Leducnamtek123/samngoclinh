@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Link } from '@/lib/I18nNavigation';
 import {
   ShieldCheck,
   ChevronRight,
@@ -16,18 +16,19 @@ import {
   RotateCcw,
   Building2,
 } from 'lucide-react';
-import { TERMS_POLICIES } from '../terms-data';
+import { getTermsPolicies, TERMS_POLICIES } from '../terms-data';
 
 type PolicyPageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
 export async function generateMetadata(props: PolicyPageProps): Promise<Metadata> {
-  const { slug } = await props.params;
-  const policy = TERMS_POLICIES[slug];
+  const { locale, slug } = await props.params;
+  const policies = getTermsPolicies(locale);
+  const policy = policies[slug];
   if (!policy) {
     return {
-      title: 'Không tìm thấy chính sách – Sâm Ngọc Linh',
+      title: 'Policy Not Found – Sâm Ngọc Linh',
     };
   }
 
@@ -52,8 +53,11 @@ const POLICY_ICONS: Record<string, React.ElementType> = {
 export default async function PolicyDetailPage(props: PolicyPageProps) {
   const { locale, slug } = await props.params;
   setRequestLocale(locale);
+  const tTerms = await getTranslations({ locale, namespace: 'termsPage' });
+  const tNav = await getTranslations({ locale, namespace: 'nav' });
 
-  const policy = TERMS_POLICIES[slug];
+  const policies = getTermsPolicies(locale);
+  const policy = policies[slug];
   if (!policy) {
     notFound();
   }
@@ -66,11 +70,11 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
         {/* Navigation Breadcrumb */}
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs sm:text-sm text-slate-500">
           <Link href="/" className="hover:text-emerald-800 transition-colors font-medium">
-            Trang chủ
+            {tNav('home')}
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <Link href="/terms" className="hover:text-emerald-800 transition-colors font-medium">
-            Chính sách &amp; Điều khoản
+            {tTerms('title')}
           </Link>
           <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-slate-900 font-bold truncate max-w-[200px] sm:max-w-none">
@@ -83,11 +87,11 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-bold tracking-wide">
               <IconComponent className="w-4 h-4 text-emerald-700" />
-              <span>VĂN BẢN QUY CHẾ CHÍNH THỨC</span>
+              <span>{tTerms('badge')}</span>
             </div>
             <div className="inline-flex items-center gap-1.5 text-xs text-slate-500 font-medium">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
-              <span>Cập nhật: {policy.lastUpdated}</span>
+              <span>Updated: {policy.lastUpdated}</span>
             </div>
           </div>
 
@@ -130,7 +134,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
                 CÔNG TY CỔ PHẦN SÂM NGỌC LINH
               </h3>
               <p className="text-xs sm:text-sm text-slate-300">
-                Nông trại &amp; Trung tâm Số hóa Sâm Ngọc Linh – Nam Trà My, Quảng Nam
+                Nam Trà My, Quảng Nam
               </p>
             </div>
           </div>
@@ -138,7 +142,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-emerald-800/40 text-xs sm:text-sm">
             <div className="flex items-center gap-2.5 text-slate-200">
               <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Hotline hỗ trợ: <strong className="text-white font-bold">0967 234 234</strong> (24/7)</span>
+              <span>Hotline: <strong className="text-white font-bold">0967 234 234</strong> (24/7)</span>
             </div>
             <div className="flex items-center gap-2.5 text-slate-200">
               <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -152,7 +156,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold transition-colors border border-white/15"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Xem tất cả chính sách</span>
+              <span>{locale === 'en' ? 'View all policies' : 'Xem tất cả chính sách'}</span>
             </Link>
 
             <Link
@@ -160,7 +164,7 @@ export default async function PolicyDetailPage(props: PolicyPageProps) {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-[background-color,transform] active:scale-98"
             >
               <FileText className="w-4 h-4" />
-              <span>Hợp đồng điện tử &amp; Quy chế</span>
+              <span>{tTerms('viewContractSample')}</span>
             </Link>
           </div>
         </div>

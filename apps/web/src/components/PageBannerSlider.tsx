@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface Banner {
   id: string;
@@ -19,6 +20,7 @@ type PageBannerSliderProps = {
 };
 
 export function PageBannerSlider({ banners = [], images = [] }: PageBannerSliderProps) {
+  const t = useTranslations('homepage');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,20 +32,22 @@ export function PageBannerSlider({ banners = [], images = [] }: PageBannerSlider
     return img;
   };
 
+  const defaultSubtitle = t('heroDesc');
+
   const safeBanners: Banner[] = (banners.length > 0
     ? banners
     : images.map((img, idx) => ({
         id: `img-${idx}`,
         pageKey: 'home',
         title: 'SÂM NGỌC LINH KON TUM',
-        subtitle: 'Báu vật của đại ngàn, chuẩn chất lượng tuyệt đối.',
+        subtitle: defaultSubtitle,
         image: img,
         order: idx,
       }))).map((b) => ({
         ...b,
         image: cleanBannerImage(b.image),
         title: b.title || 'SÂM NGỌC LINH KON TUM',
-        subtitle: b.subtitle || 'Báu vật của đại ngàn, chuẩn chất lượng tuyệt đối.',
+        subtitle: b.subtitle || defaultSubtitle,
       }));
 
   useEffect(() => {

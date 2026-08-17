@@ -1,6 +1,7 @@
 import { Lato } from "next/font/google"
 
 import { cn } from "@/lib/utils"
+import { getDictionary } from "@/lib/get-dictionary"
 
 import "../globals.css"
 
@@ -40,7 +41,8 @@ const latoFont = Lato({
   variable: "--font-lato",
 })
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const dictionary = await getDictionary("en")
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -50,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           latoFont.variable // Include Lato font variable
         )}
       >
-        <Providers locale="en" direction="ltr" session={null}>
+        <Providers locale="en" direction="ltr" session={null} dictionary={dictionary}>
           {children}
           <Toaster />
           <Sonner />

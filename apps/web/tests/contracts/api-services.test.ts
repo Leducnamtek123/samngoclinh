@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { catalogService } from '@/services/catalog.service';
 import { ordersService } from '@/services/orders.service';
 import { econtractService } from '@/services/econtract.service';

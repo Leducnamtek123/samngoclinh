@@ -111,16 +111,16 @@ export function OrdersTable({
 
   const columns: ColumnDef<Order>[] = [
     {
-      header: "Mã đơn hàng",
+      header: t("orders.fields.orderCode"),
       className: "font-mono font-semibold text-slate-900 dark:text-slate-100",
       cell: (order) => order.code,
     },
     {
-      header: "Khách hàng",
+      header: t("orders.fields.customer"),
       cell: (order) => (
         <div className="flex flex-col">
           <span className="font-medium text-slate-800 dark:text-slate-200">
-            {order.customerName || "Khách lẻ"}
+            {order.customerName || "—"}
           </span>
           {order.customerPhone && (
             <span className="text-xs text-muted-foreground font-mono">
@@ -131,7 +131,7 @@ export function OrdersTable({
       ),
     },
     {
-      header: "Thanh toán",
+      header: "Payment",
       className: "text-xs font-medium",
       cell: (order) =>
         order.paymentMethod === "bank_transfer" ||
@@ -139,11 +139,11 @@ export function OrdersTable({
         (order.paymentMethod || "").toLowerCase().includes("bank")
           ? "Chuyển khoản"
           : order.paymentMethod === "cod"
-            ? "Thanh toán COD"
+            ? "COD"
             : "Chuyển khoản",
     },
     {
-      header: "Trạng thái",
+      header: t("products.fields.status"),
       cell: (order) => {
         const statusLower = (order.status || "").toLowerCase()
         const isFinalStatus =
@@ -217,7 +217,7 @@ export function OrdersTable({
       },
     },
     {
-      header: "Ngày tạo",
+      header: t("users.fields.createdAt"),
       className: "text-xs text-muted-foreground whitespace-nowrap",
       cell: (order) =>
         order.createdAt
@@ -227,12 +227,12 @@ export function OrdersTable({
           : "-",
     },
     {
-      header: "Ghi chú",
+      header: t("trees.fields.notes"),
       className: "text-xs max-w-[160px] truncate text-muted-foreground",
       cell: (order) => order.customerNote || "-",
     },
     {
-      header: "Tổng tiền",
+      header: t("orders.fields.totalAmount"),
       headerClassName: "text-right",
       className:
         "text-right font-semibold text-emerald-600 dark:text-emerald-400",
@@ -287,9 +287,9 @@ export function OrdersTable({
         data={initialOrders}
         metadata={metadata}
         onPageChange={handlePageChange}
-        emptyMessage="Không tìm thấy đơn hàng nào."
+        emptyMessage={t("common.table.noResults")}
         toolbarProps={{
-          searchPlaceholder: "Tìm kiếm mã đơn...",
+          searchPlaceholder: t("search.searchPlaceholder"),
           searchValue: searchVal,
           onSearchChange: setSearchVal,
           statusValue: statusFilter,
@@ -298,13 +298,13 @@ export function OrdersTable({
           statusPlaceholder: t("common.status.all"),
           onReset: resetFilters,
         }}
-        rowActionsHeader="Thao tác"
+        rowActionsHeader={t("common.actions.actions")}
         rowActions={(order) => (
           <Link
             href={`/pages/orders/details?id=${order.id}`}
             className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
           >
-            Chi tiết
+            {t("common.actions.view")}
           </Link>
         )}
       />
@@ -313,7 +313,7 @@ export function OrdersTable({
         <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 pointer-events-auto">
           <ToastCard
             type="error"
-            title="Lỗi xảy ra"
+            title={t("common.status.error")}
             description={localError}
             onClose={() => setLocalError("")}
           />

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import {
   CheckCircle2,
   Clock,
@@ -17,7 +18,6 @@ import {
   Car,
   Globe,
   UploadCloud,
-  Lock,
   Info,
   Check,
 } from 'lucide-react';
@@ -53,82 +53,30 @@ interface DocumentOption {
   notes: string[];
 }
 
-const DOCUMENT_OPTIONS: DocumentOption[] = [
-  {
-    id: 'cccd',
-    title: 'Căn cước công dân',
-    subtitle: 'Thẻ CCCD gắn chip hoặc CMND 12 số',
-    icon: CreditCard,
-    fieldLabel: 'Số Căn cước công dân (12 chữ số)',
-    fieldPlaceholder: 'Nhập số CCCD gắn chip...',
-    frontTitle: 'Ảnh mặt trước CCCD',
-    frontDescription: 'Chụp rõ nét khuôn mặt, số CCCD và quốc huy',
-    backTitle: 'Ảnh mặt sau CCCD',
-    backDescription: 'Chụp rõ nét chip điện tử, mã MRZ và ngày cấp',
-    isBackRequired: true,
-    notes: [
-      'Chụp đủ 4 góc của thẻ, không để lóa đèn flash hoặc mất viền',
-      'Giấy tờ gốc còn hạn sử dụng, không dùng bản photocopy hoặc scan đen trắng',
-    ],
-  },
-  {
-    id: 'driver_license',
-    title: 'Giấy phép lái xe',
-    subtitle: 'Bằng lái xe thẻ PET hợp lệ toàn quốc',
-    icon: Car,
-    fieldLabel: 'Số Giấy phép lái xe (GPLX)',
-    fieldPlaceholder: 'Nhập số GPLX...',
-    frontTitle: 'Ảnh mặt trước GPLX',
-    frontDescription: 'Chụp rõ ảnh chân dung, số bằng và họ tên',
-    backTitle: 'Ảnh mặt sau GPLX',
-    backDescription: 'Chụp rõ hạng lái xe và ngày cấp',
-    isBackRequired: true,
-    notes: [
-      'Chụp rõ 2 mặt thẻ PET chính chủ, không bị mờ nhòe số bằng lái',
-      'Đảm bảo thông tin ngày hết hạn còn hiệu lực pháp lý',
-    ],
-  },
-  {
-    id: 'passport',
-    title: 'Hộ chiếu',
-    subtitle: 'Hộ chiếu phổ thông (Passport) còn hạn',
-    icon: Globe,
-    fieldLabel: 'Số Hộ chiếu (Passport Number)',
-    fieldPlaceholder: 'Ví dụ: B1234567, C8910111...',
-    frontTitle: 'Trang thông tin nhân thân',
-    frontDescription: 'Trang đôi có ảnh chân dung, số hộ chiếu và mã ICAO',
-    backTitle: 'Trang bìa hoặc thị thực',
-    backDescription: 'Ảnh bổ sung (không bắt buộc)',
-    isBackRequired: false,
-    notes: [
-      'Mở phẳng trang thông tin nhân thân, không để ngón tay che chữ',
-      'Đảm bảo vùng mã máy đọc ICAO ở chân trang hiển thị trọn vẹn',
-    ],
-  },
-];
-
 // Subcomponent: Document Type Badge
 function KycDocTypeBadge({ type }: { type?: string }) {
+  const t = useTranslations('kyc');
+
   switch (type) {
     case 'passport':
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
           <Globe className="w-3.5 h-3.5 text-indigo-600" />
-          Hộ chiếu
+          {t('docTypes.passport')}
         </span>
       );
     case 'driver_license':
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/50 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
           <Car className="w-3.5 h-3.5 text-sky-600" />
-          Bằng lái xe
+          {t('docTypes.driverLicense')}
         </span>
       );
     default:
       return (
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
           <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
-          Căn cước công dân
+          {t('docTypes.cccd')}
         </span>
       );
   }
@@ -146,6 +94,8 @@ function KycVerifiedCard({
   existingFront: string;
   existingBack: string;
 }) {
+  const t = useTranslations('kyc');
+
   return (
     <Card className="border border-emerald-200/90 dark:border-emerald-900 bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/30 rounded-2xl shadow-xs overflow-hidden">
       <CardContent className="p-6 space-y-6">
@@ -156,10 +106,10 @@ function KycVerifiedCard({
             </div>
             <div>
               <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
-                Chứng nhận định danh hợp lệ
+                {t('verifiedCertificate')}
               </h4>
               <p className="text-xs text-emerald-800 dark:text-emerald-400 font-medium mt-0.5">
-                Hồ sơ của bạn đã được đối soát thành công và có đầy đủ quyền lợi ký Hợp đồng điện tử.
+                {t('verifiedCertificateDesc')}
               </p>
             </div>
           </div>
@@ -170,15 +120,15 @@ function KycVerifiedCard({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/90 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 text-xs">
           <div className="space-y-1">
-            <span className="text-slate-400 font-medium block">Số giấy tờ tùy thân</span>
+            <span className="text-slate-400 font-medium block">{t('documentNumber')}</span>
             <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
-              {actualKycData?.idCardNumber || actualKycData?.idNumber || 'Đã đối soát'}
+              {actualKycData?.idCardNumber || actualKycData?.idNumber || t('verifiedMatch')}
             </span>
           </div>
           <div className="space-y-1">
-            <span className="text-slate-400 font-medium block">Họ và tên chủ sở hữu</span>
+            <span className="text-slate-400 font-medium block">{t('ownerName')}</span>
             <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              {actualKycData?.fullName || profile?.name || 'Chủ tài khoản'}
+              {actualKycData?.fullName || profile?.name || t('accountOwner')}
             </span>
           </div>
         </div>
@@ -187,12 +137,12 @@ function KycVerifiedCard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-emerald-200/60 dark:border-emerald-900/60">
             <div className="space-y-2">
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                Ảnh mặt trước / Trang thông tin
+                {t('frontPhoto')}
               </span>
               <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
                 <Image
                   src={existingFront}
-                  alt="Ảnh mặt trước"
+                  alt={t('frontAlt')}
                   fill
                   sizes="(max-width: 640px) 100vw, 320px"
                   unoptimized
@@ -204,12 +154,12 @@ function KycVerifiedCard({
             {existingBack && (
               <div className="space-y-2">
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                  Ảnh mặt sau
+                  {t('backPhoto')}
                 </span>
                 <div className="relative h-36 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
                   <Image
                     src={existingBack}
-                    alt="Ảnh mặt sau"
+                    alt={t('backAlt')}
                     fill
                     sizes="(max-width: 640px) 100vw, 320px"
                     unoptimized
@@ -237,6 +187,8 @@ function KycPendingCard({
   existingBack: string;
   onReupload: () => void;
 }) {
+  const t = useTranslations('kyc');
+
   return (
     <Card className="border border-amber-200/90 dark:border-amber-900/80 bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-amber-950/20 rounded-2xl shadow-xs overflow-hidden">
       <CardContent className="p-6 space-y-5">
@@ -247,10 +199,10 @@ function KycPendingCard({
             </div>
             <div>
               <h4 className="font-bold text-base text-slate-900 dark:text-slate-100">
-                Hồ sơ đang trong quá trình xét duyệt
+                {t('pendingTitle')}
               </h4>
               <p className="text-xs text-amber-800 dark:text-amber-400 font-medium mt-0.5">
-                Ban quản trị đang đối soát giấy tờ tùy thân. Thời gian xử lý tiêu chuẩn từ 1 đến 2 giờ làm việc.
+                {t('pendingDesc')}
               </p>
             </div>
           </div>
@@ -263,19 +215,19 @@ function KycPendingCard({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-amber-200/60 dark:border-amber-900/40">
             <div className="space-y-2">
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                Ảnh mặt trước đã tải lên
+                {t('frontPhoto')}
               </span>
               <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                <Image src={existingFront} alt="Mặt trước" fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
+                <Image src={existingFront} alt={t('frontAlt')} fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
               </div>
             </div>
             {existingBack && (
               <div className="space-y-2">
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-                  Ảnh mặt sau đã tải lên
+                  {t('backPhoto')}
                 </span>
                 <div className="relative h-32 w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 flex items-center justify-center">
-                  <Image src={existingBack} alt="Mặt sau" fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
+                  <Image src={existingBack} alt={t('backAlt')} fill sizes="(max-width: 640px) 100vw, 320px" unoptimized className="object-contain p-1" />
                 </div>
               </div>
             )}
@@ -291,7 +243,7 @@ function KycPendingCard({
             className="text-xs font-semibold text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-950/60 gap-1.5 cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Thay đổi hoặc tải lại hồ sơ
+            {t('reuploadOther')}
           </Button>
         </div>
       </CardContent>
@@ -323,6 +275,8 @@ function KycPhotoUploadDropzone({
   setFrontImagePreview: (val: string) => void;
   setBackImagePreview: (val: string) => void;
 }) {
+  const t = useTranslations('kyc');
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Front Photo Zone */}
@@ -331,7 +285,7 @@ function KycPhotoUploadDropzone({
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
             {activeOption.frontTitle} <span className="text-rose-500">*</span>
           </span>
-          <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
+          <span className="text-[11px] text-slate-400">{t('formatHint')}</span>
         </div>
 
         <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[border-color,box-shadow] bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
@@ -351,18 +305,18 @@ function KycPhotoUploadDropzone({
           />
           {frontImagePreview ? (
             <div className="relative h-40 w-full flex items-center justify-center">
-              <Image src={frontImagePreview} alt="Ảnh mặt trước mới" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <Image src={frontImagePreview} alt={t('frontAlt')} fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
               <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
                 <Camera className="w-4 h-4" />
-                Nhấp để đổi ảnh khác
+                {t('reuploadOther')}
               </div>
               <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                Đã chọn ảnh mới
+                {t('uploadSuccess')}
               </span>
             </div>
           ) : existingFront && !isReuploadMode ? (
             <div className="relative h-40 w-full flex items-center justify-center">
-              <Image src={existingFront} alt="Ảnh mặt trước cũ" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <Image src={existingFront} alt={t('frontAlt')} fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2.5 text-center p-2">
@@ -371,7 +325,7 @@ function KycPhotoUploadDropzone({
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Tải lên {activeOption.frontTitle.toLowerCase()}
+                  {activeOption.frontTitle}
                 </span>
                 <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
                   {activeOption.frontDescription}
@@ -387,9 +341,9 @@ function KycPhotoUploadDropzone({
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
             {activeOption.backTitle}{' '}
-            {activeOption.isBackRequired ? <span className="text-rose-500">*</span> : <span className="text-slate-400 font-normal">(Không bắt buộc)</span>}
+            {activeOption.isBackRequired ? <span className="text-rose-500">*</span> : <span className="text-slate-400 font-normal">({t('optional')})</span>}
           </span>
-          <span className="text-[11px] text-slate-400">PNG, JPG tối đa 20MB</span>
+          <span className="text-[11px] text-slate-400">{t('formatHint')}</span>
         </div>
 
         <label className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-600 dark:hover:border-emerald-500 rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-[border-color,box-shadow] bg-white dark:bg-slate-900 min-h-[190px] relative group overflow-hidden shadow-2xs hover:shadow-xs">
@@ -409,18 +363,18 @@ function KycPhotoUploadDropzone({
           />
           {backImagePreview ? (
             <div className="relative h-40 w-full flex items-center justify-center">
-              <Image src={backImagePreview} alt="Ảnh mặt sau mới" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <Image src={backImagePreview} alt={t('backAlt')} fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
               <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center text-white text-xs font-bold gap-1.5">
                 <Camera className="w-4 h-4" />
-                Nhấp để đổi ảnh khác
+                {t('reuploadOther')}
               </div>
               <span className="absolute bottom-2 right-2 bg-emerald-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                Đã chọn ảnh mới
+                {t('uploadSuccess')}
               </span>
             </div>
           ) : existingBack && !isReuploadMode ? (
             <div className="relative h-40 w-full flex items-center justify-center">
-              <Image src={existingBack} alt="Ảnh mặt sau cũ" fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
+              <Image src={existingBack} alt={t('backAlt')} fill sizes="(max-width: 768px) 100vw, 400px" unoptimized className="object-contain rounded-xl" />
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2.5 text-center p-2">
@@ -429,7 +383,7 @@ function KycPhotoUploadDropzone({
               </div>
               <div>
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
-                  Tải lên {activeOption.backTitle.toLowerCase()}
+                  {activeOption.backTitle}
                 </span>
                 <span className="text-[11px] text-slate-400 font-medium block mt-0.5">
                   {activeOption.backDescription}
@@ -445,13 +399,14 @@ function KycPhotoUploadDropzone({
 
 // Subcomponent: Verification History Table
 function KycHistoryList({ historyList, formatDate }: { historyList: any[]; formatDate: (d?: string) => string }) {
+  const t = useTranslations('kyc');
   if (historyList.length === 0) return null;
 
   return (
     <div className="space-y-4 pt-6 border-t border-slate-200/80 dark:border-slate-800">
       <div className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
         <History className="w-4 h-4 text-emerald-600" />
-        <span>Lịch sử xác thực eKYC ({historyList.length})</span>
+        <span>{t('historyTitle')} ({historyList.length})</span>
       </div>
 
       <div className="space-y-3">
@@ -466,7 +421,7 @@ function KycHistoryList({ historyList, formatDate }: { historyList: any[]; forma
               <div className="space-y-1">
                 <div className="flex items-center gap-2.5">
                   <span className="font-bold text-slate-900 dark:text-slate-100">
-                    Lần {historyList.length - idx}
+                    {t('attempt', { index: historyList.length - idx })}
                   </span>
                   <KycDocTypeBadge type={item.documentType} />
                   <span
@@ -478,7 +433,7 @@ function KycHistoryList({ historyList, formatDate }: { historyList: any[]; forma
                         : 'bg-amber-50 text-amber-700 border border-amber-200'
                     }`}
                   >
-                    {isItemApproved ? 'Đã duyệt' : isItemRejected ? 'Bị từ chối' : 'Chờ đối soát'}
+                    {isItemApproved ? t('verified') : isItemRejected ? t('rejected') : t('pending')}
                   </span>
                 </div>
 
@@ -487,14 +442,14 @@ function KycHistoryList({ historyList, formatDate }: { historyList: any[]; forma
                   <span>{formatDate(item.createdAt)}</span>
                   {item.idCardNumber && (
                     <span>
-                      Số giấy tờ: <strong className="font-mono text-slate-700 dark:text-slate-300">{item.idCardNumber}</strong>
+                      {t('documentNumber')}: <strong className="font-mono text-slate-700 dark:text-slate-300">{item.idCardNumber}</strong>
                     </span>
                   )}
                 </div>
 
                 {isItemRejected && item.rejectionReason && (
                   <p className="text-rose-600 font-medium pt-1">
-                    Lý do từ chối: {item.rejectionReason}
+                    {t('rejectionReason')} {item.rejectionReason}
                   </p>
                 )}
               </div>
@@ -531,6 +486,7 @@ function KycSubmissionForm({
   setIsReuploadMode,
   handleSubmit,
   isSubmitting,
+  documentOptions,
 }: {
   isRejected: boolean;
   isReuploadMode: boolean;
@@ -555,7 +511,11 @@ function KycSubmissionForm({
   setIsReuploadMode: (val: boolean) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   isSubmitting: boolean;
+  documentOptions: DocumentOption[];
 }) {
+  const t = useTranslations('kyc');
+  const tActions = useTranslations('actions');
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {isRejected && !isReuploadMode && (
@@ -565,14 +525,14 @@ function KycSubmissionForm({
           </div>
           <div className="space-y-1.5 text-xs flex-1">
             <h4 className="font-bold text-sm text-rose-900 dark:text-rose-200">
-              Hồ sơ xác thực trước đó không được phê duyệt
+              {t('rejectedTitle')}
             </h4>
             <div className="bg-white/80 dark:bg-slate-900/80 p-3 rounded-xl border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 font-medium">
-              <span className="font-bold block text-rose-900 dark:text-rose-200 mb-0.5">Lý do từ chối:</span>
-              {actualKycData?.rejectionReason || 'Ảnh chụp không đủ rõ nét hoặc bị lóa sáng. Vui lòng tải lại ảnh mới.'}
+              <span className="font-bold block text-rose-900 dark:text-rose-200 mb-0.5">{t('rejectionReason')}</span>
+              {actualKycData?.rejectionReason || t('guide2')}
             </div>
             <p className="text-slate-600 dark:text-slate-400 font-medium pt-1">
-              Vui lòng kiểm tra lại thông tin và chụp lại ảnh rõ nét theo các tiêu chuẩn bên dưới.
+              {t('guide1')}
             </p>
           </div>
         </div>
@@ -585,13 +545,13 @@ function KycSubmissionForm({
             <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
               1
             </span>
-            Chọn loại giấy tờ tùy thân
+            {t('selectDocType')}
           </span>
-          <span className="text-xs text-slate-400 font-medium">Bắt buộc</span>
+          <span className="text-xs text-slate-400 font-medium">*</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {DOCUMENT_OPTIONS.map((opt) => {
+          {documentOptions.map((opt) => {
             const Icon = opt.icon;
             const isSelected = documentType === opt.id;
             return (
@@ -649,7 +609,7 @@ function KycSubmissionForm({
           <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
             2
           </span>
-          Thông tin chi tiết giấy tờ
+          {t('enterDocInfo')}
         </span>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -669,14 +629,14 @@ function KycSubmissionForm({
 
           <div className="space-y-1.5">
             <label htmlFor="kyc-full-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
-              Họ và tên in trên giấy tờ <span className="text-rose-500">*</span>
+              {t('fullNameLabel')} <span className="text-rose-500">*</span>
             </label>
             <input
               id="kyc-full-name"
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Ví dụ: NGUYEN VAN A"
+              placeholder="NGUYEN VAN A"
               className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-colors"
             />
           </div>
@@ -688,7 +648,7 @@ function KycSubmissionForm({
         <Info className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
         <div className="space-y-1 text-xs">
           <span className="font-bold text-slate-900 dark:text-slate-100 block">
-            Tiêu chuẩn ảnh chụp chứng thực
+            {t('notesTitle')}
           </span>
           <ul className="space-y-0.5 text-slate-600 dark:text-slate-400 font-medium">
             {activeOption.notes.map((note) => (
@@ -714,7 +674,7 @@ function KycSubmissionForm({
           <span className="w-5 h-5 rounded-full bg-emerald-800 text-white text-[11px] font-bold inline-flex items-center justify-center">
             3
           </span>
-          Tải ảnh giấy tờ tùy thân
+          {t('frontLabel')}
         </span>
 
         <KycPhotoUploadDropzone
@@ -731,14 +691,6 @@ function KycSubmissionForm({
         />
       </div>
 
-      {/* Privacy Security Compliance Guarantee */}
-      <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-        <Lock className="w-4 h-4 text-emerald-700 shrink-0" />
-        <span>
-          Thông tin và hình ảnh giấy tờ được mã hóa theo tiêu chuẩn an ninh <strong>SSL 256-bit</strong> và tuân thủ chặt chẽ <strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân.
-        </span>
-      </div>
-
       {/* Form Actions */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/80 dark:border-slate-800">
         {isReuploadMode && (
@@ -748,7 +700,7 @@ function KycSubmissionForm({
             onClick={() => setIsReuploadMode(false)}
             className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 cursor-pointer"
           >
-            Hủy bỏ
+            {tActions('cancel')}
           </Button>
         )}
         <ButtonLoading
@@ -756,7 +708,7 @@ function KycSubmissionForm({
           isLoading={isSubmitting}
           className="bg-emerald-800 hover:bg-emerald-900 text-white px-8 py-3 rounded-xl font-bold text-xs shadow-md shadow-emerald-950/20 active:scale-[0.98] transition-[transform,background-color] cursor-pointer"
         >
-          {isReuploadMode || isRejected ? 'Gửi lại hồ sơ eKYC' : 'Gửi hồ sơ xác thực'}
+          {isReuploadMode || isRejected ? t('resubmitBtn') : t('submitBtn')}
         </ButtonLoading>
       </div>
     </form>
@@ -769,7 +721,62 @@ export const ProfileKycTab = ({
   refetchKycStatus,
   submitKycMutation,
 }: ProfileKycTabProps) => {
+  const t = useTranslations('kyc');
   const actualKycData = (kycStatusData as any)?.data || kycStatusData;
+
+  const DOCUMENT_OPTIONS: DocumentOption[] = [
+    {
+      id: 'cccd',
+      title: t('docTypes.cccd'),
+      subtitle: t('docTypes.cccdSubtitle'),
+      icon: CreditCard,
+      fieldLabel: t('docTypes.cccdFieldLabel'),
+      fieldPlaceholder: t('docTypes.cccdPlaceholder'),
+      frontTitle: t('docTypes.cccdFrontTitle'),
+      frontDescription: t('docTypes.cccdFrontDesc'),
+      backTitle: t('docTypes.cccdBackTitle'),
+      backDescription: t('docTypes.cccdBackDesc'),
+      isBackRequired: true,
+      notes: [
+        t('guide1'),
+        t('guide2'),
+      ],
+    },
+    {
+      id: 'driver_license',
+      title: t('docTypes.driverLicense'),
+      subtitle: t('docTypes.driverLicenseSubtitle'),
+      icon: Car,
+      fieldLabel: t('docTypes.driverLicenseFieldLabel'),
+      fieldPlaceholder: t('docTypes.driverLicensePlaceholder'),
+      frontTitle: t('docTypes.driverLicenseFrontTitle'),
+      frontDescription: t('docTypes.driverLicenseFrontDesc'),
+      backTitle: t('docTypes.driverLicenseBackTitle'),
+      backDescription: t('docTypes.driverLicenseBackDesc'),
+      isBackRequired: true,
+      notes: [
+        t('guide1'),
+        t('guide3'),
+      ],
+    },
+    {
+      id: 'passport',
+      title: t('docTypes.passport'),
+      subtitle: t('docTypes.passportSubtitle'),
+      icon: Globe,
+      fieldLabel: t('docTypes.passportFieldLabel'),
+      fieldPlaceholder: t('docTypes.passportPlaceholder'),
+      frontTitle: t('docTypes.passportFrontTitle'),
+      frontDescription: t('docTypes.passportFrontDesc'),
+      backTitle: t('docTypes.passportBackTitle'),
+      backDescription: t('docTypes.passportBackDesc'),
+      isBackRequired: false,
+      notes: [
+        t('guide1'),
+        t('guide2'),
+      ],
+    },
+  ];
 
   const [userDocumentType, setUserDocumentType] = useState<IdentityDocumentType | null>(null);
   const [userIdCardNumber, setUserIdCardNumber] = useState<string | null>(null);
@@ -814,29 +821,29 @@ export const ProfileKycTab = ({
 
     const cleanId = idCardNumber.trim();
     if (!cleanId) {
-      setKycErrorMsg(`Vui lòng nhập ${activeOption.fieldLabel.toLowerCase()}`);
+      setKycErrorMsg(t('idNumberLabel'));
       return;
     }
 
     if (documentType === 'cccd' && cleanId.length !== 12) {
-      setKycErrorMsg('Số Căn cước công dân gắn chip phải đúng 12 chữ số');
+      setKycErrorMsg(t('docTypes.cccdFieldLabel'));
       return;
     }
 
     if (!fullName.trim()) {
-      setKycErrorMsg('Vui lòng nhập họ và tên in trên giấy tờ');
+      setKycErrorMsg(t('fullNameLabel'));
       return;
     }
 
     const hasFront = !!frontFileRef.current || (existingFront && !isReuploadMode);
     if (!hasFront) {
-      setKycErrorMsg(`Vui lòng tải lên ${activeOption.frontTitle.toLowerCase()}`);
+      setKycErrorMsg(t('uploadFront'));
       return;
     }
 
     const hasBack = !!backFileRef.current || (existingBack && !isReuploadMode);
     if (activeOption.isBackRequired && !hasBack) {
-      setKycErrorMsg(`Vui lòng tải lên ${activeOption.backTitle.toLowerCase()}`);
+      setKycErrorMsg(t('uploadBack'));
       return;
     }
 
@@ -876,11 +883,11 @@ export const ProfileKycTab = ({
         await submitKycMutation.mutateAsync(payload);
       }
 
-      toast.success('Gửi hồ sơ xác thực eKYC thành công! Hệ thống đang tiến hành đối soát.');
+      toast.success(t('submitSuccess'));
       setIsReuploadMode(false);
       if (refetchKycStatus) refetchKycStatus();
     } catch (err: any) {
-      const errorMsg = err?.message || 'Không thể gửi hồ sơ eKYC. Vui lòng kiểm tra lại kết nối mạng.';
+      const errorMsg = err?.message || t('submitError');
       setKycErrorMsg(errorMsg);
       toast.error(errorMsg);
     }
@@ -896,11 +903,11 @@ export const ProfileKycTab = ({
               <FileCheck className="w-5 h-5" />
             </div>
             <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Xác thực danh tính điện tử
+              {t('title')}
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium max-w-2xl leading-relaxed">
-            Hồ sơ định danh bảo mật phục vụ ký kết Hợp đồng điện tử, xác thực quyền sở hữu cây sâm và giao dịch tài sản số trên nền tảng.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -908,22 +915,22 @@ export const ProfileKycTab = ({
           {isVerified ? (
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-xs">
               <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              Đã xác thực chính thức
+              {t('verified')}
             </span>
           ) : isRejected ? (
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700">
               <AlertOctagon className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-              Yêu cầu cập nhật lại
+              {t('rejected')}
             </span>
           ) : isPending ? (
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse">
               <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              Đang chờ đối soát
+              {t('pending')}
             </span>
           ) : (
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               <ShieldCheck className="w-4 h-4 text-slate-400" />
-              Chưa xác thực
+              {t('unverified')}
             </span>
           )}
         </div>
@@ -975,6 +982,7 @@ export const ProfileKycTab = ({
           setIsReuploadMode={setIsReuploadMode}
           handleSubmit={handleSubmit}
           isSubmitting={submitKycMutation.isPending}
+          documentOptions={DOCUMENT_OPTIONS}
         />
       )}
 

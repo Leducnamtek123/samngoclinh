@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 const DEFAULT_CENTER = { lat: 10.776889, lng: 106.700806 }; // TP. Hồ Chí Minh
@@ -15,6 +16,7 @@ export function useMapLocationPicker({
   onSelectLocation,
   onClose,
 }: UseMapLocationPickerProps) {
+  const t = useTranslations('profile.mapPicker');
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [position, setPosition] = useState(DEFAULT_CENTER);
   const [address, setAddress] = useState(initialAddress);
@@ -41,38 +43,34 @@ export function useMapLocationPicker({
         iconSize: [36, 36],
         iconAnchor: [18, 36],
       });
-      // react-doctor-disable-next-line react-hooks-js/set-state-in-effect
       setCustomIcon(icon);
     }
   }, []);
 
   const reverseGeocode = useCallback(async (lat: number, lng: number) => {
-    setIsLoading(true);
     try {
-      const resOsm = await fetch(
+      const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`
       );
-      if (resOsm.ok) {
-        const dataOsm = await resOsm.json();
-        if (dataOsm?.display_name) {
-          setAddress(dataOsm.display_name);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.display_name) {
+          setAddress(data.display_name);
         }
       }
-    } catch (e) {
-      console.error('Reverse geocoding error:', e);
+    } catch {
+      // Ignore geocode error
     }
-    setIsLoading(false);
   }, []);
 
   const handlePositionChange = (lat: number, lng: number) => {
-    const newPos = { lat, lng };
-    setPosition(newPos);
+    setPosition({ lat, lng });
     reverseGeocode(lat, lng);
   };
 
   const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('Trình duyệt của bạn không hỗ trợ định vị GPS.');
+      toast.error(t('gpsNotSupported'));
       return;
     }
 
@@ -86,11 +84,11 @@ export function useMapLocationPicker({
         setPosition(newPos);
         reverseGeocode(newPos.lat, newPos.lng);
         setIsLocating(false);
-        toast.success('Đã xác định vị trí của bạn!');
+        toast.success(t('locationIdentified'));
       },
       () => {
         setIsLocating(false);
-        toast.error('Không thể lấy vị trí hiện tại. Vui lòng bật quyền GPS.');
+        toast.error(t('gpsPermissionDenied'));
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -108,7 +106,7 @@ export function useMapLocationPicker({
         )}&accept-language=vi&limit=1`
       );
       if (!resOsm.ok) {
-        toast.error('Không tìm thấy địa chỉ phù hợp.');
+        toast.error(t('addressNotFound'));
       } else {
         const dataOsm = await resOsm.json();
         if (dataOsm && dataOsm[0]) {
@@ -116,18 +114,18 @@ export function useMapLocationPicker({
           setPosition(newPos);
           setAddress(dataOsm[0].display_name);
         } else {
-          toast.error('Không tìm thấy địa chỉ phù hợp.');
+          toast.error(t('addressNotFound'));
         }
       }
     } catch {
-      toast.error('Lỗi khi tìm kiếm địa chỉ.');
+      toast.error(t('searchError'));
     }
     setIsLoading(false);
   };
 
   const handleConfirm = () => {
     if (!address) {
-      toast.error('Vui lòng chọn địa chỉ hợp lệ.');
+      toast.error(t('selectValidAddress'));
       return;
     }
     onSelectLocation(address, position.lat, position.lng);

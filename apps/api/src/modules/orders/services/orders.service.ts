@@ -940,7 +940,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
                             const providerTrees = await tx.cultivationTree.findMany({
                                 where: {
-                                    ownerUserId: { not: order.userId },
+                                    ownerUserId: null,
                                     ageYear: ageYear,
                                     status: 'active',
                                 },
@@ -1020,7 +1020,11 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         });
 
                         // Auto-generate E-Contract for plant ownership & care
-                        const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                        const contractCode = order.code.startsWith('ORD-')
+                            ? order.code.replace(/^ORD-/, 'CTR-')
+                            : (order.code.startsWith('ORD')
+                                ? order.code.replace(/^ORD/, 'CTR')
+                                : `CTR-${order.code}`);
                         const existingContract = await tx.eContract.findUnique({
                             where: { code: contractCode },
                         });
@@ -1220,7 +1224,11 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                     });
 
                     // 2. If contract was created, send Contract Created Email
-                    const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                    const contractCode = order.code.startsWith('ORD-')
+                        ? order.code.replace(/^ORD-/, 'CTR-')
+                        : (order.code.startsWith('ORD')
+                            ? order.code.replace(/^ORD/, 'CTR')
+                            : `CTR-${order.code}`);
                     const contract = await this.databaseService.eContract.findUnique({
                         where: { code: contractCode },
                     });

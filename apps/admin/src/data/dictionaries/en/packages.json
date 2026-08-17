@@ -1,15 +1,52 @@
 {
   "title": "Service Packages",
-  "addPackage": "Add Service Package",
+  "addPackage": "Add New Service Package",
   "editPackage": "Edit Service Package",
-  "createSubtitle": "Enter details for the package and click Save to complete.",
+  "addCareTitle": "Add New Care Package",
+  "addProtectionTitle": "Add New Insurance Package",
+  "editCareTitle": "Edit Care Package",
+  "editProtectionTitle": "Edit Insurance Package",
+  "createDesc": "Fill in the details below to initialize a ginseng service package.",
+  "editDesc": "Update package details and terms.",
+  "emptyCareTitle": "No care packages yet",
+  "emptyCareDesc": "Click the button below to configure the first ginseng care package.",
+  "emptyProtectionTitle": "No insurance packages yet",
+  "emptyProtectionDesc": "Click the button below to configure the first ginseng insurance package.",
+  "addCarePackage": "Add Care Package",
+  "addProtectionPackage": "Add Insurance Package",
+  "confirmDeleteTitle": "Confirm delete service package?",
+  "confirmDeleteDesc": "Are you sure you want to delete \"{name}\"? Registered trees will maintain their benefits until expiration.",
+  "months": "Months",
+  "active": "Active",
+  "inactive": "Inactive",
+  "selectStatus": "Select status",
   "fields": {
-    "code": "Package Code",
-    "name": "Package Name",
-    "price": "Unit Price (VND)",
-    "duration": "Duration (Months)",
-    "description": "Description",
+    "code": "Package Code *",
+    "name": "Package Name *",
+    "price": "Price (VND) *",
+    "duration": "Duration (Months) *",
+    "description": "Description / Benefits",
     "status": "Status",
-    "coverage": "Coverage / Insurance Scope"
+    "coverage": "Coverage / Compensation Rate"
+  },
+  "placeholders": {
+    "code": "e.g. CARE_VIP_1Y",
+    "name": "e.g. 1-Year Comprehensive Care",
+    "price": "e.g. 500000",
+    "duration": "e.g. 12",
+    "coverage": "e.g. 100% plant value",
+    "description": "Describe care services or compensation conditions..."
+  },
+  "toasts": {
+    "createCareSuccess": "Care package created successfully!",
+    "updateCareSuccess": "Care package updated successfully!",
+    "createProtectionSuccess": "Insurance package created successfully!",
+    "updateProtectionSuccess": "Insurance package updated successfully!",
+    "deleteCareSuccess": "Care package deleted successfully!",
+    "deleteProtectionSuccess": "Insurance package deleted successfully!",
+    "operationFailed": "Operation failed. Please try again later."
+  },
+  "errors": {
+    "requiredFields": "Please fill in all required fields (*)"
   }
 }

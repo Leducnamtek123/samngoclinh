@@ -92,15 +92,15 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
     const noteVal = (finalNotes || '').trim();
 
     if (!customerName) {
-      toast.error('Vui lòng nhập tên người nhận!');
+      toast.error(t('recipientNameRequired'));
       return;
     }
     if (!customerPhone) {
-      toast.error('Vui lòng nhập số điện thoại người nhận!');
+      toast.error(t('recipientPhoneRequired'));
       return;
     }
     if (finalDeliveryType === 'shipping' && !address) {
-      toast.error('Vui lòng nhập hoặc chọn địa chỉ giao hàng!');
+      toast.error(t('addressRequired'));
       return;
     }
 
@@ -109,19 +109,19 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
       const finalIdNum = identityNumber.trim();
 
       if (!finalLegalName) {
-        toast.error('Vui lòng nhập họ và tên người đứng tên Hợp đồng!');
+        toast.error(t('recipientNameRequired'));
         return;
       }
       if (!finalIdNum || finalIdNum.length < 9) {
-        toast.error('Vui lòng nhập đúng số Căn cước công dân (CCCD) để kích hoạt hợp đồng!');
+        toast.error(t('identityRequired'));
         return;
       }
       if (!signatureData) {
-        toast.error('Vui lòng thực hiện ký số điện tử trước khi thanh toán!');
+        toast.error(t('signatureRequired'));
         return;
       }
       if (!isContractAgreed) {
-        toast.error('Vui lòng tích chọn đồng ý với các điều khoản Hợp đồng ủy quyền chăm sóc sâm!');
+        toast.error(t('contractAgreedRequired'));
         return;
       }
     }
@@ -152,10 +152,10 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
       const orderId = orderData?.code || orderData?.id;
 
       clearCart();
-      toast.success('Đã tạo đơn hàng thành công! Đang chuyển hướng sang trang thanh toán...');
+      toast.success(t('orderSuccessRedirect'));
       window.location.assign(`/api/proxy/public/payment/sepay/pay/${orderId}`);
     } catch (err: any) {
-      toast.error(err?.message || 'Không thể tạo đơn hàng. Vui lòng kiểm tra lại thông tin!');
+      toast.error(err?.message || t('orderFailed'));
     }
   };
 
@@ -205,4 +205,3 @@ export function CheckoutConfirmClient({ locale }: { locale: string }) {
     </div>
   );
 }
-

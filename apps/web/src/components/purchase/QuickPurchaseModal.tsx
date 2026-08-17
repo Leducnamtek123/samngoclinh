@@ -179,14 +179,14 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                       <div className="flex items-center justify-between">
                         <span className="font-extrabold text-xs text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
                           <Truck className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                          <span>Giao hàng tận nơi</span>
+                          <span>{t('shippingLabel')}</span>
                         </span>
                         <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
                           30.000 đ
                         </span>
                       </div>
                       <p className="text-[11px] text-gray-500 font-medium">
-                        Giao tận địa chỉ bạn chọn
+                        {t('shippingDesc')}
                       </p>
                     </button>
 
@@ -202,14 +202,14 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                       <div className="flex items-center justify-between">
                         <span className="font-extrabold text-xs text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
                           <Store className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                          <span>Nhận tại vườn</span>
+                          <span>{t('pickupLabel')}</span>
                         </span>
                         <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
-                          Miễn phí
+                          {t('pickupFree')}
                         </span>
                       </div>
                       <p className="text-[11px] text-gray-500 font-medium">
-                        Tự đến nhận sản phẩm tại vườn
+                        {t('pickupDesc')}
                       </p>
                     </button>
                   </div>
@@ -224,9 +224,9 @@ export const QuickPurchaseModal: React.FC<QuickPurchaseModalProps> = ({
                   />
                 ) : (
                   <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-700/60 rounded-xl p-4 space-y-1 text-xs">
-                    <p className="font-bold text-gray-900 dark:text-gray-100">Địa chỉ nhận tại vườn</p>
+                    <p className="font-bold text-gray-900 dark:text-gray-100">{t('pickupAddressTitle')}</p>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                      Vườn sâm Ngọc Linh, Xã Trà Nam, Huyện Nam Trà My, Tỉnh Quảng Nam
+                      {t('pickupAddressDesc')}
                     </p>
                   </div>
                 )}

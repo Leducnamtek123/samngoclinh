@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Search, QrCode, ShieldCheck, ArrowRight, Sprout, FileText, Cpu, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/animation';
 
 export default function TraceIndexPage() {
+  const t = useTranslations('trace');
   const [code, setCode] = useState('');
   const router = useRouter();
 
@@ -35,13 +37,13 @@ export default function TraceIndexPage() {
           <div className="text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-900 text-emerald-300 border border-emerald-700/50 text-xs font-black uppercase tracking-wider shadow-sm">
               <Cpu className="w-3.5 h-3.5 text-amber-400" />
-              <span>Nền Tảng AgTech & Blockchain Minh Bạch</span>
+              <span>{t('badge')}</span>
             </div>
             <h1 className="text-3xl sm:text-5xl font-black text-primary tracking-tight font-display leading-tight">
-              Cổng Truy Xuất Nguồn Gốc Sâm Ngọc Linh
+              {t('title')}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 max-w-xl mx-auto font-normal leading-relaxed">
-              Xác thực tức thì độ tuổi, vị trí luống trồng, nhật ký chăm sóc IoT và tính pháp lý hợp đồng chữ ký số.
+              {t('subtitle')}
             </p>
           </div>
         </ScrollReveal>
@@ -53,10 +55,10 @@ export default function TraceIndexPage() {
             <div className="flex items-center justify-between pb-4 border-b border-gray-100">
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-800">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-ping" />
-                <span>Hệ Thống Sẵn Sàng Tra Cứu (Live Index)</span>
+                <span>{t('readyStatus')}</span>
               </div>
               <span className="text-[11px] font-mono text-gray-400 font-bold uppercase">
-                GACP-WHO Standard
+                {t('standard')}
               </span>
             </div>
 
@@ -64,7 +66,7 @@ export default function TraceIndexPage() {
             <form onSubmit={handleSearch} className="space-y-4">
               <div>
                 <label htmlFor="trace-code-input" className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                  Mã định danh cây sâm hoặc mã hợp đồng
+                  {t('inputLabel')}
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none text-emerald-700">
@@ -75,7 +77,7 @@ export default function TraceIndexPage() {
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    placeholder="Nhập mã gốc sâm (VD: SAM-01) hoặc mã hợp đồng (VD: HD-01)..."
+                    placeholder={t('inputPlaceholder')}
                     className="w-full pl-13 pr-4 py-4 rounded-2xl border-2 border-gray-200 bg-gray-50/70 text-gray-900 font-bold text-sm sm:text-base focus:outline-none focus:border-emerald-700 focus:bg-white transition-colors shadow-inner placeholder:text-gray-400"
                   />
                 </div>
@@ -84,7 +86,7 @@ export default function TraceIndexPage() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
                 {/* Sample quick chips */}
                 <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
-                  <span className="text-[11px] text-gray-400">Gợi ý mã:</span>
+                  <span className="text-[11px] text-gray-400">{t('sampleSuggestions')}</span>
                   {sampleCodes.map((sCode) => (
                     <button
                       key={sCode}
@@ -105,7 +107,7 @@ export default function TraceIndexPage() {
                   className="w-full sm:w-auto px-8 py-4 h-auto rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm sm:text-base shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-[transform,background-color,opacity] hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Search className="w-4 h-4" />
-                  <span>Xác Minh Ngay</span>
+                  <span>{t('verifyBtn')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -116,20 +118,20 @@ export default function TraceIndexPage() {
               <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-2">
                 <div className="flex items-center gap-2 font-bold text-emerald-900 text-sm">
                   <Sprout className="w-4 h-4 text-emerald-700" />
-                  <span>Tra cứu Gốc Sâm & Vườn Luống</span>
+                  <span>{t('featureTreeTitle')}</span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed font-normal">
-                  Kiểm tra nhật ký độ tuổi, tọa độ GPS luống vườn, chu kỳ bón phân hữu cơ và độ cao sinh trưởng 1.800m+.
+                  {t('featureTreeDesc')}
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
                 <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
                   <FileText className="w-4 h-4 text-emerald-800" />
-                  <span>Xác Thực Hợp Đồng Điện Tử</span>
+                  <span>{t('featureContractTitle')}</span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed font-normal">
-                  Tra cứu tính pháp lý, chữ ký số, cam kết bảo hiểm sinh trưởng và chính sách bàn giao củ sâm khi thu hoạch.
+                  {t('featureContractDesc')}
                 </p>
               </div>
             </div>
@@ -138,11 +140,11 @@ export default function TraceIndexPage() {
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-gray-500 pt-2 font-semibold">
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>100% Sâm Thuần Chủng Kon Tum</span>
+                <span>{t('guarantee1')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                <span>Kiểm Định DNA Viện Dược Liệu</span>
+                <span>{t('guarantee2')}</span>
               </div>
             </div>
           </div>

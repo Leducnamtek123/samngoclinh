@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 
 import type { ProductCategory } from "./use-categories-manager"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -19,7 +20,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,9 +36,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 
 const categorySchema = z.object({
-  code: z.string().min(2, "Mã danh mục phải có ít nhất 2 ký tự"),
-  name: z.string().min(2, "Tên danh mục không được để trống"),
-  slug: z.string().min(2, "Slug không được để trống"),
+  code: z.string().min(2),
+  name: z.string().min(2),
+  slug: z.string().min(2),
   description: z.string().optional(),
   status: z.enum(["active", "inactive"]),
 })
@@ -48,18 +48,22 @@ type CategoryFormValues = z.infer<typeof categorySchema>
 interface CategoryDialogProps {
   isOpen: boolean
   onClose: () => void
+  onSave: (values: CategoryFormValues) => void
+  selectedCategory?: ProductCategory | null
+  initialData?: ProductCategory | null
   mode: "create" | "edit"
-  selectedCategory: ProductCategory | null
-  onSave: (data: CategoryFormValues) => void
 }
 
 export function CategoryDialog({
   isOpen,
   onClose,
-  mode,
-  selectedCategory,
   onSave,
+  selectedCategory,
+  initialData,
+  mode,
 }: CategoryDialogProps) {
+  const { t } = useTranslation()
+  const activeData = selectedCategory || initialData
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
@@ -72,38 +76,40 @@ export function CategoryDialog({
   })
 
   useEffect(() => {
-    if (mode === "edit" && selectedCategory) {
+    if (activeData && mode === "edit") {
       form.reset({
-        code: selectedCategory.code,
-        name: selectedCategory.name,
-        slug: selectedCategory.slug,
-        description: selectedCategory.description || "",
-        status: selectedCategory.status,
+        code: activeData.code,
+        name: activeData.name,
+        slug: activeData.slug,
+        description: activeData.description || "",
+        status: activeData.status,
       })
     } else {
       form.reset({
-        code: `CAT-${Math.floor(100 + Math.random() * 900)}`,
+        code: "",
         name: "",
         slug: "",
         description: "",
         status: "active",
       })
     }
-  }, [mode, selectedCategory, form, isOpen])
+  }, [activeData, mode, form, isOpen])
+
+  const generateSlug = (str: string) => {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+  }
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nameVal = e.target.value
-    form.setValue("name", nameVal)
     if (mode === "create") {
-      const generatedSlug = nameVal
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/đ/g, "d")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .trim()
-        .replace(/\s+/g, "-")
-      form.setValue("slug", generatedSlug)
+      const name = e.target.value
+      form.setValue("slug", generateSlug(name), { shouldValidate: true })
     }
   }
 
@@ -117,11 +123,11 @@ export function CategoryDialog({
         <DialogHeader>
           <DialogTitle>
             {mode === "create"
-              ? "Thêm danh mục sản phẩm mới"
-              : "Chỉnh sửa danh mục sản phẩm"}
+              ? t("products.categoryForm.addTitle")
+              : t("products.categoryForm.editTitle")}
           </DialogTitle>
           <DialogDescription>
-            Điền đầy đủ thông tin để quản lý danh mục phân loại sản phẩm.
+            {t("products.categoryForm.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -135,7 +141,7 @@ export function CategoryDialog({
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mã danh mục (Code)</FormLabel>
+                  <FormLabel>{t("products.categoryForm.code")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -153,7 +159,7 @@ export function CategoryDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên danh mục</FormLabel>
+                  <FormLabel>{t("products.categoryForm.name")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -174,11 +180,10 @@ export function CategoryDialog({
               name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Đường dẫn tĩnh (Slug)</FormLabel>
+                  <FormLabel>{t("products.categoryForm.slug")}</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="VD: san-pham-che-bien" />
                   </FormControl>
-                  <FormDescription>Tự động tạo từ tên danh mục</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -189,16 +194,16 @@ export function CategoryDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Trạng thái</FormLabel>
+                  <FormLabel>{t("products.categoryForm.status")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn trạng thái" />
+                        <SelectValue placeholder={t("products.categoryForm.status")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="active">Hoạt động</SelectItem>
-                      <SelectItem value="inactive">Tạm ẩn</SelectItem>
+                      <SelectItem value="active">{t("products.categoryForm.active")}</SelectItem>
+                      <SelectItem value="inactive">{t("products.categoryForm.inactive")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -211,11 +216,11 @@ export function CategoryDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mô tả chi tiết</FormLabel>
+                  <FormLabel>{t("products.categoryForm.desc")}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Nhập mô tả nhóm sản phẩm..."
+                      placeholder="Mô tả..."
                       rows={3}
                     />
                   </FormControl>
@@ -226,9 +231,9 @@ export function CategoryDialog({
 
             <DialogFooter className="pt-4 border-t">
               <Button type="button" variant="outline" onClick={onClose}>
-                Hủy
+                {t("common.actions.cancel")}
               </Button>
-              <Button type="submit">Lưu danh mục</Button>
+              <Button type="submit">{t("common.actions.save")}</Button>
             </DialogFooter>
           </form>
         </Form>

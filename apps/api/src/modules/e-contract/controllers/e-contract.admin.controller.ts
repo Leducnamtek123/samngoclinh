@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response, ResponsePaging } from '@common/response/decorators/response.decorator';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
@@ -14,6 +14,7 @@ import {
     EContractAdminCheckExpiryDoc,
     EContractAdminCreateDoc,
     EContractAdminDeleteDoc,
+    EContractAdminGetDoc,
     EContractAdminListDoc,
     EContractAdminUpdateDoc,
 } from '@modules/e-contract/docs/e-contract.admin.doc';
@@ -27,6 +28,8 @@ import { IPaginationEqual, IPaginationQueryOffsetParams } from '@common/paginati
     path: '/contracts',
 })
 export class EContractAdminController {
+    private readonly logger = new Logger(EContractAdminController.name);
+
     constructor(
         private readonly eContractService: EContractService,
         private readonly eContractTemplateService: EContractTemplateService
@@ -127,16 +130,17 @@ export class EContractAdminController {
         return this.eContractService.listContractsPaginated(pagination, status);
     }
 
-    @ApiOperation({ summary: 'Lấy chi tiết hợp đồng điện tử theo ID' })
+    @EContractAdminGetDoc()
     @Response('eContract.get')
-    @RoleProtected(EnumRoleType.admin, EnumRoleType.superAdmin)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
-    @Get('/:id')
+    @Get(['/:id', '/detail/:id', '/get/:id'])
     async getContractDetail(
         @Param('id') id: string
     ): Promise<IResponseReturn<EContract>> {
+        this.logger.log(`[getContractDetail] requested id: "${id}"`);
         return this.eContractService.getContract(id);
     }
 

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
 import { authOptions } from "@/configs/next-auth"
+import { getDictionary } from "@/lib/get-dictionary"
 import { cn } from "@/lib/utils"
 
 import "../globals.css"
@@ -138,7 +139,7 @@ export default async function RootLayout(props: {
             `,
           }}
         />
-        <Providers locale={lang} direction={direction} session={session}>
+        <Providers locale={lang} direction={direction} session={session} dictionary={await getDictionary(lang)}>
           {children}
           <Toaster />
           <Sonner />

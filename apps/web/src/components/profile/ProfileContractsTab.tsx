@@ -1,9 +1,13 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { Button, Badge } from '@/components/ui';
 import { EmptyState, LoadingState } from '@/components/common';
 import { FileText, CheckCircle2, Clock, AlertTriangle, XCircle, PenTool } from 'lucide-react';
 import { DigitalSignatureCard } from './DigitalSignatureCard';
 import type { EContractData } from '@/types';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type ProfileContractsTabProps = {
   contractsLoading: boolean;
@@ -16,23 +20,27 @@ export const ProfileContractsTab = ({
   contractsData,
   onOpenContractModal,
 }: ProfileContractsTabProps) => {
+  const t = useTranslations('contractsTab');
+  const tCommon = useTranslations('actions');
+  const tStatus = useTranslations('status');
+
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100">Hợp đồng điện tử</h3>
-        <p className="text-xs text-gray-400 font-medium">Quản lý và thực hiện ký số cho các hợp đồng hợp tác đầu tư sâm</p>
+        <h3 className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{t('title')}</h3>
+        <p className="text-xs text-gray-400 font-medium">{t('subtitle')}</p>
       </div>
 
       {contractsLoading ? (
-        <LoadingState variant="centered" message="Đang tải danh sách hợp đồng..." />
+        <LoadingState variant="centered" message={tCommon('loading')} />
       ) : !contractsData || contractsData.length === 0 ? (
         <EmptyState
-          title="Chưa có hợp đồng điện tử nào"
-          description="Các hợp đồng đầu tư & ủy quyền chăm sóc sẽ tự động khởi tạo khi bạn hoàn tất đơn mua cây sâm hoặc gói chăm sóc."
+          title={t('noContracts')}
+          description={t('noContracts')}
           icon={FileText}
         >
           <Button asChild variant="default" className="mt-2">
-            <Link href="/products">Khám phá cây sâm giống</Link>
+            <Link href="/products">{t('title')}</Link>
           </Button>
         </EmptyState>
       ) : (
@@ -44,10 +52,10 @@ export const ProfileContractsTab = ({
             const isPendingSign = status === 'pending' || status === 'pending_signature';
 
             const createdAtStr = contract.createdAt
-              ? new Date(contract.createdAt).toLocaleDateString('vi-VN')
+              ? new Date(contract.createdAt).toLocaleDateString()
               : '—';
             const expiredAtStr = contract.expiredAt
-              ? new Date(contract.expiredAt).toLocaleDateString('vi-VN')
+              ? new Date(contract.expiredAt).toLocaleDateString()
               : '—';
             const contractVal = contract.contractValue ?? contract.totalAmount ?? contract.value ?? contract.order?.total ?? 0;
 
@@ -59,42 +67,44 @@ export const ProfileContractsTab = ({
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">
-                      {contract.title || `Hợp đồng #${contract.code || contract.id.slice(0, 8)}`}
+                      {contract.title || t('contractCode', { code: contract.code || contract.id.slice(0, 8) })}
                     </span>
                     {isSigned ? (
                       <Badge variant="secondary" className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-none font-bold text-xs inline-flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                        <span>Đã ký & Có hiệu lực</span>
+                        <span>{tStatus('signed')}</span>
                       </Badge>
                     ) : isDraft ? (
                       <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-none font-bold text-xs inline-flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                        <span>Đang soạn thảo</span>
+                        <span>{tStatus('draft')}</span>
                       </Badge>
                     ) : status === 'expired' ? (
                       <Badge variant="secondary" className="bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-none font-bold text-xs inline-flex items-center gap-1">
                         <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-                        <span>Đã hết hạn</span>
+                        <span>{tStatus('expired')}</span>
                       </Badge>
                     ) : status === 'cancelled' ? (
                       <Badge variant="secondary" className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border-none font-bold text-xs inline-flex items-center gap-1">
                         <XCircle className="w-3.5 h-3.5 text-gray-600 shrink-0" />
-                        <span>Đã hủy</span>
+                        <span>{tStatus('cancelled')}</span>
                       </Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-none font-bold text-xs inline-flex items-center gap-1 animate-pulse">
                         <PenTool className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                        <span>Chờ bạn ký số</span>
+                        <span>{tStatus('pending')}</span>
                       </Badge>
                     )}
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    <span>Mã: <strong className="text-slate-700 dark:text-slate-200">{contract.code || contract.id.slice(0, 8)}</strong></span>
-                    <span>Ngày tạo: <strong className="text-slate-700 dark:text-slate-200">{createdAtStr}</strong></span>
-                    <span>Hiệu lực đến: <strong className="text-slate-700 dark:text-slate-200">{expiredAtStr}</strong></span>
+                    <span>{t('contractCode', { code: contract.code || contract.id.slice(0, 8) })}</span>
+                    <span>{t('signedDate')} <strong className="text-slate-700 dark:text-slate-200">{createdAtStr}</strong></span>
+                    {contract.expiredAt && (
+                      <span>{t('status')} <strong className="text-slate-700 dark:text-slate-200">{expiredAtStr}</strong></span>
+                    )}
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium pt-0.5">
-                    Giá trị hợp đồng: <strong className="text-primary font-bold text-sm">{(Number(contractVal) || 0).toLocaleString('vi-VN')} VNĐ</strong>
+                    {t('contractValue')} <strong className="text-primary font-bold text-sm">{formatVNDPrice(Number(contractVal) || 0)}</strong>
                   </p>
                 </div>
 
@@ -106,10 +116,10 @@ export const ProfileContractsTab = ({
                     onClick={() => onOpenContractModal(contract.id)}
                   >
                     {isSigned
-                      ? 'Xem chi tiết'
+                      ? t('viewContract')
                       : isDraft
-                      ? 'Xem bản nháp'
-                      : 'Ký điện tử ngay'}
+                      ? t('viewContract')
+                      : t('signNow')}
                   </Button>
                 </div>
               </div>

@@ -116,7 +116,7 @@ export function AddressModal({
           </div>
           <button
             type="button"
-            aria-label="Đóng cửa sổ"
+            aria-label={tChange('close')}
             onClick={onClose}
             className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
           >

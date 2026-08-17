@@ -1,6 +1,7 @@
 "use client"
 
 import { Pencil, Trash2 } from "lucide-react"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import type { ColumnDef } from "@/components/shared/data-table"
 
@@ -47,6 +48,8 @@ export function GardensList({
   onDelete,
   deletingId,
 }: GardensListProps) {
+  const { t } = useTranslation()
+
   const columns: ColumnDef<Garden>[] = [
     {
       header: (
@@ -67,12 +70,12 @@ export function GardensList({
       ),
     },
     {
-      header: "Mã vườn",
+      header: t("trees.gardens.code"),
       className: "font-mono text-xs",
       cell: (garden) => garden.code,
     },
     {
-      header: "Tên khu vườn",
+      header: t("trees.gardens.name"),
       cell: (garden) => (
         <span className="font-semibold text-slate-800 dark:text-slate-200">
           {garden.name}
@@ -80,36 +83,36 @@ export function GardensList({
       ),
     },
     {
-      header: "Vị trí",
+      header: t("trees.gardens.location"),
       className: "text-sm",
       cell: (garden) => garden.location || "Kon Tum",
     },
     {
-      header: "Tổng số luống",
+      header: t("trees.gardens.totalBeds"),
       className: "font-medium",
       cell: (garden) => garden.totalBeds,
     },
     {
-      header: "Luống đang hoạt động",
+      header: t("trees.gardens.activeBeds"),
       className: "text-emerald-600 dark:text-emerald-400 font-medium",
       cell: (garden) => garden.activeBeds,
     },
     {
-      header: "Tổng số gốc sâm",
+      header: t("trees.gardens.totalTrees"),
       className: "font-medium",
-      cell: (garden) => `${garden.totalTrees.toLocaleString("vi-VN")} cây`,
+      cell: (garden) => t("trees.gardens.treesUnit", { count: garden.totalTrees.toLocaleString("vi-VN") }),
     },
     {
-      header: "Trạng thái",
+      header: t("trees.gardens.status"),
       cell: (garden) => (
         <StatusBadge
           status={garden.status}
-          label={garden.status === "active" ? "Hoạt động" : garden.status}
+          label={garden.status === "active" ? t("trees.gardens.active") : garden.status}
         />
       ),
     },
     {
-      header: "Ngày tạo",
+      header: t("trees.gardens.createdAt"),
       className: "text-xs text-muted-foreground",
       cell: (garden) =>
         new Date(garden.createdAt).toLocaleDateString("vi-VN", {
@@ -122,8 +125,8 @@ export function GardensList({
     <DataTable
       columns={columns}
       data={gardens}
-      emptyMessage="Không tìm thấy khu vườn nào trong hệ thống."
-      rowActionsHeader="Thao tác"
+      emptyMessage={t("trees.gardens.emptyMessage")}
+      rowActionsHeader={t("common.actions")}
       rowActions={(garden) => (
         <div className="flex items-center justify-end gap-2">
           <Button

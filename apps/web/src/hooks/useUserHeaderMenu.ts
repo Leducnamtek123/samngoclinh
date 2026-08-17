@@ -1,5 +1,5 @@
 import { useState, useEffect, useSyncExternalStore } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/lib/I18nNavigation';
 import { getCartCount } from '@/utils/cart';
 import { cartStore } from '@/lib/stores/useCartStore';
@@ -14,6 +14,7 @@ export function useUserHeaderMenu(
   initialProfile: { fullName?: string; email?: string; name?: string } | null,
   menuRef?: React.RefObject<HTMLDivElement | null>
 ) {
+  const tNav = useTranslations('nav');
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
   const cartCount = useSyncExternalStore(cartStore.subscribe, getCartCount, () => 0);
@@ -46,7 +47,7 @@ export function useUserHeaderMenu(
     effectiveProfile?.fullName?.trim() ||
     (effectiveProfile as any)?.name?.trim() ||
     effectiveProfile?.email?.split('@')[0] ||
-    'Khách hàng';
+    tNav('account');
   const email = effectiveProfile?.email || '';
   const initial = displayName.charAt(0).toUpperCase() || 'U';
 

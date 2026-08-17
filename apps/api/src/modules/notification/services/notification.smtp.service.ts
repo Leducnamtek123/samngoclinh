@@ -5,7 +5,7 @@ import {
 import { NotificationEmailTemplate } from '@modules/notification/constants/notification.email-template.constant';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 // @ts-ignore
 import * as Handlebars from 'handlebars';
 // @ts-ignore
@@ -16,10 +16,6 @@ import { join } from 'path';
 export class NotificationSmtpService implements OnModuleInit {
     private readonly logger = new Logger(NotificationSmtpService.name);
     private transporter: Transporter | null = null;
-    private readonly templatesDir = join(
-        process.cwd(),
-        'src/modules/notification/templates'
-    );
     private readonly cache = new Map<string, Handlebars.TemplateDelegate>();
 
     constructor(private readonly configService: ConfigService) {}
@@ -57,6 +53,27 @@ export class NotificationSmtpService implements OnModuleInit {
         return this.configService.get<string | null>('smtp.from') ?? null;
     }
 
+    private getTemplatePath(fileName: string): string {
+        const candidatePaths = [
+            join(__dirname, '../templates', fileName),
+            join(__dirname, '../../templates', fileName),
+            join(__dirname, '../../../templates', fileName),
+            join(process.cwd(), 'dist/modules/notification/templates', fileName),
+            join(process.cwd(), 'src/modules/notification/templates', fileName),
+            join(process.cwd(), 'apps/api/dist/modules/notification/templates', fileName),
+            join(process.cwd(), 'apps/api/src/modules/notification/templates', fileName),
+            join(process.cwd(), 'templates', fileName),
+        ];
+
+        for (const p of candidatePaths) {
+            if (existsSync(p)) {
+                return p;
+            }
+        }
+
+        return candidatePaths[0];
+    }
+
     private render(
         templateName: string,
         data?: Record<string, string>
@@ -70,10 +87,14 @@ export class NotificationSmtpService implements OnModuleInit {
 
         let compiled = this.cache.get(templateName);
         if (!compiled) {
-            const source = readFileSync(
-                join(this.templatesDir, meta.file),
-                'utf8'
-            );
+            const templatePath = this.getTemplatePath(meta.file);
+            let source = '';
+            try {
+                source = readFileSync(templatePath, 'utf8');
+            } catch (err) {
+                this.logger.error(`Could not read notification template file "${meta.file}" at "${templatePath}": ${err}`);
+                source = `<p>Thông báo từ Hệ thống Sâm Ngọc Linh: ${meta.subject}</p>`;
+            }
             compiled = Handlebars.compile(source);
             this.cache.set(templateName, compiled);
         }

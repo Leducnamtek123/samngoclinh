@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/providers/i18n-provider"
 import { toast } from "sonner"
 import { fetchApi } from "@/lib/api"
 import { useApiQuery } from "@/hooks/use-api-query"
@@ -22,6 +23,7 @@ interface UseCreateContractWizardProps {
 }
 
 export function useCreateContractWizard({ users, lang }: UseCreateContractWizardProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -33,31 +35,37 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   const [selectedTreeCode, setSelectedTreeCode] = useState<string>("none")
   const [title, setTitle] = useState<string>("Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh")
 
-  // Customer Override Fields (Admin can freely customize)
   const [customerName, setCustomerName] = useState<string>(
     initialUser?.name || initialUser?.username || ""
   )
   const [customerPhone, setCustomerPhone] = useState<string>(
     initialUser?.mobileNumbers?.[0]?.number || ""
   )
-  const [customerCccd, setCustomerCccd] = useState<string>("079090001234")
-  const [customerAddress, setCustomerAddress] = useState<string>("Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam")
-  const [customerEmail, setCustomerEmail] = useState<string>(
-    initialUser?.email || ""
-  )
+  const [customerCccd, setCustomerCccd] = useState<string>("")
+  const [customerAddress, setCustomerAddress] = useState<string>("")
+  const [customerEmail, setCustomerEmail] = useState<string>(initialUser?.email || "")
   const [treeQuantity, setTreeQuantity] = useState<number>(1)
 
+  // Sync with selected user info
+  const selectedUser = useMemo(
+    () => users.find((u) => u.id === selectedUserId) || null,
+    [users, selectedUserId]
+  )
+
+  useEffect(() => {
+    if (selectedUser) {
+      setCustomerName(selectedUser.name || selectedUser.username || "")
+      setCustomerPhone(selectedUser.mobileNumbers?.[0]?.number || "")
+      setCustomerEmail(selectedUser.email || "")
+    }
+  }, [selectedUser])
+
   // Step 2: Commercial Terms
-  const [contractValue, setContractValue] = useState<number>(5000000)
-  const [careFee, setCareFee] = useState<number>(500000)
+  const [contractValue, setContractValue] = useState<number>(50000000)
+  const [careFee, setCareFee] = useState<number>(3000000)
   const [paymentStatus] = useState<string>("unpaid")
-  const [partyA, setPartyA] = useState<string>("Công ty Cổ phần Sâm Ngọc Linh")
-  const [partyB, setPartyB] = useState<string>(() => {
-    if (!initialUser) return ""
-    const uName = initialUser.name || initialUser.username || "Khách hàng"
-    const uPhone = initialUser.mobileNumbers?.[0]?.number
-    return uPhone ? `${uName} - SĐT: ${uPhone}` : uName
-  })
+  const [partyA, setPartyA] = useState<string>("CÔNG TY CỔ PHẦN SÂM NGỌC LINH")
+  const [partyB, setPartyB] = useState<string>("")
   const [contractCode] = useState<string>(
     () => `HĐ-SNL-${new Date().getFullYear()}/${String(Math.floor(Math.random() * 900) + 100)}`
   )
@@ -90,22 +98,8 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
     templateResponse?.data?.contentHtml ||
     ""
 
-  // Selected User Object
-  const selectedUser = users.find((u) => u.id === selectedUserId) || null
-
   const handleUserChange = (userId: string) => {
     setSelectedUserId(userId)
-    const u = users.find((item) => item.id === userId)
-    if (u) {
-      const uName = u.name || u.username || "Khách hàng"
-      const uPhone = u.mobileNumbers?.[0]?.number || ""
-      const uEmail = u.email || ""
-      setCustomerName(uName)
-      setCustomerPhone(uPhone)
-      setCustomerEmail(uEmail)
-      const phoneStr = uPhone ? ` - SĐT: ${uPhone}` : ""
-      setPartyB(`${uName}${phoneStr}`)
-    }
   }
 
   const handleContractValueChange = (val: number) => {
@@ -132,7 +126,7 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   // Helper to re-generate rendered HTML from raw template & current state
   const buildRenderedHtml = useCallback(
     (template: string) => {
-      if (!template) return "<p class='p-6 text-slate-500'>Đang tải nội dung mẫu hợp đồng...</p>"
+      if (!template) return `<p class='p-6 text-slate-500'>${t("contracts.notifications.loadingTemplate")}</p>`
 
       const cName = customerName.trim() || selectedUser?.name || selectedUser?.username || "Quý Khách Hàng"
       const cPhone = customerPhone.trim() || selectedUser?.mobileNumbers?.[0]?.number || "090xxxxxxx"
@@ -191,6 +185,7 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
       treeQuantity,
       contractCode,
       allPlaceholders,
+      t,
     ]
   )
 
@@ -206,7 +201,7 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
     setIsCustomEdited(false)
     if (rawTemplateHtml) {
       setRenderedPreviewHtml(buildRenderedHtml(rawTemplateHtml))
-      toast.success("Đã làm mới nội dung văn bản theo mẫu tự động.")
+      toast.success(t("contracts.notifications.templateRefreshed"))
     }
   }
 
@@ -216,11 +211,11 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
 
   const handleNext = () => {
     if (currentStep === 1 && !isStep1Valid) {
-      toast.error("Vui lòng chọn khách hàng và nhập tiêu đề hợp đồng.")
+      toast.error(t("contracts.notifications.selectCustomerAndTitle"))
       return
     }
     if (currentStep === 2 && !isStep2Valid) {
-      toast.error("Vui lòng nhập giá trị hợp đồng và thời hạn hợp lệ.")
+      toast.error(t("contracts.notifications.enterValidValueAndDuration"))
       return
     }
     if (currentStep < 4) {
@@ -237,7 +232,7 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
   // Handle Publish / Draft Submit
   const handleSubmit = async (publishStatus: "pending" | "draft") => {
     if (!selectedUserId) {
-      toast.error("Vui lòng chọn khách hàng")
+      toast.error(t("contracts.notifications.selectCustomer"))
       return
     }
 
@@ -288,16 +283,16 @@ export function useCreateContractWizard({ users, lang }: UseCreateContractWizard
       if (res.status < 400 && result.data) {
         toast.success(
           publishStatus === "pending"
-            ? "Đã phát hành hợp đồng thành công! Khách hàng có thể ký ngay trên Web/App."
-            : "Đã lưu bản nháp hợp đồng thành công."
+            ? t("contracts.notifications.publishSuccess")
+            : t("contracts.notifications.updateSuccess")
         )
         router.push(`/${lang}/pages/contracts/${result.data.id}`)
       } else {
-        toast.error(result.message || "Không thể tạo hợp đồng.")
+        toast.error(result.message || t("contracts.notifications.createError"))
       }
     } catch (err) {
       console.error("Error creating contract:", err)
-      toast.error("Có lỗi xảy ra khi kết nối máy chủ.")
+      toast.error(t("contracts.notifications.serverError"))
     } finally {
       setIsSubmitting(false)
     }

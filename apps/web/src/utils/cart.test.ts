@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   getCartItems,
   addToCart,
@@ -13,7 +13,13 @@ describe('cartUtils', () => {
 
   beforeEach(() => {
     store = {};
-    global.window = global as any;
+    global.window = {
+      location: { origin: 'http://localhost:3000', pathname: '/', search: '' },
+    } as any;
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: {} }),
+    } as any);
     global.localStorage = {
       getItem: (key: string) => store[key] || null,
       setItem: (key: string, value: string) => {

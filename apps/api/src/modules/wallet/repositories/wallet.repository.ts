@@ -1,5 +1,5 @@
 import { DatabaseService } from '@common/database/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
     IWalletSummary,
     IWalletTransactionItem,
@@ -72,6 +72,9 @@ export class WalletRepository {
                 wallet = await tx.walletAccount.create({
                     data: { userId, balancePoint: 0, treesOwned: 0 },
                 });
+            }
+            if (amount < 0 && wallet.balancePoint + amount < 0) {
+                throw new BadRequestException('Số dư điểm không đủ để thực hiện khấu trừ.');
             }
             const updatedWallet = await tx.walletAccount.update({
                 where: { id: wallet.id },

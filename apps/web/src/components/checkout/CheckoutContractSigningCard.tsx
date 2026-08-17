@@ -1,11 +1,15 @@
+'use client';
+
 import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FileText, ShieldCheck, PenTool, RotateCcw, Info, CheckCircle2, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
 import type { UserProfile, IdentityVerificationStatus } from '@/types';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type CheckoutContractSigningCardProps = {
   profile?: UserProfile | null;
@@ -36,6 +40,10 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
   totalPlants,
   totalAmount,
 }) => {
+  const tKyc = useTranslations('kyc');
+  const tContracts = useTranslations('contractsTab');
+  const tActions = useTranslations('actions');
+
   const { data: savedSignatureUrl } = useUserSignature();
   const saveSignatureMutation = useSaveUserSignature();
 
@@ -183,23 +191,23 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
               <FileText className="w-4 h-4" />
             </div>
             <h3 className="font-extrabold text-slate-900 dark:text-slate-100 text-base">
-              Xác thực Pháp lý & Ký Hợp đồng Điện tử
+              {tContracts('title')}
             </h3>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-            Đơn hàng sở hữu <strong className="text-emerald-800 dark:text-emerald-300 font-bold">{totalPlants} cây sâm</strong> sẽ tự động kích hoạt Hợp đồng Ủy quyền Chăm sóc 02 năm ngay khi hoàn tất.
+            {tContracts('subtitle')} ({totalPlants} plants)
           </p>
         </div>
 
         {isKycVerified ? (
           <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 border-none font-bold text-xs flex items-center gap-1 w-fit">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Đã xác thực eKYC</span>
+            <span>{tKyc('verified')}</span>
           </Badge>
         ) : (
           <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-300 font-bold text-xs flex items-center gap-1 w-fit">
             <Info className="w-3.5 h-3.5" />
-            <span>Chưa hoàn tất eKYC</span>
+            <span>{tKyc('unverified')}</span>
           </Badge>
         )}
       </div>
@@ -208,15 +216,11 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
       <div className="bg-white/80 dark:bg-slate-900/80 p-4 rounded-xl border border-emerald-200/80 dark:border-emerald-800 text-xs space-y-2">
         <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 text-xs">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>Tóm tắt Thỏa thuận Mua bán & Ký gửi Chăm sóc:</span>
+          <span>{tContracts('contractName')}:</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600 dark:text-slate-400">
-          <div>• <strong>Bên A (Bên Bán & Chăm Sóc):</strong> Công ty Cổ phần Sâm Ngọc Linh</div>
-          <div>• <strong>Vùng trồng:</strong> Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam</div>
-          <div>• <strong>Số lượng sâm sở hữu:</strong> {totalPlants} cây ({totalAmount.toLocaleString('vi-VN')} đ)</div>
-          <div>• <strong>Thời hạn hợp đồng:</strong> 02 năm kể từ ngày thanh toán đơn hàng</div>
-          <div>• <strong>Phí chăm sóc:</strong> Miễn phí năm đầu theo chính sách vườn bảo trợ</div>
-          <div>• <strong>Quyền lợi:</strong> Giám sát nhật ký sinh trưởng, mã định danh RFID từng cây</div>
+          <div>• <strong>{tContracts('contractName')}:</strong> Sâm Ngọc Linh Joint Stock Company</div>
+          <div>• <strong>{tContracts('contractValue')}:</strong> {totalPlants} plants ({formatVNDPrice(totalAmount)})</div>
         </div>
       </div>
 
@@ -224,26 +228,26 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <label htmlFor="contract-legal-name" className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-            Họ và tên người đứng tên Hợp đồng <span className="text-red-500">*</span>
+            {tKyc('fullNameLabel')} <span className="text-red-500">*</span>
           </label>
           <Input
             id="contract-legal-name"
             value={legalName}
             onChange={(e) => setLegalName(e.target.value)}
-            placeholder="Ví dụ: NGUYEN VAN A"
+            placeholder="NGUYEN VAN A"
             className="h-10 text-xs uppercase font-semibold bg-white dark:bg-slate-900 border-slate-300"
           />
         </div>
 
         <div className="space-y-1.5">
           <label htmlFor="contract-identity-number" className="block text-xs font-bold text-slate-800 dark:text-slate-200">
-            Số Căn cước công dân / CMND (12 số) <span className="text-red-500">*</span>
+            {tKyc('docTypes.cccdFieldLabel')} <span className="text-red-500">*</span>
           </label>
           <Input
             id="contract-identity-number"
             value={identityNumber}
             onChange={(e) => setIdentityNumber(e.target.value)}
-            placeholder="Nhập 12 số CCCD gắn chip..."
+            placeholder={tKyc('docTypes.cccdPlaceholder')}
             maxLength={12}
             className="h-10 text-xs font-mono font-semibold bg-white dark:bg-slate-900 border-slate-300"
           />
@@ -255,7 +259,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
             <PenTool className="w-3.5 h-3.5 text-emerald-700" />
-            <span>Ký số điện tử Bên B (Bên Mua & Sở Hữu) <span className="text-red-500">*</span></span>
+            <span>{tContracts('signNow')} <span className="text-red-500">*</span></span>
           </span>
           <div className="flex items-center gap-1 bg-slate-200/80 dark:bg-slate-800 p-0.5 rounded-lg text-xs font-semibold">
             {savedSignatureUrl && (
@@ -272,7 +276,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                 }`}
               >
                 <Sparkles className="w-3 h-3 text-amber-500" />
-                <span>Chữ ký đã lưu</span>
+                <span>Saved Signature</span>
               </button>
             )}
             <button
@@ -284,7 +288,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              Vẽ tay
+              Draw
             </button>
             <button
               type="button"
@@ -295,7 +299,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              Ký theo tên
+              Type
             </button>
           </div>
         </div>
@@ -304,20 +308,17 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
           <div className="p-4 bg-white dark:bg-slate-950 border-2 border-emerald-500/80 rounded-xl space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
               <CheckCircle2 className="w-4 h-4" />
-              <span>Đã tự động nạp Chữ ký số từ hồ sơ của bạn</span>
+              <span>{tKyc('uploadSuccess')}</span>
             </div>
             <div className="relative w-full h-24 max-w-sm flex items-center justify-center p-2 bg-slate-50/60 dark:bg-slate-900 rounded-lg">
               <Image
                 src={savedSignatureUrl}
-                alt="Chữ ký đã lưu"
+                alt="Signature"
                 fill
                 unoptimized
                 className="object-contain"
               />
             </div>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Chữ ký này sẽ được dập vào bản Hợp đồng điện tử chính thức sau khi thanh toán.
-            </p>
           </div>
         ) : signatureMode === 'draw' ? (
           <div className="space-y-2">
@@ -338,7 +339,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
               {!hasDrawn && !signatureData && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-slate-400 text-xs font-medium gap-1.5">
                   <PenTool className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Dùng chuột hoặc ngón tay vẽ chữ ký của bạn tại đây</span>
+                  <span>{tContracts('signNow')}</span>
                 </div>
               )}
             </div>
@@ -347,10 +348,10 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                 {signatureData ? (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                    <span>Đã ghi nhận nét vẽ chữ ký (được tự động lưu vào hồ sơ)</span>
+                    <span>{tKyc('uploadSuccess')}</span>
                   </>
                 ) : (
-                  <span>Vui lòng ký vào khung trên</span>
+                  <span>{tContracts('signNow')}</span>
                 )}
               </div>
               <button
@@ -359,7 +360,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
                 className="flex items-center gap-1 text-slate-500 hover:text-red-600 font-semibold cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
-                <span>Xóa nét vẽ</span>
+                <span>{tActions('delete')}</span>
               </button>
             </div>
           </div>
@@ -368,12 +369,9 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
             <Input
               value={typedSignName}
               onChange={(e) => handleTypeSignature(e.target.value)}
-              placeholder="Nhập họ và tên để tạo chữ ký số..."
+              placeholder={tKyc('fullNameLabel')}
               className="h-10 text-sm bg-white dark:bg-slate-900 border-slate-300 font-serif italic text-emerald-800"
             />
-            <p className="text-[11px] text-slate-500 font-medium">
-              Chữ ký số sẽ được khởi tạo tự động từ tên của bạn và lưu vào hồ sơ tài khoản.
-            </p>
           </div>
         )}
       </div>
@@ -388,7 +386,7 @@ export const CheckoutContractSigningCard: React.FC<CheckoutContractSigningCardPr
             className="mt-0.5 w-4 h-4 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer"
           />
           <span className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
-            Tôi đã đọc, hiểu rõ và đồng ý với toàn bộ các điều khoản trong <strong>Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh</strong>. Tôi xác nhận chữ ký điện tử trên có đầy đủ giá trị pháp lý.
+            {tContracts('title')} ({tContracts('signedDate')})
           </span>
         </label>
       </div>

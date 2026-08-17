@@ -1,4 +1,7 @@
+'use client';
+
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { Button, Badge } from '@/components/ui';
 import { EmptyState, LoadingState, ErrorState } from '@/components/common';
@@ -7,7 +10,6 @@ import { formatVNDPrice } from '@/utils/formatters';
 import { formatLocalDateTime } from '@/utils/datetime';
 import { getOrderStatusInfo } from '@/utils/orderStatus';
 import type { StatusCounts, PaginationMeta } from '@/hooks/useProfileOrders';
-
 import type { Order } from '@/types';
 
 type ProfileOrdersTabProps = {
@@ -38,13 +40,17 @@ export const ProfileOrdersTab = ({
   onPayOrder,
   onRetry,
 }: ProfileOrdersTabProps) => {
+  const t = useTranslations('ordersTab');
+  const tCommon = useTranslations('actions');
+  const tStatus = useTranslations('status');
+
   const tabs = [
-    { id: 'all', label: 'Tất cả', count: statusCounts.all },
-    { id: 'pending', label: 'Chờ thanh toán', count: statusFilter === 'pending' ? Math.max(statusCounts.pending || 0, safeOrders.length) : statusCounts.pending },
-    { id: 'paid', label: 'Đã thanh toán', count: statusFilter === 'paid' ? Math.max(statusCounts.paid || 0, safeOrders.length) : statusCounts.paid },
-    { id: 'shipping', label: 'Đang giao hàng', count: statusFilter === 'shipping' ? Math.max(statusCounts.shipping || 0, safeOrders.length) : statusCounts.shipping },
-    { id: 'completed', label: 'Đã giao / Hoàn thành', count: statusFilter === 'completed' ? Math.max(statusCounts.completed || 0, safeOrders.length) : statusCounts.completed },
-    { id: 'cancelled', label: 'Đã hủy', count: statusFilter === 'cancelled' ? Math.max(statusCounts.cancelled || 0, safeOrders.length) : statusCounts.cancelled },
+    { id: 'all', label: t('all'), count: statusCounts.all },
+    { id: 'pending', label: t('pending'), count: statusFilter === 'pending' ? Math.max(statusCounts.pending || 0, safeOrders.length) : statusCounts.pending },
+    { id: 'paid', label: tStatus('paid'), count: statusFilter === 'paid' ? Math.max(statusCounts.paid || 0, safeOrders.length) : statusCounts.paid },
+    { id: 'shipping', label: t('shipping'), count: statusFilter === 'shipping' ? Math.max(statusCounts.shipping || 0, safeOrders.length) : statusCounts.shipping },
+    { id: 'completed', label: t('completed'), count: statusFilter === 'completed' ? Math.max(statusCounts.completed || 0, safeOrders.length) : statusCounts.completed },
+    { id: 'cancelled', label: t('cancelled'), count: statusFilter === 'cancelled' ? Math.max(statusCounts.cancelled || 0, safeOrders.length) : statusCounts.cancelled },
   ];
 
   // Infinite scroll observer setup
@@ -69,15 +75,14 @@ export const ProfileOrdersTab = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-bold text-gray-900">Lịch sử đơn hàng</h3>
-        <p className="text-xs text-gray-400 font-medium">Theo dõi tiến độ đơn hàng và danh sách các gói sản phẩm sâm Ngọc Linh</p>
+        <h3 className="text-lg font-bold text-gray-900">{t('orderCode', { code: '' }).replace('#', '').trim()}</h3>
+        <p className="text-xs text-gray-400 font-medium">{t('noOrders')}</p>
       </div>
 
       {/* Filter Tabs Header */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-gray-200 no-scrollbar">
         {tabs.map((tab) => {
           const isActive = statusFilter === tab.id;
-          // Shopee Rule: 'all' tab never shows count. Other tabs show count ONLY if > 0.
           const showBadge = tab.id !== 'all' && (tab.count ?? 0) > 0;
 
           return (
@@ -105,21 +110,21 @@ export const ProfileOrdersTab = ({
       </div>
 
       {ordersLoading && safeOrders.length === 0 ? (
-        <LoadingState variant="centered" message="Đang tải lịch sử đơn hàng..." />
+        <LoadingState variant="centered" message={tCommon('loading')} />
       ) : ordersError ? (
         <ErrorState
-          title="Không thể tải đơn hàng"
+          title={tCommon('error')}
           message={ordersError}
           onRetry={onRetry}
         />
       ) : safeOrders.length === 0 ? (
         <EmptyState
-          title="Không có đơn hàng"
-          description="Không có đơn hàng nào ở trạng thái này."
+          title={t('noOrders')}
+          description={t('noOrders')}
           icon={ShoppingBag}
         >
           <Button asChild variant="default" className="mt-2">
-            <Link href="/ginseng">Ghé Cửa hàng ngay</Link>
+            <Link href="/products">{t('reorder')}</Link>
           </Button>
         </EmptyState>
       ) : (
@@ -134,8 +139,12 @@ export const ProfileOrdersTab = ({
                 <div key={ord.id || ord.code} className="border border-gray-200 rounded-xl p-5 space-y-3 bg-white shadow-2xs hover:shadow-xs transition-shadow">
                   <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                     <div>
-                      <span className="font-bold text-gray-900 text-sm">Đơn hàng #{ord.code || ord.id}</span>
-                      <span className="text-xs text-gray-400 block mt-0.5">{formatLocalDateTime(ord.createdAt)}</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {t('orderCode', { code: ord.code || ord.id || '' })}
+                      </span>
+                      <span className="text-xs text-gray-400 block mt-0.5">
+                        {t('placedAt', { date: formatLocalDateTime(ord.createdAt) })}
+                      </span>
                     </div>
                     <Badge variant="secondary" className={statusInfo.badgeClass}>
                       {statusInfo.label}
@@ -144,14 +153,14 @@ export const ProfileOrdersTab = ({
 
                   {safeItems.length > 0 && safeItems.map((item: any, idx: number) => (
                     <div key={item.id || item.productId || item.name || idx} className="flex justify-between items-center text-xs font-medium text-gray-700">
-                      <span>{item.name || 'Sản phẩm'} (x{item.quantity ?? 1})</span>
+                      <span>{item.name || 'Product'} (x{item.quantity ?? 1})</span>
                       <span>{item.price != null ? formatVNDPrice(Number(item.price) * Number(item.quantity ?? 1)) : '—'}</span>
                     </div>
                   ))}
 
                   <div className="flex justify-between items-center pt-2 border-t border-gray-100">
                     <span className="text-xs font-bold text-gray-900">
-                      Tổng tiền: <strong className="text-emerald-800 text-sm font-black">{finalTotal != null ? formatVNDPrice(finalTotal) : '—'}</strong>
+                      {t('totalAmount')} <strong className="text-emerald-800 text-sm font-black">{finalTotal != null ? formatVNDPrice(finalTotal) : '—'}</strong>
                     </span>
                     <div className="flex items-center gap-2">
                       <Button
@@ -160,7 +169,7 @@ export const ProfileOrdersTab = ({
                         size="sm"
                         onClick={() => onViewDetail(ord)}
                       >
-                        Chi tiết đơn hàng
+                        {t('viewDetails')}
                       </Button>
                       {statusInfo.canPay && (
                         <Button
@@ -169,7 +178,7 @@ export const ProfileOrdersTab = ({
                           size="sm"
                           onClick={() => onPayOrder(ord)}
                         >
-                          Thanh toán
+                          {tCommon('checkout')}
                         </Button>
                       )}
                     </div>
@@ -185,7 +194,7 @@ export const ProfileOrdersTab = ({
               {ordersLoading ? (
                 <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500">
                   <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
-                  <span>Đang tải thêm đơn hàng...</span>
+                  <span>{tCommon('loading')}</span>
                 </div>
               ) : (
                 <Button
@@ -194,7 +203,7 @@ export const ProfileOrdersTab = ({
                   onClick={onLoadMore}
                   className="text-xs font-bold text-emerald-800 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100"
                 >
-                  Tải thêm đơn hàng
+                  {tCommon('viewAll')}
                 </Button>
               )}
             </div>
@@ -202,7 +211,7 @@ export const ProfileOrdersTab = ({
 
           {!hasMore && safeOrders.length > 0 && (
             <p className="text-center text-xs text-gray-400 font-medium py-3 border-t border-gray-100">
-              Đã hiển thị tất cả đơn hàng
+              —
             </p>
           )}
         </div>
@@ -210,4 +219,3 @@ export const ProfileOrdersTab = ({
     </div>
   );
 };
-

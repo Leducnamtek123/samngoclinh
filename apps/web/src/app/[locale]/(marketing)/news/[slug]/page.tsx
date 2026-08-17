@@ -47,15 +47,21 @@ async function getRelatedArticles(category: string, currentSlug: string) {
   }
 }
 
-const categoryLabels: Record<string, string> = {
-  'news': 'Tin tức',
-  'event': 'Sự kiện',
-  'guide': 'Hướng dẫn sử dụng app',
-  'faq': 'Kiến thức',
-};
-
-const getCategoryLabel = (category: string) => {
-  return categoryLabels[category] || category || 'Tin tức';
+const getCategoryLabel = (category: string, locale: string) => {
+  const labelsVi: Record<string, string> = {
+    'news': 'Tin tức',
+    'event': 'Sự kiện',
+    'guide': 'Hướng dẫn sử dụng',
+    'faq': 'Kiến thức'
+  };
+  const labelsEn: Record<string, string> = {
+    'news': 'News',
+    'event': 'Events',
+    'guide': 'User Guide',
+    'faq': 'Knowledge'
+  };
+  const map = locale === 'en' ? labelsEn : labelsVi;
+  return map[category] || category || (locale === 'en' ? 'News' : 'Tin tức');
 };
 
 export async function generateMetadata(props: ArticleDetailPageProps): Promise<Metadata> {
@@ -63,11 +69,11 @@ export async function generateMetadata(props: ArticleDetailPageProps): Promise<M
   const article = await getArticleDetail(slug);
   if (!article) {
     return {
-      title: 'Bài viết không tồn tại',
+      title: 'Article Not Found',
     };
   }
   return {
-    title: `${article.title} | Rượu Sâm Ngọc Linh`,
+    title: `${article.title} | Sâm Ngọc Linh`,
     description: article.summary,
   };
 }
@@ -103,17 +109,17 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
           </svg>
-          <span>Quay lại danh sách</span>
+          <span>{locale === 'en' ? 'Back to articles' : 'Quay lại danh sách'}</span>
         </Link>
 
         {/* Category & Date Info */}
         <div className="flex items-center gap-3 mb-4">
           <span className="bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
-            {getCategoryLabel(article.category)}
+            {getCategoryLabel(article.category, locale)}
           </span>
           <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-            {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+            {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
           </span>
         </div>
 
@@ -124,10 +130,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
 
         {/* Author / Source */}
         <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 pb-8 border-b border-gray-150 mb-10">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-          </svg>
-          <span>Tác giả: {(article.metadata as any)?.authorName || 'Sâm Ngọc Linh'}</span>
+          <span>{locale === 'en' ? 'Author:' : 'Tác giả:'} {(article.metadata as any)?.authorName || 'Sâm Ngọc Linh'}</span>
         </div>
 
         {/* Article Body Content */}
@@ -165,7 +168,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         {relatedArticles.length > 0 && (
           <div className="border-t border-gray-200 pt-12">
             <h3 className="text-xl font-bold text-gray-900 mb-8 text-center">
-              Bài viết liên quan
+              {locale === 'en' ? 'Related Articles' : 'Bài viết liên quan'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {relatedArticles.map((rel: any, idx: number) => (
@@ -187,15 +190,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                       </Link>
                       <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
-                        {getCategoryLabel(rel.category)}
+                        {getCategoryLabel(rel.category, locale)}
                       </span>
                     </div>
                     <div className="p-5 space-y-2.5">
                       <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                        </svg>
-                        {rel.publishedAt ? new Date(rel.publishedAt).toLocaleDateString("vi-VN", { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
+                        {rel.publishedAt ? new Date(rel.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
                       </div>
                       <Link href={`/news/${rel.slug}`}>
                         <h4 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2 hover:text-primary transition-colors min-h-[36px] cursor-pointer">
@@ -206,16 +206,13 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                   </div>
                   <div className="p-5 pt-0 flex items-center justify-between border-t border-gray-50 mt-2">
                     <div className="flex items-center gap-1.5 pt-3 text-[10px] font-semibold text-gray-500">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 text-gray-400">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                      </svg>
                       <span>{rel.author || 'Sâm Ngọc Linh'}</span>
                     </div>
                     <Link
                       href={`/news/${rel.slug}`}
                       className="inline-flex items-center gap-1 text-[11px] font-bold text-secondary hover:text-secondary-hover pt-3 transition-colors group cursor-pointer"
                     >
-                      <span>Đọc thêm</span>
+                      <span>{locale === 'en' ? 'Read more' : 'Đọc thêm'}</span>
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>

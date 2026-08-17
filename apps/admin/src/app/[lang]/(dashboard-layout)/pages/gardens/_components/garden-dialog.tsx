@@ -67,10 +67,10 @@ export function GardenDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
               <DialogTitle>
-                {mode === "create" ? "Thêm khu vườn mới" : "Chỉnh sửa khu vườn"}
+                {mode === "create" ? t("trees.gardens.addGarden") : t("trees.gardens.editGarden")}
               </DialogTitle>
               <DialogDescription>
-                Điền các thông tin của khu vườn dưới đây. Nhấn Lưu khi hoàn tất.
+                {t("trees.gardens.dialogDesc")}
               </DialogDescription>
             </DialogHeader>
 
@@ -86,9 +86,9 @@ export function GardenDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem className="col-span-2">
-                    <FormLabel>Tên khu vườn *</FormLabel>
+                    <FormLabel>{t("trees.gardens.name")} *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Tên vườn sâm..." {...field} />
+                      <Input placeholder={t("trees.gardens.name")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -100,9 +100,9 @@ export function GardenDialog({
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Vị trí địa lý</FormLabel>
+                    <FormLabel>{t("trees.gardens.location")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Kon Tum, Quảng Nam..." {...field} />
+                      <Input placeholder={t("trees.gardens.location")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -114,7 +114,7 @@ export function GardenDialog({
                 name="area"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Diện tích (m²)</FormLabel>
+                    <FormLabel>{t("trees.gardens.area")}</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="500" {...field} />
                     </FormControl>
@@ -128,9 +128,9 @@ export function GardenDialog({
                 name="managerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tên quản lý vườn</FormLabel>
+                    <FormLabel>{t("users.fields.fullName")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nguyễn Văn A" {...field} />
+                      <Input placeholder={t("users.fields.fullName")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,7 +142,7 @@ export function GardenDialog({
                 name="managerPhone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SĐT quản lý vườn</FormLabel>
+                    <FormLabel>{t("users.fields.phone")}</FormLabel>
                     <FormControl>
                       <Input placeholder="0987654321" {...field} />
                     </FormControl>
@@ -156,7 +156,7 @@ export function GardenDialog({
                 name="maxBeds"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số luống tối đa</FormLabel>
+                    <FormLabel>{t("trees.fields.bed")}</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="100" {...field} />
                     </FormControl>
@@ -170,9 +170,9 @@ export function GardenDialog({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="col-span-2">
-                    <FormLabel>Mô tả chi tiết</FormLabel>
+                    <FormLabel>{t("trees.gardens.description")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Mô tả về khu vườn..." {...field} />
+                      <Input placeholder={t("trees.gardens.description")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

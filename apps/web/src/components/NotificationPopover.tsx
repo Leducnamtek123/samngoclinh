@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { EmptyState } from '@/components/common/EmptyState';
 import { OrderDetailData } from '@/components/orders/OrderDetailModal';
 import { useNotificationPopover } from '@/hooks/useNotificationPopover';
@@ -17,6 +18,9 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
   onSelectOrder,
 }) => {
   const notif = useNotificationPopover(isOpen, onClose, onSelectOrder);
+  const tNotif = useTranslations('notifications');
+  const tCart = useTranslations('cart');
+  const tProfile = useTranslations('profile');
 
   if (!isOpen) return null;
 
@@ -25,14 +29,14 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
       {/* Header Bar */}
       <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-white">
         <h3 className="font-extrabold text-gray-900 text-base font-display-lg">
-          Thông báo
+          {tNotif('title')}
         </h3>
         <button
           type="button"
           onClick={notif.handleMarkAllRead}
           className="text-xs font-semibold text-gray-500 hover:text-emerald-700 transition-colors cursor-pointer"
         >
-          Đọc tất cả
+          {tNotif('markAllRead')}
         </button>
       </div>
 
@@ -40,7 +44,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
       <div className="max-h-[460px] overflow-y-auto divide-y divide-gray-100 modal-content">
         {notif.notifications.length === 0 ? (
           <div className="p-4">
-            <EmptyState title="Không có thông báo nào" description="Bạn chưa có thông báo mới nào." />
+            <EmptyState title={tNotif('noNotifications')} description={tNotif('emptyDesc')} />
           </div>
         ) : (
           notif.notifications.map((item) => (
@@ -91,7 +95,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                 <div className="bg-white/80 border border-gray-200/60 rounded-xl p-3 text-[11px] space-y-1.5 font-medium text-gray-700">
                   {item.details.orderCode && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Đơn hàng</span>
+                      <span className="text-gray-400">{tProfile('orderCode')}</span>
                       <span className="font-bold text-gray-900 font-mono">
                         {item.details.orderCode}
                       </span>
@@ -99,7 +103,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                   )}
                   {item.details.customerName && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Khách hàng</span>
+                      <span className="text-gray-400">{tProfile('fullName')}</span>
                       <span className="font-semibold text-gray-800">
                         {item.details.customerName}
                       </span>
@@ -107,7 +111,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                   )}
                   {item.details.productSummary && (
                     <div className="flex justify-between items-center gap-2">
-                      <span className="text-gray-400 shrink-0">Sản phẩm</span>
+                      <span className="text-gray-400 shrink-0">{tCart('product')}</span>
                       <span className="font-semibold text-gray-800 truncate text-right">
                         {item.details.productSummary}
                       </span>
@@ -115,7 +119,7 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                   )}
                   {item.details.totalAmount && (
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Giá trị</span>
+                      <span className="text-gray-400">{tCart('total')}</span>
                       <span className="font-extrabold text-gray-900 underline">
                         {item.details.totalAmount}
                       </span>

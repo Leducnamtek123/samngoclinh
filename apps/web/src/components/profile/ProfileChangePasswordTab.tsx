@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { KeyRound, Check, AlertCircle } from 'lucide-react';
@@ -20,6 +21,7 @@ type ProfileChangePasswordTabProps = {
 export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> = ({
   locale = 'vi',
 }) => {
+  const t = useTranslations('security');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,7 +43,7 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
         newPassword: values.newPassword,
       });
 
-      toast.success('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+      toast.success(t('updateSuccess'));
       form.reset();
 
       setTimeout(() => {
@@ -49,8 +51,7 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
       }, 1500);
     } catch (err: any) {
       setErrorMsg(
-        err?.message ||
-          'Đổi mật khẩu thất bại. Vui lòng kiểm tra lại mật khẩu hiện tại.'
+        err?.message || t('updateError')
       );
     }
     setIsSubmitting(false);
@@ -68,10 +69,10 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
         </div>
         <div>
           <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">
-            Đổi mật khẩu tài khoản
+            {t('title')}
           </h3>
           <p className="text-xs text-gray-400 font-normal">
-            Mật khẩu mới cần đáp ứng các tiêu chuẩn bảo mật hệ thống
+            {t('subtitle')}
           </p>
         </div>
       </div>
@@ -86,21 +87,24 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
       <FormPassword
         control={form.control}
         name="oldPassword"
-        label="Mật khẩu hiện tại"
+        label={t('currentPassword')}
+        placeholder={t('currentPasswordPlaceholder')}
         required
       />
 
       <FormPassword
         control={form.control}
         name="newPassword"
-        label="Mật khẩu mới"
+        label={t('newPassword')}
+        placeholder={t('newPasswordPlaceholder')}
         required
       />
 
       <FormPassword
         control={form.control}
         name="confirmPassword"
-        label="Xác nhận mật khẩu mới"
+        label={t('confirmPassword')}
+        placeholder={t('confirmPasswordPlaceholder')}
         required
       />
 
@@ -113,7 +117,7 @@ export const ProfileChangePasswordTab: React.FC<ProfileChangePasswordTabProps> =
           className="w-full flex items-center justify-center gap-2"
         >
           {!isSubmitting && <Check className="w-4 h-4" />}
-          <span>{isSubmitting ? 'Đang lưu...' : 'Cập nhật mật khẩu'}</span>
+          <span>{isSubmitting ? t('updating') : t('updatePasswordBtn')}</span>
         </ButtonLoading>
       </div>
     </Form>

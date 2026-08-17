@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { User, Mail, Lock, ShieldCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
 import {
   Form,
   FormPhoneInput,
@@ -14,12 +15,12 @@ import {
 } from '@/components/ui/form';
 import { ButtonLoading } from '@/components/ui/button';
 import { signUpSchema, type SignUpFormValues } from '@/lib/validation/schemas';
-
 import { useRouter } from 'next/navigation';
 import { apiSignUp } from '@/services/auth.service';
 
 export default function SignUpForm() {
   const router = useRouter();
+  const t = useTranslations('SignUp');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -49,12 +50,12 @@ export default function SignUpForm() {
         password: values.password,
       });
 
-      setSuccess('Đăng ký tài khoản thành công! Đang chuyển đến trang đăng nhập...');
+      setSuccess(t('signUpSuccess'));
       setTimeout(() => {
         router.push('/sign-in');
       }, 1500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Đã xảy ra lỗi kết nối';
+      const msg = err instanceof Error ? err.message : t('signUpFailed');
       setError(msg);
     }
     setLoading(false);
@@ -71,7 +72,7 @@ export default function SignUpForm() {
             <Link href="/" className="inline-flex items-center gap-3">
               <Image
                 src="/assets/images/logo_ruou_sam.png?v=2"
-                alt="Sâm Ngọc Linh Logo"
+                alt="Logo"
                 width={48}
                 height={48}
                 unoptimized
@@ -79,26 +80,26 @@ export default function SignUpForm() {
               />
               <div>
                 <span className="font-display font-black text-lg tracking-tight block text-white">Sâm Ngọc Linh</span>
-                <span className="text-[10px] text-amber-300 uppercase tracking-widest block font-bold">Quốc Bảo Dược Liệu</span>
+                <span className="text-[10px] text-amber-300 uppercase tracking-widest block font-bold">{t('brandTagline')}</span>
               </div>
             </Link>
 
             <div className="space-y-3 pt-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 border border-emerald-600/60 text-emerald-200 text-xs font-bold">
-                Đặc Quyền Thành Viên Mới
+                {t('title')}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-white font-display leading-tight">
-                Gia Nhập Cộng Đồng Sở Hữu Sâm Ngọc Linh
+                {t('subtitle')}
               </h2>
               <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed font-normal">
-                Đăng ký ngay để nhận cơ hội tham gia chương trình tài trợ cây giống, ký gửi chăm sóc tại vườn farm chuẩn GACP-WHO và hưởng ưu đãi dành riêng.
+                {t('meta_description')}
               </p>
             </div>
           </div>
 
           <div className="pt-8 border-t border-emerald-800/60 space-y-2 relative z-10 text-xs text-emerald-200/70">
-            <p className="font-semibold text-white">Bảo Mật Tuyệt Đối</p>
-            <p className="text-[11px] leading-relaxed">Thông tin cá nhân được bảo vệ theo Nghị định 13/2023/NĐ-CP.</p>
+            <p className="font-semibold text-white">{t('securityBadge')}</p>
+            <p className="text-[11px] leading-relaxed">{t('securityDesc')}</p>
           </div>
         </div>
 
@@ -106,97 +107,110 @@ export default function SignUpForm() {
         <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 font-display">
-              Tạo tài khoản mới
+              {t('title')}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 font-normal">
-              Đăng ký để bắt đầu trải nghiệm dịch vụ Sâm Ngọc Linh cao cấp
+              {t('subtitle')}
             </p>
           </div>
 
           {error && (
-            <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium flex items-center gap-2 leading-relaxed">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-medium flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl font-medium flex items-center gap-2 leading-relaxed">
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-xs font-medium flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{success}</span>
             </div>
           )}
 
-          <Form form={form} onSubmit={form.handleSubmit(onSignUpSubmit)} className="space-y-3.5">
+          <Form form={form} onSubmit={form.handleSubmit(onSignUpSubmit)} className="space-y-4">
             <FormFloatingInput
               control={form.control}
               name="fullName"
-              label="Họ và tên"
+              label={t('fullNameLabel')}
+              placeholder={t('fullNamePlaceholder')}
               required
               prefixIcon={<User className="w-4 h-4" />}
             />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <FormFloatingInput
-                control={form.control}
-                name="email"
-                type="email"
-                label="Địa chỉ Email"
-                required
-                prefixIcon={<Mail className="w-4 h-4" />}
-              />
+            <FormFloatingInput
+              control={form.control}
+              name="email"
+              type="email"
+              label={t('emailLabel')}
+              placeholder={t('emailPlaceholder')}
+              required
+              prefixIcon={<Mail className="w-4 h-4" />}
+            />
 
-              <FormPhoneInput
-                control={form.control}
-                name="phone"
-                label="Số điện thoại"
-                required
-              />
+            <FormPhoneInput
+              control={form.control}
+              name="phone"
+              label={t('phoneLabel')}
+              placeholder={t('phonePlaceholder')}
+              required
+            />
+
+            <FormFloatingInput
+              control={form.control}
+              name="password"
+              type="password"
+              label={t('passwordLabel')}
+              placeholder={t('passwordPlaceholder')}
+              required
+              prefixIcon={<Lock className="w-4 h-4" />}
+            />
+
+            <FormFloatingInput
+              control={form.control}
+              name="confirmPassword"
+              type="password"
+              label={t('confirmPasswordLabel')}
+              placeholder={t('confirmPasswordPlaceholder')}
+              required
+              prefixIcon={<Lock className="w-4 h-4" />}
+            />
+
+            <div className="pt-1">
+              <FormCheckbox control={form.control} name="agreeTerms">
+                <span className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  {t('agreeTermsPrefix')}{' '}
+                  <Link href="/terms/terms-of-service" target="_blank" className="text-emerald-700 font-semibold hover:underline">
+                    {t('termsOfService')}
+                  </Link>{' '}
+                  {t('andWord')}{' '}
+                  <Link href="/terms/privacy-policy" target="_blank" className="text-emerald-700 font-semibold hover:underline">
+                    {t('privacyPolicy')}
+                  </Link>
+                </span>
+              </FormCheckbox>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <FormFloatingInput
-                control={form.control}
-                name="password"
-                type="password"
-                label="Mật khẩu"
-                required
-                prefixIcon={<Lock className="w-4 h-4" />}
-              />
-
-              <FormFloatingInput
-                control={form.control}
-                name="confirmPassword"
-                type="password"
-                label="Xác nhận mật khẩu"
-                required
-                prefixIcon={<ShieldCheck className="w-4 h-4" />}
-              />
-            </div>
-
-            <FormCheckbox control={form.control} name="agreeTerms">
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                Tôi đồng ý với <Link href="/terms" className="text-emerald-700 font-bold hover:underline">Điều khoản</Link> & <Link href="/privacy" className="text-emerald-700 font-bold hover:underline">Chính sách bảo mật</Link>
-              </span>
-            </FormCheckbox>
 
             <ButtonLoading
               type="submit"
               isLoading={loading}
               variant="default"
-              className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md transition-[transform,background-color] active:scale-[0.98] cursor-pointer mt-2"
+              className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md transition-[transform,background-color] active:scale-[0.98] cursor-pointer"
             >
-              {loading ? 'Đang khởi tạo tài khoản...' : 'Tạo tài khoản mới'}
+              {t('submitBtn')}
             </ButtonLoading>
           </Form>
 
-          <div className="pt-6 border-t border-gray-100 dark:border-gray-800 text-center">
-            <p className="text-xs text-gray-500 font-normal">
-              Bạn đã có tài khoản thành viên?{' '}
-              <Link href="/sign-in" className="text-emerald-700 font-bold hover:underline">
-                Đăng nhập ngay
-              </Link>
-            </p>
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-800 text-center space-y-3">
+            <p className="text-xs text-gray-500 font-normal">{t('hasAccount')}</p>
+            <ButtonLoading
+              type="button"
+              variant="outline"
+              className="w-full py-3 rounded-xl border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-800 transition-[transform,background-color] active:scale-[0.98]"
+              onClick={() => router.push('/sign-in')}
+            >
+              {t('signInNow')}
+            </ButtonLoading>
           </div>
         </div>
       </div>

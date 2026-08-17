@@ -1,6 +1,10 @@
 export async function fetchApiClient(endpoint: string, options: RequestInit = {}) {
-  const baseUrl = '/api/proxy';
-  const url = `${baseUrl}${endpoint}`;
+  const origin =
+    typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const baseUrl = `${origin}/api/proxy`;
+  const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
 
   const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
   const customHeaders = (options.headers as Record<string, string>) || {};

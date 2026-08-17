@@ -187,7 +187,7 @@ describe('Phase 5B — P1 Multi-Tree & Order <-> Contract Domain Test Suite', ()
         configService = {
             get: jest.fn((key: string) => {
                 if (key === 'HOME_URL') return 'http://localhost:3002';
-                if (key === 'smtp.from') return 'noreply@wefarm.com.vn';
+                if (key === 'smtp.from') return 'noreply@samngoclinh.vn';
                 return null;
             }),
         };

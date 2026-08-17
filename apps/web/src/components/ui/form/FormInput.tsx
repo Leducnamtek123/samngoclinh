@@ -79,7 +79,8 @@ export function FormInput<
             tabIndex={-1}
             onClick={handleClear}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded-full transition-colors cursor-pointer"
-            title="Xóa nội dung"
+            title="Clear"
+            aria-label="Clear"
           >
             <X className="w-3.5 h-3.5" />
           </button>

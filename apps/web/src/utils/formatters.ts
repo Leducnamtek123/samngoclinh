@@ -29,9 +29,9 @@ export function formatInputDate(dateStr?: string): string {
   return `${year}-${month}-${day}`;
 }
 
-export function formatGenderLabel(gender?: string, fallback = 'Chưa cập nhật'): string {
+export function formatGenderLabel(gender?: string, fallback = 'Chưa cập nhật', t?: (key: string) => string): string {
   if (!gender) return fallback;
-  if (gender === 'male' || gender === 'Nam') return 'Nam';
-  if (gender === 'female' || gender === 'Nữ') return 'Nữ';
+  if (gender === 'male' || gender === 'Nam') return t ? t('male') : 'Nam';
+  if (gender === 'female' || gender === 'Nữ') return t ? t('female') : 'Nữ';
   return gender;
 }

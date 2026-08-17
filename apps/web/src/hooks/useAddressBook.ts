@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { userService } from '@/services/user.service';
 import { toast } from 'sonner';
 import type { AddressItem } from '@/types';
@@ -8,6 +9,7 @@ import type { AddressItem } from '@/types';
 const ADDRESSES_STORAGE_KEY = 'user_addresses:v1';
 
 export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
+  const t = useTranslations('profile');
   const [localAddresses, setLocalAddresses] = useState<AddressItem[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -25,7 +27,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
   const apiAddresses: AddressItem[] = (initialProfileAddresses && Array.isArray(initialProfileAddresses))
     ? initialProfileAddresses.map((a: AddressItem) => ({
         id: a.id,
-        name: a.recipient || a.name || a.label || 'Địa chỉ nhận hàng',
+        name: a.recipient || a.name || a.label || t('addressTitle'),
         phone: a.phone || '',
         address: a.detail || a.address || '',
         detail: a.detail || a.address || '',
@@ -66,7 +68,7 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
     setLocalAddresses(updated);
     saveToStorage(updated);
     setIsAddAddressOpen(false);
-    toast.success('Thêm địa chỉ giao hàng mới thành công!');
+    toast.success(t('addAddressModal.savedSuccess'));
   };
 
   const setDefaultAddress = (id: string) => {
@@ -83,9 +85,9 @@ export function useAddressBook(initialProfileAddresses?: AddressItem[]) {
       const updated = addresses.filter((a) => a.id !== deletingAddressId);
       setLocalAddresses(updated);
       saveToStorage(updated);
-      toast.success('Đã xóa địa chỉ giao hàng thành công!');
+      toast.success(t('addAddressModal.deleteSuccess'));
     } catch {
-      toast.error('Không thể xóa địa chỉ. Vui lòng thử lại.');
+      toast.error(t('addAddressModal.deleteError'));
     }
     setIsDeletingAddress(false);
     setDeletingAddressId(null);

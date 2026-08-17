@@ -15,7 +15,6 @@ import {
     statSync,
     writeFileSync,
 } from 'fs';
-import Mime from 'mime';
 import Papa from 'papaparse';
 import { dirname, join } from 'path';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
@@ -24,6 +23,32 @@ import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 export class FileService implements IFileService {
     private readonly logger = new Logger(FileService.name);
     private isCloudinaryReady = false;
+
+    private readonly mimeMap: Record<string, string> = {
+        pdf: 'application/pdf',
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        webp: 'image/webp',
+        gif: 'image/gif',
+        svg: 'image/svg+xml',
+        json: 'application/json',
+        csv: 'text/csv',
+        txt: 'text/plain',
+    };
+
+    private readonly extensionMap: Record<string, string> = {
+        'application/pdf': 'pdf',
+        'image/png': 'png',
+        'image/jpeg': 'jpg',
+        'image/jpg': 'jpg',
+        'image/webp': 'webp',
+        'image/gif': 'gif',
+        'image/svg+xml': 'svg',
+        'application/json': 'json',
+        'text/csv': 'csv',
+        'text/plain': 'txt',
+    };
 
     constructor(
         private readonly helperService: HelperService,
@@ -91,11 +116,8 @@ export class FileService implements IFileService {
     }
 
     extractMimeFromFilename(filename: string): string | null {
-        return (
-            Mime.getType(
-                filename.slice(filename.lastIndexOf('.'))
-            )?.toLowerCase() ?? null
-        );
+        const ext = this.extractExtensionFromFilename(filename);
+        return ext ? (this.mimeMap[ext] ?? null) : null;
     }
 
     extractFilenameFromPath(filePath: string): string {
@@ -196,7 +218,7 @@ export class FileService implements IFileService {
      */
     saveFileToLocal(file: IFile, subdir: string): string {
         const extension =
-            Mime.getExtension(file.mimetype) ??
+            (file.mimetype ? this.extensionMap[file.mimetype.toLowerCase()] : null) ??
             this.extractExtensionFromFilename(file.originalname) ??
             'bin';
         const filename = `${this.helperService.randomString(16)}.${extension}`;
@@ -217,7 +239,7 @@ export class FileService implements IFileService {
         let extension = 'png';
 
         if (matches && matches.length === 3) {
-            extension = Mime.getExtension(matches[1]) ?? 'png';
+            extension = this.extensionMap[matches[1].toLowerCase()] ?? 'png';
             buffer = Buffer.from(matches[2], 'base64');
         } else {
             buffer = Buffer.from(base64Data, 'base64');

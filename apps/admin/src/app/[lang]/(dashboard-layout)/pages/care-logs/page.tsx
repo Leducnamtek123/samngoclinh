@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { RoleGuard } from "@/components/guards/rbac-guard"
+import { useTranslation } from "@/providers/i18n-provider"
 import type { PaginationMeta } from "@/types"
 
 interface CareLog {
@@ -64,11 +65,12 @@ const formatDateTimeVi = (dateStr?: string) => {
 }
 
 export default function CareLogsPage() {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState({
     treeCode: "",
     bedCode: "",
-    action: "Tưới nước & Đánh giá sức khỏe",
+    action: "",
     description: "",
     temperature: "22",
     humidity: "85",
@@ -105,16 +107,17 @@ export default function CareLogsPage() {
         endpoint: "/user/cultivation/logs",
         data: {
           ...formData,
+          action: formData.action || t("trees.careLogs.activity"),
           temperature: parseFloat(formData.temperature),
           humidity: parseFloat(formData.humidity),
         },
         method: "POST",
       })
-      toast.success("Nhập nhật ký chăm sóc thành công")
+      toast.success(t("trees.careLogs.submitSuccess"))
       setIsOpen(false)
       refetch()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Có lỗi xảy ra khi lưu nhật ký"
+      const message = error instanceof Error ? error.message : t("trees.careLogs.submitError")
       toast.error(message)
     }
   }
@@ -126,11 +129,10 @@ export default function CareLogsPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
               <Sprout className="w-6 h-6 text-emerald-600" />
-              Nhật ký Chăm sóc Sâm Ngọc Linh
+              {t("trees.careLogs.title")}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Ghi nhận các hoạt động tưới nước, bón phân, đo đạc thông số môi
-              trường từ REST API
+              {t("trees.careLogs.subtitle")}
             </p>
           </div>
 
@@ -141,22 +143,22 @@ export default function CareLogsPage() {
               onClick={() => refetch()}
               className="gap-2"
             >
-              <RefreshCw className="w-4 h-4" /> Làm mới
+              <RefreshCw className="w-4 h-4" /> {t("common.actions.refresh")}
             </Button>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
-                  <Plus className="w-4 h-4" /> Nhập Nhật ký Mới
+                  <Plus className="w-4 h-4" /> {t("trees.careLogs.newLog")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                  <DialogTitle>Nhập Nhật ký Chăm sóc Sâm</DialogTitle>
+                  <DialogTitle>{t("trees.careLogs.newLog")}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-2">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Mã Cây (Tree Code)</Label>
+                      <Label>{t("trees.careLogs.treeCode")}</Label>
                       <Input
                         placeholder="VD: TREE-001"
                         value={formData.treeCode}
@@ -166,7 +168,7 @@ export default function CareLogsPage() {
                       />
                     </div>
                     <div>
-                      <Label>Mã Luống (Bed Code)</Label>
+                      <Label>{t("trees.careLogs.bedCode")}</Label>
                       <Input
                         placeholder="VD: BED-01"
                         value={formData.bedCode}
@@ -177,9 +179,9 @@ export default function CareLogsPage() {
                     </div>
                   </div>
                   <div>
-                    <Label>Tên / Loại hoạt động</Label>
+                    <Label>{t("trees.careLogs.action")}</Label>
                     <Input
-                      placeholder="Tưới nước, Bón phân, Kiểm tra sâu bệnh..."
+                      placeholder={t("trees.careLogs.action")}
                       value={formData.action}
                       onChange={(e) =>
                         setFormData({ ...formData, action: e.target.value })
@@ -189,7 +191,7 @@ export default function CareLogsPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Nhiệt độ (°C)</Label>
+                      <Label>{t("trees.careLogs.temperature")}</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -203,7 +205,7 @@ export default function CareLogsPage() {
                       />
                     </div>
                     <div>
-                      <Label>Độ ẩm (%)</Label>
+                      <Label>{t("trees.careLogs.humidity")}</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -215,9 +217,9 @@ export default function CareLogsPage() {
                     </div>
                   </div>
                   <div>
-                    <Label>Mô tả chi tiết</Label>
+                    <Label>{t("trees.careLogs.description")}</Label>
                     <Textarea
-                      placeholder="Ghi chú thêm về quy trình thực hiện, tình trạng sức khỏe của sâm..."
+                      placeholder={t("trees.careLogs.description")}
                       value={formData.description}
                       onChange={(e) =>
                         setFormData({
@@ -233,14 +235,14 @@ export default function CareLogsPage() {
                       variant="outline"
                       onClick={() => setIsOpen(false)}
                     >
-                      Hủy
+                      {t("common.actions.cancel")}
                     </Button>
                     <Button
                       type="submit"
                       className="bg-emerald-600 hover:bg-emerald-700 text-white"
                       disabled={mutation.isPending}
                     >
-                      {mutation.isPending ? "Đang lưu..." : "Lưu nhật ký"}
+                      {mutation.isPending ? t("common.status.processing") : t("common.actions.save")}
                     </Button>
                   </div>
                 </form>
@@ -252,33 +254,32 @@ export default function CareLogsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">
-              Lịch sử Nhật ký Chăm sóc Thực tế
+              {t("trees.careLogs.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
-                Đang tải nhật ký từ API...
+                {t("common.table.loading")}
               </div>
             ) : isError ? (
               <div className="py-8 text-center text-sm text-destructive">
-                Không thể kết nối đến máy chủ API NestJS.
+                {t("common.status.error")}
               </div>
             ) : careLogs.length === 0 ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
-                Chưa có nhật ký chăm sóc nào được tạo. Nhấn "Nhập Nhật ký Mới"
-                để tạo nhật ký đầu tiên!
+                {t("common.table.noResults")}
               </div>
             ) : (
               <>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Mã Cây / Luống</TableHead>
-                      <TableHead>Hoạt Động</TableHead>
-                      <TableHead>Thông Số Môi Trường</TableHead>
-                      <TableHead>Mô Tả</TableHead>
-                      <TableHead>Thời Gian</TableHead>
+                      <TableHead>{t("trees.careLogs.treeCode")} / {t("trees.careLogs.bedCode")}</TableHead>
+                      <TableHead>{t("trees.careLogs.activity")}</TableHead>
+                      <TableHead>{t("trees.careLogs.temperature")} & {t("trees.careLogs.humidity")}</TableHead>
+                      <TableHead>{t("trees.careLogs.description")}</TableHead>
+                      <TableHead>{t("trees.careLogs.date")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -297,7 +298,7 @@ export default function CareLogsPage() {
                           >
                             {log.action ||
                               log.activityType ||
-                              "Chăm sóc định kỳ"}
+                              "Chăm sóc"}
                           </Badge>
                         </TableCell>
                         <TableCell>

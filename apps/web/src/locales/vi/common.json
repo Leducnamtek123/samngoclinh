@@ -9,8 +9,21 @@
   },
   "BaseTemplate": {
     "description": "Rượu Sâm Ngọc Linh",
-    "footer_text": "© {year} {name}.",
-    "main_navigation_label": "Điều hướng chính"
+    "footer_text": "© {year} {name}. Bảo lưu mọi quyền.",
+    "main_navigation_label": "Điều hướng chính",
+    "company_name": "Công ty Cổ phần Sâm Ngọc Linh",
+    "company_address": "Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam, Việt Nam",
+    "company_hotline": "Hotline tư vấn: 0967 234 234",
+    "company_email": "Email: lienhe@samngoclinh.vn",
+    "certified_origin": "Chứng nhận Quốc bảo Sâm Ngọc Linh 100%",
+    "quick_links": "Liên kết nhanh",
+    "customer_support": "Hỗ trợ khách hàng",
+    "legal_policies": "Chính sách pháp lý",
+    "privacy_policy": "Chính sách bảo mật",
+    "terms_of_service": "Điều khoản sử dụng",
+    "shipping_policy": "Chính sách giao hàng",
+    "return_policy": "Chính sách đổi trả & Bồi hoàn",
+    "connect_with_us": "Kết nối với chúng tôi"
   },
   "nav": {
     "home": "Trang chủ",
@@ -24,24 +37,156 @@
     "profile": "Tài khoản",
     "signIn": "Đăng nhập",
     "signUp": "Đăng ký",
-    "signOut": "Đăng xuất"
+    "signOut": "Đăng xuất",
+    "contracts": "Hợp đồng của tôi",
+    "trace": "Truy xuất nguồn gốc",
+    "news": "Tin tức & Sự kiện",
+    "terms": "Chính sách & Quy chế",
+    "portfolio": "Bộ sưu tập",
+    "search_placeholder": "Tìm kiếm sâm Ngọc Linh, rượu sâm...",
+    "my_account": "Tài khoản của tôi",
+    "my_orders": "Đơn hàng của tôi",
+    "my_farm": "Vườn sâm của tôi",
+    "security": "Bảo mật & Mật khẩu",
+    "points_balance": "{points} Điểm Sâm",
+    "member_rank": "Hạng thành viên"
+  },
+  "topBanner": {
+    "announcement": "🌾 Ưu đãi mùa trồng Sâm 2026: Tặng kèm bảo hiểm nông nghiệp 100% khi sở hữu cây giống!",
+    "hotline": "Hotline: 0967 234 234",
+    "consultation": "Tư vấn chuyên gia"
   },
   "categories": {
     "news": "Tin tức",
     "event": "Sự kiện",
     "guide": "Hướng dẫn sử dụng",
-    "faq": "Kiến thức & FAQ"
+    "faq": "Kiến thức & FAQ",
+    "wine": "Rượu Sâm",
+    "plants": "Cây Giống",
+    "products": "Chế Phẩm & Trà Sâm",
+    "package": "Gói Chăm Sóc"
   },
   "LocaleSwitcher": {
-    "change_language": "Đổi ngôn ngữ"
+    "change_language": "Đổi ngôn ngữ",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "actions": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "view": "Xem",
+    "viewDetails": "Xem chi tiết",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
+    "confirm": "Xác nhận",
+    "retry": "Thử lại",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "backHome": "Về trang chủ",
+    "next": "Tiếp tục",
+    "previous": "Trước",
+    "submit": "Gửi",
+    "search": "Tìm kiếm",
+    "filter": "Bộ lọc",
+    "reset": "Đặt lại",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
+    "download": "Tải xuống",
+    "downloadPdf": "Tải file PDF",
+    "sign": "Ký điện tử",
+    "showMore": "Xem thêm",
+    "showLess": "Thu gọn",
+    "selectAll": "Chọn tất cả",
+    "clearAll": "Xóa tất cả",
+    "apply": "Áp dụng",
+    "loading": "Đang xử lý...",
+    "saving": "Đang lưu...",
+    "submitting": "Đang gửi..."
+  },
+  "status": {
+    "draft": "Bản nháp",
+    "pending": "Chờ xử lý",
+    "pending_confirmation": "Chờ xác nhận",
+    "pending_payment": "Chờ thanh toán",
+    "processing": "Đang xử lý",
+    "shipping": "Đang giao hàng",
+    "delivered": "Đã giao hàng",
+    "completed": "Hoàn tất",
+    "cancelled": "Đã hủy",
+    "refunded": "Đã hoàn tiền",
+    "paid": "Đã thanh toán",
+    "unpaid": "Chưa thanh toán",
+    "failed": "Thất bại",
+    "active": "Đang hoạt động",
+    "inactive": "Ngừng hoạt động",
+    "verified": "Đã xác thực",
+    "unverified": "Chưa xác thực",
+    "rejected": "Bị từ chối",
+    "expired": "Đã hết hạn",
+    "signed": "Đã ký",
+    "unsigned": "Chưa ký",
+    "unknown": "Không xác định"
+  },
+  "memberRank": {
+    "standard": "Thành viên Tiêu Chuẩn",
+    "silver": "Hạng Bạc (Silver)",
+    "gold": "Hạng Vàng (Gold)",
+    "platinum": "Hạng Bạch Kim (Platinum)",
+    "diamond": "Hạng Kim Cương (Diamond)",
+    "badge": "Hạng {rank}",
+    "pointsSuffix": "điểm"
   },
   "confirmModal": {
+    "title": "Xác nhận thao tác",
+    "description": "Bạn có chắc chắn muốn thực hiện hành động này không?",
     "confirm": "Xác nhận",
-    "cancel": "Hủy"
+    "cancel": "Hủy bỏ",
+    "deleteTitle": "Xác nhận xóa",
+    "deleteDesc": "Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa?",
+    "logoutTitle": "Xác nhận đăng xuất",
+    "logoutDesc": "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
   },
   "errorState": {
     "title": "Đã xảy ra lỗi",
     "description": "Không thể tải dữ liệu. Vui lòng thử lại sau.",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "notFoundTitle": "Không tìm thấy nội dung",
+    "notFoundDesc": "Nội dung bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "backHome": "Về trang chủ"
+  },
+  "emptyState": {
+    "title": "Chưa có dữ liệu",
+    "description": "Hiện tại chưa có thông tin hiển thị.",
+    "noOrders": "Bạn chưa có đơn hàng nào.",
+    "noContracts": "Bạn chưa có hợp đồng điện tử nào.",
+    "noAddresses": "Bạn chưa lưu địa chỉ nhận hàng nào.",
+    "noProducts": "Không tìm thấy sản phẩm phù hợp.",
+    "noNotifications": "Bạn không có thông báo nào mới.",
+    "actionShop": "Khám phá sản phẩm ngay",
+    "actionAddAddress": "Thêm địa chỉ mới"
+  },
+  "pagination": {
+    "page": "Trang {current} / {total}",
+    "previous": "Trang trước",
+    "next": "Trang sau",
+    "showing": "Hiển thị {from}-{to} trong tổng số {total} kết quả"
+  },
+  "toasts": {
+    "success": "Thao tác thành công!",
+    "error": "Có lỗi xảy ra, vui lòng thử lại.",
+    "copied": "Đã sao chép vào bộ nhớ tạm!",
+    "loginRequired": "Vui lòng đăng nhập để tiếp tục!",
+    "networkError": "Lỗi kết nối mạng, vui lòng kiểm tra lại đường truyền."
+  },
+  "formatters": {
+    "currencyUnit": "đ",
+    "currencyVND": "VNĐ",
+    "treeUnit": "cây",
+    "bottleUnit": "chai",
+    "itemUnit": "sản phẩm",
+    "yearUnit": "năm",
+    "pointUnit": "Điểm Sâm"
   }
 }

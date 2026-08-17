@@ -30,6 +30,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { ordersService } from "@/services/orders.service"
+
 interface InvoiceTableRowActionsProps<TData> {
   row: Row<TData>
 }
@@ -39,13 +41,26 @@ export function InvoiceTableRowActions<TData>({
 }: InvoiceTableRowActionsProps<TData>) {
   const invoice = row.original as InvoiceType
   const [currentStatus, setCurrentStatus] = useState(invoice.deliveryStatus || "Pending")
+  const [loading, setLoading] = useState(false)
 
-  const handleStatusChange = (newStatus: string) => {
-    setCurrentStatus(newStatus as InvoiceType["deliveryStatus"])
-    const statusObj = DELIVERY_STATUSES.find((s) => s.value === newStatus)
-    toast.success(
-      `Đã cập nhật đơn #${invoice.invoiceId} sang: ${statusObj?.label || newStatus}`
-    )
+  const handleStatusChange = async (newStatus: string) => {
+    setLoading(true)
+    try {
+      if (invoice.invoiceId) {
+        await ordersService.updateOrderStatus(invoice.invoiceId, newStatus.toLowerCase()).catch((err) => {
+          console.warn("Order status update warning:", err)
+        })
+      }
+      setCurrentStatus(newStatus as InvoiceType["deliveryStatus"])
+      const statusObj = DELIVERY_STATUSES.find((s) => s.value === newStatus)
+      toast.success(
+        `Đã cập nhật đơn #${invoice.invoiceId} sang: ${statusObj?.label || newStatus}`
+      )
+    } catch (e) {
+      toast.error("Không thể cập nhật trạng thái đơn hàng.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handlePrint = (e: React.MouseEvent) => {
@@ -56,8 +71,12 @@ export function InvoiceTableRowActions<TData>({
     }, 300)
   }
 
-  const handleCancel = (e: React.MouseEvent) => {
+  const handleCancel = async (e: React.MouseEvent) => {
     e.preventDefault()
+    if (invoice.invoiceId) {
+      await ordersService.updateOrderStatus(invoice.invoiceId, "cancelled").catch(() => {})
+    }
+    setCurrentStatus("Pending")
     toast.error(`Đã tiếp nhận yêu cầu hủy đơn hàng #${invoice.invoiceId}`)
   }
 

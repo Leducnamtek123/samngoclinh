@@ -31,6 +31,7 @@
   "status": {
     "all": "All statuses",
     "active": "Active",
+    "available": "Available",
     "inactive": "Inactive",
     "blocked": "Blocked",
     "pending": "Pending",
@@ -68,5 +69,16 @@
     "deleteDescription": "This action cannot be undone. This will permanently delete the item.",
     "confirmText": "Yes, delete",
     "cancelText": "Cancel"
+  },
+  "generalSettings": {
+    "title": "General System Settings",
+    "subtitle": "Comprehensive list of operational parameters and system settings stored in the database.",
+    "listTitle": "System Configuration Parameters",
+    "listDesc": "View and directly edit system operational settings.",
+    "loadingParams": "Loading parameter list...",
+    "emptyParams": "No additional configurations yet. Primary settings like Shipping Fees and Reward Rates are managed in their dedicated submenus.",
+    "defaultParamDesc": "System configuration parameter",
+    "currentValue": "Current value: {value}",
+    "infoNotice": "You can quickly configure Shipping Fees and Reward Rates directly in the submenus above."
   }
 }

@@ -66,8 +66,34 @@ describe('Phase 5C — Contract Amendment & Renewal Specification Suite', () => 
         amendments: [],
     };
 
+    let currentAmendment: any;
+
+    const sampleAmendment: any = {
+        id: 'amd-uuid-001',
+        contractId: 'ctr-uuid-001',
+        amendmentNumber: 1,
+        code: 'AMD-CTR-O20260815001-01',
+        type: 'extension',
+        title: 'Phụ lục gia hạn hợp đồng số 01',
+        content: 'Nội dung gia hạn',
+        previousExpiredAt: originalExpiry,
+        newExpiredAt: new Date('2029-08-15T00:00:00.000Z'),
+        extendedMonths: 12,
+        amendmentValue: 0,
+        status: 'signed',
+        signedAt: new Date('2027-08-15T10:00:00.000Z'),
+        signatureUrl: 'https://res.cloudinary.com/demo/image/upload/signatures/sig-amd-001.png',
+        pdfUrl: 'https://res.cloudinary.com/demo/raw/upload/contracts/AMD-CTR-O20260815001-01.pdf',
+        documentHash: samplePdfHash,
+        metadata: {
+            documentHash: samplePdfHash,
+            qrUrl: 'http://localhost:3002/trace/contract/CTR-O20260815001',
+        },
+    };
+
     beforeEach(() => {
         jest.clearAllMocks();
+        currentAmendment = { ...sampleAmendment };
 
         contractRepo = {
             createContract: jest.fn(),
@@ -81,16 +107,34 @@ describe('Phase 5C — Contract Amendment & Renewal Specification Suite', () => 
         } as any;
 
         amendmentRepo = {
-            createAmendment: jest.fn(),
-            findById: jest.fn(),
-            findByCode: jest.fn(),
-            findByContractId: jest.fn().mockResolvedValue([]),
+            createAmendment: jest.fn().mockImplementation((data) => {
+                const docHash = data.metadata?.documentHash || samplePdfHash;
+                currentAmendment = {
+                    ...sampleAmendment,
+                    ...data,
+                    documentHash: docHash,
+                    id: 'amd-uuid-001',
+                };
+                return Promise.resolve(currentAmendment);
+            }),
+            findById: jest.fn().mockImplementation(() => Promise.resolve(currentAmendment)),
+            findByCode: jest.fn().mockImplementation(() => Promise.resolve(currentAmendment)),
+            findByContractId: jest.fn().mockImplementation(() => Promise.resolve([currentAmendment])),
             findLatestSigned: jest.fn().mockResolvedValue(null),
             getNextAmendmentNumber: jest.fn().mockResolvedValue(1),
-            updatePending: jest.fn(),
-            markSigned: jest.fn(),
-            cancelPending: jest.fn(),
-            deleteAmendment: jest.fn(),
+            updatePending: jest.fn().mockImplementation((_id, data) => {
+                currentAmendment = { ...currentAmendment, ...data };
+                return Promise.resolve(currentAmendment);
+            }),
+            markSigned: jest.fn().mockImplementation((_id, sigUrl, pdfUrl, meta) => {
+                currentAmendment = { ...currentAmendment, status: 'signed', signatureUrl: sigUrl, pdfUrl, metadata: meta };
+                return Promise.resolve(currentAmendment);
+            }),
+            cancelPending: jest.fn().mockImplementation(() => {
+                currentAmendment = { ...currentAmendment, status: 'cancelled' };
+                return Promise.resolve(currentAmendment);
+            }),
+            deleteAmendment: jest.fn().mockResolvedValue(true),
         } as any;
 
         pdfService = {
@@ -112,7 +156,15 @@ describe('Phase 5C — Contract Amendment & Renewal Specification Suite', () => 
                 }),
             },
             contractAmendment: {
-                update: jest.fn(),
+                update: jest.fn().mockImplementation(({ data }) => {
+                    currentAmendment = { ...currentAmendment, ...data };
+                    return Promise.resolve(currentAmendment);
+                }),
+                create: jest.fn().mockResolvedValue(sampleAmendment),
+                findUnique: jest.fn().mockImplementation(() => Promise.resolve(currentAmendment)),
+            },
+            activityLog: {
+                create: jest.fn().mockResolvedValue({ id: 'log-01' }),
             },
         };
 

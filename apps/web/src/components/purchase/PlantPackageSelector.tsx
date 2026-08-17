@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type PlantPackageSelectorProps = {
   carePackagesList: any[];
@@ -27,7 +28,7 @@ export const PlantPackageSelector = ({
         <span className="text-xs font-bold text-foreground uppercase tracking-wider block">
           {t('careTitle')}
         </span>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {carePackagesList.map((pkg) => {
             const pkgId = pkg.code || pkg.id;
             const isSelected = selectedCareId === pkgId;
@@ -52,7 +53,7 @@ export const PlantPackageSelector = ({
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-primary mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perTree')}</span>
+                  +{formatVNDPrice(pkgPrice)} <span className="text-[9px] text-muted-foreground font-normal">{t('perTree')}</span>
                 </p>
                 <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultCareDesc')}</span>
               </Button>
@@ -91,7 +92,7 @@ export const PlantPackageSelector = ({
                   </div>
                 </div>
                 <p className="text-[11px] font-black text-primary mt-1">
-                  +{pkgPrice.toLocaleString('vi-VN')} đ <span className="text-[9px] text-muted-foreground font-normal">{t('perYear')}</span>
+                  +{formatVNDPrice(pkgPrice)} <span className="text-[9px] text-muted-foreground font-normal">{t('perYear')}</span>
                 </p>
                 <span className="text-[9px] text-muted-foreground block line-clamp-1 mt-0.5">{pkg.description || t('defaultProtectionDesc')}</span>
               </Button>

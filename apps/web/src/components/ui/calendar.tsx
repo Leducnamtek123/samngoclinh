@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
@@ -14,23 +15,6 @@ export interface CalendarProps {
   disabled?: boolean;
 }
 
-const MONTH_NAMES = [
-  'Tháng 1',
-  'Tháng 2',
-  'Tháng 3',
-  'Tháng 4',
-  'Tháng 5',
-  'Tháng 6',
-  'Tháng 7',
-  'Tháng 8',
-  'Tháng 9',
-  'Tháng 10',
-  'Tháng 11',
-  'Tháng 12',
-];
-
-const WEEK_DAYS = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-
 const STATIC_YEARS: number[] = Array.from({ length: 96 }, (_, i) => 2035 - i);
 
 export function Calendar({
@@ -41,6 +25,23 @@ export function Calendar({
   maxDate,
   disabled,
 }: CalendarProps) {
+  const locale = useLocale();
+  const tActions = useTranslations('actions');
+
+  const monthNames = React.useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(2026, i, 1);
+      return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { month: 'long' });
+    });
+  }, [locale]);
+
+  const weekDays = React.useMemo(() => {
+    if (locale === 'en') {
+      return ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+    }
+    return ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+  }, [locale]);
+
   const initialDate = selected || new Date();
   const [viewYear, setViewYear] = React.useState<number>(initialDate.getFullYear());
   const [viewMonth, setViewMonth] = React.useState<number>(initialDate.getMonth());
@@ -77,8 +78,6 @@ export function Calendar({
     const firstDayOfMonth = new Date(viewYear, viewMonth, 1);
     const lastDayOfMonth = new Date(viewYear, viewMonth + 1, 0);
 
-    // Get day of week (0 = Sunday, 1 = Monday, ... 6 = Saturday)
-    // Convert to Monday = 0, ..., Sunday = 6
     let startDay = firstDayOfMonth.getDay() - 1;
     if (startDay === -1) startDay = 6;
 
@@ -171,11 +170,11 @@ export function Calendar({
         <div className="flex items-center gap-1.5">
           <select
             value={viewMonth}
-            aria-label="Chọn tháng"
+            aria-label="Select month"
             onChange={(e) => setViewMonth(Number(e.target.value))}
-            className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none"
+            className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none capitalize"
           >
-            {MONTH_NAMES.map((name, idx) => (
+            {monthNames.map((name, idx) => (
               <option key={name} value={idx}>
                 {name}
               </option>
@@ -184,13 +183,13 @@ export function Calendar({
 
           <select
             value={viewYear}
-            aria-label="Chọn năm"
+            aria-label="Select year"
             onChange={(e) => setViewYear(Number(e.target.value))}
             className="text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-slate-800 rounded-lg px-2 py-1 border-0 focus:ring-1 focus:ring-emerald-500 cursor-pointer outline-none"
           >
             {years.map((y) => (
               <option key={y} value={y}>
-                Năm {y}
+                {y}
               </option>
             ))}
           </select>
@@ -201,7 +200,7 @@ export function Calendar({
             type="button"
             onClick={handlePrevMonth}
             className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            title="Tháng trước"
+            title="Previous month"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -209,7 +208,7 @@ export function Calendar({
             type="button"
             onClick={handleNextMonth}
             className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            title="Tháng sau"
+            title="Next month"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -218,7 +217,7 @@ export function Calendar({
 
       {/* Week days */}
       <div className="grid grid-cols-7 gap-1 text-center">
-        {WEEK_DAYS.map((w, idx) => (
+        {weekDays.map((w, idx) => (
           <div
             key={w}
             className={cn(
@@ -268,7 +267,7 @@ export function Calendar({
           onClick={handleClear}
           className="h-7 text-[11px] font-semibold text-gray-500 hover:text-red-600 px-2 cursor-pointer"
         >
-          Xóa chọn
+          {tActions('delete')}
         </Button>
         <Button
           type="button"
@@ -277,7 +276,7 @@ export function Calendar({
           onClick={handleSelectToday}
           className="h-7 text-[11px] font-bold text-emerald-800 dark:text-emerald-400 hover:bg-emerald-50 px-2 cursor-pointer"
         >
-          Hôm nay
+          {locale === 'en' ? 'Today' : 'Hôm nay'}
         </Button>
       </div>
     </div>

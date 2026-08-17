@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Sprout, LayoutGrid } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCatalogPlants } from '@/hooks/queries/useCatalog';
@@ -27,6 +28,10 @@ type GinsengClientProps = {
 };
 
 export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClientProps) => {
+  const tTrees = useTranslations('trees');
+  const tProducts = useTranslations('products');
+  const tActions = useTranslations('actions');
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -85,7 +90,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
       image: item.image || item.images?.[0] || item.imageUrl || '',
       category: 'Cây giống',
     });
-    toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+    toast.success(`${tProducts('addedToCart')} "${item.name}"`);
   };
 
   const handleBuyItem = (e: React.MouseEvent, item: GinsengPlantItem) => {
@@ -166,11 +171,11 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 pt-4">
           <ProductFilterSidebar
-            title="Bộ Lọc Sâm"
+            title={tProducts('filterTitle')}
             ageOptions={[
-              { label: '1 Năm Tuổi', value: 1, id: 'age-1' },
-              { label: '2 Năm Tuổi', value: 2, id: 'age-2' },
-              { label: 'Từ 3 Năm Tuổi+', value: 3, id: 'age-3' },
+              { label: `1 ${tTrees('yearsOld')}`, value: 1, id: 'age-1' },
+              { label: `2 ${tTrees('yearsOld')}`, value: 2, id: 'age-2' },
+              { label: `3+ ${tTrees('yearsOld')}`, value: 3, id: 'age-3' },
             ]}
             selectedAges={selectedAges}
             onAgeToggle={handleAgeToggle}
@@ -190,7 +195,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
               <SearchInput
                 value={searchTerm}
                 onSearch={setSearchTerm}
-                placeholder="Tìm kiếm sâm giống..."
+                placeholder={tProducts('searchPlaceholder')}
               />
 
               <div className="flex bg-gray-200/80 p-1 rounded-xl w-full sm:w-auto shrink-0">
@@ -202,7 +207,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                   }`}
                 >
                   <Sprout className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Danh mục sâm</span>
+                  <span>{tTrees('treeInfo')}</span>
                 </button>
                 <button
                   type="button"
@@ -212,7 +217,7 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
                   }`}
                 >
                   <LayoutGrid className="w-3.5 h-3.5 text-emerald-700" />
-                  <span>Vườn luống Farm</span>
+                  <span>{tTrees('cultivationBed')}</span>
                 </button>
               </div>
             </div>
@@ -220,14 +225,14 @@ export const GinsengClient = ({ locale, initialItems, isLoggedIn }: GinsengClien
             {viewMode === 'beds' ? (
               <GinsengBedsGrid beds={processedBeds} />
             ) : isLoading ? (
-              <LoadingState message="Đang tải danh sách sâm giống..." size="lg" />
+              <LoadingState message={tProducts('loading')} size="lg" />
             ) : isError ? (
-              <ErrorState message="Không thể tải danh sách sâm. Vui lòng thử lại sau." onRetry={handleClearFilters} />
+              <ErrorState message={tProducts('error')} onRetry={handleClearFilters} />
             ) : processedItems.length === 0 ? (
               <EmptyState
-                title="Không tìm thấy sâm phù hợp"
-                description="Hãy thử thay đổi độ tuổi hoặc giá trị tìm kiếm."
-                actionLabel="Đặt lại bộ lọc"
+                title={tProducts('noProductsFound')}
+                description={tProducts('noProductsDesc')}
+                actionLabel={tActions('clearFilters')}
                 onAction={handleClearFilters}
               />
             ) : (

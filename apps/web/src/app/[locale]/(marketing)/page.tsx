@@ -7,6 +7,7 @@ import { Link } from '@/lib/I18nNavigation';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
 import { HomeFeaturedProducts } from '@/components/home/HomeFeaturedProducts';
 import { HomeSaponinComparison } from '@/components/home/HomeSaponinComparison';
+import { ScrollReveal, StaggerContainer } from '@/components/animation';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,17 +15,21 @@ type IndexPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-
-
-const categoryLabels: Record<string, string> = {
-  'news': 'Tin tức',
-  'event': 'Sự kiện',
-  'guide': 'Hướng dẫn sử dụng app',
-  'faq': 'Kiến thức'
-};
-
-const getCategoryLabel = (category: string) => {
-  return categoryLabels[category] || category || 'Tin tức';
+const getCategoryLabel = (category: string, locale: string) => {
+  const labelsVi: Record<string, string> = {
+    'news': 'Tin tức',
+    'event': 'Sự kiện',
+    'guide': 'Hướng dẫn',
+    'faq': 'Kiến thức'
+  };
+  const labelsEn: Record<string, string> = {
+    'news': 'News',
+    'event': 'Events',
+    'guide': 'Guide',
+    'faq': 'Knowledge'
+  };
+  const map = locale === 'en' ? labelsEn : labelsVi;
+  return map[category] || category || (locale === 'en' ? 'News' : 'Tin tức');
 };
 
 async function getArticles() {
@@ -93,14 +98,14 @@ async function getBannerImages() {
   return defaultImages;
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: IndexPageProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'homepage' });
   return {
-    title: 'Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh',
-    description: 'Ứng dụng tiên phong mua, sở hữu và theo dõi quá trình sinh trưởng của sâm Ngọc Linh thật qua điện thoại.',
+    title: `${t('heroTitle')} | Sâm Ngọc Linh`,
+    description: t('heroSubtitle'),
   };
 }
-
-import { ScrollReveal, StaggerContainer } from '@/components/animation';
 
 function AboutSection({ t }: { t: any }) {
   return (
@@ -113,7 +118,7 @@ function AboutSection({ t }: { t: any }) {
                 <Image 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                   src="/images/kon_tum_ginseng.png" 
-                  alt="Vùng trồng Sâm Ngọc Linh Kon Tum" 
+                  alt={t('aboutTitle')} 
                   fill
                   sizes="(max-width: 768px) 100vw, 40vw"
                   unoptimized
@@ -205,7 +210,7 @@ function AboutSection({ t }: { t: any }) {
   );
 }
 
-function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles: any[]; newsImages: string[] }) {
+function NewsSection({ t, latestArticles, newsImages, locale }: { t: any; latestArticles: any[]; newsImages: string[]; locale: string }) {
   if (!latestArticles.length) return null;
   return (
     <section className="py-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 border-t border-gray-100">
@@ -237,15 +242,12 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
                 </Link>
                 <span className="absolute top-6 left-6 bg-[#EAF5ED] text-[#2D7A4D] border border-emerald-100/50 text-[10px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#2D7A4D]"></span>
-                  {getCategoryLabel(article.category)}
+                  {getCategoryLabel(article.category, locale)}
                 </span>
               </div>
               <div className="p-6 space-y-3">
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-                  </svg>
-                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("vi-VN", { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
+                  {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'vi-VN', { day: 'numeric', month: 'long', year: 'numeric' }) : ""}
                 </div>
                 <Link href={`/news/${article.slug}`}>
                   <h3 className="font-bold text-gray-900 text-base leading-snug line-clamp-2 hover:text-primary transition-colors min-h-[44px] cursor-pointer">
@@ -259,16 +261,13 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
             </div>
             <div className="p-6 pt-0 flex items-center justify-between border-t border-gray-50 mt-4">
               <div className="flex items-center gap-1.5 pt-4 text-xs font-semibold text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                </svg>
                 <span>{article.author || 'Sâm Ngọc Linh'}</span>
               </div>
               <Link
                 href={`/news/${article.slug}`}
                 className="inline-flex items-center gap-1 text-xs font-bold text-secondary hover:text-secondary-hover pt-4 transition-colors group cursor-pointer"
               >
-                <span>Đọc thêm</span>
+                <span>{locale === 'en' ? 'Read more' : 'Đọc thêm'}</span>
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
@@ -283,7 +282,7 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
           href="/news" 
           className="inline-flex items-center gap-2 border border-gray-300 hover:border-secondary hover:text-secondary text-primary px-8 py-3 rounded-lg text-sm font-bold transition-colors duration-200"
         >
-          <span>Xem tất cả</span>
+          <span>{locale === 'en' ? 'View all news' : 'Xem tất cả'}</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
@@ -293,17 +292,17 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
   );
 }
 
-function ContactSection() {
+function ContactSection({ locale }: { locale: string }) {
   return (
     <section className="py-20 bg-white border-t border-gray-100 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <ScrollReveal variant="fade-up">
           <div className="text-center mb-16 space-y-2">
             <h2 className="text-4xl font-extrabold text-primary font-display-lg pt-1">
-              Liên hệ với chúng tôi
+              {locale === 'en' ? 'Contact Us' : 'Liên hệ với chúng tôi'}
             </h2>
             <p className="text-gray-500 text-sm max-w-2xl mx-auto font-medium">
-              Hãy để chúng tôi hỗ trợ bạn tìm được những cây sâm ưng ý nhất
+              {locale === 'en' ? 'Let us assist you in finding your ideal ginseng products.' : 'Hãy để chúng tôi hỗ trợ bạn tìm được những cây sâm ưng ý nhất'}
             </p>
           </div>
         </ScrollReveal>
@@ -313,7 +312,7 @@ function ContactSection() {
             <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-white border border-gray-100 shadow-md flex items-center justify-center p-3.5 z-20">
               <Image 
                 src="/assets/images/logo_ruou_sam.png?v=2" 
-                alt="Rượu Sâm Ngọc Linh Logo" 
+                alt="Logo" 
                 width={96}
                 height={96}
                 unoptimized
@@ -345,7 +344,7 @@ function ContactSection() {
                   </div>
                   <div>
                     <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
-                      Địa chỉ
+                      {locale === 'en' ? 'Address' : 'Địa chỉ'}
                     </span>
                     <p className="text-sm font-bold text-gray-700 leading-relaxed">
                       Showroom 156 Tây Thạnh, P. Tây Thạnh, TP. Hồ Chí Minh, Việt Nam
@@ -361,7 +360,7 @@ function ContactSection() {
                   </div>
                   <div>
                     <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
-                      Điện thoại
+                      {locale === 'en' ? 'Phone' : 'Điện thoại'}
                     </span>
                     <p className="text-sm font-bold text-gray-700 leading-relaxed">
                       <a href="tel:0967234234" className="hover:text-secondary transition-colors">0967 234 234</a>
@@ -377,7 +376,7 @@ function ContactSection() {
                   </div>
                   <div>
                     <span className="text-[11px] font-black text-emerald-700 uppercase tracking-wider block mb-1">
-                      Giấy phép kinh doanh
+                      {locale === 'en' ? 'Business License' : 'Giấy phép kinh doanh'}
                     </span>
                     <p className="text-sm font-bold text-gray-700 leading-relaxed">
                       Số 0316913632 cấp ngày 22/06/2021 tại Sở Kế hoạch và Đầu tư TP.HCM
@@ -401,29 +400,6 @@ function ContactSection() {
                   </div>
                 </div>
               </StaggerContainer>
-
-              <ScrollReveal variant="blur" delay={0.2}>
-                <div className="bg-emerald-50/40 border border-emerald-600/5 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 mt-8 relative overflow-hidden">
-                  <div className="w-10 h-10 flex-shrink-0 relative">
-                    <Image 
-                      src="/assets/images/logo_ruou_sam.png?v=2" 
-                      alt="Logo" 
-                      width={40}
-                      height={40}
-                      unoptimized
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-center sm:text-left z-10">
-                    <p className="text-[10px] sm:text-xs text-gray-500 font-semibold uppercase tracking-wider">
-                      Chúng tôi luôn sẵn sàng hỗ trợ và đồng hành cùng bạn
-                    </p>
-                    <p className="text-xs sm:text-sm font-extrabold text-emerald-800 mt-0.5 font-display-md">
-                      Rượu Sâm Ngọc Linh – Tinh hoa từ đại ngàn Kon Tum
-                    </p>
-                  </div>
-                </div>
-              </ScrollReveal>
             </div>
           </div>
         </ScrollReveal>
@@ -432,23 +408,22 @@ function ContactSection() {
   );
 }
 
-function CtaBanner() {
+function CtaBanner({ t }: { t: any }) {
   return (
     <section className="bg-gradient-to-r from-emerald-950 via-primary to-emerald-950 py-16 sm:py-20 px-4 sm:px-6 lg:px-8 text-center text-white relative overflow-hidden border-t border-emerald-800/40">
-      {/* Ambient background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="max-w-4xl mx-auto space-y-6 relative z-10">
         <ScrollReveal variant="fade-up">
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-800/60 border border-emerald-600/50 text-emerald-300 text-xs font-black uppercase tracking-wider mb-2">
-            Tinh Hoa Dược Liệu Quốc Bảo
+            {t('heroBadge')}
           </span>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display-lg mt-2">
-            Bắt đầu hành trình cùng Sâm Ngọc Linh ngay hôm nay
+            {t('ctaTitle')}
           </h2>
         </ScrollReveal>
         <ScrollReveal variant="fade-up" delay={0.15}>
           <p className="text-emerald-100/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
-            Tham gia cùng hàng nghìn khách hàng đã tin tưởng Sâm Ngọc Linh. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
+            {t('ctaSubtitle')}
           </p>
         </ScrollReveal>
         <ScrollReveal variant="scale" delay={0.3} scaleFrom={0.92} className="pt-2">
@@ -456,7 +431,7 @@ function CtaBanner() {
             href="/products"
             className="inline-flex items-center justify-center bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-8 py-3.5 rounded-full shadow-xl hover:shadow-2xl transition-[color,box-shadow,transform] duration-300 hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base cursor-pointer"
           >
-            <span>Khám phá sản phẩm</span>
+            <span>{t('exploreProducts')}</span>
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               fill="none" 
@@ -477,7 +452,7 @@ function CtaBanner() {
 export default async function Index(props: IndexPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
-  const t = await getTranslations('homepage');
+  const t = await getTranslations({ locale, namespace: 'homepage' });
 
   const [articles, bannerImages, initialPlants, initialShopItems, cookieStore] = await Promise.all([
     getArticles(),
@@ -520,10 +495,9 @@ export default async function Index(props: IndexPageProps) {
       <HomeSaponinComparison />
 
       <AboutSection t={t} />
-      <NewsSection t={t} latestArticles={latestArticles} newsImages={newsImages} />
-      <ContactSection />
-      <CtaBanner />
+      <NewsSection t={t} latestArticles={latestArticles} newsImages={newsImages} locale={locale} />
+      <ContactSection locale={locale} />
+      <CtaBanner t={t} />
     </div>
   );
 }
-

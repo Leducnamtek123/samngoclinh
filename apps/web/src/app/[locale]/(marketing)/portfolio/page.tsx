@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/lib/I18nNavigation';
 import { Award, ShieldCheck, Sparkles, Check, ArrowRight, Droplets, Clock, Flame } from 'lucide-react';
 import { ScrollReveal, StaggerContainer } from '@/components/animation';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type PortfolioPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: PortfolioPageProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'homepage' });
   return {
-    title: 'Bộ Sưu Tập Rượu Sâm Ngọc Linh Thượng Hạng | Di Sản Quốc Bảo',
-    description: 'Chiêm ngưỡng các kiệt tác bình rượu Sâm Ngọc Linh ngâm ủ lâu năm độc bản, chuẩn nguồn gốc đỉnh núi Ngọc Linh.',
+    title: `${t('vintageCollection')} | Sâm Ngọc Linh`,
+    description: t('vintageCollectionSubtitle'),
   };
 }
 
@@ -20,22 +23,29 @@ export default async function Portfolio(props: PortfolioPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
+  const tHome = await getTranslations({ locale, namespace: 'homepage' });
+  const tProd = await getTranslations({ locale, namespace: 'products' });
+
   const masterpiece = {
     id: 'COL-GRAND-01',
     code: 'SNL-VINTAGE-2014',
-    title: 'Rượu Sâm Ngọc Linh Cổ Thụ Độc Bản 12 Năm Tuổi',
-    volume: 'Bình Pha Lê 20 Lít • Củ Sâm Tự Nhiên 12 Năm',
-    edition: 'Phiên bản Hoàng gia giới hạn 09 bình',
-    age: '12 năm tuổi',
+    title: locale === 'en'
+      ? '12-Year-Old Ancient Ngoc Linh Ginseng Wine'
+      : 'Rượu Sâm Ngọc Linh Cổ Thụ Độc Bản 12 Năm Tuổi',
+    volume: locale === 'en' ? 'Crystal Decanter 20L • 12Y Wild Ginseng' : 'Bình Pha Lê 20 Lít • Củ Sâm Tự Nhiên 12 Năm',
+    edition: locale === 'en' ? 'Limited Imperial Edition - 09 Decanters' : 'Phiên bản Hoàng gia giới hạn 09 bình',
+    age: locale === 'en' ? '12 Years Old' : '12 năm tuổi',
     abv: '39% Vol',
-    steepTime: 'Ngâm ủ 5 năm trong hầm đá ngầm',
-    desc: 'Tuyển chọn từ củ sâm Ngọc Linh nguyên vẹn rễ nhánh khai thác ở độ cao 2.100m đỉnh núi Ngọc Linh. Kết hợp cùng rượu men lá thảo dược bí truyền của đồng bào Xơ Đăng, trải qua quá trình hạ thổ tách lọc độc tố Andehit hoàn hảo.',
+    steepTime: locale === 'en' ? 'Aged 5 years in stone cellar' : 'Ngâm ủ 5 năm trong hầm đá ngầm',
+    desc: locale === 'en'
+      ? 'Selected from pristine whole wild Ngoc Linh ginseng roots harvested at 2,100m altitude. Combined with ancient herbal yeast wine and underground aged to perfection.'
+      : 'Tuyển chọn từ củ sâm Ngọc Linh nguyên vẹn rễ nhánh khai thác ở độ cao 2.100m đỉnh núi Ngọc Linh. Kết hợp cùng rượu men lá thảo dược bí truyền của đồng bào Xơ Đăng, trải qua quá trình hạ thổ tách lọc độc tố Andehit hoàn hảo.',
     price: 68000000,
     image: '/images/products/wine_root.png',
     highlights: [
-      'Hàm lượng Saponin MR2 đạt đỉnh >52% tổng dược tính',
-      'Rượu êm dịu, hậu vị ngọt sâu lắng, màu hổ phách sóng sánh',
-      'Đính kèm Chứng Thư Giám Định Gen DNA & Tem QR Chống Giả',
+      locale === 'en' ? 'MR2 Saponin potency peaks at >52%' : 'Hàm lượng Saponin MR2 đạt đỉnh >52% tổng dược tính',
+      locale === 'en' ? 'Velvety smooth finish, shimmering amber hue' : 'Rượu êm dịu, hậu vị ngọt sâu lắng, màu hổ phách sóng sánh',
+      locale === 'en' ? 'Includes DNA Certificate & Anti-Counterfeit QR' : 'Đính kèm Chứng Thư Giám Định Gen DNA & Tem QR Chống Giả',
     ],
   };
 
@@ -43,24 +53,28 @@ export default async function Portfolio(props: PortfolioPageProps) {
     {
       id: 'COL-02',
       code: 'SNL-RESERVE-8Y',
-      title: 'Rượu Sâm Ngọc Linh Hạ Thổ Thượng Hạng',
-      volume: 'Bình 10 Lít • Sâm củ 8 năm tuổi',
-      age: '8 năm tuổi',
+      title: locale === 'en' ? 'Premium 8-Year Underground Aged Ginseng Wine' : 'Rượu Sâm Ngọc Linh Hạ Thổ Thượng Hạng',
+      volume: locale === 'en' ? '10L Jar • 8Y Root' : 'Bình 10 Lít • Sâm củ 8 năm tuổi',
+      age: locale === 'en' ? '8 Years Old' : '8 năm tuổi',
       abv: '38% Vol',
-      steepTime: 'Hạ thổ 3 năm trong chum sành mộc',
-      desc: 'Ngâm ủ từ những củ sâm đạt chuẩn dược điển, hương vị đậm đà, bổ khí huyết, tăng cường sinh lực và tăng khả năng miễn dịch.',
+      steepTime: locale === 'en' ? 'Cellar aged 3 years' : 'Hạ thổ 3 năm trong chum sành mộc',
+      desc: locale === 'en'
+        ? 'Brewed from pharmacopoeia-standard roots with rich herbal notes and natural revitalizing properties.'
+        : 'Ngâm ủ từ những củ sâm đạt chuẩn dược điển, hương vị đậm đà, bổ khí huyết, tăng cường sinh lực và tăng khả năng miễn dịch.',
       price: 32000000,
       image: '/images/products/wine_root.png',
     },
     {
       id: 'COL-03',
       code: 'SNL-CLASSIC-6Y',
-      title: 'Rượu Sâm Ngọc Linh Chum Sành Cổ Truyền',
-      volume: 'Bình 5 Lít • Sâm củ 6 năm tuổi',
-      age: '6 năm tuổi',
+      title: locale === 'en' ? 'Classic 6-Year Ceramic Jar Ginseng Wine' : 'Rượu Sâm Ngọc Linh Chum Sành Cổ Truyền',
+      volume: locale === 'en' ? '5L Jar • 6Y Root' : 'Bình 5 Lít • Sâm củ 6 năm tuổi',
+      age: locale === 'en' ? '6 Years Old' : '6 năm tuổi',
       abv: '35% Vol',
-      steepTime: 'Ngâm ủ 2 năm trong chum sành không tráng men',
-      desc: 'Dòng sản phẩm lý tưởng để thưởng thức hàng ngày hoặc làm quà biếu đối tác ngoại giao, mang trọn tinh hoa của núi rừng Kon Tum.',
+      steepTime: locale === 'en' ? 'Aged 2 years' : 'Ngâm ủ 2 năm trong chum sành không tráng men',
+      desc: locale === 'en'
+        ? 'Ideal for diplomatic gifting or daily enjoyment, capturing the pure essence of Kon Tum rainforest.'
+        : 'Dòng sản phẩm lý tưởng để thưởng thức hàng ngày hoặc làm quà biếu đối tác ngoại giao, mang trọn tinh hoa của núi rừng Kon Tum.',
       price: 15500000,
       image: '/images/products/wine_root.png',
     },
@@ -70,43 +84,43 @@ export default async function Portfolio(props: PortfolioPageProps) {
     <div className="w-full bg-brand-bg text-gray-900 min-h-screen py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-20">
         
-        {/* Header Section (Editorial Asymmetric Layout) */}
+        {/* Header Section */}
         <ScrollReveal variant="fade-up">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-gray-200/80 pb-8">
             <div className="max-w-3xl space-y-3">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-900 text-amber-300 text-xs font-black uppercase tracking-widest shadow-sm">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Tuyển Tập Kiệt Tác Độc Bản</span>
+                <span>{tHome('vintageCollection')}</span>
               </div>
               <h1 className="text-3xl sm:text-5xl font-black text-primary font-display tracking-tight leading-tight">
-                Bộ Sưu Tập Rượu Sâm Ngọc Linh
+                {tHome('vintageCollection')}
               </h1>
               <p className="text-gray-600 text-sm sm:text-base font-normal leading-relaxed">
-                Được tuyển chọn nghiêm ngặt từ những gốc sâm cổ thuần chủng tại rừng nguyên sinh Nam Trà My & Kon Tum, ngâm ủ trong chum sành men lá truyền thống để giữ trọn vẹn dược tính vàng.
+                {tHome('vintageCollectionSubtitle')}
               </p>
             </div>
 
             <div className="flex items-center gap-4 text-xs font-semibold text-gray-500 shrink-0">
               <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-2xs">
                 <ShieldCheck className="w-4 h-4 text-emerald-700" />
-                <span>Chỉ Dẫn Địa Lý Số 00049</span>
+                <span>GI No. 00049</span>
               </span>
               <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-2xs">
                 <Award className="w-4 h-4 text-amber-600" />
-                <span>Chuẩn Men Lá Cổ Truyền</span>
+                <span>GACP-WHO</span>
               </span>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Masterpiece Feature Spotlight (60/40 Asymmetric Split) */}
+        {/* Masterpiece Feature Spotlight */}
         <ScrollReveal variant="scale" duration={1.1} scaleFrom={0.96}>
           <div className="bg-gradient-to-br from-emerald-950 via-[#122B18] to-slate-950 rounded-3xl p-6 sm:p-12 text-white shadow-2xl border border-emerald-800/40 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
-              {/* Left Visual: Grand Bottle Display */}
+              {/* Left Visual */}
               <div className="lg:col-span-5 relative group">
                 <div className="relative aspect-[4/5] sm:aspect-square lg:aspect-[4/5] rounded-2xl bg-white/5 border border-emerald-700/40 backdrop-blur-md p-6 flex items-center justify-center overflow-hidden">
                   <div className="absolute top-4 left-4 bg-amber-400 text-slate-950 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-md">
@@ -123,7 +137,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
                 </div>
               </div>
 
-              {/* Right Content: Narrative & Biological Breakdown */}
+              {/* Right Content */}
               <div className="lg:col-span-7 space-y-6">
                 <div className="space-y-2">
                   <span className="text-xs font-mono font-bold text-emerald-400 tracking-wider">
@@ -141,21 +155,21 @@ export default async function Portfolio(props: PortfolioPageProps) {
                 <div className="grid grid-cols-3 gap-3 p-4 bg-white/5 rounded-2xl border border-emerald-700/30 text-center">
                   <div className="space-y-1">
                     <span className="text-[10px] text-emerald-400 uppercase font-bold flex items-center justify-center gap-1">
-                      <Clock className="w-3 h-3" /> Tuổi sâm
+                      <Clock className="w-3 h-3" /> {locale === 'en' ? 'Age' : 'Tuổi sâm'}
                     </span>
                     <p className="text-sm sm:text-base font-extrabold text-white">{masterpiece.age}</p>
                   </div>
                   <div className="space-y-1 border-x border-emerald-800/60">
                     <span className="text-[10px] text-emerald-400 uppercase font-bold flex items-center justify-center gap-1">
-                      <Flame className="w-3 h-3" /> Nồng độ
+                      <Flame className="w-3 h-3" /> ABV
                     </span>
                     <p className="text-sm sm:text-base font-extrabold text-white">{masterpiece.abv}</p>
                   </div>
                   <div className="space-y-1">
                     <span className="text-[10px] text-emerald-400 uppercase font-bold flex items-center justify-center gap-1">
-                      <Droplets className="w-3 h-3" /> Quy cách
+                      <Droplets className="w-3 h-3" /> Volume
                     </span>
-                    <p className="text-sm sm:text-base font-extrabold text-white">Bình 20 Lít</p>
+                    <p className="text-sm sm:text-base font-extrabold text-white">20L</p>
                   </div>
                 </div>
 
@@ -171,14 +185,14 @@ export default async function Portfolio(props: PortfolioPageProps) {
                   ))}
                 </div>
 
-                {/* Price & Acquisition Call to Action */}
+                {/* Price & Action */}
                 <div className="pt-4 border-t border-emerald-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold block">
-                      Giá niêm yết độc bản
+                      {locale === 'en' ? 'Exclusive Price' : 'Giá niêm yết độc bản'}
                     </span>
                     <span className="text-2xl sm:text-3xl font-black text-amber-400 tracking-tight">
-                      {masterpiece.price.toLocaleString('vi-VN')} đ
+                      {formatVNDPrice(masterpiece.price)}
                     </span>
                   </div>
 
@@ -186,7 +200,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
                     href={`/${locale}/products`}
                     className="inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm px-7 py-3.5 rounded-2xl shadow-xl transition-[transform,background-color] hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                   >
-                    <span>Liên Hệ Sở Hữu Ngay</span>
+                    <span>{tProd('buyNow')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -195,14 +209,16 @@ export default async function Portfolio(props: PortfolioPageProps) {
           </div>
         </ScrollReveal>
 
-        {/* Reserve Editions (Asymmetric 2-Column Staggered Grid) */}
+        {/* Reserve Editions */}
         <div className="space-y-8">
           <div className="border-b border-gray-200/80 pb-4">
             <h3 className="text-2xl font-extrabold text-primary font-display">
-              Các Dòng Rượu Hạ Thổ Dự Trữ Đặc Biệt
+              {locale === 'en' ? 'Special Aged Reserve Cellar' : 'Các Dòng Rượu Hạ Thổ Dự Trữ Đặc Biệt'}
             </h3>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Tuyển chọn các phiên bản bình rượu sâm ngâm chum sành từ 6 đến 8 năm tuổi dành cho người sành thưởng thức.
+              {locale === 'en'
+                ? 'Curated editions aged from 6 to 8 years in natural clay jars for connoisseurs.'
+                : 'Tuyển chọn các phiên bản bình rượu sâm ngâm chum sành từ 6 đến 8 năm tuổi dành cho người sành thưởng thức.'}
             </p>
           </div>
 
@@ -213,7 +229,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
                 className="bg-white rounded-3xl border border-gray-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between group p-6 sm:p-8"
               >
                 <div className="space-y-6">
-                  {/* Top Image + Quick Spec Tags */}
+                  {/* Top Image */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
                     <div className="sm:col-span-5 aspect-square bg-gray-50/80 rounded-2xl border border-gray-100 p-4 relative overflow-hidden flex items-center justify-center">
                       <Image
@@ -242,15 +258,15 @@ export default async function Portfolio(props: PortfolioPageProps) {
                   {/* Spec Row */}
                   <div className="grid grid-cols-3 gap-2 p-3 bg-gray-50 rounded-xl text-center text-xs font-semibold text-gray-600 border border-gray-100">
                     <div>
-                      <span className="text-[10px] text-gray-400 block font-medium">Quy cách</span>
+                      <span className="text-[10px] text-gray-400 block font-medium">{locale === 'en' ? 'Volume' : 'Quy cách'}</span>
                       <span className="font-bold text-gray-800">{item.volume.split('•')[0]}</span>
                     </div>
                     <div className="border-x border-gray-200">
-                      <span className="text-[10px] text-gray-400 block font-medium">Niên vụ</span>
+                      <span className="text-[10px] text-gray-400 block font-medium">{locale === 'en' ? 'Age' : 'Niên vụ'}</span>
                       <span className="font-bold text-gray-800">{item.age}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-gray-400 block font-medium">Nồng độ</span>
+                      <span className="text-[10px] text-gray-400 block font-medium">{locale === 'en' ? 'ABV' : 'Nồng độ'}</span>
                       <span className="font-bold text-gray-800">{item.abv}</span>
                     </div>
                   </div>
@@ -259,9 +275,9 @@ export default async function Portfolio(props: PortfolioPageProps) {
                 {/* Bottom Action */}
                 <div className="pt-6 border-t border-gray-100 flex items-center justify-between mt-6">
                   <div>
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Giá niêm yết</span>
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block">{locale === 'en' ? 'Price' : 'Giá niêm yết'}</span>
                     <span className="text-xl font-black text-primary tracking-tight">
-                      {item.price.toLocaleString('vi-VN')} đ
+                      {formatVNDPrice(item.price)}
                     </span>
                   </div>
 
@@ -269,7 +285,7 @@ export default async function Portfolio(props: PortfolioPageProps) {
                     href={`/${locale}/products`}
                     className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-[box-shadow,transform,background-color] shadow-xs hover:shadow-md active:scale-[0.98] cursor-pointer"
                   >
-                    <span>Đặt mua ngay</span>
+                    <span>{tProd('buyNow')}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

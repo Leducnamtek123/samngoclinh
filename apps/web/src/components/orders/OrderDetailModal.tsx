@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 // @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { QrCode, XCircle } from 'lucide-react';
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
 import { Button, ConfirmModal } from '@/components';
 import { getOrderStatusInfo } from '@/utils/orderStatus';
 import { formatLocalDateTime } from '@/utils/datetime';
+import { formatVNDPrice } from '@/utils/formatters';
 
 const emptySubscribe = () => () => {};
 
@@ -58,6 +60,8 @@ type OrderDetailModalProps = {
 };
 
 export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetailModalProps) => {
+  const t = useTranslations('orderDetailModal');
+
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
@@ -111,12 +115,12 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
     const orderIdToCancel = order.id || rawCode;
     try {
       await cancelOrderMutation.mutateAsync(orderIdToCancel);
-      toast.success(`Đã hủy đơn hàng ${orderCode} thành công!`);
+      toast.success(t('cancelSuccess'));
       setIsCancelConfirmOpen(false);
       if (onRefreshOrders) onRefreshOrders();
       onClose();
     } catch {
-      toast.error('Không thể hủy đơn hàng này. Vui lòng thử lại.');
+      toast.error(t('cancelError'));
     }
   };
 
@@ -140,10 +144,10 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span>Quay lại</span>
+                <span>{t('back')}</span>
               </button>
               <h2 className="font-extrabold text-gray-900 text-lg sm:text-xl font-display-lg">
-                Chi tiết đơn hàng {orderCode}
+                {t('title')} {orderCode}
               </h2>
             </div>
 
@@ -156,7 +160,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                   className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs h-8 px-3.5 gap-1.5"
                 >
                   <QrCode className="w-4 h-4" />
-                  <span>Thanh toán</span>
+                  <span>{t('payBtn')}</span>
                 </Button>
 
                 <Button
@@ -167,7 +171,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                   className="border-red-200 bg-red-50/40 hover:bg-red-100/60 text-red-700 dark:text-red-400 dark:border-red-800 dark:bg-red-950/40 text-xs font-bold shrink-0 cursor-pointer"
                 >
                   {!cancelOrderMutation.isPending && <XCircle className="w-3.5 h-3.5" />}
-                  <span>Hủy Đơn</span>
+                  <span>{t('cancelOrderBtn')}</span>
                 </Button>
               </div>
             )}
@@ -209,7 +213,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span>Thông tin khách hàng</span>
+                    <span>{t('customerInfo')}</span>
                   </h3>
                   <div className="space-y-1 text-xs">
                     <p className="text-gray-500 font-medium">{userEmail}</p>
@@ -222,10 +226,10 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
-                      <span>Thông tin giao hàng</span>
+                      <span>{t('shippingInfo')}</span>
                     </h4>
                     <div className="bg-gray-100/70 border border-gray-200/50 rounded-xl p-3 text-xs font-semibold text-gray-700">
-                      {order.shippingMethod || 'Giao hàng tận nơi'}
+                      {order.shippingMethod || t('homeDelivery')}
                     </div>
                   </div>
                 </div>
@@ -236,7 +240,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    <span>Phương thức thanh toán</span>
+                    <span>{t('paymentMethod')}</span>
                   </h3>
                   <div className="border border-emerald-500 bg-emerald-50/20 rounded-xl p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -246,12 +250,12 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                         </svg>
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 text-xs">{order.paymentMethod || 'Thanh toán trực tuyến'}</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Phương thức đã chọn</p>
+                        <p className="font-bold text-gray-900 text-xs">{order.paymentMethod || t('onlinePayment')}</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{t('selectedMethod')}</p>
                       </div>
                     </div>
                     <span className="bg-emerald-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                      Đã chọn
+                      {t('selectedBadge')}
                     </span>
                   </div>
                 </div>
@@ -260,14 +264,14 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
               {/* Right Column: Ordered Products & Cost Breakdown */}
               <div className="lg:col-span-7 bg-white border border-gray-200 rounded-2xl p-5 shadow-xs space-y-6">
                 <h3 className="font-extrabold text-gray-900 text-base border-b border-gray-100 pb-3">
-                  Sản phẩm đã đặt
+                  {t('orderedProducts')}
                 </h3>
 
                 {/* Items Card List */}
                 <div className="space-y-4">
                   {items.length === 0 ? (
                     <div className="py-6 text-center text-xs text-gray-400 border border-dashed border-gray-200 rounded-xl">
-                      Không có chi tiết sản phẩm nào trong đơn hàng này
+                      {t('noProducts')}
                     </div>
                   ) : (
                     items.map((item) => {
@@ -281,7 +285,7 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                           <div className="relative w-16 h-16 shrink-0 bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center">
                             <Image
                               src={initialImg}
-                              alt={item.name || 'Sản phẩm'}
+                              alt={item.name || 'Product'}
                               fill
                               sizes="64px"
                               unoptimized
@@ -289,15 +293,15 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                             />
                           </div>
                           <div className="flex-1 min-w-0 space-y-1">
-                            <h4 className="font-bold text-gray-900 text-sm truncate">{item.name || 'Sản phẩm'}</h4>
-                            <p className="text-xs text-gray-500 font-medium">Số lượng: {itemQty}</p>
+                            <h4 className="font-bold text-gray-900 text-sm truncate">{item.name || 'Product'}</h4>
+                            <p className="text-xs text-gray-500 font-medium">{t('quantity')}: {itemQty}</p>
                             <div className="flex flex-wrap gap-x-3 text-[11px] text-gray-600 font-medium pt-0.5">
-                              <span>Đơn giá: <strong>{itemPrice.toLocaleString('vi-VN')} đ</strong></span>
+                              <span>{t('unitPrice')}: <strong>{formatVNDPrice(itemPrice)}</strong></span>
                             </div>
                           </div>
                           <div className="text-right">
                             <span className="font-extrabold text-gray-900 text-sm">
-                              {(itemPrice * itemQty).toLocaleString('vi-VN')} đ
+                              {formatVNDPrice(itemPrice * itemQty)}
                             </span>
                           </div>
                         </div>
@@ -309,23 +313,23 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
                 {/* Detailed Cost Breakdown Table */}
                 <div className="border-t border-gray-100 pt-4 space-y-2 text-xs font-medium text-gray-600">
                   <div className="flex justify-between items-center">
-                    <span>Tạm tính</span>
-                    <span className="font-bold text-gray-800">{subtotalVal != null ? `${subtotalVal.toLocaleString('vi-VN')} đ` : '—'}</span>
+                    <span>{t('subtotal')}</span>
+                    <span className="font-bold text-gray-800">{subtotalVal != null ? formatVNDPrice(subtotalVal) : '—'}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>Phí vận chuyển</span>
-                    <span className="font-bold text-emerald-700">{shippingFeeVal > 0 ? `${shippingFeeVal.toLocaleString('vi-VN')} đ` : 'Miễn phí'}</span>
+                    <span>{t('shippingFee')}</span>
+                    <span className="font-bold text-emerald-700">{shippingFeeVal > 0 ? formatVNDPrice(shippingFeeVal) : t('free')}</span>
                   </div>
                   {vatVal > 0 && (
                     <div className="flex justify-between items-center text-amber-800 font-semibold">
-                      <span>Thuế VAT{vatPercent > 0 ? ` (${vatPercent}%)` : ''}</span>
-                      <span>+{vatVal.toLocaleString('vi-VN')} đ</span>
+                      <span>{t('vatTax')}{vatPercent > 0 ? ` (${vatPercent}%)` : ''}</span>
+                      <span>+{formatVNDPrice(vatVal)}</span>
                     </div>
                   )}
 
                   <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between items-center text-sm font-black text-gray-900">
-                    <span>Tổng cộng:</span>
-                    <span className="text-lg text-emerald-800">{finalTotal != null ? `${finalTotal.toLocaleString('vi-VN')} đ` : '—'}</span>
+                    <span>{t('total')}</span>
+                    <span className="text-lg text-emerald-800">{finalTotal != null ? formatVNDPrice(finalTotal) : '—'}</span>
                   </div>
                 </div>
               </div>
@@ -337,10 +341,10 @@ export const OrderDetailModal = ({ order, onClose, onRefreshOrders }: OrderDetai
       {/* Design System Confirm Modal for Order Cancellation */}
       <ConfirmModal
         isOpen={isCancelConfirmOpen}
-        title="Hủy đơn hàng?"
-        description={`Bạn có chắc chắn muốn hủy đơn hàng ${orderCode}?\nHành động này không thể hoàn tác.`}
-        cancelText="Không, giữ đơn"
-        confirmText="Hủy đơn hàng"
+        title={t('cancelTitle')}
+        description={t('cancelDescription', { code: orderCode })}
+        cancelText={t('keepOrder')}
+        confirmText={t('cancelOrderBtn')}
         isDestructive={true}
         isLoading={cancelOrderMutation.isPending}
         onConfirm={handleConfirmCancelOrder}

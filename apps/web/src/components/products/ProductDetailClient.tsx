@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useCatalogShopItem, useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { getProductImage } from '@/utils/productUtils';
 import { addToCart, type CartItem } from '@/utils/cart';
+import { formatVNDPrice } from '@/utils/formatters';
 import { ProductDetailView } from './ProductDetailView';
 import { ErrorState } from '@/components/common/ErrorState';
 import type { ProductItem } from '@/types';
@@ -163,7 +164,7 @@ export const ProductDetailClient = ({ id, locale, isLoggedIn, initialData }: Pro
                           {relItem.name}
                         </Link>
                         <p className="text-emerald-700 font-extrabold text-sm">
-                          {(relItem.price || 0).toLocaleString('vi-VN')} đ
+                          {formatVNDPrice(relItem.price || 0)}
                         </p>
                       </div>
 

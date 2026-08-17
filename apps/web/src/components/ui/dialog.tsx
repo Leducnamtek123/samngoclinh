@@ -76,7 +76,7 @@ const DialogOverlay = React.forwardRef<
     <button
       ref={ref}
       type="button"
-      aria-label="Đóng hộp thoại"
+      aria-label="Close"
       onClick={() => onOpenChange(false)}
       className={cn('fixed inset-0 z-[-1] bg-transparent border-0 cursor-default', className)}
       {...props}

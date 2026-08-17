@@ -2,10 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import type { ChangePasswordFormType } from "../../../types"
 
-import { ChangePasswordSchema } from "../_schemas/chnage-password-schema"
+import { ChangePasswordSchema } from "../_schemas/change-password-schema"
+import { usersService } from "@/services"
 
 import { ButtonLoading } from "@/components/ui/button"
 import {
@@ -19,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 export function ChangePasswordForm() {
+  const { t } = useTranslation()
   const form = useForm<ChangePasswordFormType>({
     resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
@@ -30,6 +34,24 @@ export function ChangePasswordForm() {
 
   const { isSubmitting } = form.formState
 
+  async function onSubmit(data: ChangePasswordFormType) {
+    try {
+      await usersService.changePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      })
+      toast.success(t("users.security.changePasswordSuccess"))
+      form.reset({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      })
+    } catch (error: unknown) {
+      console.error("Change password error:", error)
+      toast.error(error instanceof Error ? error.message : t("users.security.changePasswordError"))
+    }
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-y-2">
@@ -38,9 +60,9 @@ export function ChangePasswordForm() {
           name="currentPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Current Password</FormLabel>
+              <FormLabel>{t("users.security.currentPassword")}</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -51,9 +73,9 @@ export function ChangePasswordForm() {
           name="newPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>New Password</FormLabel>
+              <FormLabel>{t("users.security.newPassword")}</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -64,21 +86,19 @@ export function ChangePasswordForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>{t("users.security.confirmPassword")}</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <ButtonLoading isLoading={isSubmitting} className="mt-2 w-fit">
-          Set new password
+        <ButtonLoading isLoading={isSubmitting} className="mt-2 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
+          {t("users.security.changePassword")}
         </ButtonLoading>
       </form>
     </Form>
   )
 }
-
-async function onSubmit(_data: ChangePasswordFormType) {}

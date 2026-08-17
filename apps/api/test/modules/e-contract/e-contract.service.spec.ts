@@ -119,7 +119,7 @@ describe('EContractService - Phase 5A P0 Invariants & Immutability Suite', () =>
         configService = {
             get: jest.fn((key: string) => {
                 if (key === 'HOME_URL') return 'http://localhost:3002';
-                if (key === 'smtp.from') return 'noreply@wefarm.com.vn';
+                if (key === 'smtp.from') return 'noreply@samngoclinh.vn';
                 return null;
             }),
         };

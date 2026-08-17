@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { fetchApiClient } from '@/lib/ApiClient';
 import { userService } from '@/services/user.service';
 import { useQueryClient } from '@tanstack/react-query';
@@ -13,6 +14,7 @@ export type UpdateProfilePayload = {
 };
 
 export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
+  const t = useTranslations('profile');
   const queryClient = useQueryClient();
 
   const saveInlineProfile = async (updatedData: UpdateProfilePayload): Promise<boolean> => {
@@ -64,7 +66,7 @@ export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
           } catch (phoneErr: any) {
             console.error('Failed to add mobile number:', phoneErr);
             throw new Error(
-              phoneErr?.message || 'Không thể lưu số điện thoại. Có thể số điện thoại này đã được sử dụng bởi tài khoản khác.'
+              phoneErr?.message || t('savedError')
             );
           }
         } else if (phoneDigits !== existingPhone.number) {
@@ -98,14 +100,14 @@ export function useProfileUpdate(profile?: any, refetchProfile?: () => void) {
       });
       await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
 
-      toast.success('Cập nhật hồ sơ cá nhân thành công!');
+      toast.success(t('savedSuccess'));
       if (refetchProfile) {
         refetchProfile();
       }
       return true;
     } catch (err: any) {
       console.error('Error saving profile:', err);
-      const errMsg = err?.message || 'Có lỗi xảy ra khi lưu thông tin. Vui lòng thử lại.';
+      const errMsg = err?.message || t('savedError');
       toast.error(errMsg);
       return false;
     }

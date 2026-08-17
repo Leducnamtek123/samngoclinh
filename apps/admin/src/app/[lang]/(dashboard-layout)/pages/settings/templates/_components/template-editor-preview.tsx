@@ -2,6 +2,7 @@
 
 import React from "react"
 import { Code, Eye, FileText, Info, Upload } from "lucide-react"
+import { useTranslation } from "@/providers/i18n-provider"
 import {
   Card,
   CardContent,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Tooltip,
@@ -45,52 +46,55 @@ export function TemplateEditorPreview({
   onFileUpload,
   getRenderedPreviewHtml,
 }: TemplateEditorPreviewProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="lg:col-span-3 space-y-4">
       <Card>
-        <CardHeader className="pb-3 border-b">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-emerald-700" />
-              <CardTitle className="text-base font-bold">
-                {title || currentTemplate?.title}
-              </CardTitle>
+        <CardHeader className="pb-3 border-b flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-900/50">
+          <div className="space-y-1">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-emerald-600" />
+              {title || currentTemplate?.title || t("content.templates.title")}
+            </CardTitle>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Slug: <code className="font-mono bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-emerald-600">{currentTemplate?.slug || "new-template"}</code></span>
+              <span>•</span>
+              <span>Ver: <strong className="text-foreground">{version}</strong></span>
             </div>
+          </div>
 
-            {/* Import File Button */}
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <Tabs
+              value={activeTab}
+              onValueChange={(val) => setActiveTab(val as "editor" | "preview")}
+              className="w-auto"
+            >
+              <TabsList className="grid grid-cols-2 w-[180px]">
+                <TabsTrigger value="editor" className="text-xs gap-1.5">
+                  <Code className="w-3.5 h-3.5" /> Soạn thảo
+                </TabsTrigger>
+                <TabsTrigger value="preview" className="text-xs gap-1.5">
+                  <Eye className="w-3.5 h-3.5" /> Xem trước
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <label
+              htmlFor="upload-template-file"
+              className="cursor-pointer inline-flex items-center gap-1 text-xs border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 px-2.5 py-1.5 rounded-md font-medium text-slate-700 dark:text-slate-200 transition-colors shrink-0"
+              title="Import file HTML mẫu biểu"
+            >
+              <Upload className="w-3.5 h-3.5 text-slate-500" />
+              <span className="hidden sm:inline">Import HTML</span>
               <input
+                id="upload-template-file"
                 type="file"
-                id="html-file-input"
                 accept=".html,.htm,.txt"
                 className="hidden"
                 onChange={onFileUpload}
               />
-              <label htmlFor="html-file-input">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-border rounded-md cursor-pointer hover:bg-accent transition-colors">
-                  <Upload className="w-3.5 h-3.5" />
-                  Import HTML file
-                </span>
-              </label>
-
-              <Tabs
-                value={activeTab}
-                onValueChange={(val) =>
-                  setActiveTab(val as "editor" | "preview")
-                }
-              >
-                <TabsList className="h-8">
-                  <TabsTrigger value="editor" className="text-xs gap-1.5 px-3">
-                    <Code className="w-3.5 h-3.5" />
-                    Trình soạn thảo
-                  </TabsTrigger>
-                  <TabsTrigger value="preview" className="text-xs gap-1.5 px-3">
-                    <Eye className="w-3.5 h-3.5" />
-                    Xem trước
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+            </label>
           </div>
         </CardHeader>
 
@@ -98,19 +102,19 @@ export function TemplateEditorPreview({
           {/* Metadata inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2 space-y-1">
-              <Label className="text-xs font-semibold">Tên mẫu hiển thị</Label>
+              <Label className="text-xs font-semibold">{t("content.templates.templateName")}</Label>
               <Input
                 value={title}
                 onChange={(e) =>
                   onFormStateChange((prev) => ({ ...prev, title: e.target.value }))
                 }
-                placeholder="Tên mẫu biểu..."
+                placeholder={t("content.templates.templateNamePlaceholder")}
                 className="text-xs h-8"
               />
             </div>
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold">Phiên bản</Label>
+                <Label className="text-xs font-semibold">{t("content.templates.version")}</Label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -118,7 +122,7 @@ export function TemplateEditorPreview({
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="text-xs">
-                        Định dạng SemVer: 1.0.0, 2.1.0,...
+                        {t("content.templates.versionTooltip")}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -134,7 +138,7 @@ export function TemplateEditorPreview({
               />
             </div>
             <div className="sm:col-span-3 space-y-1">
-              <Label className="text-xs font-semibold">Mô tả mục đích áp dụng</Label>
+              <Label className="text-xs font-semibold">{t("content.templates.description")}</Label>
               <Input
                 value={description}
                 onChange={(e) =>
@@ -143,7 +147,7 @@ export function TemplateEditorPreview({
                     description: e.target.value,
                   }))
                 }
-                placeholder="Mô tả tóm tắt văn bản quy chuẩn này..."
+                placeholder={t("content.templates.descriptionPlaceholder")}
                 className="text-xs h-8"
               />
             </div>
@@ -154,11 +158,10 @@ export function TemplateEditorPreview({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label className="text-xs font-semibold">
-                  Mã nguồn HTML mẫu biểu
+                  {t("content.templates.sourceHtml")}
                 </Label>
                 <span className="text-[11px] text-muted-foreground">
-                  Hỗ trợ định dạng HTML, CSS nội dòng và các biến placeholder
-                  {" {{...}}"}
+                  {t("content.templates.sourceHtmlHelp")}
                 </span>
               </div>
               <Textarea
@@ -179,16 +182,15 @@ export function TemplateEditorPreview({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between pb-1">
                 <Label className="text-xs font-semibold text-emerald-800 dark:text-emerald-400">
-                  Xem trước trực quan (Dữ liệu mô phỏng)
+                  {t("content.templates.visualPreview")}
                 </Label>
                 <span className="text-[11px] text-muted-foreground">
-                  Khung hiển thị mô phỏng khi tài liệu được render sang PDF / Ký
-                  số
+                  {t("content.templates.visualPreviewHelp")}
                 </span>
               </div>
               <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white overflow-hidden shadow-xs">
                 <iframe
-                  title="Xem trước mẫu hợp đồng"
+                  title={t("content.templates.iframeTitle")}
                   srcDoc={getRenderedPreviewHtml(htmlContent)}
                   className="w-full h-[600px] border-0 bg-white"
                   sandbox="allow-same-origin allow-scripts"

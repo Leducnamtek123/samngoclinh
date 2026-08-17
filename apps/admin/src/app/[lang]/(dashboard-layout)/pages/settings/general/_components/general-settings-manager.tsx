@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Check, Info, Loader2, Save, Sliders } from "lucide-react"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import { fetchApi } from "@/lib/api"
 
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/card"
 
 export function GeneralSettingsManager() {
+  const { t } = useTranslation()
   const [settingsList, setSettingsList] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [savingKey, setSavingKey] = useState<string | null>(null)
@@ -47,20 +49,18 @@ export function GeneralSettingsManager() {
 
   const handleUpdate = async (key: string, value: string) => {
     setSavingKey(key)
-    setSuccessKey(null)
-
     try {
       const res = await fetchApi(`/admin/settings/${key}`, {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value }),
       })
-
       if (res.ok) {
         setSuccessKey(key)
-        setTimeout(() => setSuccessKey(null), 3000)
+        setTimeout(() => setSuccessKey(null), 2500)
       }
     } catch {
-      // Handle gracefully
+      // Ignore
     } finally {
       setSavingKey(null)
     }
@@ -71,11 +71,10 @@ export function GeneralSettingsManager() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Sliders className="w-6 h-6 text-emerald-600" />
-          <span>Cấu Hình Hệ Thống Chung</span>
+          <span>{t("common.generalSettings.title")}</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Tổng hợp toàn bộ các tham số vận hành và cài đặt hệ thống được lưu
-          trong cơ sở dữ liệu.
+          {t("common.generalSettings.subtitle")}
         </p>
       </div>
 
@@ -83,22 +82,21 @@ export function GeneralSettingsManager() {
         <CardHeader className="border-b border-border/50 pb-4">
           <CardTitle className="text-base font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100">
             <Sliders className="w-5 h-5 text-emerald-600" />
-            <span>Danh Sách Tham Số Cấu Hình</span>
+            <span>{t("common.generalSettings.listTitle")}</span>
           </CardTitle>
           <CardDescription className="text-xs">
-            Xem và chỉnh sửa trực tiếp các tham số cài đặt hệ thống.
+            {t("common.generalSettings.listDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
           {loading ? (
             <div className="py-8 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Đang tải danh sách tham số...</span>
+              <span>{t("common.generalSettings.loadingParams")}</span>
             </div>
           ) : settingsList.length === 0 ? (
             <div className="p-4 bg-gray-50 dark:bg-gray-800/40 rounded-xl text-xs text-muted-foreground font-medium text-center">
-              Chưa có cấu hình bổ sung nào khác. Các cấu hình chính như Phí vận
-              chuyển và Tỷ lệ điểm đã được phân chia theo menu con riêng.
+              {t("common.generalSettings.emptyParams")}
             </div>
           ) : (
             <div className="space-y-3">
@@ -112,10 +110,10 @@ export function GeneralSettingsManager() {
                       {item.key}
                     </p>
                     <p className="text-xs text-muted-foreground font-medium">
-                      {item.description || "Tham số cài đặt hệ thống"}
+                      {item.description || t("common.generalSettings.defaultParamDesc")}
                     </p>
                     <p className="text-xs font-semibold text-emerald-600">
-                      Giá trị hiện tại: {item.value}
+                      {t("common.generalSettings.currentValue", { value: item.value })}
                     </p>
                   </div>
                   <Button
@@ -141,10 +139,7 @@ export function GeneralSettingsManager() {
           <div className="bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 rounded-xl p-4 flex items-start gap-3 text-xs text-emerald-900 dark:text-emerald-300 font-medium">
             <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Bạn có thể dễ dàng quản lý nhanh các thông số{" "}
-              <strong>Phí vận chuyển</strong> và{" "}
-              <strong>Tỷ lệ điểm thưởng</strong> trực tiếp tại 2 menu con phía
-              trên.
+              {t("common.generalSettings.infoNotice")}
             </p>
           </div>
         </CardContent>

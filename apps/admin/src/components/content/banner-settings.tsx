@@ -1,6 +1,7 @@
 "use client"
 
 import type { FormEvent } from "react"
+import { useTranslation } from "@/providers/i18n-provider"
 
 type BannerSettingsProps = {
   homepageBanner1: string
@@ -47,15 +48,16 @@ export function BannerSettings({
   bannerSuccess,
   handleSaveBanner,
 }: BannerSettingsProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8 space-y-6">
       <div>
         <h2 className="text-xl font-bold text-gray-900">
-          Quản lý Banner Hệ Thống
+          {t("content.banners.title")}
         </h2>
         <p className="text-xs text-gray-400 font-medium">
-          Cấu hình các hình ảnh hiển thị ở phần Banner chính trên Trang chủ và
-          các Trang con
+          {t("content.subtitle")}
         </p>
       </div>
 
@@ -68,14 +70,14 @@ export function BannerSettings({
 
         {bannerSuccess && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-xl text-xs font-semibold">
-            Cập nhật cấu hình Banner hệ thống thành công!
+            {t("common.status.success")}
           </div>
         )}
 
         <div className="space-y-6">
           <div className="border-b border-gray-150 pb-4">
             <h3 className="text-sm font-bold text-emerald-800 mb-4">
-              I. Banners Trang Chủ (5 ảnh slide hiển thị xoay vòng)
+              {t("content.banners.title")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
@@ -84,14 +86,14 @@ export function BannerSettings({
                   htmlFor="homepage-banner-1"
                   className="uppercase tracking-wider"
                 >
-                  Hình Banner Slide 1
+                  Banner 1
                 </label>
                 <input
                   id="homepage-banner-1"
                   type="text"
                   value={homepageBanner1}
                   onChange={(e) => setHomepageBanner1(e.target.value)}
-                  placeholder="Đường dẫn ảnh slide 1 (URL)"
+                  placeholder="URL 1..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -101,14 +103,14 @@ export function BannerSettings({
                   htmlFor="homepage-banner-2"
                   className="uppercase tracking-wider"
                 >
-                  Hình Banner Slide 2
+                  Banner 2
                 </label>
                 <input
                   id="homepage-banner-2"
                   type="text"
                   value={homepageBanner2}
                   onChange={(e) => setHomepageBanner2(e.target.value)}
-                  placeholder="Đường dẫn ảnh slide 2 (URL)"
+                  placeholder="URL 2..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -118,14 +120,14 @@ export function BannerSettings({
                   htmlFor="homepage-banner-3"
                   className="uppercase tracking-wider"
                 >
-                  Hình Banner Slide 3
+                  Banner 3
                 </label>
                 <input
                   id="homepage-banner-3"
                   type="text"
                   value={homepageBanner3}
                   onChange={(e) => setHomepageBanner3(e.target.value)}
-                  placeholder="Đường dẫn ảnh slide 3 (URL)"
+                  placeholder="URL 3..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -135,14 +137,14 @@ export function BannerSettings({
                   htmlFor="homepage-banner-4"
                   className="uppercase tracking-wider"
                 >
-                  Hình Banner Slide 4
+                  Banner 4
                 </label>
                 <input
                   id="homepage-banner-4"
                   type="text"
                   value={homepageBanner4}
                   onChange={(e) => setHomepageBanner4(e.target.value)}
-                  placeholder="Đường dẫn ảnh slide 4 (URL)"
+                  placeholder="URL 4..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -152,14 +154,14 @@ export function BannerSettings({
                   htmlFor="homepage-banner-5"
                   className="uppercase tracking-wider"
                 >
-                  Hình Banner Slide 5
+                  Banner 5
                 </label>
                 <input
                   id="homepage-banner-5"
                   type="text"
                   value={homepageBanner5}
                   onChange={(e) => setHomepageBanner5(e.target.value)}
-                  placeholder="Đường dẫn ảnh slide 5 (URL)"
+                  placeholder="URL 5..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -168,7 +170,7 @@ export function BannerSettings({
 
           <div>
             <h3 className="text-sm font-bold text-emerald-800 mb-4">
-              II. Banners các Trang Con
+              {t("navigation.menu.content")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold text-gray-500">
@@ -177,14 +179,14 @@ export function BannerSettings({
                   htmlFor="about-banner"
                   className="uppercase tracking-wider"
                 >
-                  Trang Giới Thiệu (About)
+                  {t("navigation.menu.content")}
                 </label>
                 <input
                   id="about-banner"
                   type="text"
                   value={aboutBanner}
                   onChange={(e) => setAboutBanner(e.target.value)}
-                  placeholder="Đường dẫn ảnh banner giới thiệu (URL)"
+                  placeholder="URL..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -194,14 +196,14 @@ export function BannerSettings({
                   htmlFor="news-banner"
                   className="uppercase tracking-wider"
                 >
-                  Trang Tin tức (News)
+                  {t("content.articles.title")}
                 </label>
                 <input
                   id="news-banner"
                   type="text"
                   value={newsBanner}
                   onChange={(e) => setNewsBanner(e.target.value)}
-                  placeholder="Đường dẫn ảnh banner tin tức (URL)"
+                  placeholder="URL..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -211,14 +213,14 @@ export function BannerSettings({
                   htmlFor="campaigns-banner"
                   className="uppercase tracking-wider"
                 >
-                  Trang Chiến Dịch (Campaigns)
+                  {t("navigation.menu.dashboard")}
                 </label>
                 <input
                   id="campaigns-banner"
                   type="text"
                   value={campaignsBanner}
                   onChange={(e) => setCampaignsBanner(e.target.value)}
-                  placeholder="Đường dẫn ảnh banner chiến dịch (URL)"
+                  placeholder="URL..."
                   className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
               </div>
@@ -232,7 +234,7 @@ export function BannerSettings({
             disabled={bannerLoading}
             className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm text-xs"
           >
-            {bannerLoading ? "Đang lưu..." : "Lưu Banner"}
+            {bannerLoading ? t("common.table.loading") : t("common.actions.save")}
           </button>
         </div>
       </form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { useCatalogShopItems } from '@/hooks/queries/useCatalog';
 import { useBanner } from '@/hooks/queries/useBanner';
@@ -22,6 +23,7 @@ type ProductsClientProps = {
 };
 
 export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsClientProps) => {
+  const t = useTranslations('products');
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -74,7 +76,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
       image: getProductImage(item, 0) || '',
       category: item.category || 'Sản phẩm',
     });
-    toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+    toast.success(`${t('addedToCart')} "${item.name}"`);
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('open_mini_cart'));
     }
@@ -157,7 +159,7 @@ export const ProductsClient = ({ locale, initialItems, isLoggedIn }: ProductsCli
             <SearchInput
               value={searchTerm}
               onSearch={setSearchTerm}
-              placeholder="Tìm kiếm sản phẩm theo tên..."
+              placeholder={t('searchPlaceholder')}
             />
 
             {/* Products Grid Subcomponent */}

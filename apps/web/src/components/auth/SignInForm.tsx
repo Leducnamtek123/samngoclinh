@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, AlertCircle, CheckCircle2, X } from 'lucide-react';
@@ -21,27 +21,28 @@ import { useSearchParams } from 'next/navigation';
 import { apiSignIn } from '@/services/auth.service';
 
 function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void }) {
+  const tAuth = useTranslations('toasts');
   const getReasonMessage = (resVal: string | null) => {
     switch (resVal) {
       case 'campaigns':
         return {
-          title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để nhận cây sâm 1 năm.',
+          title: tAuth('loginRequired'),
+          description: tAuth('loginRequired'),
         };
       case 'ginseng':
         return {
-          title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để truy cập tính năng Trồng sâm.',
+          title: tAuth('loginRequired'),
+          description: tAuth('loginRequired'),
         };
       case 'cart':
         return {
-          title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để xem giỏ hàng của mình.',
+          title: tAuth('loginRequired'),
+          description: tAuth('loginRequired'),
         };
       default:
         return {
-          title: 'Vui lòng đăng nhập',
-          description: 'Bạn cần đăng nhập để tiếp tục truy cập trang này.',
+          title: tAuth('loginRequired'),
+          description: tAuth('loginRequired'),
         };
     }
   };
@@ -71,6 +72,7 @@ function ReasonToast({ reason, onClose }: { reason: string; onClose: () => void 
 
 export default function SignInForm() {
   const locale = useLocale();
+  const t = useTranslations('SignIn');
   const searchParams = useSearchParams();
   const reason = searchParams?.get('reason');
 
@@ -98,7 +100,7 @@ export default function SignInForm() {
       const targetUrl = data.redirectUrl || `/${locale}`;
       window.location.assign(targetUrl);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Đã xảy ra lỗi kết nối';
+      const msg = err instanceof Error ? err.message : t('signInFailed');
       setError(msg);
     }
     setLoading(false);
@@ -115,7 +117,7 @@ export default function SignInForm() {
             <Link href="/" className="inline-flex items-center gap-3">
               <Image
                 src="/assets/images/logo_ruou_sam.png?v=2"
-                alt="Sâm Ngọc Linh Logo"
+                alt="Logo"
                 width={48}
                 height={48}
                 unoptimized
@@ -123,26 +125,26 @@ export default function SignInForm() {
               />
               <div>
                 <span className="font-display font-black text-lg tracking-tight block text-white">Sâm Ngọc Linh</span>
-                <span className="text-[10px] text-amber-300 uppercase tracking-widest block font-bold">Quốc Bảo Dược Liệu</span>
+                <span className="text-[10px] text-amber-300 uppercase tracking-widest block font-bold">{t('brandTagline')}</span>
               </div>
             </Link>
 
             <div className="space-y-3 pt-6">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-800/80 border border-emerald-600/60 text-emerald-200 text-xs font-bold">
-                Cổng Thành Viên & Nhà Đầu Tư
+                {t('title')}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-white font-display leading-tight">
-                Bảo Tồn & Phát Triển Dược Liệu Thượng Hạng
+                {t('subtitle')}
               </h2>
               <p className="text-xs sm:text-sm text-emerald-100/80 leading-relaxed font-normal">
-                Đăng nhập để theo dõi sinh trưởng vườn luống, quản lý hợp đồng điện tử và nhận đặc quyền thu hoạch sâm định kỳ.
+                {t('meta_description')}
               </p>
             </div>
           </div>
 
           <div className="pt-8 border-t border-emerald-800/60 space-y-2 relative z-10 text-xs text-emerald-200/70">
-            <p className="font-semibold text-white">Hệ Thống Xác Thực An Toàn</p>
-            <p className="text-[11px] leading-relaxed">Mã hóa 256-bit chuẩn eKYC & hợp đồng điện tử bảo chứng pháp lý.</p>
+            <p className="font-semibold text-white">SSL 256-bit Security</p>
+            <p className="text-[11px] leading-relaxed">eKYC Verified &amp; Legal E-Contract System.</p>
           </div>
         </div>
 
@@ -150,10 +152,10 @@ export default function SignInForm() {
         <div className="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 font-display">
-              Đăng nhập tài khoản
+              {t('title')}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 font-normal">
-              Nhập email và mật khẩu của bạn để truy cập hệ thống
+              {t('subtitle')}
             </p>
           </div>
 
@@ -176,7 +178,8 @@ export default function SignInForm() {
               control={emailForm.control}
               name="email"
               type="email"
-              label="Địa chỉ Email"
+              label={t('identifierLabel')}
+              placeholder={t('identifierPlaceholder')}
               required
               prefixIcon={<Mail className="w-4 h-4" />}
             />
@@ -185,14 +188,15 @@ export default function SignInForm() {
               control={emailForm.control}
               name="password"
               type="password"
-              label="Mật khẩu"
+              label={t('passwordLabel')}
+              placeholder={t('passwordPlaceholder')}
               required
               prefixIcon={<Lock className="w-4 h-4" />}
             />
 
             <div className="flex items-center justify-between pt-1">
               <FormCheckbox control={emailForm.control} name="remember">
-                <span className="text-xs text-gray-600 dark:text-gray-400">Ghi nhớ đăng nhập 30 ngày</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">{t('rememberMe')}</span>
               </FormCheckbox>
             </div>
 
@@ -202,18 +206,18 @@ export default function SignInForm() {
               variant="default"
               className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold text-sm shadow-md transition-[transform,background-color] active:scale-[0.98] cursor-pointer"
             >
-              Đăng nhập ngay
+              {t('submitBtn')}
             </ButtonLoading>
           </Form>
 
           <div className="pt-6 border-t border-gray-100 dark:border-gray-800 text-center space-y-3">
-            <p className="text-xs text-gray-500 font-normal">Bạn chưa có tài khoản thành viên?</p>
+            <p className="text-xs text-gray-500 font-normal">{t('noAccount')}</p>
             <Button
               asChild
               variant="outline"
               className="w-full py-3 rounded-xl border-gray-200 hover:bg-gray-50 text-xs font-bold text-gray-800 transition-[transform,background-color] active:scale-[0.98]"
             >
-              <Link href="/sign-up">Tạo tài khoản mới</Link>
+              <Link href="/sign-up">{t('signUpNow')}</Link>
             </Button>
           </div>
         </div>

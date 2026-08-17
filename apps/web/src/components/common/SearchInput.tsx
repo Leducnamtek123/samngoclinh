@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -21,11 +22,13 @@ export function SearchInput({
   onChange,
   onSearch,
   debounceMs = 300,
-  placeholder = 'Tìm kiếm...',
+  placeholder,
   className,
   containerClassName,
   ...props
 }: SearchInputProps) {
+  const t = useTranslations('common');
+  const resolvedPlaceholder = placeholder ?? t('searchPlaceholder');
   const isControlled = valueProp !== undefined;
   const [internalValue, setInternalValue] = useState<string>((defaultValue || '') as string);
   const value = isControlled ? (valueProp as string) : internalValue;
@@ -61,7 +64,7 @@ export function SearchInput({
         type="text"
         value={value}
         onChange={handleChange}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         className={cn('pl-9 pr-9', className)}
         {...props}
       />
@@ -73,7 +76,7 @@ export function SearchInput({
           size="icon"
           onClick={handleClear}
           className="absolute right-2 h-6 w-6 p-0 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          aria-label="Clear search"
+          aria-label={t('clear') || 'Clear search'}
         >
           <X className="h-3.5 w-3.5" />
         </Button>

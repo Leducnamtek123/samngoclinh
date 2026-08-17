@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type QuickPurchaseSummaryProps = {
   mode: 'plant' | 'product';
@@ -48,45 +49,45 @@ export const QuickPurchaseSummary: React.FC<QuickPurchaseSummaryProps> = ({
       {mode === 'plant' ? (
         <>
           <div className="flex justify-between font-semibold text-gray-700">
-            <span>{t('plantPriceLabel', { quantity, price: unitPrice.toLocaleString('vi-VN') })}</span>
-            <span>{treeBasePrice.toLocaleString('vi-VN')} đ</span>
+            <span>{t('plantPriceLabel', { quantity, price: formatVNDPrice(unitPrice) })}</span>
+            <span>{formatVNDPrice(treeBasePrice)}</span>
           </div>
           <div className="flex justify-between text-gray-500 text-[11px]">
             <span>{t('vatTreeLabel')}</span>
-            <span>+{vatTree.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(vatTree)}</span>
           </div>
           <div className="flex justify-between font-semibold text-gray-700 pt-1 border-t border-emerald-100">
             <span>{t('careFeeLabel', { name: selectedCareObj?.name || t('defaultPackage') })}</span>
-            <span>+{totalCareFee.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(totalCareFee)}</span>
           </div>
           <div className="flex justify-between text-gray-500 text-[11px]">
             <span>{t('vatCareLabel')}</span>
-            <span>+{vatCare.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(vatCare)}</span>
           </div>
           <div className="flex justify-between font-semibold text-gray-700 pt-1 border-t border-emerald-100">
             <span>{t('protectionFeeLabel', { name: selectedProtectionObj?.name || t('defaultPackage') })}</span>
-            <span>+{totalProtectionFee.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(totalProtectionFee)}</span>
           </div>
           <div className="flex justify-between text-gray-500 text-[11px]">
             <span>{t('vatProtectionLabel')}</span>
-            <span>+{vatProtection.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(vatProtection)}</span>
           </div>
         </>
       ) : (
         <>
           <div className="flex justify-between font-semibold text-gray-700">
             <span>{t('subtotalLabel', { quantity })}</span>
-            <span>{productSubtotal.toLocaleString('vi-VN')} đ</span>
+            <span>{formatVNDPrice(productSubtotal)}</span>
           </div>
           <div className="flex justify-between text-gray-500 text-[11px]">
             <span>{t('vatProduct8Label')}</span>
-            <span>+{vatProduct8.toLocaleString('vi-VN')} đ</span>
+            <span>+{formatVNDPrice(vatProduct8)}</span>
           </div>
           {shippingFee !== undefined && (
             <div className="flex justify-between font-semibold text-gray-700 pt-1 border-t border-emerald-100">
-              <span>Phí vận chuyển</span>
+              <span>{t('shippingFeeLabel')}</span>
               <span className="text-emerald-700 font-bold">
-                {shippingFee > 0 ? `+${shippingFee.toLocaleString('vi-VN')} đ` : 'Miễn phí'}
+                {shippingFee > 0 ? `+${formatVNDPrice(shippingFee)}` : t('freeShipping')}
               </span>
             </div>
           )}
@@ -95,7 +96,7 @@ export const QuickPurchaseSummary: React.FC<QuickPurchaseSummaryProps> = ({
 
       <div className="flex justify-between items-center text-sm font-black text-primary pt-2 border-t border-emerald-200">
         <span>{t('grandTotalLabel')}</span>
-        <span className="text-base sm:text-lg text-emerald-900 font-extrabold">{grandTotal.toLocaleString('vi-VN')} VNĐ</span>
+        <span className="text-base sm:text-lg text-emerald-900 font-extrabold">{formatVNDPrice(grandTotal)}</span>
       </div>
     </div>
   );

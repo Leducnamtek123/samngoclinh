@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ArrowLeft, Printer, ShieldCheck, Share2, Check } from 'lucide-react';
 import { Link } from '@/lib/I18nNavigation';
 import { Button } from '@/components/ui/button';
@@ -14,8 +15,10 @@ type ContractToolbarProps = {
 export const ContractToolbar = ({
   backHref = '/campaigns/free-tree',
   contractCode,
-  contractTitle = 'Hợp Đồng Mua Bán, Ký Gửi & Chăm Sóc Sâm Ngọc Linh',
+  contractTitle,
 }: ContractToolbarProps) => {
+  const t = useTranslations('econtract');
+  const resolvedTitle = contractTitle || t('title');
   const [copied, setCopied] = useState(false);
 
   const handlePrint = () => {
@@ -37,7 +40,7 @@ export const ContractToolbar = ({
   };
 
   return (
-    <aside aria-label="Thanh công cụ hợp đồng" className="no-print sticky top-20 sm:top-24 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
+    <aside aria-label={t('toolbarAria')} className="no-print sticky top-20 sm:top-24 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
       {/* Left side: Back link & Title */}
       <div className="flex items-center gap-3">
         <Link
@@ -45,12 +48,12 @@ export const ContractToolbar = ({
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-emerald-800 transition-colors px-2.5 py-1.5 rounded-xl hover:bg-slate-100/80"
         >
           <ArrowLeft className="w-4 h-4 text-slate-500" />
-          <span>Quay lại</span>
+          <span>{t('back')}</span>
         </Link>
 
         <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200/80">
           <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{contractCode ? `${contractTitle} (${contractCode})` : contractTitle}</span>
+          <span>{contractCode ? `${resolvedTitle} (${contractCode})` : resolvedTitle}</span>
         </span>
       </div>
 
@@ -62,17 +65,17 @@ export const ContractToolbar = ({
           size="sm"
           onClick={handleCopyLink}
           className="h-9 px-3 text-xs font-semibold text-slate-700 border-slate-200 hover:bg-slate-100 rounded-xl inline-flex items-center gap-1.5"
-          title="Sao chép liên kết hợp đồng"
+          title={t('share')}
         >
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5 text-emerald-600" />
-              <span className="text-emerald-700">Đã sao chép</span>
+              <span className="text-emerald-700">{t('copied')}</span>
             </>
           ) : (
             <>
               <Share2 className="w-3.5 h-3.5 text-slate-500" />
-              <span className="hidden xs:inline">Chia sẻ</span>
+              <span className="hidden xs:inline">{t('share')}</span>
             </>
           )}
         </Button>
@@ -81,10 +84,10 @@ export const ContractToolbar = ({
           type="button"
           onClick={handlePrint}
           className="h-9 px-4 text-xs font-bold bg-emerald-800 hover:bg-emerald-900 text-white rounded-xl shadow-xs inline-flex items-center gap-2 transition-[box-shadow,background-color] hover:shadow-md cursor-pointer"
-          title="In hoặc Lưu thành tệp PDF chuẩn"
+          title={t('printPdf')}
         >
           <Printer className="w-4 h-4" />
-          <span>In / Xuất PDF</span>
+          <span>{t('printPdf')}</span>
         </Button>
       </div>
     </aside>

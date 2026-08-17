@@ -52,9 +52,9 @@ export function CarePackagesList({
   if (packages.length === 0) {
     return (
       <EmptyState
-        title="Chưa có gói chăm sóc nào"
-        description="Bấm vào nút bên dưới để tạo cấu hình gói chăm sóc sâm đầu tiên."
-        actionLabel="Thêm gói chăm sóc"
+        title={t("packages.emptyCareTitle")}
+        description={t("packages.emptyCareDesc")}
+        actionLabel={t("packages.addCarePackage")}
         onAction={onOpenCreate}
       />
     )
@@ -66,12 +66,12 @@ export function CarePackagesList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã gói</TableHead>
-              <TableHead>Tên gói</TableHead>
-              <TableHead>Thời hạn</TableHead>
-              <TableHead>Giá dịch vụ</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
+              <TableHead>{t("packages.fields.code")}</TableHead>
+              <TableHead>{t("packages.fields.name")}</TableHead>
+              <TableHead>{t("packages.fields.duration")}</TableHead>
+              <TableHead>{t("packages.fields.price")}</TableHead>
+              <TableHead>{t("packages.fields.status")}</TableHead>
+              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -88,7 +88,7 @@ export function CarePackagesList({
                     </div>
                   )}
                 </TableCell>
-                <TableCell>{pkg.durationMonths} Tháng</TableCell>
+                <TableCell>{pkg.durationMonths} {t("packages.months")}</TableCell>
                 <TableCell className="font-semibold text-emerald-600">
                   {formatVND(pkg.price)}
                 </TableCell>
@@ -98,14 +98,14 @@ export function CarePackagesList({
                       variant="outline"
                       className="bg-emerald-50 text-emerald-700 border-emerald-200"
                     >
-                      Hoạt động
+                      {t("common.status.active")}
                     </Badge>
                   ) : (
                     <Badge
                       variant="outline"
                       className="bg-slate-50 text-slate-700 border-slate-200"
                     >
-                      Tạm dừng
+                      {t("common.status.inactive")}
                     </Badge>
                   )}
                 </TableCell>
@@ -116,6 +116,7 @@ export function CarePackagesList({
                       size="icon"
                       onClick={() => onEdit(pkg)}
                       className="h-8 w-8 text-slate-600 hover:text-slate-900"
+                      title={t("common.actions.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -124,6 +125,7 @@ export function CarePackagesList({
                       size="icon"
                       onClick={() => onDelete(pkg.id)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title={t("common.actions.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -156,9 +158,9 @@ export function ProtectionPackagesList({
   if (packages.length === 0) {
     return (
       <EmptyState
-        title="Chưa có gói bảo hiểm nào"
-        description="Bấm vào nút bên dưới để tạo cấu hình gói bảo hiểm cây giống đầu tiên."
-        actionLabel="Thêm gói bảo hiểm"
+        title={t("packages.emptyProtectionTitle")}
+        description={t("packages.emptyProtectionDesc")}
+        actionLabel={t("packages.addProtectionPackage")}
         onAction={onOpenCreate}
       />
     )
@@ -170,13 +172,13 @@ export function ProtectionPackagesList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã gói</TableHead>
-              <TableHead>Tên gói</TableHead>
-              <TableHead>Thời hạn</TableHead>
-              <TableHead>Mức bồi thường</TableHead>
-              <TableHead>Giá gói</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="text-right">Thao tác</TableHead>
+              <TableHead>{t("packages.fields.code")}</TableHead>
+              <TableHead>{t("packages.fields.name")}</TableHead>
+              <TableHead>{t("packages.fields.duration")}</TableHead>
+              <TableHead>{t("packages.fields.coverage")}</TableHead>
+              <TableHead>{t("packages.fields.price")}</TableHead>
+              <TableHead>{t("packages.fields.status")}</TableHead>
+              <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -193,9 +195,9 @@ export function ProtectionPackagesList({
                     </div>
                   )}
                 </TableCell>
-                <TableCell>{pkg.durationMonths} Tháng</TableCell>
+                <TableCell>{pkg.durationMonths} {t("packages.months")}</TableCell>
                 <TableCell className="font-medium text-blue-600">
-                  {pkg.coveragePercentage ? `${pkg.coveragePercentage}%` : "100% Cây giống"}
+                  {pkg.coveragePercentage ? `${pkg.coveragePercentage}%` : "100%"}
                 </TableCell>
                 <TableCell className="font-semibold text-emerald-600">
                   {formatVND(pkg.price)}
@@ -206,14 +208,14 @@ export function ProtectionPackagesList({
                       variant="outline"
                       className="bg-emerald-50 text-emerald-700 border-emerald-200"
                     >
-                      Hoạt động
+                      {t("common.status.active")}
                     </Badge>
                   ) : (
                     <Badge
                       variant="outline"
                       className="bg-slate-50 text-slate-700 border-slate-200"
                     >
-                      Tạm dừng
+                      {t("common.status.inactive")}
                     </Badge>
                   )}
                 </TableCell>
@@ -224,6 +226,7 @@ export function ProtectionPackagesList({
                       size="icon"
                       onClick={() => onEdit(pkg)}
                       className="h-8 w-8 text-slate-600 hover:text-slate-900"
+                      title={t("common.actions.edit")}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -232,6 +235,7 @@ export function ProtectionPackagesList({
                       size="icon"
                       onClick={() => onDelete(pkg.id)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title={t("common.actions.delete")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

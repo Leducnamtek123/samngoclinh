@@ -26,30 +26,27 @@ import {
 } from "@/components/ui/card"
 import { DataTablePagination } from "@/components/ui/data-table/data-table-pagination"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useTranslation } from "@/providers/i18n-provider"
 import { InvoiceTableToolbar } from "./invoice-table-toolbar"
-import { invoicesTableColumns } from "./invoices-table-columns"
+import { getInvoicesTableColumns } from "./invoices-table-columns"
 
 interface InvoicesTableProps {
   data: InvoiceType[]
 }
 
 export function InvoicesTable({ data }: InvoicesTableProps) {
+  const { t } = useTranslation()
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
+  const columns = getInvoicesTableColumns(t)
+
   const table = useReactTable({
     data: data,
-    columns: invoicesTableColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -70,7 +67,7 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
     <Card>
       <CardHeader className="flex-row justify-between items-center gap-x-1.5 space-y-0">
         <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-100">
-          Đơn Hàng & Giao Dịch Gần Đây
+          {t("orders.title")}
         </CardTitle>
         <InvoiceTableToolbar table={table} />
       </CardHeader>
@@ -116,10 +113,10 @@ export function InvoicesTable({ data }: InvoicesTableProps) {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={invoicesTableColumns.length}
+                    colSpan={columns.length}
                     className="h-24 text-center text-muted-foreground"
                   >
-                    Không tìm thấy dữ liệu đơn hàng phù hợp.
+                    {t("common.table.noResults")}
                   </TableCell>
                 </TableRow>
               )}

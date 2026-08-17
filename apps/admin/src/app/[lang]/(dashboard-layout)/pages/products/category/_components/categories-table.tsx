@@ -53,15 +53,15 @@ export function CategoriesTable() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">
-            Quản lý Danh mục Sản phẩm
+            {t("products.categories")}
           </h1>
           <p className="text-muted-foreground">
-            Quản lý các nhóm phân loại sản phẩm thương mại và vật tư nông nghiệp
+            {t("products.subtitle")}
           </p>
         </div>
         <Button onClick={openCreateDialog}>
           <Plus className="size-4 mr-2" />
-          Thêm danh mục
+          {t("products.addCategory")}
         </Button>
       </div>
 
@@ -69,14 +69,14 @@ export function CategoriesTable() {
         <CardHeader>
           <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
             <div className="space-y-1">
-              <CardTitle>Danh sách danh mục</CardTitle>
+              <CardTitle>{t("products.categories")}</CardTitle>
               <CardDescription>
-                {categories.length} danh mục phân loại trong hệ thống
+                {categories.length} {t("products.categories").toLowerCase()}
               </CardDescription>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <Input
-                placeholder="Tìm kiếm danh mục..."
+                placeholder={t("common.actions.search")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-xs"
@@ -89,13 +89,13 @@ export function CategoriesTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[120px]">Mã code</TableHead>
-                  <TableHead>Tên danh mục</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Mô tả</TableHead>
-                  <TableHead className="text-center">Số sản phẩm</TableHead>
-                  <TableHead className="text-center">Trạng thái</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
+                  <TableHead className="w-[120px]">{t("products.categoryForm.code")}</TableHead>
+                  <TableHead>{t("products.categoryForm.name")}</TableHead>
+                  <TableHead>{t("products.categoryForm.slug")}</TableHead>
+                  <TableHead>{t("products.categoryForm.desc")}</TableHead>
+                  <TableHead className="text-center">{t("products.title")}</TableHead>
+                  <TableHead className="text-center">{t("products.fields.status")}</TableHead>
+                  <TableHead className="text-right">{t("common.actions.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -105,7 +105,7 @@ export function CategoriesTable() {
                       colSpan={7}
                       className="h-32 text-center text-muted-foreground"
                     >
-                      Không tìm thấy danh mục phù hợp.
+                      {t("common.table.noResults")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -125,20 +125,20 @@ export function CategoriesTable() {
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="secondary" className="font-semibold">
-                          {cat.productCount} sản phẩm
+                          {cat.productCount}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         {cat.status === "active" ? (
                           <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20">
-                            Hoạt động
+                            {t("products.categoryForm.active")}
                           </Badge>
                         ) : (
                           <Badge
                             variant="outline"
                             className="text-muted-foreground"
                           >
-                            Tạm ẩn
+                            {t("products.categoryForm.inactive")}
                           </Badge>
                         )}
                       </TableCell>
@@ -148,7 +148,7 @@ export function CategoriesTable() {
                             variant="ghost"
                             size="icon"
                             onClick={() => openEditDialog(cat)}
-                            title="Chỉnh sửa"
+                            title={t("common.actions.edit")}
                           >
                             <Edit className="size-4 text-muted-foreground hover:text-foreground" />
                           </Button>
@@ -156,7 +156,7 @@ export function CategoriesTable() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(cat.id)}
-                            title="Xóa danh mục"
+                            title={t("common.actions.delete")}
                           >
                             <Trash2 className="size-4 text-destructive" />
                           </Button>
@@ -187,8 +187,8 @@ export function CategoriesTable() {
         onConfirm={confirmDialog.action}
         title={confirmDialog.title}
         description={confirmDialog.description}
-        confirmLabel="Xác nhận"
-        cancelLabel="Hủy"
+        confirmLabel={t("common.actions.confirm")}
+        cancelLabel={t("common.actions.cancel")}
         type="danger"
         isLoading={confirmDialog.loading}
       />
@@ -198,7 +198,7 @@ export function CategoriesTable() {
         {successMsg && (
           <ToastCard
             type="success"
-            title="Thành công"
+            title={t("common.status.success")}
             description={successMsg}
             onClose={() => setSuccessMsg("")}
           />

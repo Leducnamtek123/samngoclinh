@@ -3,6 +3,7 @@
 import React, { useState } from "react"
 import { Sliders, Trash2, Plus } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -21,12 +22,13 @@ export function CreateContractCustomPlaceholders({
   allPlaceholders,
   formatPlaceholderLabel,
 }: CreateContractCustomPlaceholdersProps) {
+  const { t } = useTranslation()
   const [newKeyInput, setNewKeyInput] = useState("")
   const [newValInput, setNewValInput] = useState("")
 
   const handleAddPlaceholder = () => {
     if (!newKeyInput.trim()) {
-      toast.error("Vui lòng nhập mã biến (ví dụ: SO_TAI_KHOAN)")
+      toast.error(t("contracts.customPlaceholders.errMissingKey"))
       return
     }
     const cleanKey = newKeyInput.trim().toUpperCase().replace(/[{}]/g, "")
@@ -36,7 +38,7 @@ export function CreateContractCustomPlaceholders({
     }))
     setNewKeyInput("")
     setNewValInput("")
-    toast.success(`Đã thêm trường {{${cleanKey}}}`)
+    toast.success(t("contracts.customPlaceholders.successAdded", { key: cleanKey }))
   }
 
   const handleDeletePlaceholder = (key: string) => {
@@ -53,17 +55,17 @@ export function CreateContractCustomPlaceholders({
         <div className="flex items-center gap-2">
           <Sliders className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           <span className="text-xs font-bold uppercase tracking-wider text-purple-900 dark:text-purple-300">
-            Các trường mở rộng theo mẫu hợp đồng (Tự động phát hiện)
+            {t("contracts.customPlaceholders.sectionTitle")}
           </span>
         </div>
         <Badge variant="outline" className="text-[10px] bg-purple-100 text-purple-800 border-purple-300">
-          {Object.keys(allPlaceholders).length} trường tùy biến
+          {t("contracts.customPlaceholders.fieldsCount", { count: Object.keys(allPlaceholders).length })}
         </Badge>
       </div>
 
       {Object.keys(allPlaceholders).length === 0 ? (
         <p className="text-xs text-muted-foreground italic">
-          Mẫu này hiện dùng các trường chuẩn. Nếu mẫu HTML của bạn có thêm các biến mới (như <code>{"{{SO_TAI_KHOAN}}"}</code>, <code>{"{{TEN_NGAN_HANG}}"}</code>, <code>{"{{GIONG_SAM}}"}</code>), hệ thống sẽ tự động hiển thị ô nhập tại đây hoặc bạn có thể thêm bên dưới.
+          {t("contracts.customPlaceholders.emptyNotice")}
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -86,7 +88,7 @@ export function CreateContractCustomPlaceholders({
                       [key]: e.target.value,
                     }))
                   }}
-                  placeholder={`Nhập giá trị cho ${key}...`}
+                  placeholder={t("contracts.customPlaceholders.inputPlaceholder", { key })}
                   className="text-xs bg-slate-50 dark:bg-slate-950"
                 />
                 <Button
@@ -109,13 +111,13 @@ export function CreateContractCustomPlaceholders({
         <Input
           value={newKeyInput}
           onChange={(e) => setNewKeyInput(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"))}
-          placeholder="MÃ_BIẾN_MỚI (VD: SO_TAI_KHOAN)"
+          placeholder={t("contracts.customPlaceholders.newKeyPlaceholder")}
           className="w-48 text-xs font-mono bg-white dark:bg-slate-950"
         />
         <Input
           value={newValInput}
           onChange={(e) => setNewValInput(e.target.value)}
-          placeholder="Giá trị tương ứng..."
+          placeholder={t("contracts.customPlaceholders.newValPlaceholder")}
           className="flex-1 min-w-[160px] text-xs bg-white dark:bg-slate-950"
         />
         <Button
@@ -125,7 +127,7 @@ export function CreateContractCustomPlaceholders({
           onClick={handleAddPlaceholder}
           className="text-xs gap-1 bg-white dark:bg-slate-950 border-purple-200"
         >
-          <Plus className="w-3.5 h-3.5" /> Thêm biến
+          <Plus className="w-3.5 h-3.5" /> {t("contracts.customPlaceholders.addBtn")}
         </Button>
       </div>
     </div>

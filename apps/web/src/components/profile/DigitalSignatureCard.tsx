@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { PenTool, Upload, RotateCcw, Save, CheckCircle2 } from 'lucide-react';
 import { ButtonLoading } from '@/components/ui/button';
 import { useUserSignature, useSaveUserSignature } from '@/hooks/queries/useUserSignature';
@@ -19,6 +22,8 @@ function SignatureCanvasDrawArea({
   onStopDrawing: () => void;
   onClear: () => void;
 }) {
+  const tActions = useTranslations('actions');
+
   return (
     <div className="space-y-3">
       <div className="border border-gray-200 dark:border-gray-700 rounded-2xl bg-white p-2 relative shadow-xs">
@@ -44,7 +49,7 @@ function SignatureCanvasDrawArea({
           className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 font-semibold transition-colors cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>Xoá nét vẽ</span>
+          <span>{tActions('delete')}</span>
         </button>
       </div>
     </div>
@@ -59,6 +64,8 @@ function SignatureUploadArea({
   uploadedImageBase64: string | null;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
+  const tProfile = useTranslations('profile');
+
   return (
     <div className="space-y-3">
       <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-6 text-center hover:border-emerald-600 transition-colors bg-gray-50/50 dark:bg-gray-800/30">
@@ -66,7 +73,7 @@ function SignatureUploadArea({
           <div className="space-y-3">
             <Image
               src={uploadedImageBase64}
-              alt="Ảnh chữ ký đã chọn"
+              alt="Signature"
               width={240}
               height={160}
               unoptimized
@@ -74,7 +81,7 @@ function SignatureUploadArea({
             />
             <label className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:underline cursor-pointer">
               <Upload className="w-3.5 h-3.5" />
-              <span>Chọn ảnh khác</span>
+              <span>{tProfile('uploadAvatar')}</span>
               <input type="file" accept="image/*" onChange={onFileUpload} className="hidden" />
             </label>
           </div>
@@ -82,9 +89,9 @@ function SignatureUploadArea({
           <label className="flex flex-col items-center justify-center cursor-pointer py-4 space-y-2">
             <Upload className="w-8 h-8 text-gray-400" />
             <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-              Nhấp để tải lên ảnh chữ ký (PNG, JPG)
+              {tProfile('uploadAvatar')}
             </span>
-            <span className="text-[11px] text-gray-400">Nên dùng ảnh nền trắng hoặc trong suốt</span>
+            <span className="text-[11px] text-gray-400">{tProfile('uploadAvatarHint')}</span>
             <input type="file" accept="image/*" onChange={onFileUpload} className="hidden" />
           </label>
         )}
@@ -95,6 +102,7 @@ function SignatureUploadArea({
 
 // Subcomponent: Saved Signature Preview
 function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: string }) {
+  const t = useTranslations('digitalSignature');
   const finalUrl =
     savedSignatureUrl.startsWith('data:') ||
     savedSignatureUrl.startsWith('http://') ||
@@ -107,13 +115,13 @@ function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: strin
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>Chữ ký điện tử đã được lưu</span>
+          <span>{t('testSuccess')}</span>
         </span>
       </div>
       <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl inline-block">
         <Image
           src={finalUrl}
-          alt="Chữ ký điện tử hiện tại"
+          alt="Saved Signature"
           width={200}
           height={96}
           unoptimized
@@ -125,6 +133,8 @@ function SavedSignaturePreview({ savedSignatureUrl }: { savedSignatureUrl: strin
 }
 
 export const DigitalSignatureCard: React.FC = () => {
+  const t = useTranslations('digitalSignature');
+  const tActions = useTranslations('actions');
   const [mode, setMode] = useState<'draw' | 'upload'>('draw');
   const { data: savedSignatureUrl } = useUserSignature();
   const [uploadedImageBase64, setUploadedImageBase64] = useState<string | null>(null);
@@ -209,11 +219,11 @@ export const DigitalSignatureCard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      toast.error('Vui lòng chọn tệp hình ảnh hợp lệ (PNG, JPG, JPEG)');
+      toast.error(t('imageOnly'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Dung lượng ảnh tối đa là 5MB');
+      toast.error(t('maxSize'));
       return;
     }
     const reader = new FileReader();
@@ -228,13 +238,13 @@ export const DigitalSignatureCard: React.FC = () => {
     if (mode === 'draw') {
       const canvas = canvasRef.current;
       if (!canvas || !hasDrawnRef.current) {
-        toast.error('Vui lòng vẽ chữ ký của bạn trước khi lưu.');
+        toast.error(t('testSuccess'));
         return;
       }
       signatureData = canvas.toDataURL('image/png');
     } else {
       if (!uploadedImageBase64) {
-        toast.error('Vui lòng tải lên hình ảnh chữ ký của bạn.');
+        toast.error(t('testSuccess'));
         return;
       }
       signatureData = uploadedImageBase64;
@@ -242,9 +252,9 @@ export const DigitalSignatureCard: React.FC = () => {
 
     try {
       await updateSignatureMutation.mutateAsync(signatureData);
-      toast.success('Lưu chữ ký điện tử thành công!');
+      toast.success(t('testSuccess'));
     } catch (err: any) {
-      toast.error(err?.message || 'Lưu chữ ký thất bại. Vui lòng thử lại.');
+      toast.error(err?.message || 'Error');
     }
   };
 
@@ -254,10 +264,10 @@ export const DigitalSignatureCard: React.FC = () => {
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <PenTool className="w-5 h-5 text-emerald-800 dark:text-emerald-400 shrink-0" />
-          <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">Chữ ký điện tử</h3>
+          <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg">{t('title')}</h3>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-normal">
-          Chữ ký điện tử sẽ được tự động điền vào mục Bên B (Bên Mua & Sở Hữu) khi bạn ký kết các hợp đồng mua bán hoặc ủy quyền chăm sóc sâm.
+          {t('legalNotice')}
         </p>
       </div>
 
@@ -273,7 +283,7 @@ export const DigitalSignatureCard: React.FC = () => {
           }`}
         >
           <PenTool className="w-3.5 h-3.5" />
-          <span>Vẽ tay</span>
+          <span>Draw</span>
         </button>
 
         <button
@@ -286,7 +296,7 @@ export const DigitalSignatureCard: React.FC = () => {
           }`}
         >
           <Upload className="w-3.5 h-3.5" />
-          <span>Tải ảnh</span>
+          <span>Upload</span>
         </button>
       </div>
 
@@ -315,7 +325,7 @@ export const DigitalSignatureCard: React.FC = () => {
           className="bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 shadow-sm"
         >
           <Save className="w-4 h-4" />
-          <span>Lưu chữ ký</span>
+          <span>{tActions('save')}</span>
         </ButtonLoading>
       </div>
 

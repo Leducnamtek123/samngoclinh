@@ -159,7 +159,7 @@ export const HomeFeaturedProducts: React.FC<HomeFeaturedProductsProps> = ({
         {/* Products Grid */}
         {filteredItems.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 shadow-xs max-w-xl mx-auto">
-            <p className="text-gray-400 text-sm font-medium">Hiện chưa có sản phẩm trong danh mục này.</p>
+            <p className="text-gray-400 text-sm font-medium">{t('emptyProducts')}</p>
           </div>
         ) : (
           <StaggerContainer

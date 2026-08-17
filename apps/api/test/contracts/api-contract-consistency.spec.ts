@@ -1,8 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EContractAdminController } from '@modules/e-contract/controllers/e-contract.admin.controller';
 import { ContactAdminController } from '@modules/contact/controllers/contact.admin.controller';
-import { EContractService } from '@modules/e-contract/services/e-contract.service';
-import { ContactService } from '@modules/contact/services/contact.service';
 
 describe('API Contract Consistency Tests', () => {
   let eContractAdminController: EContractAdminController;
@@ -23,23 +20,12 @@ describe('API Contract Consistency Tests', () => {
     adminDelete: jest.fn(),
   };
 
-  beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      controllers: [EContractAdminController, ContactAdminController],
-      providers: [
-        {
-          provide: EContractService,
-          useValue: mockEContractService,
-        },
-        {
-          provide: ContactService,
-          useValue: mockContactService,
-        },
-      ],
-    }).compile();
-
-    eContractAdminController = moduleRef.get<EContractAdminController>(EContractAdminController);
-    contactAdminController = moduleRef.get<ContactAdminController>(ContactAdminController);
+  beforeAll(() => {
+    eContractAdminController = new EContractAdminController(
+      mockEContractService as any,
+      { listTemplates: jest.fn(), getTemplate: jest.fn(), updateTemplate: jest.fn(), importHtml: jest.fn() } as any
+    );
+    contactAdminController = new ContactAdminController(mockContactService as any);
   });
 
   describe('EContractAdminController', () => {

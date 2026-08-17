@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { MapPin, QrCode, ArrowLeft, Truck, Store, Phone } from 'lucide-react';
 import type { CartItem } from '@/utils/cart';
+import { formatVNDPrice } from '@/utils/formatters';
 import { Form, FormTextarea } from '@/components/ui/form';
 import { Button, ButtonLoading } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -79,7 +80,7 @@ function DeliveryTypePicker({
               <span>{tShipping('deliveryShipping')}</span>
             </span>
             <span className="text-xs font-black text-emerald-700 dark:text-emerald-400">
-              {shippingFee.toLocaleString('vi-VN')} đ
+              {formatVNDPrice(shippingFee)}
             </span>
           </div>
           <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
@@ -161,11 +162,11 @@ function CartShippingOrderSummary({
             <div className="space-y-0.5">
               <p className="font-bold text-gray-800 dark:text-gray-200 line-clamp-1">{item.name}</p>
               <p className="text-[10px] text-gray-400 font-semibold">
-                {item.quantity} x {item.price.toLocaleString('vi-VN')} đ
+                {item.quantity} x {formatVNDPrice(item.price)}
               </p>
             </div>
             <span className="font-bold text-emerald-800 dark:text-emerald-400">
-              {(item.price * item.quantity).toLocaleString('vi-VN')} đ
+              {formatVNDPrice(item.price * item.quantity)}
             </span>
           </div>
         ))}
@@ -174,18 +175,18 @@ function CartShippingOrderSummary({
       <div className="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-2 text-xs">
         <div className="flex justify-between font-semibold text-gray-600 dark:text-gray-400">
           <span>{tShipping('subtotal')}</span>
-          <span>{totalAmount.toLocaleString('vi-VN')} đ</span>
+          <span>{formatVNDPrice(totalAmount)}</span>
         </div>
         <div className="flex justify-between font-semibold text-gray-600 dark:text-gray-400">
           <span>{tShipping('shippingFee')}</span>
           <span className="text-emerald-700 font-bold">
-            {deliveryType === 'shipping' ? `${shippingFee.toLocaleString('vi-VN')} đ` : tShipping('free')}
+            {deliveryType === 'shipping' ? formatVNDPrice(shippingFee) : tShipping('free')}
           </span>
         </div>
         <div className="flex justify-between text-base font-black text-gray-900 dark:text-gray-100 pt-3 border-t border-gray-100 dark:border-gray-800">
           <span>{tShipping('totalPayment')}</span>
           <span className="text-emerald-800 dark:text-emerald-400">
-            {calculatedGrandTotal.toLocaleString('vi-VN')} đ
+            {formatVNDPrice(calculatedGrandTotal)}
           </span>
         </div>
       </div>

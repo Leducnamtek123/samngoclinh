@@ -1,6 +1,7 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 export interface LoadingStateProps {
@@ -22,16 +23,18 @@ const iconSizes = {
 };
 
 export function LoadingState({
-  message = 'Đang tải...',
+  message,
   size = 'md',
   variant = 'centered',
   className,
 }: LoadingStateProps) {
+  const t = useTranslations('common');
+  const displayMessage = message ?? t('loading');
   if (variant === 'inline') {
     return (
       <div className={cn('inline-flex items-center gap-2 text-muted-foreground text-sm', className)}>
         <Loader2 className={cn('animate-spin shrink-0 text-primary', iconSizes[size])} />
-        {message && <span>{message}</span>}
+        {displayMessage && <span>{displayMessage}</span>}
       </div>
     );
   }
@@ -40,7 +43,7 @@ export function LoadingState({
     return (
       <div className={cn('absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-4', className)}>
         <Loader2 className={cn('animate-spin text-primary mb-2', iconSizes[size])} />
-        {message && <p className="text-sm font-medium text-muted-foreground">{message}</p>}
+        {displayMessage && <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>}
       </div>
     );
   }
@@ -48,7 +51,7 @@ export function LoadingState({
   return (
     <div className={cn('flex flex-col items-center justify-center p-8 min-h-[160px] w-full text-center', className)}>
       <Loader2 className={cn('animate-spin text-primary mb-3', iconSizes[size])} />
-      {message && <p className="text-sm font-medium text-muted-foreground">{message}</p>}
+      {displayMessage && <p className="text-sm font-medium text-muted-foreground">{displayMessage}</p>}
     </div>
   );
 }

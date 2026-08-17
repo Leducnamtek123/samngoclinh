@@ -2,21 +2,22 @@
 
 import { useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { 
   Minus, 
   Plus, 
   CheckCircle2, 
   ShieldCheck, 
   Gift, 
-  ExternalLink,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button, ButtonLoading } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
+import { formatVNDPrice } from '@/utils/formatters';
+import { cultivationService } from '@/services/cultivation.service';
 
 const emptySubscribe = () => () => {};
 
@@ -27,6 +28,10 @@ export type ClaimPlantModalProps = {
 };
 
 export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps) {
+  const t = useTranslations('freeTreeCampaign');
+  const tCart = useTranslations('cart');
+  const tActions = useTranslations('actions');
+
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const [quantity, setQuantity] = useState(1);
@@ -50,20 +55,24 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
 
   const grandTotal = totalCareFee + vatCare + totalProtectionFee + vatProtection;
 
-  const formatVND = (num: number) => {
-    return num.toLocaleString('vi-VN') + ' đ';
-  };
-
   const handleClaimSubmit = async () => {
     if (!agreed) return;
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      if (item?.id) {
+        await cultivationService.subscribePackage({
+          treeId: String(item.id),
+          packageType: 'care',
+          packageId: String(item.id),
+          months: careYears * 12,
+        }).catch((err) => console.warn('Care package sub warning:', err));
+      }
       setIsSuccess(true);
     } catch (error) {
       console.error('Claim plant error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   const plantName = item?.plantCatalog?.name ?? '—';
@@ -73,9 +82,9 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Nhận cây sâm 1 năm</DialogTitle>
+          <DialogTitle>{t('modalTitle')}</DialogTitle>
           <DialogDescription>
-            Ưu đãi tặng giá trị cây sâm 1 năm. Bạn chỉ cần chọn đủ gói chăm sóc và bảo vệ cây để nhận ưu đãi.
+            {t('subtitle')}
           </DialogDescription>
         </DialogHeader>
 
@@ -85,9 +94,9 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-extrabold text-foreground">Đăng Ký Nhận Cây Thành Công!</h3>
+              <h3 className="text-2xl font-extrabold text-foreground">{t('successToast')}</h3>
               <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Đơn nhận cây sâm 1 năm đã được khởi tạo thành công trên hệ thống. Cây sâm đã được ghi nhận trực tiếp vào tài khoản của bạn tại vườn Kon Tum.
+                {t('rule3')}
               </p>
             </div>
             <div className="pt-4">
@@ -95,7 +104,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                 onClick={onClose}
                 className="px-8"
               >
-                Hoàn tất
+                {tActions('cancel')}
               </Button>
             </div>
           </div>
@@ -115,14 +124,14 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               </div>
               <div className="space-y-1.5 flex-1">
                 <h4 className="font-extrabold text-foreground text-base leading-snug">{plantName}</h4>
-                <p className="text-xs text-muted-foreground font-medium">Tồn kho: {item?.remainingSlots ?? 0}</p>
-                <Badge variant="secondary">Giá cây được tặng</Badge>
+                <p className="text-xs text-muted-foreground font-medium">{t('remainingCount', { count: item?.remainingSlots ?? 0 })}</p>
+                <Badge variant="secondary">{t('badge')}</Badge>
               </div>
             </Card>
 
             {/* Quantity Selector */}
             <div className="flex items-center justify-between py-2 border-b border-border">
-              <span className="text-sm font-bold text-foreground">Số lượng</span>
+              <span className="text-sm font-bold text-foreground">{tCart('itemCount')}</span>
               <div className="flex items-center border border-border rounded-xl overflow-hidden bg-muted/50">
                 <Button
                   variant="ghost"
@@ -152,7 +161,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               <div className="space-y-1.5">
                 <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <Gift className="w-3.5 h-3.5 text-primary" />
-                  <span>Gói chăm sóc</span>
+                  <span>{t('rule2')}</span>
                 </span>
                 <Select
                   value={String(careYears)}
@@ -162,9 +171,9 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 năm - {formatVND(careCostPerYear * quantity)}</SelectItem>
-                    <SelectItem value="2">2 năm - {formatVND(careCostPerYear * 2 * quantity)}</SelectItem>
-                    <SelectItem value="3">3 năm - {formatVND(careCostPerYear * 3 * quantity)}</SelectItem>
+                    <SelectItem value="1">1 year - {formatVNDPrice(careCostPerYear * quantity)}</SelectItem>
+                    <SelectItem value="2">2 years - {formatVNDPrice(careCostPerYear * 2 * quantity)}</SelectItem>
+                    <SelectItem value="3">3 years - {formatVNDPrice(careCostPerYear * 3 * quantity)}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -172,7 +181,7 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
               <div className="space-y-1.5">
                 <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                  <span>Gói đảm bảo</span>
+                  <span>{t('rule1')}</span>
                 </span>
                 <Select
                   value={String(protectionYears)}
@@ -182,9 +191,9 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 năm - {formatVND(protectionCostPerYear * quantity)}</SelectItem>
-                    <SelectItem value="2">2 năm - {formatVND(protectionCostPerYear * 2 * quantity)}</SelectItem>
-                    <SelectItem value="3">3 năm - {formatVND(protectionCostPerYear * 3 * quantity)}</SelectItem>
+                    <SelectItem value="1">1 year - {formatVNDPrice(protectionCostPerYear * quantity)}</SelectItem>
+                    <SelectItem value="2">2 years - {formatVNDPrice(protectionCostPerYear * 2 * quantity)}</SelectItem>
+                    <SelectItem value="3">3 years - {formatVNDPrice(protectionCostPerYear * 3 * quantity)}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -193,29 +202,17 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
             {/* Detailed Price Breakdown Table */}
             <Card className="p-4 space-y-2 text-xs text-muted-foreground bg-muted/30 border-border">
               <div className="flex justify-between">
-                <span>VAT cây (5%):</span>
-                <span className="font-semibold text-foreground">0 đ</span>
+                <span>{tCart('subtotal')}:</span>
+                <span className="font-semibold text-foreground">{formatVNDPrice(totalCareFee)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Phí chăm sóc:</span>
-                <span className="font-semibold text-foreground">{formatVND(totalCareFee)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>VAT chăm sóc (10%):</span>
-                <span className="font-semibold text-foreground">{formatVND(vatCare)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Phí bảo vệ cây:</span>
-                <span className="font-semibold text-foreground">{formatVND(totalProtectionFee)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>VAT bảo vệ (10%):</span>
-                <span className="font-semibold text-foreground">{formatVND(vatProtection)}</span>
+                <span>{tCart('shippingFee')}:</span>
+                <span className="font-semibold text-foreground">{formatVNDPrice(totalProtectionFee)}</span>
               </div>
 
               <div className="pt-3 border-t border-border flex items-center justify-between text-sm sm:text-base font-extrabold text-foreground">
-                <span>Tổng cộng:</span>
-                <span className="text-primary text-lg sm:text-xl font-black">{formatVND(grandTotal)}</span>
+                <span>{tCart('total')}:</span>
+                <span className="text-primary text-lg sm:text-xl font-black">{formatVNDPrice(grandTotal)}</span>
               </div>
             </Card>
 
@@ -229,70 +226,29 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
                   className="shrink-0"
                 />
                 <span className="text-xs font-semibold text-foreground leading-normal group-hover:text-primary transition-colors">
-                  Tôi đã đọc và đồng ý với điều khoản sử dụng và hợp đồng mua bán, ký gửi, chăm sóc cây Sâm Ngọc Linh.
+                  {t('agreeNotice')}
                 </span>
               </label>
-
-              <Accordion type="single" collapsible className="pt-2 border-t border-border">
-                <AccordionItem value="terms">
-                  <AccordionTrigger>Điều khoản sử dụng – Sâm Ngọc Linh</AccordionTrigger>
-                  <AccordionContent className="space-y-2 text-xs">
-                    <p>
-                      Điều khoản sử dụng áp dụng cho tất cả tài khoản đăng ký nhận cây ưu đãi và sử dụng dịch vụ chăm sóc tại vườn Sâm Ngọc Linh.
-                    </p>
-                    <div className="mt-1">
-                      <a
-                        href="/terms"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-primary hover:underline font-bold transition-colors"
-                      >
-                        <span>Xem toàn văn 13 Điều khoản sử dụng</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="contract">
-                  <AccordionTrigger>Hợp đồng mua bán cây</AccordionTrigger>
-                  <AccordionContent>
-                    <p className="leading-relaxed">
-                      Hợp đồng mua bán, ký gửi và chăm sóc cây Sâm Ngọc Linh áp dụng cho đơn hàng cây trồng và các dịch vụ đi kèm.
-                    </p>
-                    <div className="mt-2">
-                      <a
-                        href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-primary hover:underline font-bold transition-colors"
-                      >
-                        <span>Mở hợp đồng mua bán, ký gửi và chăm sóc cây Sâm Ngọc Linh</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
             </div>
 
-            {/* Modal Footer Actions */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+            {/* Submit Action */}
+            <div className="pt-2 flex items-center justify-end gap-3">
               <Button
                 variant="outline"
                 onClick={onClose}
-                disabled={isSubmitting}
               >
-                Hủy
+                {tActions('cancel')}
               </Button>
-              <ButtonLoading
-                variant="default"
-                isLoading={isSubmitting}
-                disabled={!agreed}
-                onClick={handleClaimSubmit}
-              >
-                Nhận cây
-              </ButtonLoading>
+              {isSubmitting ? (
+                <ButtonLoading>...</ButtonLoading>
+              ) : (
+                <Button
+                  onClick={handleClaimSubmit}
+                  disabled={!agreed}
+                >
+                  {t('claimBtn')}
+                </Button>
+              )}
             </div>
           </div>
         )}

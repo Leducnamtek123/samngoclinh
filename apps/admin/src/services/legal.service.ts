@@ -118,6 +118,10 @@ export const legalService = {
     return fetchApiJson<ContactRequest[]>(`/admin/contacts?${query.toString()}`)
   },
 
+  async getContactDetail(id: string): Promise<ApiResponse<ContactRequest>> {
+    return fetchApiJson<ContactRequest>(`/admin/contacts/${encodeURIComponent(id)}`)
+  },
+
   async deleteContact(id: string): Promise<ApiResponse<void>> {
     return fetchApiJson<void>(`/admin/contacts/${encodeURIComponent(id)}`, {
       method: "DELETE",

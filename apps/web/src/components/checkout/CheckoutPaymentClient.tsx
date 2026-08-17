@@ -45,7 +45,7 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
 
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
-          toast.success('Đã thanh toán thành công!');
+          toast.success(t('paymentSuccess'));
           // react-doctor-disable-next-line react-doctor/nextjs-no-client-side-redirect
           router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
           return;
@@ -85,9 +85,9 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
     return () => {
       isMounted = false;
     };
-  }, [orderId, locale, router]);
+  }, [orderId, locale, router, t]);
 
-  // SePay Auto Polling & Window Focus listener (Learned from Mobile App AppState listener)
+  // SePay Auto Polling & Window Focus listener
   useEffect(() => {
     if (!orderId) return;
 
@@ -97,50 +97,49 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
         const data = res?.data || res;
         if (data?.status === 'paid' || data?.status === 'completed') {
           clearCart();
-          toast.success('Xác nhận thanh toán thành công!');
+          toast.success(t('paymentSuccess'));
+          // react-doctor-disable-next-line react-doctor/nextjs-no-client-side-redirect
           router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
         }
-      } catch {
-        // Silent retry
-      }
+      } catch {}
     };
 
-    const interval = setInterval(checkPaymentStatus, 3000);
-    window.addEventListener('focus', checkPaymentStatus);
+    const intervalId = setInterval(checkPaymentStatus, 3000);
+
+    const onFocus = () => {
+      checkPaymentStatus();
+    };
+    window.addEventListener('focus', onFocus);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', checkPaymentStatus);
+      clearInterval(intervalId);
+      window.removeEventListener('focus', onFocus);
     };
-  }, [orderId, locale, router]);
+  }, [orderId, locale, router, t]);
 
-  const handleCopy = (text: string, fieldName: string) => {
+  const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
-    setCopiedField(fieldName);
+    setCopiedField(field);
+    toast.success(t('copied'));
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleManualComplete = async () => {
+  const handleManualVerify = async () => {
     setIsVerifying(true);
     try {
       const res: any = await paymentService.verifySepayOrder(orderId);
       const data = res?.data || res;
       if (data?.status === 'paid' || data?.status === 'completed') {
         clearCart();
-        toast.success('Xác nhận thanh toán thành công!');
+        toast.success(t('paymentSuccess'));
         router.push(`/${locale}/checkout/result?order=${orderId}&status=success`);
       } else {
-        toast.info('Hệ thống chưa ghi nhận giao dịch thành công. Vui lòng kiểm tra lại ứng dụng ngân hàng hoặc chờ trong giây lát.');
+        toast.info(t('pendingPayment'));
       }
     } catch {
-      toast.info('Đang xác minh giao dịch với ngân hàng, vui lòng thử lại sau ít phút.');
+      toast.error(t('verifyFailed'));
     }
     setIsVerifying(false);
-  };
-
-  const handleOpenSepayGateway = () => {
-    const code = orderInfo?.orderCode || orderId;
-    window.location.href = `/api/proxy/public/payment/sepay/pay/${code}`;
   };
 
   const stepsList = [
@@ -150,10 +149,10 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
     { step: 4, label: t('step4'), icon: PackageCheck },
   ];
 
-  if (loading || !orderInfo) {
+  if (loading) {
     return (
-      <div className="w-full bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
-        <LoadingState message="Đang tải thông tin thanh toán..." size="lg" />
+      <div className="w-full min-h-[60vh] flex items-center justify-center">
+        <LoadingState variant="centered" message={t('loading')} />
       </div>
     );
   }
@@ -163,14 +162,15 @@ export function CheckoutPaymentClient({ locale, orderId }: CheckoutPaymentClient
       <div className="max-w-4xl mx-auto space-y-10">
         <CartStepProgress currentStep={3} stepsList={stepsList} />
 
-        <CartStepPayment
-          orderInfo={orderInfo}
-          copiedField={copiedField}
-          isVerifying={isVerifying}
-          onCopy={handleCopy}
-          onCompletePayment={handleManualComplete}
-          onOpenSepayGateway={handleOpenSepayGateway}
-        />
+        {orderInfo && (
+          <CartStepPayment
+            orderInfo={orderInfo}
+            copiedField={copiedField}
+            onCopy={handleCopy}
+            onCompletePayment={handleManualVerify}
+            isVerifying={isVerifying}
+          />
+        )}
       </div>
     </div>
   );

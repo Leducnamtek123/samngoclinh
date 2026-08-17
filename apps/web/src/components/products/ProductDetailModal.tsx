@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { ProductDetailView } from './ProductDetailView';
 import type { ProductItem } from '@/types';
 
@@ -19,6 +20,8 @@ export function ProductDetailModal({
   onClose,
   onBuyItem,
 }: ProductDetailModalProps) {
+  const t = useTranslations('common');
+
   useEffect(() => {
     if (!selectedDetailProduct) return;
     const origOverflow = document.body.style.overflow;
@@ -31,7 +34,16 @@ export function ProductDetailModal({
   if (!selectedDetailProduct) return null;
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 transition-opacity duration-200 animate-in fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-label={t('close')}
+        onClick={onClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity cursor-pointer border-0 w-full h-full text-left"
+      />
+
+      {/* Modal Container */}
       <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden relative shadow-xl border border-border shrink-0 transition-transform duration-200 animate-in zoom-in-95">
         {/* Sticky Header */}
         <div className="flex-shrink-0 px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10">
@@ -47,7 +59,7 @@ export function ProductDetailModal({
           </div>
           <button
             type="button"
-            aria-label="Đóng modal sản phẩm"
+            aria-label={t('close')}
             onClick={onClose}
             className="w-8 h-8 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors font-bold cursor-pointer shrink-0"
           >

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { fetchApi } from '@/lib/Api';
 import { cookies } from 'next/headers';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
@@ -14,10 +14,12 @@ type FreeTreePageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: FreeTreePageProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'freeTreeCampaign' });
   return {
-    title: 'Tặng Cây Sâm 1 Năm | Rượu Sâm Ngọc Linh',
-    description: 'Chương trình ưu đãi sở hữu cây sâm 1 năm dành cho nhà đầu tư đủ điều kiện.',
+    title: `${t('title')} | Sâm Ngọc Linh`,
+    description: t('subtitle'),
   };
 }
 
@@ -37,7 +39,7 @@ async function getCampaignDetails() {
   }
 }
 
-async function getCampaignsBanner() {
+async function getCampaignsBanner(locale: string) {
   try {
     const res = await fetchApi('/public/banners/campaigns', { next: { revalidate: 60 } });
     if (res.ok) {
@@ -51,8 +53,10 @@ async function getCampaignsBanner() {
     {
       id: 'campaigns-default',
       pageKey: 'campaigns',
-      title: 'Chương trình Tặng cây sâm 1 năm',
-      subtitle: 'Chọn cây sâm 1 năm phù hợp, hoàn tất gói chăm sóc và bảo vệ cây để nhận ưu đãi dành riêng cho tài khoản đủ điều kiện.',
+      title: locale === 'en' ? 'Free 1-Year Ginseng Tree Program' : 'Chương trình Tặng cây sâm 1 năm',
+      subtitle: locale === 'en'
+        ? 'Select eligible 1-year tree, complete care package and receive special promotion for qualified accounts.'
+        : 'Chọn cây sâm 1 năm phù hợp, hoàn tất gói chăm sóc và bảo vệ cây để nhận ưu đãi dành riêng cho tài khoản đủ điều kiện.',
       image: '/images/banners/campaigns_banner.png',
       order: 0
     }
@@ -62,13 +66,14 @@ async function getCampaignsBanner() {
 export default async function FreeTreePage(props: FreeTreePageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'freeTreeCampaign' });
 
   const cookieStore = await cookies();
   const token = cookieStore.get('user_session')?.value;
 
   const [campaignData, banner] = await Promise.all([
     getCampaignDetails(),
-    getCampaignsBanner(),
+    getCampaignsBanner(locale),
   ]);
 
   if (!campaignData) {
@@ -79,9 +84,13 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
             <Info className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-slate-800">Chương trình hiện chưa kích hoạt</h3>
+          <h3 className="text-xl font-bold text-slate-800">
+            {locale === 'en' ? 'Campaign currently not active' : 'Chương trình hiện chưa kích hoạt'}
+          </h3>
           <p className="text-slate-500 font-medium max-w-md mx-auto">
-            Chương trình ưu đãi hiện tại đã kết thúc hoặc chưa được bật từ hệ thống quản trị. Vui lòng quay lại sau!
+            {locale === 'en'
+              ? 'This campaign has concluded or is not yet enabled. Please check back soon!'
+              : 'Chương trình ưu đãi hiện tại đã kết thúc hoặc chưa được bật từ hệ thống quản trị. Vui lòng quay lại sau!'}
           </p>
         </div>
       </div>
@@ -99,9 +108,13 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
             <Sprout className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-slate-800">Đang cập nhật danh sách</h3>
+          <h3 className="text-xl font-bold text-slate-800">
+            {locale === 'en' ? 'Updating tree list' : 'Đang cập nhật danh sách'}
+          </h3>
           <p className="text-slate-500 font-medium max-w-md mx-auto">
-            Hiện chưa có suất quà tặng hoặc cây sâm khả dụng trong chương trình.
+            {locale === 'en'
+              ? 'No promotional trees are currently available in this campaign.'
+              : 'Hiện chưa có suất quà tặng hoặc cây sâm khả dụng trong chương trình.'}
           </p>
         </div>
       </div>
@@ -125,14 +138,14 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/70 px-3 py-1 rounded-full mb-2">
               <BadgePercent className="w-3.5 h-3.5" />
-              <span>Danh sách quà tặng</span>
+              <span>{t('badge')}</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Cây Sâm Ưu Đãi 1 Năm Tuổi
+              {t('title')}
             </h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium max-w-md">
-            Mỗi tài khoản đủ điều kiện được đăng ký 01 cây sâm kèm gói chăm sóc & bảo vệ tại Kon Tum.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -142,4 +155,3 @@ export default async function FreeTreePage(props: FreeTreePageProps) {
     </div>
   );
 }
-

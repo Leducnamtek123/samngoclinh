@@ -1,8 +1,12 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { ProductImageCollage } from './ProductImageCollage';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { formatVNDPrice } from '@/utils/formatters';
 import type { ProductItem } from '@/types';
 
 export interface ProductsGridProps {
@@ -28,20 +32,23 @@ export const ProductsGrid: React.FC<ProductsGridProps> = ({
   onQuickPurchase,
   onClearFilters,
 }) => {
+  const t = useTranslations('products');
+  const tActions = useTranslations('actions');
+
   if (isLoading) {
-    return <LoadingState message="Đang tải danh sách sản phẩm..." size="lg" />;
+    return <LoadingState message={t('loading')} size="lg" />;
   }
 
   if (isError) {
-    return <ErrorState message="Không thể tải danh sách sản phẩm. Vui lòng thử lại sau." onRetry={onClearFilters} />;
+    return <ErrorState message={t('error')} onRetry={onClearFilters} />;
   }
 
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Không tìm thấy sản phẩm phù hợp"
-        description="Hãy thử thay đổi từ khóa hoặc chọn danh mục khác."
-        actionLabel="Đặt lại bộ lọc"
+        title={t('noProductsFound')}
+        description={t('noProductsDesc')}
+        actionLabel={tActions('clearFilters')}
         onAction={onClearFilters}
       />
     );
@@ -77,7 +84,7 @@ export const ProductsGrid: React.FC<ProductsGridProps> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span>{item.images.length} ảnh</span>
+                  <span>{item.images.length}</span>
                 </span>
               )}
 
@@ -97,7 +104,7 @@ export const ProductsGrid: React.FC<ProductsGridProps> = ({
               </div>
 
               <div className="text-secondary font-extrabold text-base pt-1">
-                {(item.price || 0).toLocaleString('vi-VN')} đ
+                {formatVNDPrice(item.price || 0)}
               </div>
 
               {/* Actions */}
@@ -106,7 +113,7 @@ export const ProductsGrid: React.FC<ProductsGridProps> = ({
                   type="button"
                   onClick={(e) => onAddToCart(e, item)}
                   className="p-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs"
-                  title="Thêm vào giỏ hàng"
+                  title={t('addToCart')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -123,7 +130,7 @@ export const ProductsGrid: React.FC<ProductsGridProps> = ({
                   }}
                   className="flex-1 flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg font-extrabold transition-colors duration-200 text-xs active:scale-98 shadow-xs cursor-pointer"
                 >
-                  Mua ngay
+                  {t('buyNow')}
                 </button>
               </div>
             </div>

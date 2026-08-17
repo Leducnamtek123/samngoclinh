@@ -3,33 +3,50 @@
     "title": "Thông Báo Hệ Thống",
     "markAllRead": "Đánh dấu tất cả là đã đọc",
     "noNotifications": "Chưa có thông báo nào.",
-    "unreadCount": "{count} chưa đọc"
+    "unreadCount": "{count} chưa đọc",
+    "viewAll": "Xem tất cả thông báo",
+    "emptyDesc": "Bạn đã đọc hết mọi thông báo mới từ hệ thống.",
+    "types": {
+      "order": "Đơn hàng",
+      "contract": "Hợp đồng",
+      "system": "Hệ thống",
+      "tree": "Cây sâm",
+      "kyc": "Xác minh eKYC"
+    }
   },
   "trace": {
     "title": "Truy Xuất Nguồn Gốc Sâm Ngọc Linh",
-    "subtitle": "Kiểm tra nguồn gốc, lô sản xuất và nhật ký chăm sóc của cây sâm",
-    "searchPlaceholder": "Nhập mã QR hoặc mã cây sâm...",
-    "verifyBtn": "Truy Xuất Nguồn Gốc",
-    "originDetails": "Thông Tin Nguồn Gốc",
-    "treeCode": "Mã Cây Sâm",
+    "subtitle": "Kiểm tra nguồn gốc, mã lô sản xuất, chỉ số Saponin và nhật ký chăm sóc cây sâm",
+    "searchPlaceholder": "Nhập mã QR, mã vạch hoặc mã định danh cây sâm...",
+    "verifyBtn": "Truy Xuất Ngay",
+    "originDetails": "Thông Tin Nguồn Gốc Định Danh",
+    "treeCode": "Mã Định Danh Cây Sâm:",
     "gardenLocation": "Vị Trí Nông Trường",
-    "garden": "Nông trường",
-    "bed": "Vị trí luống",
-    "harvestDate": "Ngày Thu Hoạch",
-    "certificate": "Giấy Chứng Nhận Nguồn Gốc",
+    "garden": "Nông trường:",
+    "bed": "Vị trí luống:",
+    "altitude": "Độ cao:",
+    "harvestDate": "Ngày Thu Hoạch:",
+    "plantedDate": "Ngày Gieo Trồng:",
+    "careGiver": "Nghệ nhân phụ trách:",
+    "certificate": "Giấy Chứng Nhận Nguồn Gốc & Kiểm Định",
     "verifiedBadge": "Chứng Nhận Chính Gốc 100%",
     "verified": "ĐÃ XÁC MINH CHÍNH GỐC",
-    "careLogs": "Nhật Ký Chăm Sóc & Canh Tác",
-    "ageAndStatus": "Độ Tuổi & Trạng Thái"
+    "careLogs": "Nhật Ký Chăm Sóc & Sinh Trưởng",
+    "ageAndStatus": "Độ Tuổi & Trạng Thái Sinh Trưởng",
+    "labResults": "Chỉ Số Kiểm Nghiệm Hoạt Chất (MR2, Rg1, Rb1)",
+    "downloadCert": "Tải Chứng Thư Kiểm Định PDF",
+    "invalidCode": "Mã định danh không hợp lệ hoặc không tồn tại trên hệ thống Sâm Ngọc Linh.",
+    "scanQr": "Quét mã QR bằng Camera"
   },
   "mapLocationPicker": {
     "searchPlaceholder": "Tìm kiếm địa chỉ, tên đường, quận huyện...",
     "searchAriaLabel": "Ô nhập tìm kiếm địa chỉ",
     "useCurrentLocation": "Sử Dụng Vị Trí Hiện Tại",
     "selectedLocationTitle": "VỊ TRÍ ĐÃ CHỌN:",
-    "confirmLocationBtn": "Xác Nhận Chọn",
-    "geoNotSupported": "Trình duyệt không hỗ trợ định vị Geolocation.",
-    "geoPermDenied": "Quyền truy cập vị trí bị từ chối.",
-    "geoError": "Không thể lấy vị trí hiện tại."
+    "confirmLocationBtn": "Xác Nhận Chọn Vị Trí",
+    "geoNotSupported": "Trình duyệt của bạn không hỗ trợ định vị Geolocation.",
+    "geoPermDenied": "Quyền truy cập vị trí đã bị từ chối. Vui lòng cho phép truy cập vị trí trong cài đặt trình duyệt.",
+    "geoError": "Không thể lấy vị trí hiện tại của bạn.",
+    "locating": "Đang định vị vị trí..."
   }
 }

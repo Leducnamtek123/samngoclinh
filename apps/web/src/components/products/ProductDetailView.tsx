@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { ShoppingCart, Zap, PackageCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { getProductImage } from '@/utils/productUtils';
 import type { ProductItem } from '@/types';
+import { formatVNDPrice } from '@/utils/formatters';
 
 export type ProductDetailViewProps = {
   product: ProductItem;
@@ -25,6 +27,8 @@ export function ProductDetailView({
   onBuyNow,
   className,
 }: ProductDetailViewProps) {
+  const t = useTranslations('products');
+
   const [activeImageIdx, setActiveImageIdx] = useState<number>(initialImageIdx);
   const [quantity, setQuantity] = useState<number>(1);
 
@@ -46,7 +50,7 @@ export function ProductDetailView({
           ) : (
             <div className="flex flex-col items-center justify-center text-gray-400 text-xs font-medium space-y-1">
               <PackageCheck className="w-10 h-10 opacity-40" />
-              <span>Không có hình ảnh</span>
+              <span>{t('noImage')}</span>
             </div>
           )}
         </div>
@@ -96,18 +100,18 @@ export function ProductDetailView({
 
           {product.code && (
             <p className="text-xs text-gray-400 font-mono">
-              Mã sản phẩm: <span className="text-gray-700 dark:text-gray-300 font-semibold">{product.code}</span>
+              {t('productCode')}: <span className="text-gray-700 dark:text-gray-300 font-semibold">{product.code}</span>
             </p>
           )}
 
           <div className="text-2xl sm:text-3xl font-black text-primary font-display">
-            {(product.price || 0).toLocaleString('vi-VN')} đ
+            {formatVNDPrice(product.price || 0)}
           </div>
 
           <div className="border-t border-gray-100 dark:border-gray-800 pt-4 space-y-1.5">
-            <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">Mô tả sản phẩm</h4>
+            <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">{t('description')}</h4>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-normal leading-relaxed">
-              {product.description || 'Sản phẩm Sâm Ngọc Linh chuẩn nguồn gốc được kiểm định chất lượng nghiêm ngặt.'}
+              {product.description || t('guaranteedQuality')}
             </p>
           </div>
 
@@ -115,12 +119,12 @@ export function ProductDetailView({
           {showQuantity && (
             <div className="space-y-2 pt-2">
               <span className="text-xs font-bold uppercase text-gray-400 tracking-wider block">
-                Số lượng
+                {t('quantity')}
               </span>
               <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-900 w-max shadow-2xs">
                 <button
                   type="button"
-                  aria-label="Giảm số lượng"
+                  aria-label={t('decreaseQuantity')}
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-3.5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer active:scale-90"
                 >
@@ -129,7 +133,7 @@ export function ProductDetailView({
                 <span className="px-4 text-sm font-bold text-gray-900 dark:text-gray-100 select-none">{quantity}</span>
                 <button
                   type="button"
-                  aria-label="Tăng số lượng"
+                  aria-label={t('increaseQuantity')}
                   onClick={() => setQuantity(quantity + 1)}
                   className="px-3.5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-800 font-bold transition-colors cursor-pointer active:scale-90"
                 >
@@ -150,7 +154,7 @@ export function ProductDetailView({
               className="flex-1 py-3.5 text-xs font-bold border-primary text-primary hover:bg-emerald-50 dark:hover:bg-emerald-950 flex items-center justify-center gap-2 rounded-xl transition-[transform,background-color] active:scale-[0.98] cursor-pointer shadow-2xs"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Thêm Vào Giỏ Hàng</span>
+              <span>{t('addToCart')}</span>
             </Button>
           )}
 
@@ -162,7 +166,7 @@ export function ProductDetailView({
               className="flex-1 py-3.5 text-xs font-bold shadow-md hover:shadow-lg flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-white transition-[transform,background-color,box-shadow] active:scale-[0.98] cursor-pointer"
             >
               <Zap className="w-4 h-4 text-amber-300" />
-              <span>Mua Ngay</span>
+              <span>{t('buyNow')}</span>
             </Button>
           )}
         </div>

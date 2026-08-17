@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { useTranslation } from "@/providers/i18n-provider"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,57 +31,59 @@ export function CreateContractIdentityFields({
   customerAddress,
   onCustomerAddressChange,
 }: CreateContractIdentityFieldsProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="space-y-3 pt-2 border-t">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-          Thông tin pháp lý hiển thị trên hợp đồng
+          {t("contracts.identity.title")}
         </span>
-        <Badge variant="outline" className="text-[10px]">Tự động điền theo eKYC</Badge>
+        <Badge variant="outline" className="text-[10px]">{t("contracts.identity.autoBadge")}</Badge>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div className="space-y-1.5">
-          <Label className="text-xs">Họ và tên khách hàng *</Label>
+          <Label className="text-xs">{t("contracts.identity.fullName")}</Label>
           <Input
             value={customerName}
             onChange={(e) => onCustomerNameChange(e.target.value)}
-            placeholder="Họ và tên đầy đủ..."
+            placeholder={t("contracts.identity.fullNamePlaceholder")}
             className="bg-white dark:bg-slate-950"
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Số CMND / CCCD / MST *</Label>
+          <Label className="text-xs">{t("contracts.identity.cccd")}</Label>
           <Input
             value={customerCccd}
             onChange={(e) => onCustomerCccdChange(e.target.value)}
-            placeholder="079090001234"
+            placeholder={t("contracts.identity.cccdPlaceholder")}
             className="bg-white dark:bg-slate-950"
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Số điện thoại liên lạc *</Label>
+          <Label className="text-xs">{t("contracts.identity.phone")}</Label>
           <Input
             value={customerPhone}
             onChange={(e) => onCustomerPhoneChange(e.target.value)}
-            placeholder="0901234567"
+            placeholder={t("contracts.identity.phonePlaceholder")}
             className="bg-white dark:bg-slate-950"
           />
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs">Địa chỉ Email</Label>
+          <Label className="text-xs">{t("contracts.identity.email")}</Label>
           <Input
             value={customerEmail}
             onChange={(e) => onCustomerEmailChange(e.target.value)}
-            placeholder="email@domain.com"
+            placeholder={t("contracts.identity.emailPlaceholder")}
             className="bg-white dark:bg-slate-950"
           />
         </div>
         <div className="sm:col-span-2 space-y-1.5">
-          <Label className="text-xs">Địa chỉ thường trú / cư trú *</Label>
+          <Label className="text-xs">{t("contracts.identity.address")}</Label>
           <Input
             value={customerAddress}
             onChange={(e) => onCustomerAddressChange(e.target.value)}
-            placeholder="Thôn 2, Xã Trà Linh, Huyện Nam Trà My, Tỉnh Quảng Nam"
+            placeholder={t("contracts.identity.addressPlaceholder")}
             className="bg-white dark:bg-slate-950"
           />
         </div>

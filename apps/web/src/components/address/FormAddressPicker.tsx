@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { FieldPath, FieldValues, useFormContext } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { MapPin, Locate } from 'lucide-react';
 import { FormInput, FormInputProps } from '@/components/ui/form/FormInput';
 import { LeafletMapLocationModal } from '@/components/address/LeafletMapLocationModal';
@@ -37,12 +38,16 @@ export function FormAddressPicker<
   name,
   showIcon = true,
   enableMapPicker = true,
-  placeholder = 'Nhập hoặc chọn địa chỉ nhận hàng...',
+  placeholder,
   clearButton = true,
   ...props
 }: FormAddressPickerProps<TFieldValues, TName>) {
-  const [isMapOpen, setIsMapOpen] = useState(false);
+  const t = useTranslations('profile.addAddressModal');
+  const tMap = useTranslations('profile.mapPicker');
   const formContext = useFormContext<TFieldValues>();
+  const [isMapOpen, setIsMapOpen] = useState(false);
+
+  const resolvedPlaceholder = placeholder || t('shippingAddressPlaceholder');
 
   const handleSelectLocation = (address: string) => {
     if (formContext) {
@@ -59,11 +64,11 @@ export function FormAddressPicker<
     e.stopPropagation();
 
     if (!navigator.geolocation) {
-      toast.error('Trình duyệt không hỗ trợ định vị GPS.');
+      toast.error(tMap('gpsNotSupported'));
       return;
     }
 
-    toast.info('Đang xác định vị trí của bạn...');
+    toast.info(tMap('locating'));
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const address = await fetchReverseGeocodeAddress(pos.coords.latitude, pos.coords.longitude);
@@ -73,13 +78,13 @@ export function FormAddressPicker<
             shouldDirty: true,
             shouldTouch: true,
           });
-          toast.success('Đã tự động cập nhật vị trí hiện tại!');
+          toast.success(t('savedSuccess'));
         } else if (!address) {
-          toast.error('Không thể tự động giải mã tên địa chỉ.');
+          toast.error(tMap('addressNotFound'));
         }
       },
       () => {
-        toast.error('Vui lòng bật quyền truy cập GPS trên thiết bị.');
+        toast.error(tMap('gpsPermissionDenied'));
       }
     );
   };
@@ -93,7 +98,7 @@ export function FormAddressPicker<
         variant="ghost"
         size="sm"
         onClick={handleQuickGps}
-        title="Tự động định vị GPS"
+        title="GPS"
         className="h-7 px-2 text-[11px] font-extrabold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 dark:text-emerald-300 rounded-lg flex items-center gap-1 border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs cursor-pointer"
       >
         <Locate className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
@@ -104,11 +109,11 @@ export function FormAddressPicker<
         type="button"
         size="sm"
         onClick={() => setIsMapOpen(true)}
-        title="Chọn vị trí trên bản đồ OpenStreetMap"
+        title="Map"
         className="h-7 px-2.5 text-[11px] font-extrabold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer"
       >
         <MapPin className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Bản đồ</span>
+        <span className="hidden sm:inline">Map</span>
       </Button>
     </div>
   ) : undefined;
@@ -119,7 +124,7 @@ export function FormAddressPicker<
         control={control}
         name={name}
         type="text"
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         clearButton={clearButton}
         prefixIcon={showIcon ? <MapPin className="w-4 h-4 text-emerald-700" /> : undefined}
         suffixIcon={actionButtons}

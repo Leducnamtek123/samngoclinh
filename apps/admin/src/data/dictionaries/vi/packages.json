@@ -2,14 +2,51 @@
   "title": "Gói Dịch Vụ",
   "addPackage": "Thêm Gói Dịch Vụ Mới",
   "editPackage": "Chỉnh Sửa Gói Dịch Vụ",
-  "createSubtitle": "Nhập các thông tin chi tiết cho gói dịch vụ. Nhấn Lưu để hoàn tất.",
+  "addCareTitle": "Thêm gói chăm sóc mới",
+  "addProtectionTitle": "Thêm gói bảo hiểm mới",
+  "editCareTitle": "Chỉnh sửa gói chăm sóc",
+  "editProtectionTitle": "Chỉnh sửa gói bảo hiểm",
+  "createDesc": "Điền thông tin bên dưới để khởi tạo cấu hình gói dịch vụ cây sâm.",
+  "editDesc": "Cập nhật thông tin và điều khoản của gói dịch vụ.",
+  "emptyCareTitle": "Chưa có gói chăm sóc nào",
+  "emptyCareDesc": "Bấm vào nút bên dưới để tạo cấu hình gói chăm sóc sâm đầu tiên.",
+  "emptyProtectionTitle": "Chưa có gói bảo hiểm nào",
+  "emptyProtectionDesc": "Bấm vào nút bên dưới để tạo cấu hình gói bảo hiểm đầu tiên.",
+  "addCarePackage": "Thêm gói chăm sóc",
+  "addProtectionPackage": "Thêm gói bảo hiểm",
+  "confirmDeleteTitle": "Xác nhận xóa gói dịch vụ?",
+  "confirmDeleteDesc": "Bạn có chắc chắn muốn xóa \"{name}\"? Các cây sâm đã đăng ký gói này vẫn tiếp tục duy trì quyền lợi cho đến khi hết hạn.",
+  "months": "Tháng",
+  "active": "Đang áp dụng (Active)",
+  "inactive": "Tạm dừng (Inactive)",
+  "selectStatus": "Chọn trạng thái",
   "fields": {
-    "code": "Mã gói dịch vụ",
-    "name": "Tên gói dịch vụ",
-    "price": "Đơn giá (VND)",
-    "duration": "Thời hạn gói (tháng)",
-    "description": "Mô tả dịch vụ",
-    "status": "Trạng thái hoạt động",
-    "coverage": "Phạm vi bảo vệ / bồi thường"
+    "code": "Mã gói dịch vụ *",
+    "name": "Tên gói dịch vụ *",
+    "price": "Giá gói (VNĐ) *",
+    "duration": "Thời hạn (Tháng) *",
+    "description": "Mô tả / Quyền lợi chi tiết",
+    "status": "Trạng thái",
+    "coverage": "Tỷ lệ bảo hiểm / Đền bù"
+  },
+  "placeholders": {
+    "code": "VD: CARE_VIP_1Y",
+    "name": "VD: Chăm Sóc Toàn Diện 1 Năm",
+    "price": "VD: 500000",
+    "duration": "VD: 12",
+    "coverage": "VD: 100% giá trị cây giống",
+    "description": "Mô tả các hạng mục chăm sóc hoặc điều kiện bồi thường..."
+  },
+  "toasts": {
+    "createCareSuccess": "Tạo gói chăm sóc thành công!",
+    "updateCareSuccess": "Cập nhật gói chăm sóc thành công!",
+    "createProtectionSuccess": "Tạo gói bảo hiểm thành công!",
+    "updateProtectionSuccess": "Cập nhật gói bảo hiểm thành công!",
+    "deleteCareSuccess": "Đã xóa gói chăm sóc thành công!",
+    "deleteProtectionSuccess": "Đã xóa gói bảo hiểm thành công!",
+    "operationFailed": "Thao tác thất bại. Vui lòng thử lại sau."
+  },
+  "errors": {
+    "requiredFields": "Vui lòng điền đầy đủ các thông tin bắt buộc (*)"
   }
 }

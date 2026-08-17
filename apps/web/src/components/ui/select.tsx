@@ -68,7 +68,7 @@ const SelectTrigger = React.forwardRef<
 });
 SelectTrigger.displayName = 'SelectTrigger';
 
-const SelectValue: React.FC<{ placeholder?: string; children?: React.ReactNode }> = ({ placeholder = 'Chọn...', children }) => {
+const SelectValue: React.FC<{ placeholder?: string; children?: React.ReactNode }> = ({ placeholder = '', children }) => {
   const { value } = React.useContext(SelectContext);
   return (
     <span className={cn('block truncate', !value && 'text-gray-400 dark:text-gray-500 font-normal')}>
@@ -89,7 +89,7 @@ const SelectContent = React.forwardRef<
     <>
       <button
         type="button"
-        aria-label="Đóng danh sách lựa chọn"
+        aria-label="Close selection"
         className="fixed inset-0 z-40 bg-transparent border-0 cursor-default"
         onClick={() => setOpen(false)}
       />

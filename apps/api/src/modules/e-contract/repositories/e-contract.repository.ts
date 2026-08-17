@@ -1,5 +1,5 @@
 import { DatabaseService } from '@common/database/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { EContract } from '@generated/prisma-client';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
@@ -10,6 +10,8 @@ import { IResponsePagingReturn } from '@common/response/interfaces/response.inte
 
 @Injectable()
 export class EContractRepository {
+    private readonly logger = new Logger(EContractRepository.name);
+
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly paginationService: PaginationService
@@ -68,49 +70,69 @@ export class EContractRepository {
     }
 
     async getContractById(id: string): Promise<any | null> {
-        return this.databaseService.eContract.findUnique({
-            where: { id },
-            include: {
-                items: true,
-                order: true,
-                amendments: {
-                    orderBy: { amendmentNumber: 'asc' },
+        try {
+            return await this.databaseService.eContract.findUnique({
+                where: { id },
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
                 },
-            },
-        });
+            });
+        } catch (error) {
+            this.logger.warn(`Fallback getContractById(${id}) without includes: ${error}`);
+            return this.databaseService.eContract.findUnique({
+                where: { id },
+            });
+        }
     }
 
     async getContractByCode(code: string): Promise<any | null> {
-        const direct = await this.databaseService.eContract.findUnique({
-            where: { code },
-            include: {
-                items: true,
-                order: true,
-                amendments: {
-                    orderBy: { amendmentNumber: 'asc' },
+        try {
+            const direct = await this.databaseService.eContract.findUnique({
+                where: { code },
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
                 },
-            },
-        });
-        if (direct) return direct;
+            });
+            if (direct) return direct;
 
-        return this.databaseService.eContract.findFirst({
-            where: {
-                OR: [
-                    { id: code },
-                    { code: code },
-                    { code: code.replace(/^HD-/, 'CTR-') },
-                    { code: code.replace(/^CTR-/, 'HD-') },
-                    { code: { contains: code } },
-                ],
-            },
-            include: {
-                items: true,
-                order: true,
-                amendments: {
-                    orderBy: { amendmentNumber: 'asc' },
+            return await this.databaseService.eContract.findFirst({
+                where: {
+                    OR: [
+                        { id: code },
+                        { code: code },
+                        { code: code.replace(/^HD-/, 'CTR-') },
+                        { code: code.replace(/^CTR-/, 'HD-') },
+                        { code: { contains: code } },
+                    ],
                 },
-            },
-        });
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
+                },
+            });
+        } catch (error) {
+            this.logger.warn(`Fallback getContractByCode(${code}) without includes: ${error}`);
+            return this.databaseService.eContract.findFirst({
+                where: {
+                    OR: [
+                        { id: code },
+                        { code: code },
+                        { code: { contains: code } },
+                    ],
+                },
+            });
+        }
     }
 
     async listContracts(userId?: string): Promise<any[]> {

@@ -2,14 +2,17 @@
 
 import { useState, useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from '@/lib/I18nNavigation';
 import { cartStore } from '@/lib/stores/useCartStore';
 import type { CartItem } from '@/types';
+import { formatVNDPrice } from '@/utils/formatters';
 
 const emptyCartList: CartItem[] = [];
 
 export const MiniCartDrawer = () => {
+  const t = useTranslations('cart');
   const [isOpen, setIsOpen] = useState(false);
   const items = useSyncExternalStore(cartStore.subscribe, cartStore.getSnapshot, () => emptyCartList);
 
@@ -43,7 +46,7 @@ export const MiniCartDrawer = () => {
       {/* Backdrop */}
       <button
         type="button"
-        aria-label="Đóng giỏ hàng"
+        aria-label="Close cart drawer"
         className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in cursor-pointer border-0"
         onClick={() => setIsOpen(false)}
       />
@@ -57,15 +60,15 @@ export const MiniCartDrawer = () => {
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base tracking-tight text-white">Giỏ Hàng Của Bạn</h3>
+              <h3 className="font-extrabold text-base tracking-tight text-white">{t('step1')}</h3>
               <p className="text-xs text-emerald-300/80 font-medium">
-                {totalCount > 0 ? `${totalCount} sản phẩm đã chọn` : 'Chưa có sản phẩm'}
+                {totalCount > 0 ? `${totalCount} ${t('itemCount')}` : t('emptyCart')}
               </p>
             </div>
           </div>
           <button
             type="button"
-            aria-label="Đóng giỏ hàng"
+            aria-label="Close cart drawer"
             onClick={() => setIsOpen(false)}
             className="p-2 rounded-xl text-emerald-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
@@ -81,7 +84,7 @@ export const MiniCartDrawer = () => {
                 <ShoppingBag className="w-8 h-8" />
               </div>
               <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                Giỏ hàng của bạn đang trống
+                {t('emptyCart')}
               </p>
             </div>
           ) : (
@@ -102,14 +105,14 @@ export const MiniCartDrawer = () => {
                     {item.name}
                   </h4>
                   <div className="text-xs font-black text-emerald-800 dark:text-emerald-400 mt-1">
-                    {(Number(item.price) || 0).toLocaleString('vi-VN')} đ
+                    {formatVNDPrice(Number(item.price) || 0)}
                   </div>
 
                   <div className="flex items-center justify-between mt-2.5">
                     <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-slate-800">
                       <button
                         type="button"
-                        aria-label="Giảm số lượng"
+                        aria-label="Decrease quantity"
                         onClick={() => cartStore.updateQuantity(item.id, -1)}
                         className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer"
                       >
@@ -120,7 +123,7 @@ export const MiniCartDrawer = () => {
                       </span>
                       <button
                         type="button"
-                        aria-label="Tăng số lượng"
+                        aria-label="Increase quantity"
                         onClick={() => cartStore.updateQuantity(item.id, 1)}
                         className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-gray-300 transition-colors cursor-pointer"
                       >
@@ -130,10 +133,10 @@ export const MiniCartDrawer = () => {
 
                     <button
                       type="button"
-                      aria-label="Xóa sản phẩm"
+                      aria-label="Remove item"
                       onClick={() => cartStore.removeItem(item.id)}
                       className="p-1 text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
-                      title="Xóa sản phẩm"
+                      title="Remove item"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -148,9 +151,9 @@ export const MiniCartDrawer = () => {
         {items.length > 0 && (
           <div className="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900 space-y-3">
             <div className="flex items-baseline justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Tạm tính:</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-500">{t('subtotal')}:</span>
               <span className="text-lg font-black text-emerald-800 dark:text-emerald-400">
-                {totalAmount.toLocaleString('vi-VN')} đ
+                {formatVNDPrice(totalAmount)}
               </span>
             </div>
 
@@ -160,21 +163,21 @@ export const MiniCartDrawer = () => {
                 onClick={() => setIsOpen(false)}
                 className="py-3 px-4 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 text-center font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
               >
-                <span>Xem Giỏ Hàng</span>
+                <span>{t('step1')}</span>
               </Link>
               <Link
                 href="/checkout"
                 onClick={() => setIsOpen(false)}
                 className="py-3 px-4 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-center font-bold text-xs shadow-md transition-colors flex items-center justify-center gap-1.5"
               >
-                <span>Thanh Toán</span>
+                <span>{t('continueToCheckout')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
             <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 pt-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Thanh toán an toàn • Bảo mật thông tin 100%</span>
+              <span>PCI-DSS SSL 256-bit</span>
             </div>
           </div>
         )}

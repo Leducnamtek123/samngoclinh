@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import type { AddressItem } from '@/types';
 
@@ -16,10 +17,12 @@ export function AddressCardItem({
   address,
   isSelected,
   onSelect,
-  defaultBadgeLabel = 'Mặc định',
+  defaultBadgeLabel,
   className = '',
 }: AddressCardItemProps) {
-  const recipient = address.recipient || address.name || 'Người nhận';
+  const t = useTranslations('address');
+  const defaultBadge = defaultBadgeLabel || t('defaultBadge');
+  const recipient = address.recipient || address.name || t('defaultRecipient');
   const phone = address.phone || '';
   const detail = address.detail || address.address || '';
 
@@ -50,7 +53,7 @@ export function AddressCardItem({
               variant="secondary"
               className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-bold border-none text-[10px]"
             >
-              {defaultBadgeLabel}
+              {defaultBadge}
             </Badge>
           )}
         </div>

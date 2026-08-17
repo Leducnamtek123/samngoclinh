@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/lib/I18nNavigation';
 import { Sprout, CheckCircle2, Gift, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,9 @@ type FreeTreeOfferGridProps = {
 };
 
 export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
+  const t = useTranslations('freeTreeCampaign');
+  const tAuth = useTranslations('auth');
+
   const [selectedItem, setSelectedItem] = useState<FreeTreeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -62,8 +66,8 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
 
               {/* Bottom Image Tag */}
               <div className="absolute bottom-3 left-3 right-3 text-white text-xs font-semibold drop-shadow-sm flex items-center justify-between">
-                <span className="bg-black/40 backdrop-blur-xs px-2.5 py-1 rounded-lg">Mã số: SNG-{slot.id.slice(0, 4).toUpperCase()}</span>
-                <span className="bg-emerald-600/90 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider">Hợp lệ</span>
+                <span className="bg-black/40 backdrop-blur-xs px-2.5 py-1 rounded-lg">SNG-{slot.id.slice(0, 4).toUpperCase()}</span>
+                <span className="bg-emerald-600/90 text-white px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase tracking-wider">OK</span>
               </div>
             </div>
 
@@ -71,10 +75,10 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
             <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div className="space-y-2">
                 <h3 className="font-extrabold text-slate-900 text-lg group-hover:text-emerald-800 transition-colors line-clamp-1">
-                  {slot.plantCatalog?.name || "Sâm Ngọc Linh 2026"}
+                  {slot.plantCatalog?.name || "Sâm Ngọc Linh"}
                 </h3>
                 <p className="text-slate-500 text-xs line-clamp-2 leading-relaxed font-normal">
-                  {slot.plantCatalog?.description || "Gói sở hữu cây sâm thật được chăm sóc trực tiếp tại vườn sâm chuẩn nguồn gốc Kon Tum."}
+                  {slot.plantCatalog?.description || t('subtitle')}
                 </p>
               </div>
 
@@ -82,11 +86,11 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                  <span>Chăm sóc chuẩn sinh học tại vườn</span>
+                  <span>{t('rule2')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                  <span>Cập nhật nhật ký tăng trưởng định kỳ</span>
+                  <span>{t('rule3')}</span>
                 </div>
               </div>
 
@@ -94,11 +98,10 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
                   <Gift className="w-4 h-4 text-amber-600" />
-                  <span>Gói chăm sóc</span>
+                  <span>{t('eligibilityTitle')}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[#D97706] font-black text-base uppercase tracking-tight block">Miễn phí</span>
-                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">Ưu đãi 100%</span>
+                  <span className="text-[#D97706] font-black text-base uppercase tracking-tight block">100% Free</span>
                 </div>
               </div>
 
@@ -110,7 +113,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
                     onClick={() => handleClaimClick(slot)}
                     className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg cursor-pointer"
                   >
-                    <span>Nhận cây ngay</span>
+                    <span>{t('claimBtn')}</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </Button>
                 ) : (
@@ -118,7 +121,7 @@ export function FreeTreeOfferGrid({ slots, token }: FreeTreeOfferGridProps) {
                     href="/sign-in?reason=campaign"
                     className="group/btn flex items-center justify-center gap-2 w-full py-3 bg-primary hover:bg-primary-hover active:bg-emerald-950 text-white rounded-2xl font-bold text-xs transition-colors duration-200 shadow-md hover:shadow-lg"
                   >
-                    <span>Đăng nhập để nhận</span>
+                    <span>{tAuth('login')}</span>
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                 )}

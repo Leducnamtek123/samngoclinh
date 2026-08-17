@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useProfileMe, useProfileBusiness } from '@/hooks/queries/useProfile';
 import { useWalletSummary } from '@/hooks/queries/useWallet';
 import { useCultivationTrees } from '@/hooks/queries/useCultivation';
@@ -51,6 +52,10 @@ export const ProfileClient = ({
   initialTrees,
 }: ProfileClientProps) => {
   const router = useRouter();
+  const t = useTranslations('profile');
+  const tActions = useTranslations('actions');
+  const tConfirm = useTranslations('confirmModal');
+  const tCart = useTranslations('cart');
   const [tabs, setTabs] = useState(initialTab);
 
   // Queries
@@ -100,7 +105,7 @@ export const ProfileClient = ({
 
   const handleCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    setCopyToast(`Đã sao chép ${label}!`);
+    setCopyToast(`${label} ${tActions('copy')}`);
     setTimeout(() => setCopyToast(null), 2500);
   };
 
@@ -115,9 +120,8 @@ export const ProfileClient = ({
     return (
       <div className="max-w-4xl mx-auto py-16 px-4">
         <ErrorState
-          title="Phiên làm việc đã hết hạn"
-          description="Vui lòng đăng nhập lại để tiếp tục quản lý thông tin tài khoản và tài sản cây sâm."
-          retryLabel="Đăng nhập lại"
+          title={t('title')}
+          message={t('subtitle')}
           onRetry={handleRelogin}
         />
       </div>
@@ -130,7 +134,7 @@ export const ProfileClient = ({
 
   const fullName = profile?.fullName ?? profile?.name ?? '—';
   const email = profile?.email || '';
-  const rank = profile?.rank || 'Đồng';
+  const rank = profile?.rank || 'bronze';
   const referralCode = profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
 
   return (
@@ -253,7 +257,7 @@ export const ProfileClient = ({
             orderCode: selectedOrderForPayment.code,
           }}
           onPaymentSuccess={() => {
-            toast.success('Thanh toán đơn hàng thành công!');
+            toast.success(tCart('paymentSuccess'));
             setSelectedOrderForPayment(null);
             refetchOrders();
           }}
@@ -283,10 +287,10 @@ export const ProfileClient = ({
 
       <ConfirmModal
         isOpen={!!deletingAddressId}
-        title="Xóa địa chỉ giao hàng?"
-        description="Bạn có chắc chắn muốn xóa địa chỉ này khỏi Sổ địa chỉ? Hành động này không thể hoàn tác."
-        cancelText="Hủy"
-        confirmText="Xóa địa chỉ"
+        title={tConfirm('title')}
+        description={tConfirm('description')}
+        cancelText={tActions('cancel')}
+        confirmText={tActions('delete')}
         isDestructive={true}
         isLoading={isDeletingAddress}
         onConfirm={confirmDeleteAddress}

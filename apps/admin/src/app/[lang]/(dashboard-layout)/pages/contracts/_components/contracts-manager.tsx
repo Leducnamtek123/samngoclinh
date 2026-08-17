@@ -27,6 +27,7 @@ import { ContractsList } from "./contracts-list"
 import { ContractsStatsCards } from "./contracts-stats-cards"
 import { ContractsFilterBar } from "./contracts-filter-bar"
 import { fetchApi } from "@/lib/api"
+import { useTranslation } from "@/providers/i18n-provider"
 
 import type { AdminUser, EContract, PaginationMeta, Tree } from "@/types"
 
@@ -45,6 +46,7 @@ export function ContractsManager({
   metadata,
   errorMsg: initialError,
 }: ContractsManagerProps) {
+  const { t } = useTranslation()
   const params = useParams()
   const lang = (params?.lang as string) || "vi"
   const router = useRouter()
@@ -138,13 +140,13 @@ export function ContractsManager({
       const payload = await res.json()
       if (res.status < 400 && payload.data) {
         toast.success(
-          `Đã quét hệ thống: ${payload.data.count} hợp đồng sắp hết hạn được ghi nhận thông báo.`
+          t("contracts.notifications.checkExpiredSuccess", { count: payload.data.count })
         )
       } else {
-        toast.error("Không thể kiểm tra hợp đồng hết hạn.")
+        toast.error(t("contracts.notifications.checkExpiredError"))
       }
     } catch {
-      toast.error("Lỗi kết nối máy chủ.")
+      toast.error(t("contracts.notifications.serverError"))
     } finally {
       setIsCheckingExpiry(false)
     }
@@ -154,13 +156,13 @@ export function ContractsManager({
     try {
       const res = await fetchApi(`/admin/contracts/${id}`, { method: "DELETE" })
       if (res.status < 400) {
-        toast.success("Đã xóa hợp đồng.")
+        toast.success(t("contracts.notifications.deleteSuccess"))
         setContracts((prev) => prev.filter((c) => c.id !== id))
       } else {
-        toast.error("Không thể xóa hợp đồng.")
+        toast.error(t("contracts.notifications.deleteError"))
       }
     } catch {
-      toast.error("Lỗi kết nối máy chủ.")
+      toast.error(t("contracts.notifications.serverError"))
     }
   }
 
@@ -170,13 +172,13 @@ export function ContractsManager({
         method: "POST",
       })
       if (res) {
-        toast.success("Phát hành hợp đồng và gửi thông báo cho khách hàng thành công!")
+        toast.success(t("contracts.notifications.publishSuccess"))
         setContracts((prev) =>
           prev.map((c) => (c.id === id ? { ...c, status: "pending" } : c))
         )
       }
     } catch (err: any) {
-      toast.error(err?.message || "Không thể phát hành hợp đồng. Vui lòng thử lại.")
+      toast.error(err?.message || t("contracts.notifications.publishError"))
     }
   }
 

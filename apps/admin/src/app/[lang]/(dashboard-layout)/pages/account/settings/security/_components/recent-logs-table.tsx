@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslation } from "@/providers/i18n-provider"
 import { formatDateWithTime } from "@/lib/utils"
 
 import {
@@ -18,14 +21,16 @@ interface LogItem {
 }
 
 export function RecentLogsTable({ logs = [] }: { logs?: LogItem[] }) {
+  const { t } = useTranslation()
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Trình duyệt / Ứng dụng</TableHead>
-          <TableHead>Thiết bị</TableHead>
-          <TableHead>Địa điểm</TableHead>
-          <TableHead>Thời gian</TableHead>
+          <TableHead>{t("users.security.browserApp")}</TableHead>
+          <TableHead>{t("users.security.device")}</TableHead>
+          <TableHead>{t("users.security.location")}</TableHead>
+          <TableHead>{t("users.security.time")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -41,7 +46,7 @@ export function RecentLogsTable({ logs = [] }: { logs?: LogItem[] }) {
         ) : (
           <TableRow>
             <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
-              Phiên đăng nhập hiện tại đang hoạt động an toàn. Chưa có nhật ký cảnh báo bảo mật.
+              {t("users.security.emptyLogs")}
             </TableCell>
           </TableRow>
         )}

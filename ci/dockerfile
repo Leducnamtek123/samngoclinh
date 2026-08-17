@@ -23,6 +23,11 @@ RUN set -x && pnpm install --frozen-lockfile --prod --ignore-scripts
 # Copy only necessary files from previous stages
 COPY --from=builder /app/apps/api/generated/prisma-client ./apps/api/generated/prisma-client
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/templates ./templates
+COPY --from=builder /app/templates ./apps/api/templates
+COPY --from=builder /app/apps/api/src/modules/notification/templates ./apps/api/src/modules/notification/templates
+COPY --from=builder /app/apps/api/src/modules/term-policy/templates ./apps/api/src/modules/term-policy/templates
+COPY --from=builder /app/apps/api/assets ./apps/api/assets
 
 # Set working directory to apps/api for running the app
 WORKDIR /app/apps/api

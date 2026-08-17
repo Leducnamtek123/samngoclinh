@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { Bell, Shield, Moon, Sun, Monitor, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -16,6 +17,8 @@ type ProfileSettingsTabProps = {
 };
 
 export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
+  const t = useTranslations('settingsTab');
+  const tActions = useTranslations('actions');
   const { data: apiSettings } = useNotificationSettings();
   const updateSettingsMutation = useUpdateNotificationSettings();
 
@@ -52,7 +55,6 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
     setIsSaving(true);
 
     try {
-      // Save local preferences
       if (typeof window !== 'undefined') {
         localStorage.setItem(
           'samngoclinh_user_settings:v1',
@@ -60,7 +62,6 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
         );
       }
 
-      // Save notification channels to backend DTO
       await Promise.allSettled([
         updateSettingsMutation.mutateAsync({
           channel: 'email',
@@ -74,9 +75,9 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
         }),
       ]);
 
-      toast.success('Đã lưu cấu hình cài đặt hệ thống thành công!');
+      toast.success(t('notificationsSection'));
     } catch {
-      toast.success('Đã lưu cấu hình cài đặt.');
+      toast.success(t('notificationsSection'));
     }
     setIsSaving(false);
   };
@@ -90,32 +91,32 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
             <Bell className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Cấu hình thông báo</h3>
-            <p className="text-xs text-gray-400 font-normal">Tùy chỉnh kênh nhận tin tức và trạng thái đơn hàng</p>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">{t('notificationsSection')}</h3>
+            <p className="text-xs text-gray-400 font-normal">{t('subtitle')}</p>
           </div>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3.5 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl">
             <div>
-              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">Thông báo email đơn hàng & thanh toán</p>
-              <p className="text-[11px] text-gray-500">Nhận email khi có cập nhật biến động số dư, hợp đồng và hóa đơn</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">{t('emailNotif')}</p>
+              <p className="text-[11px] text-gray-500">{t('emailNotifDesc')}</p>
             </div>
             <Switch checked={emailNotif} onCheckedChange={(val) => setEmailNotif(val)} />
           </div>
 
           <div className="flex items-center justify-between p-3.5 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl">
             <div>
-              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">Thông báo tiến độ chăm sóc cây sâm</p>
-              <p className="text-[11px] text-gray-500">Nhận cảnh báo hình ảnh, nhật ký phân bón và nhật ký vườn sâm định kỳ</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">{t('orderUpdates')}</p>
+              <p className="text-[11px] text-gray-500">{t('orderUpdatesDesc')}</p>
             </div>
             <Switch checked={orderNotif} onCheckedChange={(val) => setOrderNotif(val)} />
           </div>
 
           <div className="flex items-center justify-between p-3.5 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl">
             <div>
-              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">Thông tin ưu đãi & sự kiện mới</p>
-              <p className="text-[11px] text-gray-500">Cập nhật tin tức chương trình tặng cây sâm giống và voucher khuyến mãi</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">{t('smsNotif')}</p>
+              <p className="text-[11px] text-gray-500">{t('smsNotifDesc')}</p>
             </div>
             <Switch checked={promoNotif} onCheckedChange={(val) => setPromoNotif(val)} />
           </div>
@@ -129,31 +130,31 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
             <Shield className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Bảo mật & Phiên làm việc</h3>
-            <p className="text-xs text-gray-400 font-normal">Quản lý xác thực 2 lớp và tự động đăng xuất khi treo máy</p>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">{t('languageSection')}</h3>
+            <p className="text-xs text-gray-400 font-normal">{t('selectLanguage')}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-4 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl space-y-2">
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm block">Tự động đăng xuất khi không hoạt động</span>
+            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm block">{t('selectLanguage')}</span>
             <Select value={autoLogout} onValueChange={(val) => setAutoLogout(val)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="15">Sau 15 phút</SelectItem>
-                <SelectItem value="30">Sau 30 phút (Khuyến nghị)</SelectItem>
-                <SelectItem value="60">Sau 60 phút</SelectItem>
-                <SelectItem value="never">Không tự động đăng xuất</SelectItem>
+                <SelectItem value="15">15 min</SelectItem>
+                <SelectItem value="30">30 min</SelectItem>
+                <SelectItem value="60">60 min</SelectItem>
+                <SelectItem value="never">Never</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="p-4 bg-gray-50/70 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl flex items-center justify-between">
             <div>
-              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">Xác thực 2 lớp (2FA)</p>
-              <p className="text-[11px] text-gray-500">Yêu cầu mã OTP qua Email khi giao dịch lớn</p>
+              <p className="font-bold text-gray-800 dark:text-gray-200 text-xs sm:text-sm">2FA</p>
+              <p className="text-[11px] text-gray-500">OTP via Email</p>
             </div>
             <Switch checked={twoFactor} onCheckedChange={(val) => setTwoFactor(val)} />
           </div>
@@ -167,16 +168,16 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
             <Moon className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">Giao diện & Hiển thị</h3>
-            <p className="text-xs text-gray-400 font-normal">Tùy chỉnh chế độ hiển thị màn hình hệ thống</p>
+            <h3 className="font-bold text-gray-900 dark:text-gray-100 text-base">{t('languageSection')}</h3>
+            <p className="text-xs text-gray-400 font-normal">{t('selectLanguage')}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: 'light', label: 'Chế độ Sáng', icon: <Sun className="w-5 h-5" /> },
-            { id: 'dark', label: 'Chế độ Tối', icon: <Moon className="w-5 h-5" /> },
-            { id: 'system', label: 'Hệ thống', icon: <Monitor className="w-5 h-5" /> },
+            { id: 'light', label: 'Light', icon: <Sun className="w-5 h-5" /> },
+            { id: 'dark', label: 'Dark', icon: <Moon className="w-5 h-5" /> },
+            { id: 'system', label: 'System', icon: <Monitor className="w-5 h-5" /> },
           ].map((mode) => (
             <Button
               key={mode.id}
@@ -201,7 +202,7 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
           className="flex items-center gap-2"
         >
           {!isSaving && <Check className="w-4 h-4" />}
-          <span>{isSaving ? 'Đang lưu...' : 'Lưu cấu hình hệ thống'}</span>
+          <span>{isSaving ? tActions('saving') : tActions('save')}</span>
         </ButtonLoading>
       </div>
     </form>

@@ -1,8 +1,8 @@
 "use client"
 
 import Image from "next/image"
-
 import type { ChangeEvent, FormEvent } from "react"
+import { useTranslation } from "@/providers/i18n-provider"
 
 type Article = {
   id: string
@@ -50,13 +50,15 @@ export function ArticleDialog({
   handleImageUpload,
   handleSubmit,
 }: ArticleDialogProps) {
+  const { t } = useTranslation()
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-xl">
         <h3 className="text-base font-bold text-gray-900 border-b border-gray-150 pb-3">
-          {editingArticle ? "Chỉnh sửa bài viết" : "Thêm bài viết mới"}
+          {editingArticle ? t("common.actions.edit") : t("content.articles.addArticle")}
         </h3>
 
         {error && (
@@ -71,14 +73,14 @@ export function ArticleDialog({
               htmlFor="article-title"
               className="uppercase tracking-wider font-bold text-gray-500 text-[10px]"
             >
-              Tiêu đề bài viết
+              {t("content.contacts.subject")}
             </label>
             <input
               id="article-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nhập tiêu đề..."
+              placeholder={t("content.contacts.subject")}
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
               required
             />
@@ -90,7 +92,7 @@ export function ArticleDialog({
                 htmlFor="article-category"
                 className="uppercase tracking-wider font-bold text-gray-500 text-[10px]"
               >
-                Chuyên mục
+                {t("products.categoryForm.parent")}
               </label>
               <select
                 id="article-category"
@@ -98,10 +100,10 @@ export function ArticleDialog({
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium bg-white"
               >
-                <option>Tin tức</option>
-                <option>Kiến thức</option>
-                <option>Hướng dẫn sử dụng app</option>
-                <option>Sự kiện</option>
+                <option value="news">{t("content.articles.categories.news")}</option>
+                <option value="guide">{t("content.articles.categories.guide")}</option>
+                <option value="faq">{t("content.articles.categories.faq")}</option>
+                <option value="event">{t("content.articles.categories.event")}</option>
               </select>
             </div>
 
@@ -110,7 +112,7 @@ export function ArticleDialog({
                 htmlFor="article-image"
                 className="uppercase tracking-wider font-bold text-gray-500 text-[10px]"
               >
-                Hình ảnh minh họa
+                {t("products.fields.image")}
               </label>
               <div className="flex gap-2">
                 <input
@@ -118,14 +120,14 @@ export function ArticleDialog({
                   type="text"
                   value={image}
                   onChange={(e) => setImage(e.target.value)}
-                  placeholder="Nhập URL ảnh..."
+                  placeholder="URL..."
                   className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
                 />
                 <label
                   htmlFor="article-image-file"
                   className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-4 py-2.5 rounded-lg transition-colors text-xs flex items-center justify-center cursor-pointer min-w-[100px] text-center"
                 >
-                  {uploadingImage ? "Đang tải..." : "Tải ảnh lên"}
+                  {uploadingImage ? t("common.table.loading") : t("common.actions.upload")}
                   <input
                     id="article-image-file"
                     type="file"
@@ -148,7 +150,7 @@ export function ArticleDialog({
                   <button
                     type="button"
                     onClick={() => setImage("")}
-                    aria-label="Gỡ bỏ ảnh"
+                    aria-label="Remove"
                     className="absolute top-1.5 right-1.5 bg-black/50 hover:bg-black/70 text-white rounded-full p-1 transition-colors"
                   >
                     <svg
@@ -175,13 +177,13 @@ export function ArticleDialog({
                 htmlFor="article-summary"
                 className="uppercase tracking-wider font-bold text-gray-500 text-[10px]"
               >
-                Mô tả ngắn
+                {t("products.categoryForm.description")}
               </label>
               <textarea
                 id="article-summary"
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                placeholder="Nhập mô tả ngắn cho bài viết..."
+                placeholder={t("products.categoryForm.description")}
                 rows={3}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary text-gray-800 font-medium"
               />
@@ -194,14 +196,14 @@ export function ArticleDialog({
               onClick={() => setIsOpen(false)}
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-lg transition-colors text-xs"
             >
-              Hủy
+              {t("common.actions.cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm text-xs"
             >
-              {loading ? "Đang lưu..." : "Lưu lại"}
+              {loading ? t("common.table.loading") : t("common.actions.save")}
             </button>
           </div>
         </form>

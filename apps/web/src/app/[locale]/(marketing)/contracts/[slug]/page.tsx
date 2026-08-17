@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { ContractToolbar } from '@/components/contract/ContractToolbar';
 import { fetchApi } from '@/lib/Api';
 import DOMPurify from 'isomorphic-dompurify';
@@ -11,11 +11,12 @@ type ContractPageProps = {
   searchParams?: Promise<Record<string, string>>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'econtract' });
   return {
-    title: 'Hợp Đồng Mua Bán, Ký Gửi & Chăm Sóc Cây Sâm Ngọc Linh',
-    description:
-      'Văn bản pháp lý chính thức: Hợp đồng mua bán và ký gửi, chăm sóc cây Sâm Ngọc Linh chuẩn nguồn gốc Kon Tum, Nam Trà My.',
+    title: `${t('title')} | Sâm Ngọc Linh`,
+    description: t('subtitle'),
   };
 }
 
@@ -46,19 +47,20 @@ export default async function ContractPage(props: ContractPageProps) {
   const { locale, slug } = await props.params;
   const searchParams = props.searchParams ? await props.searchParams : {};
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'econtract' });
 
   const contractCodeFormatted = slug
     ? `HĐ-${slug.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10)}/2026/SNL`
     : 'HĐ-SNL/2026/01';
 
   const defaultPlaceholders: Record<string, string> = {
-    TEN_KHACH_HANG: searchParams.customerName || 'CÔNG TY [*] HOẶC ÔNG/BÀ [*] (KHÁCH HÀNG SỞ HỮU)',
+    TEN_KHACH_HANG: searchParams.customerName || 'CÔNG TY [*] HOẶC ÔNG/BÀ [*]',
     CCCD_MST: searchParams.idCard || '[*]',
     DIA_CHI: searchParams.address || '[*]',
     SO_DIEN_THOAI: searchParams.phone || '[*]',
     MA_HOP_DONG: contractCodeFormatted,
     SO_LUONG_CAY: searchParams.treeCount || '[*]',
-    SO_LUONG_CAY_CHU: searchParams.treeCountWords || '[* cây]',
+    SO_LUONG_CAY_CHU: searchParams.treeCountWords || '[*]',
     TONG_GIA_TRI: searchParams.totalAmount || '[*]',
     TONG_GIA_TRI_CHU: searchParams.totalAmountWords || '[*]',
     PHI_CHAM_SOC: searchParams.careFee || '[*]',
@@ -73,7 +75,7 @@ export default async function ContractPage(props: ContractPageProps) {
     const queryParams = new URLSearchParams(defaultPlaceholders);
     const targetSlug = slug || 'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh';
     const res = await fetchApi(`/public/contracts/templates/${targetSlug}?${queryParams.toString()}`, {
-      next: { revalidate: 60 }, // Cache 60s for performance, automatic revalidation
+      next: { revalidate: 60 },
     });
     const payload = await res.json();
     if (res.status < 400 && payload.data?.contentHtml) {
@@ -95,7 +97,7 @@ export default async function ContractPage(props: ContractPageProps) {
         <ContractToolbar
           backHref="/campaigns/free-tree"
           contractCode={contractCodeFormatted}
-          contractTitle="Hợp Đồng Mua Bán, Ký Gửi & Chăm Sóc Sâm Ngọc Linh"
+          contractTitle={t('title')}
         />
 
         {/* Legal Paper Document Container */}
@@ -112,7 +114,7 @@ export default async function ContractPage(props: ContractPageProps) {
             />
           ) : (
             <div className="p-12 text-center text-slate-500 font-medium">
-              Đang tải nội dung văn bản hợp đồng pháp lý...
+              {t('loadingContract')}
             </div>
           )}
         </article>

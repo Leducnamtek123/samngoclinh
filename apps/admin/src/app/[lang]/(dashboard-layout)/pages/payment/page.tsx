@@ -6,8 +6,11 @@ import {
 } from "lucide-react"
 
 import type { Metadata } from "next"
+import type { LocaleType } from "@/types"
 
 import { fetchApi } from "@/lib/api"
+import { getDictionary } from "@/lib/get-dictionary"
+import { createTranslator } from "@/lib/i18n"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -26,9 +29,9 @@ import {
 } from "@/components/ui/table"
 
 export const metadata: Metadata = {
-  title: "Quản lý Giao dịch & Thanh toán | Admin",
+  title: "Payment & Transactions | Admin",
   description:
-    "Theo dõi nhật ký giao dịch tài chính, nạp rút và lịch sử thanh toán hệ thống",
+    "Track transaction history and payments",
 }
 
 interface TransactionItem {
@@ -54,7 +57,11 @@ export default async function PaymentPage({
 }: {
   params: Promise<{ lang: string }>
 }) {
-  const { lang } = await params
+  const resolvedParams = await params
+  const lang = (resolvedParams?.lang || "vi") as LocaleType
+  const dictionary = await getDictionary(lang)
+  const t = createTranslator(dictionary)
+
   let transactions: TransactionItem[] = []
   let errorMsg = ""
 
@@ -62,13 +69,13 @@ export default async function PaymentPage({
     const res = await fetchApi("/admin/wallet/transactions")
     const payload = await res.json()
     if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải danh sách giao dịch"
+      errorMsg = payload?.message || t("common.status.error")
     } else {
       transactions = payload?.data?.items || payload?.data || []
     }
   } catch (err) {
     console.error("Error fetching transactions in payment page:", err)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = t("common.status.error")
   }
 
   return (
@@ -76,18 +83,17 @@ export default async function PaymentPage({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-emerald-950 dark:text-emerald-50">
-            Quản lý Giao dịch & Thanh toán
+            {t("orders.transactions.title")}
           </h1>
           <p className="text-muted-foreground">
-            Lịch sử giao dịch biến động số dư ví, nạp/rút điểm và doanh thu hệ
-            thống.
+            {t("orders.transactions.subtitle")}
           </p>
         </div>
         <Badge
           variant="outline"
           className="bg-emerald-50 border-emerald-200 text-emerald-700 font-semibold px-3 py-1.5 flex items-center gap-1.5 w-fit"
         >
-          <DollarSign className="h-4 w-4" /> Hệ thống thanh toán SePay / Ví
+          <DollarSign className="h-4 w-4" /> SePay / Wallet
         </Badge>
       </div>
 
@@ -96,14 +102,14 @@ export default async function PaymentPage({
         <Card className="bg-gradient-to-br from-emerald-900 to-teal-800 text-white shadow-md">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-emerald-100">
-              Tổng số giao dịch
+              {t("orders.transactions.totalCount")}
             </CardTitle>
             <CreditCard className="h-4 w-4 text-emerald-200" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{transactions.length}</div>
             <p className="text-xs text-emerald-200 mt-1">
-              Giao dịch ghi nhận trên hệ thống
+              {t("orders.transactions.totalCountDesc")}
             </p>
           </CardContent>
         </Card>
@@ -111,7 +117,7 @@ export default async function PaymentPage({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">
-              Tổng giao dịch Cộng
+              {t("orders.transactions.totalCredit")}
             </CardTitle>
             <ArrowDownLeft className="h-4 w-4 text-emerald-600" />
           </CardHeader>
@@ -120,13 +126,13 @@ export default async function PaymentPage({
               {formatMoney(
                 transactions
                   .filter(
-                    (t) => t.type === "credit" || (t.amount && t.amount > 0)
+                    (item) => item.type === "credit" || (item.amount && item.amount > 0)
                   )
                   .reduce((acc, curr) => acc + (curr.amount || 0), 0)
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Nạp tiền & Tích lũy
+              {t("orders.transactions.totalCreditDesc")}
             </p>
           </CardContent>
         </Card>
@@ -134,7 +140,7 @@ export default async function PaymentPage({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">
-              Tổng giao dịch Trừ
+              {t("orders.transactions.totalDebit")}
             </CardTitle>
             <ArrowUpRight className="h-4 w-4 text-rose-600" />
           </CardHeader>
@@ -143,13 +149,13 @@ export default async function PaymentPage({
               {formatMoney(
                 transactions
                   .filter(
-                    (t) => t.type === "debit" || (t.amount && t.amount < 0)
+                    (item) => item.type === "debit" || (item.amount && item.amount < 0)
                   )
                   .reduce((acc, curr) => acc + Math.abs(curr.amount || 0), 0)
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              Rút tiền & Rút vốn
+              {t("orders.transactions.totalDebitDesc")}
             </p>
           </CardContent>
         </Card>
@@ -158,14 +164,14 @@ export default async function PaymentPage({
       {/* Real Transactions List */}
       <Card>
         <CardHeader>
-          <CardTitle>Nhật ký Giao dịch Hệ thống (Real-time API)</CardTitle>
+          <CardTitle>{t("orders.transactions.realtimeLog")}</CardTitle>
           <CardDescription>
             {errorMsg ? (
               <span className="text-amber-600 font-medium">
-                {errorMsg} - Hiển thị cấu hình thanh toán bổ trợ bên dưới
+                {errorMsg}
               </span>
             ) : (
-              "Danh sách giao dịch nạp, rút và mua gói sâm Ngọc Linh thu thập từ API"
+              t("orders.transactions.realtimeLogDesc")
             )}
           </CardDescription>
         </CardHeader>
@@ -175,13 +181,13 @@ export default async function PaymentPage({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Mã GD</TableHead>
-                    <TableHead>Mô tả / Nội dung</TableHead>
-                    <TableHead>Loại</TableHead>
-                    <TableHead className="text-right">Số tiền / Điểm</TableHead>
-                    <TableHead className="text-right">Số dư sau GD</TableHead>
-                    <TableHead>Trạng thái</TableHead>
-                    <TableHead>Thời gian</TableHead>
+                    <TableHead>{t("orders.transactions.code")}</TableHead>
+                    <TableHead>{t("orders.transactions.description")}</TableHead>
+                    <TableHead>{t("orders.transactions.type")}</TableHead>
+                    <TableHead className="text-right">{t("orders.transactions.amount")}</TableHead>
+                    <TableHead className="text-right">{t("orders.transactions.balanceAfter")}</TableHead>
+                    <TableHead>{t("orders.transactions.status")}</TableHead>
+                    <TableHead>{t("orders.transactions.time")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -191,7 +197,7 @@ export default async function PaymentPage({
                         {txn.code || txn.id.slice(0, 8)}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {txn.title || "Giao dịch ví"}
+                        {txn.title || "—"}
                       </TableCell>
                       <TableCell>
                         <Badge
@@ -199,7 +205,7 @@ export default async function PaymentPage({
                             txn.type === "credit" ? "default" : "secondary"
                           }
                         >
-                          {txn.type === "credit" ? "Nạp / Cộng" : "Trừ / Rút"}
+                          {txn.type === "credit" ? t("orders.transactions.credit") : t("orders.transactions.debit")}
                         </Badge>
                       </TableCell>
                       <TableCell
@@ -221,7 +227,7 @@ export default async function PaymentPage({
                               : "bg-amber-100 text-amber-800"
                           }
                         >
-                          {txn.status === "success" ? "Thành công" : txn.status}
+                          {txn.status === "success" ? t("common.status.success") : txn.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
@@ -236,8 +242,7 @@ export default async function PaymentPage({
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
-              Chưa có dữ liệu giao dịch từ API backend hoặc máy chủ API chưa
-              phản hồi.
+              {t("common.table.noResults")}
             </div>
           )}
         </CardContent>

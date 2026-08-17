@@ -5,6 +5,18 @@
   "editProduct": "Chỉnh sửa sản phẩm",
   "categories": "Danh mục sản phẩm",
   "addCategory": "Thêm danh mục",
+  "categoryForm": {
+    "addTitle": "Thêm danh mục sản phẩm mới",
+    "editTitle": "Chỉnh sửa danh mục sản phẩm",
+    "description": "Điền đầy đủ thông tin để quản lý danh mục phân loại sản phẩm.",
+    "code": "Mã danh mục (Code)",
+    "name": "Tên danh mục",
+    "slug": "Đường dẫn tĩnh (Slug)",
+    "desc": "Mô tả danh mục",
+    "status": "Trạng thái",
+    "active": "Kích hoạt",
+    "inactive": "Tạm dừng"
+  },
   "fields": {
     "name": "Tên sản phẩm",
     "sku": "Mã sản phẩm (SKU)",

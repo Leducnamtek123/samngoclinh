@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { NotificationPopover } from '@/components/NotificationPopover';
 import { OrderDetailModal } from '@/components/orders/OrderDetailModal';
 import { useUserHeaderMenu } from '@/hooks/useUserHeaderMenu';
@@ -34,6 +35,11 @@ const UKFlag = () => (
 export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const menu = useUserHeaderMenu(profile, menuRef);
+  const tNav = useTranslations('nav');
+  const tSidebar = useTranslations('accountSidebar');
+  const tNotif = useTranslations('notifications');
+  const tLocale = useTranslations('LocaleSwitcher');
+  const tCart = useTranslations('cart');
 
   return (
     <div className="flex items-center gap-4 sm:gap-5" ref={menuRef}>
@@ -46,7 +52,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
           }
         }}
         className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
-        title="Giỏ hàng"
+        title={tCart('title')}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -67,7 +73,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
             menu.setIsOpen(false);
           }}
           className="relative p-1 text-gray-600 hover:text-primary transition-colors cursor-pointer"
-          title="Thông báo"
+          title={tNotif('title')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -122,7 +128,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span>Tài khoản của tôi</span>
+                  <span>{tSidebar('info')}</span>
                 </button>
               </li>
               <li>
@@ -134,19 +140,19 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  <span>Đơn hàng của tôi</span>
+                  <span>{tSidebar('orders')}</span>
                 </button>
               </li>
               <li>
                 <button
                   type="button"
-                  onClick={() => menu.navigateToTab('assets')}
+                  onClick={() => menu.navigateToTab('trees')}
                   className="w-full px-5 py-2.5 hover:bg-gray-50 flex items-center gap-3 text-left transition-colors cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
-                  <span>Vườn sâm sở hữu</span>
+                  <span>{tSidebar('trees')}</span>
                 </button>
               </li>
             </ul>
@@ -166,7 +172,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8" />
                   </svg>
-                  <span>{menu.locale === 'vi' ? 'Tiếng Việt' : 'English'}</span>
+                  <span>{menu.locale === 'vi' ? tLocale('vi') : tLocale('en')}</span>
                 </div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +197,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                     }`}
                   >
                     <VietnamFlag />
-                    <span>Tiếng Việt (VI)</span>
+                    <span>{tLocale('vi')} (VI)</span>
                     {menu.locale === 'vi' && (
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -206,7 +212,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
                     }`}
                   >
                     <UKFlag />
-                    <span>English (EN)</span>
+                    <span>{tLocale('en')} (EN)</span>
                     {menu.locale === 'en' && (
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-emerald-600 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -229,7 +235,7 @@ export const UserHeaderMenu = ({ profile }: UserHeaderMenuProps) => {
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span>Đăng xuất</span>
+              <span>{tNav('signOut')}</span>
             </button>
           </div>
         )}

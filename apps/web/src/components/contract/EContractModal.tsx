@@ -2,12 +2,14 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FileText, CheckCircle2, AlertCircle, X, PenTool, ShieldCheck, Clock, Download, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState } from '@/components/common/LoadingState';
 import { EContractSignaturePad } from './EContractSignaturePad';
 import { EContractDocumentView } from './EContractDocumentView';
 import { useEContractModal } from './useEContractModal';
+import { formatVNDPrice } from '@/utils/formatters';
 
 type EContractModalProps = {
   contractId: string | null;
@@ -15,6 +17,8 @@ type EContractModalProps = {
 };
 
 export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onClose }) => {
+  const t = useTranslations('econtract');
+  const tActions = useTranslations('actions');
   const modal = useEContractModal({ contractId });
 
   if (!contractId) return null;
@@ -31,10 +35,10 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
             </div>
             <div>
               <h3 className="font-extrabold text-base leading-snug">
-                Hợp Đồng Điện Tử #{modal.contract?.code || contractId.slice(0, 8)}
+                {t('title')} #{modal.contract?.code || contractId.slice(0, 8)}
               </h3>
               <p className="text-xs text-slate-400 font-medium">
-                Hợp đồng hợp tác đầu tư & ủy quyền chăm sóc Sâm Ngọc Linh
+                {t('subtitle')}
               </p>
             </div>
           </div>
@@ -42,7 +46,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
             variant="ghost"
             size="icon"
             onClick={onClose}
-            aria-label="Đóng modal hợp đồng"
+            aria-label={t('close')}
             className="p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
@@ -53,12 +57,12 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
         <div data-lenis-prevent className="flex-1 p-6 space-y-6 overflow-y-auto overscroll-contain min-h-0">
           {modal.isLoading ? (
             <div className="py-20">
-              <LoadingState message="Đang tải nội dung hợp đồng..." />
+              <LoadingState message={t('loadingContract')} />
             </div>
           ) : modal.isError || !modal.contract ? (
             <div className="py-12 bg-red-50 text-red-700 p-6 rounded-2xl text-center font-medium space-y-2">
               <AlertCircle className="w-8 h-8 mx-auto text-red-500" />
-              <p>Không thể tải thông tin hợp đồng. Vui lòng thử lại sau.</p>
+              <p>{tActions('error')}</p>
             </div>
           ) : (
             <>
@@ -73,35 +77,35 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                 return (
                   <div className="bg-emerald-50/80 border border-emerald-200/80 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Trạng thái hợp đồng</span>
+                      <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">{t('status')}</span>
                       <div className="flex items-center gap-2">
                         {modal.isSigned ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 text-white rounded-full text-xs font-bold shadow-xs">
-                            <CheckCircle2 className="w-4 h-4" /> Đã ký điện tử
+                            <CheckCircle2 className="w-4 h-4" /> {t('signed')}
                           </span>
                         ) : isDraft ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-600 text-white rounded-full text-xs font-bold shadow-xs">
-                            <Clock className="w-4 h-4" /> Bản nháp (Đang khởi tạo)
+                            <Clock className="w-4 h-4" /> {t('draft')}
                           </span>
                         ) : isExpired ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-600 text-white rounded-full text-xs font-bold shadow-xs">
-                            <AlertCircle className="w-4 h-4" /> Đã hết hạn
+                            <AlertCircle className="w-4 h-4" /> {t('expired')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500 text-white rounded-full text-xs font-bold shadow-xs">
-                            <PenTool className="w-4 h-4" /> Vui lòng hoàn tất chữ ký
+                            <PenTool className="w-4 h-4" /> {t('pendingSign')}
                           </span>
                         )}
                         <span className="text-xs text-slate-500 font-medium">
-                          • Ngày tạo: {modal.contract.createdAt ? new Date(modal.contract.createdAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : '—'}
+                          • {t('createdDate', { date: modal.contract.createdAt ? new Date(modal.contract.createdAt).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : '—' })}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs text-slate-500 font-semibold block">Giá trị hợp đồng</span>
+                      <span className="text-xs text-slate-500 font-semibold block">{t('contractValue')}</span>
                       <span className="text-lg font-black text-primary">
-                        {contractValueNum.toLocaleString('vi-VN')} VNĐ
+                        {formatVNDPrice(contractValueNum)}
                       </span>
                     </div>
                   </div>
@@ -120,17 +124,17 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                         <ShieldCheck className="w-6 h-6" />
                       </div>
                       <div>
-                        <h5 className="font-bold text-slate-900 text-sm">Hợp đồng đã có hiệu lực pháp lý</h5>
+                        <h5 className="font-bold text-slate-900 text-sm">{t('legalEffective')}</h5>
                         <p className="text-xs text-slate-500">
-                          Thời gian ký: {modal.contract.signedAt ? new Date(modal.contract.signedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'Đã hoàn tất'}
+                          {t('signedAt', { time: modal.contract.signedAt ? new Date(modal.contract.signedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }) : 'Done' })}
                         </p>
                       </div>
                     </div>
 
                     {modal.contract.userSignatureUrl && (
                       <div className="border border-slate-200 rounded-lg p-2 bg-white text-center shrink-0">
-                        <Image src={modal.contract.userSignatureUrl} alt="Chữ ký" width={120} height={48} unoptimized className="h-12 w-auto object-contain mx-auto" />
-                        <span className="text-[10px] text-slate-400 font-semibold block">Chữ ký điện tử</span>
+                        <Image src={modal.contract.userSignatureUrl} alt="Signature" width={120} height={48} unoptimized className="h-12 w-auto object-contain mx-auto" />
+                        <span className="text-[10px] text-slate-400 font-semibold block">{t('digitalSignature')}</span>
                       </div>
                     )}
                   </div>
@@ -143,7 +147,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                       className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
                     >
                       <Download className="w-4 h-4 shrink-0" />
-                      <span>Tải tệp PDF có dấu mộc & QR</span>
+                      <span>{t('downloadPdf')}</span>
                     </a>
                     <a
                       href={`/vi/trace/contract/${modal.contract.code}`}
@@ -152,7 +156,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                       className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-colors"
                     >
                       <Search className="w-4 h-4 shrink-0" />
-                      <span>Tra cứu chứng nhận số</span>
+                      <span>{t('verifyCertificate')}</span>
                     </a>
                   </div>
                 </div>
@@ -162,9 +166,9 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <h5 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Bản nháp hợp đồng đang được xử lý</h5>
+                    <h5 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{t('draftProcessingTitle')}</h5>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                      Ban Quản Trị đang rà soát thông tin cây sâm và các điều khoản giao kết. Quý khách sẽ nhận được thông báo ký số ngay khi hợp đồng được phát hành chính thức.
+                      {t('draftProcessingDesc')}
                     </p>
                   </div>
                 </div>
@@ -196,7 +200,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
             onClick={onClose}
             className="px-5 py-2.5 border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-bold transition-colors h-auto"
           >
-            Đóng
+            {t('close')}
           </Button>
 
           {!modal.isSigned &&
@@ -211,7 +215,7 @@ export const EContractModal: React.FC<EContractModalProps> = ({ contractId, onCl
                 className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover active:bg-primary/80 text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md h-auto"
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Xác nhận ký điện tử</span>
+                <span>{t('confirmSign')}</span>
               </Button>
             )}
         </div>

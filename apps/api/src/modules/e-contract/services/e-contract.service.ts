@@ -151,7 +151,10 @@ export class EContractService implements IEContractService {
     }
 
     async getContract(id: string, userId?: string): Promise<IResponseReturn<any>> {
-        const contract = await this.eContractRepository.getContractById(id);
+        let contract = await this.eContractRepository.getContractById(id);
+        if (!contract) {
+            contract = await this.eContractRepository.getContractByCode(id);
+        }
         if (!contract) {
             throw new NotFoundException('Contract not found');
         }
@@ -345,6 +348,10 @@ export class EContractService implements IEContractService {
         const contract = await this.eContractRepository.getContractByCode(code);
         if (!contract) {
             throw new NotFoundException('Contract not found');
+        }
+
+        if (contract.status === 'signed' && !contract.pdfUrl) {
+            throw new BadRequestException('SIGNED contract is missing immutable PDF storage.');
         }
 
         // Domain Invariant: For SIGNED contracts, try to load stored immutable artifact first

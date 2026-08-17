@@ -3,6 +3,7 @@
 import type { Table } from "@tanstack/react-table"
 
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/providers/i18n-provider"
 import { InvoiceTableViewOptions } from "./invoice-table-view-options"
 
 interface InvoiceTableToolbarProps<TTable> {
@@ -12,11 +13,13 @@ interface InvoiceTableToolbarProps<TTable> {
 export function InvoiceTableToolbar<TTable>({
   table,
 }: InvoiceTableToolbarProps<TTable>) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex gap-x-1.5">
       <InvoiceTableViewOptions table={table} />
       <Input
-        placeholder="Tìm kiếm mã đơn hàng..."
+        placeholder={t("search.searchPlaceholder")}
         className="border border-input bg-background hover:bg-accent hover:text-accent-foreground text-sm"
         value={(table.getColumn("invoiceId")?.getFilterValue() as string) ?? ""}
         onChange={(event) =>

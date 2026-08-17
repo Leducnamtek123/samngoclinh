@@ -1,7 +1,8 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { fetchApi } from "@/lib/api"
+import { legalService } from "@/services/legal.service"
+import { usersService } from "@/services/users.service"
 import type { AdminUser, EContract } from "@/types"
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { ContractDetailView } from "./_components/contract-detail-view"
@@ -21,28 +22,25 @@ interface ContractDetailPageProps {
 export default async function ContractDetailPage({
   params,
 }: ContractDetailPageProps) {
-  const { id } = await params
+  const { id, lang } = await params
 
   let contract: EContract | null = null
   let user: AdminUser | null = null
-  let users: AdminUser[] = []
   let errorMsg = ""
 
   try {
-    // 1. Fetch contract by ID directly
-    const res = await fetchApi(`/admin/contracts/${encodeURIComponent(id)}`)
-    if (res.ok) {
-      const payload = await res.json()
-      contract = payload.data || null
+    // 1. Fetch contract by ID directly via legalService
+    const res = await legalService.getContractDetail(id).catch(() => null)
+    if (res?.data) {
+      contract = res.data
     } else {
-      // Fallback search by code if ID was code
-      const searchRes = await fetchApi(`/admin/contracts?search=${encodeURIComponent(id)}`)
-      if (searchRes.ok) {
-        const searchPayload = await searchRes.json()
-        const items: EContract[] = Array.isArray(searchPayload.data?.items)
-          ? searchPayload.data.items
-          : Array.isArray(searchPayload.data)
-          ? searchPayload.data
+      // 2. Fallback search by code if ID was code or custom format
+      const searchRes = await legalService.getContracts({ search: id }).catch(() => null)
+      if (searchRes?.data) {
+        const items: EContract[] = Array.isArray(searchRes.data)
+          ? searchRes.data
+          : Array.isArray((searchRes.data as any)?.items)
+          ? (searchRes.data as any).items
           : []
         contract =
           items.find(
@@ -55,23 +53,11 @@ export default async function ContractDetailPage({
       }
     }
 
-    // 2. Fetch users to get customer details
+    // 3. Fetch user details if contract has a customer
     if (contract?.userId) {
-      const usersRes = await fetchApi(`/admin/user/get/${encodeURIComponent(contract.userId)}`)
-      if (usersRes.ok) {
-        const usersPayload = await usersRes.json()
-        user = usersPayload.data || null
-      } else {
-        const listRes = await fetchApi(`/admin/user/list?search=${encodeURIComponent(contract.userId)}`)
-        if (listRes.ok) {
-          const usersPayload = await listRes.json()
-          users = Array.isArray(usersPayload.data)
-            ? usersPayload.data
-            : Array.isArray(usersPayload.data?.items)
-            ? usersPayload.data.items
-            : []
-          user = users.find((u: AdminUser) => u.id === contract?.userId) || null
-        }
+      const userRes = await usersService.getUserDetail(contract.userId).catch(() => null)
+      if (userRes?.data) {
+        user = userRes.data
       }
     }
 
@@ -94,6 +80,8 @@ export default async function ContractDetailPage({
         <ContractDetailView
           contract={contract}
           user={user}
+          lang={lang}
+          requestedId={id}
           errorMsg={errorMsg}
         />
       </Suspense>

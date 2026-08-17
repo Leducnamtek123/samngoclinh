@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface BedsLeftSidebarProps {
   leftSidebarOpen: boolean
@@ -49,8 +50,8 @@ const formatDaysAgo = (dateStr: string | undefined) => {
   if (!dateStr) return "N/A"
   const diff = Date.now() - new Date(dateStr).getTime()
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  if (days <= 0) return "Hôm nay"
-  return `${days} ngày trước`
+  if (days <= 0) return "0d"
+  return `${days}d`
 }
 
 export function BedsLeftSidebar({
@@ -73,6 +74,8 @@ export function BedsLeftSidebar({
   handleScroll,
   filteredBeds,
 }: BedsLeftSidebarProps) {
+  const { t } = useTranslation()
+
   return (
     <div
       className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-[width,opacity] duration-300 ${
@@ -87,13 +90,13 @@ export function BedsLeftSidebar({
             type="button"
             onClick={() => setLeftSidebarOpen(false)}
             className="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 hidden lg:block"
-            title="Thu gọn danh sách"
+            title={t("common.actions.collapse")}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <div>
             <h2 className="text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100">
-              Tất cả luống ({beds.length})
+              {t("trees.fields.bed")} ({beds.length})
             </h2>
           </div>
         </div>
@@ -102,7 +105,7 @@ export function BedsLeftSidebar({
           size="sm"
           className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1 text-[10px] px-2 h-7"
         >
-          <Plus className="w-3 h-3" /> Thêm
+          <Plus className="w-3 h-3" /> {t("common.actions.add")}
         </Button>
       </div>
 
@@ -110,7 +113,7 @@ export function BedsLeftSidebar({
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
           <Input
-            placeholder="Tìm kiếm luống..."
+            placeholder={t("trees.placeholders.search")}
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             className="w-full h-9 text-xs pl-8 bg-white dark:bg-slate-900 border-slate-200"
@@ -120,21 +123,21 @@ export function BedsLeftSidebar({
         <div className="grid grid-cols-2 gap-1.5">
           <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
             <SelectTrigger className="h-8 text-[10px] bg-white dark:bg-slate-900 border-slate-200">
-              <SelectValue placeholder="Trạng thái" />
+              <SelectValue placeholder={t("trees.filters.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="active">Hoạt động</SelectItem>
-              <SelectItem value="inactive">Tạm ngưng</SelectItem>
+              <SelectItem value="all">{t("trees.filters.allStatus")}</SelectItem>
+              <SelectItem value="active">{t("common.status.active")}</SelectItem>
+              <SelectItem value="inactive">{t("common.status.inactive")}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={gardenFilter} onValueChange={handleGardenFilterChange}>
             <SelectTrigger className="h-8 text-[10px] bg-white dark:bg-slate-900 border-slate-200">
-              <SelectValue placeholder="Vườn" />
+              <SelectValue placeholder={t("trees.fields.garden")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tất cả vườn</SelectItem>
+              <SelectItem value="all">{t("trees.filters.allBeds")}</SelectItem>
               {gardens.map((garden) => (
                 <SelectItem key={garden.id} value={garden.code}>
                   {garden.name}
@@ -151,7 +154,7 @@ export function BedsLeftSidebar({
       >
         {filteredBeds.length === 0 ? (
           <div className="text-center py-12 text-xs text-muted-foreground">
-            Không tìm thấy luống nào.
+            {t("common.table.noResults")}
           </div>
         ) : (
           filteredBeds.map((bed) => {

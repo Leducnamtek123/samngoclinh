@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { MemberRankBadge } from './MemberRankBadge';
 
 type UserCardProps = {
@@ -11,9 +14,10 @@ type UserCardProps = {
 export const UserCard: React.FC<UserCardProps> = ({
   fullName = '',
   email = '',
-  rank = 'Đồng',
+  rank = 'bronze',
 }) => {
-  const displayName = fullName.trim() || email.split('@')[0] || 'Khách hàng';
+  const t = useTranslations('profile');
+  const displayName = fullName.trim() || email.split('@')[0] || t('fullName');
   const initial = displayName.charAt(0).toUpperCase() || 'U';
 
   return (

@@ -167,15 +167,15 @@ export function useQuickPurchaseForm({
         quantity,
         carePackageId: mode === 'plant' ? selectedCareId : undefined,
         protectionPackageId: mode === 'plant' ? selectedProtectionId : undefined,
-        recipientName: selectedAddrObj?.name || profile?.fullName || 'Khách hàng',
+        recipientName: selectedAddrObj?.name || profile?.fullName || 'Customer',
         recipientPhone: selectedAddrObj?.phone || profile?.mobileNumber || '',
-        shippingAddress: deliveryType === 'shipping' ? (selectedAddrObj ? selectedAddrObj.address : 'Giao hàng tận nơi') : 'Nhận tại vườn',
+        shippingAddress: deliveryType === 'shipping' ? (selectedAddrObj ? selectedAddrObj.address : t('shippingLabel')) : t('pickupLabel'),
         deliveryType,
       });
 
       const orderData = res?.data || res;
       if (!orderData?.id && !orderData?.code) {
-        toast.error('Máy chủ không trả về thông tin đơn hàng hợp lệ.');
+        toast.error(t('toastInvalidOrder'));
       } else {
         toast.success(t('toastOrderCreated'));
         onClose();
@@ -185,8 +185,8 @@ export function useQuickPurchaseForm({
         }
       }
     } catch (err: any) {
-      const serverMsg = err?.response?.data?.message || err?.message || 'Không thể tạo đơn hàng. Vui lòng đăng nhập hoặc thử lại sau!';
-      toast.error(typeof serverMsg === 'string' ? serverMsg : 'Không thể tạo đơn hàng. Vui lòng thử lại sau!');
+      const serverMsg = err?.response?.data?.message || err?.message || t('toastOrderFailed');
+      toast.error(typeof serverMsg === 'string' ? serverMsg : t('toastOrderFailed'));
     }
     setSubmitting(false);
   };

@@ -111,10 +111,10 @@ export function DatePicker({
         {displayString && !disabled && (
           <button
             type="button"
-            aria-label="Xóa ngày đã chọn"
+            aria-label="Clear date"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-gray-600 transition-colors z-10"
-            title="Xóa ngày đã chọn"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 hover:text-gray-600 transition-colors z-10 cursor-pointer"
+            title="Clear date"
           >
             <X className="w-3.5 h-3.5" />
           </button>
