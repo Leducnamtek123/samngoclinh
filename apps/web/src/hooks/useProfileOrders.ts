@@ -63,9 +63,9 @@ export function useProfileOrders(activeTab: string) {
 
       const res = await ordersService.getMyOrders(queryParams);
 
-      const rawItems = (res as { data?: { items?: OrderData[] } | OrderData[]; items?: OrderData[] });
+      const rawItems = res as { data?: { items?: OrderData[] } | OrderData[]; items?: OrderData[] };
       const list: OrderData[] = Array.isArray(rawItems?.data)
-        ? (rawItems.data as OrderData[])
+        ? rawItems.data
         : Array.isArray((rawItems?.data as { items?: OrderData[] })?.items)
           ? (rawItems.data as { items?: OrderData[] }).items || []
           : Array.isArray(rawItems?.items)
@@ -110,12 +110,19 @@ export function useProfileOrders(activeTab: string) {
         };
         for (const order of list) {
           const s = (order.status || '').toLowerCase();
-          if (s === 'pending') counts.pending++;
-          else if (s === 'pending_verification') counts.pending_verification++;
-          else if (s === 'paid') counts.paid++;
-          else if (s === 'shipping' || s === 'delivering' || s === 'shipped') counts.shipping++;
-          else if (s === 'completed' || s === 'delivered') counts.completed++;
-          else if (s === 'cancelled' || s === 'failed') counts.cancelled++;
+          if (s === 'pending') {
+            counts.pending++;
+          } else if (s === 'pending_verification') {
+            counts.pending_verification++;
+          } else if (s === 'paid') {
+            counts.paid++;
+          } else if (s === 'shipping' || s === 'delivering' || s === 'shipped') {
+            counts.shipping++;
+          } else if (s === 'completed' || s === 'delivered') {
+            counts.completed++;
+          } else if (s === 'cancelled' || s === 'failed') {
+            counts.cancelled++;
+          }
         }
         setStatusCounts(counts);
       }
@@ -144,7 +151,10 @@ export function useProfileOrders(activeTab: string) {
         });
       }
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Không thể tải lịch sử đơn hàng. Vui lòng thử lại.';
+      const msg =
+        error instanceof Error
+          ? error.message
+          : 'Không thể tải lịch sử đơn hàng. Vui lòng thử lại.';
       setOrdersError(msg);
       if (page === 1) {
         setUserOrders([]);

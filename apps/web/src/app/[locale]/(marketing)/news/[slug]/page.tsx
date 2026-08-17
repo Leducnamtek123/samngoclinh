@@ -40,7 +40,9 @@ async function getRelatedArticles(category: string, currentSlug: string): Promis
     }
     const json = await res.json();
     const all: Article[] = json.data || [];
-    return all.filter((a: Article) => a.category === category && a.slug !== currentSlug).slice(0, 3);
+    return all
+      .filter((a: Article) => a.category === category && a.slug !== currentSlug)
+      .slice(0, 3);
   } catch (error) {
     console.error('Error fetching related articles:', error);
     return [];
@@ -187,7 +189,11 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                       <Link href={`/news/${rel.slug}`}>
                         <Image
                           className="h-full w-full cursor-pointer rounded-2xl object-cover"
-                          src={rel.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
+                          src={
+                            rel.image ||
+                            newsImages[idx % newsImages.length] ||
+                            '/images/default_plant.png'
+                          }
                           alt={rel.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"

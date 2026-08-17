@@ -14,7 +14,12 @@ export type ProfileAddressTabProps = {
   setIsAddAddressOpen: (open: boolean) => void;
   onAddAddress: (
     data:
-      | ({ recipientName: string; recipientPhone: string; shippingAddress: string; notes?: string } & {
+      | ({
+          recipientName: string;
+          recipientPhone: string;
+          shippingAddress: string;
+          notes?: string;
+        } & {
           newId?: string;
         })
       | Partial<AddressItem>,

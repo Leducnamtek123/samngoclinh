@@ -12,7 +12,10 @@ import type { FormInputProps } from '@/components/ui/form/FormInput';
 import { FormInput } from '@/components/ui/form/FormInput';
 
 const LeafletMapLocationModal = dynamic(
-  () => import('@/components/address/LeafletMapLocationModal').then((mod) => mod.LeafletMapLocationModal),
+  () =>
+    import('@/components/address/LeafletMapLocationModal').then(
+      (mod) => mod.LeafletMapLocationModal,
+    ),
   { ssr: false },
 );
 

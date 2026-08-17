@@ -4,7 +4,6 @@ import { Truck, Store, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React from 'react';
-// @ts-expect-error react-dom type declaration
 import { createPortal } from 'react-dom';
 import { AddressModal } from '@/components/address/AddressModal';
 import { AddressSelector } from '@/components/address/AddressSelector';

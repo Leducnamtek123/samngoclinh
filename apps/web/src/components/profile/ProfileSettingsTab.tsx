@@ -59,8 +59,11 @@ export const ProfileSettingsTab: React.FC<ProfileSettingsTabProps> = () => {
     setUserPromoNotif(val);
   };
 
-  const autoLogout =
-    userAutoLogout ?? (apiSettings?.autoLogout ? String(apiSettings.autoLogout) : '30');
+  const autoLogoutStr =
+    typeof apiSettings?.autoLogout === 'number' || typeof apiSettings?.autoLogout === 'string'
+      ? String(apiSettings.autoLogout)
+      : '30';
+  const autoLogout = userAutoLogout ?? autoLogoutStr;
   const setAutoLogout = (val: string) => {
     setUserAutoLogout(val);
   };

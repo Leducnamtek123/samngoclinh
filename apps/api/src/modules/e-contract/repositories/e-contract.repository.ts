@@ -101,7 +101,7 @@ export class EContractRepository {
                     },
                 },
             });
-            if (direct) return direct;
+            if (direct) {return direct;}
 
             return await this.databaseService.eContract.findFirst({
                 where: {

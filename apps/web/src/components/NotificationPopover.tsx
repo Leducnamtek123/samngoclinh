@@ -92,7 +92,9 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
               </div>
 
               {/* Message Summary */}
-              <p className="text-xs leading-relaxed font-normal text-gray-600">{String(item.message || '')}</p>
+              <p className="text-xs leading-relaxed font-normal text-gray-600">
+                {String(item.message || '')}
+              </p>
 
               {/* Key-Value Details Grid Box (For Order Notifications) */}
               {item.details && typeof item.details === 'object' && (

@@ -327,7 +327,11 @@ function NewsSection({
                 <Link href={`/news/${article.slug}`}>
                   <Image
                     className="h-full w-full cursor-pointer rounded-2xl object-cover transition-transform duration-500 hover:scale-105"
-                    src={article.image || newsImages[idx % newsImages.length] || '/images/default_plant.png'}
+                    src={
+                      article.image ||
+                      newsImages[idx % newsImages.length] ||
+                      '/images/default_plant.png'
+                    }
                     alt={article.title}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"

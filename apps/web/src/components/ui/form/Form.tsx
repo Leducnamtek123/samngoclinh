@@ -3,7 +3,14 @@
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
-import type { ControllerFieldState, ControllerProps, FieldError, FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
+import type {
+  ControllerFieldState,
+  ControllerProps,
+  FieldError,
+  FieldPath,
+  FieldValues,
+  UseFormReturn,
+} from 'react-hook-form';
 import { Controller, FormProvider, useFormContext } from 'react-hook-form';
 
 export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
@@ -129,7 +136,7 @@ const FormControl = React.forwardRef<HTMLDivElement, FormControlProps>(
       <div
         ref={ref}
         id={formItemId}
-        aria-describedby={!error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`}
+        aria-describedby={error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId}
         aria-invalid={Boolean(error)}
         className={className}
         {...props}
@@ -170,11 +177,7 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
     const tVal = useTranslations('validation');
 
     const error = propError || contextError;
-    let body = error
-      ? typeof error === 'string'
-        ? error
-        : error.message || ''
-      : children;
+    let body = error ? (typeof error === 'string' ? error : error.message || '') : children;
 
     if (typeof body === 'string' && body.startsWith('validation.')) {
       try {

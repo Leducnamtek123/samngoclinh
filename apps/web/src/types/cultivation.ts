@@ -127,4 +127,3 @@ export type ProtectionPackage = {
   coverageRate?: number;
   [key: string]: unknown;
 };
-

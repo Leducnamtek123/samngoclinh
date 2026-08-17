@@ -47,15 +47,18 @@ export function useQuickPurchaseForm({
 
   const profileAddresses: AddressItem[] =
     profile?.addresses && Array.isArray(profile.addresses)
-      ? profile.addresses.map((a: AddressItem | Record<string, unknown>) => ({
-          id: String(a.id || ''),
-          name: String(a.recipient || a.name || profile.fullName || ''),
-          recipient: String(a.recipient || a.name || profile.fullName || ''),
-          phone: String(a.phone || profile.mobileNumber || ''),
-          address: String(a.detail || a.address || ''),
-          detail: String(a.detail || a.address || ''),
-          isDefault: !!a.isDefault,
-        }))
+      ? profile.addresses.map((item: unknown) => {
+          const a = (item || {}) as Record<string, string | boolean | undefined>;
+          return {
+            id: String(a.id || ''),
+            name: String(a.recipient || a.name || profile.fullName || ''),
+            recipient: String(a.recipient || a.name || profile.fullName || ''),
+            phone: String(a.phone || profile.mobileNumber || ''),
+            address: String(a.detail || a.address || ''),
+            detail: String(a.detail || a.address || ''),
+            isDefault: Boolean(a.isDefault),
+          };
+        })
       : [];
 
   const addresses = [
@@ -69,17 +72,13 @@ export function useQuickPurchaseForm({
     setUserSelectedAddressId(id);
   };
 
-  const selectedCareId =
-    userSelectedCareId ?? carePackages[0]?.code ?? carePackages[0]?.id ?? '';
+  const selectedCareId = userSelectedCareId ?? carePackages[0]?.code ?? carePackages[0]?.id ?? '';
   const setSelectedCareId = (id: string) => {
     setUserSelectedCareId(id);
   };
 
   const selectedProtectionId =
-    userSelectedProtectionId ??
-    protectionPackages[0]?.code ??
-    protectionPackages[0]?.id ??
-    '';
+    userSelectedProtectionId ?? protectionPackages[0]?.code ?? protectionPackages[0]?.id ?? '';
   const setSelectedProtectionId = (id: string) => {
     setUserSelectedProtectionId(id);
   };
@@ -113,9 +112,7 @@ export function useQuickPurchaseForm({
     protectionPackages.find(
       (p) => p.code === selectedProtectionId || p.id === selectedProtectionId,
     ) || protectionPackages[0];
-  const protectionUnitPrice = selectedProtectionObj
-    ? Number(selectedProtectionObj.price || 0)
-    : 0;
+  const protectionUnitPrice = selectedProtectionObj ? Number(selectedProtectionObj.price || 0) : 0;
 
   const treeBasePrice = unitPrice * quantity;
   const vatTree = Math.round(treeBasePrice * 0.05);
@@ -153,17 +150,11 @@ export function useQuickPurchaseForm({
         (data as ShippingAddressFormValues).recipientName ||
         'Customer',
       phone:
-        (data as AddressItem).phone ||
-        (data as ShippingAddressFormValues).recipientPhone ||
-        '',
+        (data as AddressItem).phone || (data as ShippingAddressFormValues).recipientPhone || '',
       address:
-        (data as AddressItem).address ||
-        (data as ShippingAddressFormValues).shippingAddress ||
-        '',
+        (data as AddressItem).address || (data as ShippingAddressFormValues).shippingAddress || '',
       detail:
-        (data as AddressItem).detail ||
-        (data as ShippingAddressFormValues).shippingAddress ||
-        '',
+        (data as AddressItem).detail || (data as ShippingAddressFormValues).shippingAddress || '',
       isDefault: addresses.length === 0,
     };
     const updated = [newAddr, ...localAddresses];
@@ -215,7 +206,7 @@ export function useQuickPurchaseForm({
               : t('shippingLabel')
             : t('pickupLabel'),
         deliveryType,
-      })) as ({ data?: Order; id?: string; code?: string } & Order);
+      })) as { data?: Order; id?: string; code?: string } & Order;
 
       const orderData = res?.data || res;
       if (!orderData?.id && !orderData?.code) {

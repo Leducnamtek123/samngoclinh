@@ -55,7 +55,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
             for (const order of ordersWithoutItems) {
                 const rawItems = Array.isArray(order.items) ? (order.items as any[]) : [];
-                if (rawItems.length === 0) continue;
+                if (rawItems.length === 0) {continue;}
 
                 const createData = rawItems.map((item) => {
                     const code = String(item.code || '').toLowerCase();
@@ -77,7 +77,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                 });
             }
         } catch (e) {
-            console.error('Failed to auto-sync OrderItems:', e);
+            this.logger.error(`Failed to auto-sync OrderItems: ${e instanceof Error ? e.message : String(e)}`);
         }
     }
 

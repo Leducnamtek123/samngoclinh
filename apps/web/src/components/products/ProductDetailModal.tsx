@@ -11,7 +11,11 @@ export type ProductDetailModalProps = {
   activeImageIdx?: number;
   setActiveImageIdx?: (idx: number) => void;
   onClose: () => void;
-  onBuyItem?: (e?: React.MouseEvent, item?: ProductItem | GinsengPlantItem, redirect?: boolean) => void;
+  onBuyItem?: (
+    e?: React.MouseEvent,
+    item?: ProductItem | GinsengPlantItem,
+    redirect?: boolean,
+  ) => void;
 };
 
 export function ProductDetailModal({

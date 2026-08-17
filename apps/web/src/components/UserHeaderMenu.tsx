@@ -1,7 +1,7 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 import { useRef } from 'react';
 import { NotificationPopover } from '@/components/NotificationPopover';
 import { useUserHeaderMenu } from '@/hooks/useUserHeaderMenu';

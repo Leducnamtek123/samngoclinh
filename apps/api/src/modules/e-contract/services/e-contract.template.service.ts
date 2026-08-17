@@ -151,9 +151,9 @@ export class EContractTemplateService {
             throw new NotFoundException(`Template with slug '${slug}' not found`);
         }
 
-        if (payload.title) meta.title = payload.title;
-        if (payload.version) meta.version = payload.version;
-        if (payload.description) meta.description = payload.description;
+        if (payload.title) {meta.title = payload.title;}
+        if (payload.version) {meta.version = payload.version;}
+        if (payload.description) {meta.description = payload.description;}
 
         const filePath = this.getTemplateFilePath(slug);
         const dir = path.dirname(filePath);
