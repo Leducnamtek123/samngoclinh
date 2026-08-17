@@ -8,7 +8,13 @@ import { TrafficSourcesChart } from "./traffic-sources-chart"
 import { TrafficSourcesTable } from "./traffic-sources-table"
 
 export function TrafficSources({ stats }: { stats?: AnalyticsDashboardStats }) {
-  const sources = stats?.trafficSources || []
+  const sources = (stats?.trafficSources || []).map((s) => ({
+    name: s.name,
+    visitors: Number(s.visitors ?? (s as { count?: number }).count ?? 0),
+    fill: s.fill || "hsl(var(--chart-1))",
+    percentageChange: Number(s.percentageChange ?? 0),
+    icon: s.icon || "Globe",
+  }))
 
   return (
     <DashboardCard

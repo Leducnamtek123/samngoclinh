@@ -47,16 +47,32 @@ export function PerformanceOverTime({
   const monthlyRevenue = stats?.monthlyRevenue || []
   const summary = {
     totalVisitors: monthlyRevenue.reduce(
-      (sum: number, r) => sum + (r.visitors || 0),
+      (sum: number, r) =>
+        sum +
+        Number(
+          r.visitors ?? (r as { ordersCount?: number }).ordersCount ?? 0
+        ),
       0
     ),
     totalConversions: monthlyRevenue.reduce(
-      (sum: number, r) => sum + (r.conversions || 0),
+      (sum: number, r) =>
+        sum +
+        Number(
+          r.conversions ?? (r as { treesPlanted?: number }).treesPlanted ?? 0
+        ),
       0
     ),
   }
 
-  const performance = monthlyRevenue
+  const performance = monthlyRevenue.map((m) => ({
+    month: m.month,
+    visitors: Number(
+      m.visitors ?? (m as { ordersCount?: number }).ordersCount ?? 0
+    ),
+    conversions: Number(
+      m.conversions ?? (m as { treesPlanted?: number }).treesPlanted ?? 0
+    ),
+  }))
 
   return (
     <DashboardCard

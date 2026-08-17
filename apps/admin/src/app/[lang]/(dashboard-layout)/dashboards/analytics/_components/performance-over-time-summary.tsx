@@ -11,6 +11,9 @@ export function PerformanceOverTimeSummary({
 }: {
   data: PerformanceOverTimeType["summary"]
 }) {
+  const totalVisitors = Number(data?.totalVisitors ?? 0)
+  const totalConversions = Number(data?.totalConversions ?? 0)
+
   return (
     <ul className="grid grid-cols-2 place-items-center gap-x-3">
       <li className="flex gap-x-2">
@@ -28,7 +31,7 @@ export function PerformanceOverTimeSummary({
             Lượt ghé thăm vườn
           </h3>
           <p className="text-2xl font-semibold">
-            {data.totalVisitors.toLocaleString()}
+            {totalVisitors.toLocaleString()}
           </p>
         </div>
       </li>
@@ -47,7 +50,7 @@ export function PerformanceOverTimeSummary({
             Số cây sâm trồng mới
           </h3>
           <p className="text-2xl font-semibold">
-            {data.totalConversions.toLocaleString()}
+            {totalConversions.toLocaleString()}
           </p>
         </div>
       </li>

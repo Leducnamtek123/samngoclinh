@@ -12,15 +12,16 @@ export function VisitorsByCountry({
   const data = {
     summary: {
       totalVisitors: visitorsByCountry.reduce(
-        (sum: number, c) => sum + (c.visitors || 0),
+        (sum: number, c) =>
+          sum + Number(c.visitors ?? (c as { count?: number }).count ?? 0),
         0
       ),
     },
     countries: visitorsByCountry.map((c) => ({
       countryName: c.country,
       countryCode: (c.code || "VN").toUpperCase(),
-      visitors: c.visitors,
-      percentageChange: c.percentageChange,
+      visitors: Number(c.visitors ?? (c as { count?: number }).count ?? 0),
+      percentageChange: Number(c.percentageChange ?? 0),
     })),
   }
 

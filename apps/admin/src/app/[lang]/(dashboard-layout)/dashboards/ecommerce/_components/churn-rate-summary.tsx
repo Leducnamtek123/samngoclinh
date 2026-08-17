@@ -7,7 +7,7 @@ export function ChurnRateSummary({ data }: { data: ChurnRateType["summary"] }) {
     <div className="grid grid-cols-3 justify-items-center gap-3">
       <div>
         <p className="text-2xl font-semibold">
-          {data.totalCustomers.toLocaleString()}
+          {Number(data?.totalCustomers ?? 0).toLocaleString()}
         </p>
         <h3 className="inline-flex items-baseline gap-x-1 text-sm text-muted-foreground">
           <div className="h-2.5 w-2.5 bg-chart-2 rounded-sm" />
@@ -16,7 +16,7 @@ export function ChurnRateSummary({ data }: { data: ChurnRateType["summary"] }) {
       </div>
       <div>
         <p className="text-2xl font-semibold">
-          {data.totalLostCustomers.toLocaleString()}
+          {Number(data?.totalLostCustomers ?? 0).toLocaleString()}
         </p>
         <h3 className="inline-flex items-baseline gap-x-1 text-sm text-muted-foreground">
           <div className="h-2.5 w-2.5 bg-chart-1 rounded-sm" />

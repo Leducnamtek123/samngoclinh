@@ -10,9 +10,9 @@ export function ConversionFunnelItem({
   return (
     <li className="flex flex-col items-center text-center">
       <p className="text-xl font-semibold sm:text-2xl">
-        {data.value.toLocaleString()}
+        {Number(data?.value ?? 0).toLocaleString()}
       </p>
-      <h3 className="text-sm text-muted-foreground">{data.name}</h3>
+      <h3 className="text-sm text-muted-foreground">{data?.name}</h3>
     </li>
   )
 }

@@ -58,7 +58,7 @@ export function TopProductsItem({
             <p className="text-slate-700 dark:text-slate-300">
               <span className="text-muted-foreground">Đã bán: </span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                {product.sales.value.toLocaleString()}
+                {Number(product.sales?.value ?? 0).toLocaleString()}
               </span>
             </p>
             <p className="text-slate-700 dark:text-slate-300">

@@ -12,7 +12,8 @@ export function VisitorsByCountryItem({
   data: VisitorsByCountryDataType["countries"][number]
   totalVisitors: number
 }) {
-  const flagUrl = `https://purecatamphetamine.github.io/country-flag-icons/3x2/${data.countryCode}.svg`
+  const flagUrl = `https://purecatamphetamine.github.io/country-flag-icons/3x2/${data.countryCode || "VN"}.svg`
+  const visitors = Number(data.visitors ?? 0)
 
   return (
     <li className="flex items-end justify-between gap-2">
@@ -29,7 +30,7 @@ export function VisitorsByCountryItem({
         <div className="flex items-end justify-between">
           <div>
             <p className="text-lg font-semibold leading-tight">
-              {data.visitors.toLocaleString()}
+              {visitors.toLocaleString()}
             </p>
             <h3 className="text-sm text-muted-foreground">
               {data.countryName}
@@ -37,11 +38,11 @@ export function VisitorsByCountryItem({
           </div>
           <PercentageChangeBadge
             variant="ghost"
-            value={data.percentageChange}
+            value={Number(data.percentageChange ?? 0)}
             className="p-0"
           />
         </div>
-        <Progress value={data.visitors} max={totalVisitors} />
+        <Progress value={visitors} max={totalVisitors || 1} />
       </div>
     </li>
   )
