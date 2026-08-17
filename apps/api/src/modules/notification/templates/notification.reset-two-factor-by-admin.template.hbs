@@ -1,21 +1,9 @@
 <html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Hi {{username}},</p>
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff; line-height: 1.6;">
+<p>Xin chào {{name}},</p>
 <br/>
-<p>Your two-factor authentication has been reset by admin.</p>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
-  </tbody>
-</table>
-<br/>
-<p>By: {{homeName}}.</p>
+<p>Xác thực hai lớp (2FA) của tài khoản bạn đã được quản trị viên đặt lại.</p>
+<p>Nếu bạn không yêu cầu thao tác này, vui lòng liên hệ ngay với bộ phận hỗ trợ.</p>
+{{> emailFooter}}
 </body>
 </html>

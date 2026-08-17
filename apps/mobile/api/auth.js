@@ -6,7 +6,7 @@
 //  - Interceptor (withAuth): gặp 401 -> tự refresh -> retry 1 lần -> vẫn fail thì đăng xuất.
 //  - Mọi endpoint yêu cầu header x-api-key (@ApiKeyProtected) và trả về vỏ chuẩn { statusCode, message, data }.
 
-import { API_BASE_URL, API_KEY } from './config';
+import { API_BASE_NEUTRAL, API_BASE_URL, API_KEY } from './config';
 import { getDeviceInfo } from './device';
 import { getRefreshToken, getToken, updateTokens } from './storage';
 
@@ -255,6 +255,47 @@ export async function deleteAddress(addressId) {
 // Giấy tờ tùy thân: lấy ảnh CCCD đã lưu (mặt trước/sau) hoặc null nếu chưa có.
 export async function getIdentityDocument() {
   return withAuth((token) => apiRequest('/shared/user/identity-document', { token }));
+}
+
+// Lịch sử các lần nộp eKYC (mới nhất trước). Trả mảng [] nếu chưa có.
+export async function fetchIdentityHistory() {
+  const data = await withAuth((token) =>
+    apiRequest('/shared/user/identity-document/history', { token })
+  );
+  return Array.isArray(data) ? data : [];
+}
+
+// Chữ ký số — /v1/shared/user/signature. getSignature -> { signatureUrl }.
+export async function getSignature() {
+  return withAuth((token) => apiRequest('/shared/user/signature', { token }));
+}
+export async function saveSignature(signatureData) {
+  return withAuth((token) =>
+    apiRequest('/shared/user/signature', { method: 'PUT', body: { signatureData }, token })
+  );
+}
+
+// E-contract — version-neutral (/api/user/contracts).
+export async function fetchContracts() {
+  const data = await withAuth((token) =>
+    apiRequest('/user/contracts', { token, baseUrl: API_BASE_NEUTRAL })
+  );
+  return Array.isArray(data) ? data : [];
+}
+export async function fetchContract(id) {
+  return withAuth((token) =>
+    apiRequest(`/user/contracts/${encodeURIComponent(id)}`, { token, baseUrl: API_BASE_NEUTRAL })
+  );
+}
+export async function signContract(id, signatureData) {
+  return withAuth((token) =>
+    apiRequest(`/user/contracts/${encodeURIComponent(id)}/sign`, {
+      method: 'POST',
+      body: { signatureData },
+      token,
+      baseUrl: API_BASE_NEUTRAL,
+    })
+  );
 }
 
 // Ép một asset của image-picker thành phần tử file cho FormData (RN cần {uri,name,type}).

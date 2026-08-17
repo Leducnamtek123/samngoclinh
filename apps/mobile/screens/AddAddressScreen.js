@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -30,6 +31,7 @@ export default function AddAddressScreen({ navigation }) {
   const [label, setLabel] = useState('');
   const [recipient, setRecipient] = useState('');
   const [phone, setPhone] = useState('');
+  const [isDefault, setIsDefault] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const onSave = async () => {
@@ -44,6 +46,7 @@ export default function AddAddressScreen({ navigation }) {
         label: label.trim() || undefined,
         recipient: recipient.trim() || undefined,
         phone: phone.trim() || undefined,
+        isDefault,
       });
       await refreshProfile();
       alert.success('Thành công', 'Đã thêm địa chỉ.', {
@@ -116,6 +119,19 @@ export default function AddAddressScreen({ navigation }) {
               keyboardType="phone-pad"
               maxLength={20}
             />
+
+            <View style={styles.defaultRow}>
+              <View style={styles.flex}>
+                <Text style={styles.label}>Đặt làm địa chỉ mặc định</Text>
+                <Text style={styles.hint}>Tự chọn khi đặt hàng</Text>
+              </View>
+              <Switch
+                value={isDefault}
+                onValueChange={setIsDefault}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#fff"
+              />
+            </View>
           </View>
 
           <PrimaryButton title="Lưu" onPress={onSave} loading={loading} />
@@ -162,6 +178,8 @@ const styles = StyleSheet.create({
   },
   label: { fontSize: 14, fontWeight: '700', color: colors.text, marginBottom: spacing.sm },
   labelSpacer: { marginTop: spacing.lg },
+  defaultRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.lg },
+  hint: { fontSize: 12, color: colors.textMuted },
 
   detailInput: {
     fontSize: 16,

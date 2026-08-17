@@ -1,6 +1,6 @@
 // Mua theo luống / vườn (màn 2) — chọn phạm vi (cả vườn hoặc từng luống), xem giá + tách đơn >500tr.
 // GET /public/cultivation/gardens/:code/purchase. Đặt mua thật để bước sau.
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -35,7 +35,17 @@ export default function GardenPurchaseScopeScreen({ navigation, route }) {
   const [selectedKey, setSelectedKey] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [anchor, setAnchor] = useState(null);
   const [agreed, setAgreed] = useState(false);
+  const pickerRef = useRef(null);
+
+  // Đo vị trí select box để neo dropdown ngay sát dưới nó.
+  const openPicker = () => {
+    pickerRef.current?.measureInWindow((x, y, width, height) => {
+      setAnchor({ x, y, width, height });
+      setPickerOpen(true);
+    });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -83,7 +93,7 @@ export default function GardenPurchaseScopeScreen({ navigation, route }) {
             showsVerticalScrollIndicator={false}
           >
             <Text style={styles.sectionTitle}>Phạm vi mua</Text>
-            <Pressable style={styles.picker} onPress={() => setPickerOpen(true)}>
+            <Pressable ref={pickerRef} style={styles.picker} onPress={openPicker}>
               <Text style={styles.pickerText}>{scopeLabel(selected)}</Text>
               <Ionicons name="chevron-down" size={20} color="rgba(255,255,255,0.6)" />
             </Pressable>
@@ -199,7 +209,17 @@ export default function GardenPurchaseScopeScreen({ navigation, route }) {
         onRequestClose={() => setPickerOpen(false)}
       >
         <Pressable style={styles.modalBg} onPress={() => setPickerOpen(false)}>
-          <View style={styles.modalCard}>
+          <View
+            style={[
+              styles.modalCard,
+              anchor && {
+                position: 'absolute',
+                top: anchor.y + anchor.height + 4,
+                left: anchor.x,
+                width: anchor.width,
+              },
+            ]}
+          >
             {scopes.map((s) => (
               <Pressable
                 key={s.key}
@@ -356,7 +376,7 @@ const styles = StyleSheet.create({
   buyBtnText: { color: '#fff', fontSize: 17, fontWeight: '800' },
   buyBtnTextDisabled: { color: 'rgba(255,255,255,0.4)' },
 
-  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: spacing.xl },
+  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
   modalCard: { backgroundColor: '#0E2A31', borderRadius: 14, overflow: 'hidden' },
   optionRow: {
     flexDirection: 'row',

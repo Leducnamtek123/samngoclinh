@@ -5,10 +5,7 @@ export enum EnumNotificationProcess {
     temporaryPasswordByAdmin = 'temporaryPasswordByAdmin',
     changePassword = 'changePassword',
     verifiedEmail = 'verifiedEmail',
-    verifiedMobileNumber = 'verifiedMobileNumber',
     verificationEmail = 'verificationEmail',
-    forgotPassword = 'forgotPassword',
-    resetPassword = 'resetPassword',
     newDeviceLogin = 'newDeviceLogin',
     resetTwoFactorByAdmin = 'resetTwoFactorByAdmin',
     publishTermPolicy = 'publishTermPolicy',
@@ -23,6 +20,5 @@ export enum EnumNotificationPushProcess {
     cleanupStaleTokens = 'cleanupStaleTokens',
     resetTwoFactorByAdmin = 'resetTwoFactorByAdmin',
     temporaryPasswordByAdmin = 'temporaryPasswordByAdmin',
-    resetPassword = 'resetPassword',
     newDeviceLogin = 'newDeviceLogin',
 }

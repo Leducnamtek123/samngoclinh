@@ -1,31 +1,29 @@
 <html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Hi {{name}},</p>
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff; line-height: 1.6;">
+<p>Xin chào {{name}},</p>
 <br/>
-<p>We noticed a login to your account from a new device.</p>
+<p>Chúng tôi phát hiện một lượt đăng nhập vào tài khoản của bạn từ một thiết bị mới.</p>
 <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
   <thead>
     <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
+      <th style="text-align: left;">Thông tin</th>
+      <th style="text-align: left;">Chi tiết</th>
     </tr>
   </thead>
   <tbody>
-    <tr><td>Login From</td><td>{{loginFrom}}</td></tr>
-    <tr><td>Login With</td><td>{{loginWith}}</td></tr>
-    <tr><td>Login At</td><td>{{loginAt}}</td></tr>
-    <tr><td>IP Address</td><td>{{ipAddress}}</td></tr>
-    <tr><td>Browser</td><td>{{browser}}</td></tr>
-    <tr><td>Device</td><td>{{device}}</td></tr>
-    <tr><td>OS</td><td>{{os}}</td></tr>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
+    <tr><td>Đăng nhập từ</td><td>{{loginFrom}}</td></tr>
+    <tr><td>Phương thức</td><td>{{loginWith}}</td></tr>
+    <tr><td>Thời gian</td><td>{{loginAt}}</td></tr>
+    <tr><td>Địa chỉ IP</td><td>{{ipAddress}}</td></tr>
+    <tr><td>Trình duyệt</td><td>{{browser}}</td></tr>
+    <tr><td>Thiết bị</td><td>{{device}}</td></tr>
+    <tr><td>Hệ điều hành</td><td>{{os}}</td></tr>
   </tbody>
 </table>
 <br/>
-<p>If this was you, no further action is required.</p>
-<p>If you do not recognize this login, please contact our support team immediately at {{supportEmail}}.</p>
+<p>Nếu đây là bạn, bạn không cần làm gì thêm.</p>
+<p>Nếu bạn không nhận ra lượt đăng nhập này, vui lòng liên hệ ngay với bộ phận hỗ trợ qua email {{supportEmail}}.</p>
 <br/>
-<p>By: {{homeName}}.</p>
+{{> emailFooter}}
 </body>
 </html>

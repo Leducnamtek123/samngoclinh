@@ -104,7 +104,7 @@ export default async function ContractPage(props: ContractPageProps) {
 
             <div className="border-t border-slate-200 pt-3 space-y-1">
               <h4 className="font-bold text-emerald-900 uppercase">BÊN B (BÊN MUA VÀ CHỦ SỞ HỮU CÂY SÂM):</h4>
-              <p className="font-semibold text-slate-800">KHÁCH HÀNG ĐĂNG KÝ TRÊN HỆ THỐNG iWE FARM</p>
+              <p className="font-semibold text-slate-800">KHÁCH HÀNG ĐĂNG KÝ TRÊN HỆ THỐNG Sâm Ngọc Linh</p>
               <p>Thông tin định danh cá nhân được xác thực tự động qua mã tài khoản người dùng trực tuyến.</p>
             </div>
           </div>

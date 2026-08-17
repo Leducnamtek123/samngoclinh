@@ -30,15 +30,6 @@ export type INotificationVerifiedEmailPayload = Pick<
     'reference'
 >;
 
-export interface INotificationForgotPasswordPayload extends INotificationVerificationEmailPayload {
-    resendInMinutes: number;
-}
-
-export interface INotificationVerifiedMobileNumberPayload extends INotificationVerifiedEmailPayload {
-    resendInMinutes: number;
-    mobileNumber: string;
-}
-
 export interface INotificationNewDeviceLoginPayload {
     loginFrom: EnumUserLoginFrom;
     loginWith: EnumUserLoginWith;

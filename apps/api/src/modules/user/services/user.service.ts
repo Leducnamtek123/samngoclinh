@@ -28,7 +28,6 @@ import { UserNotFoundException } from '@modules/user/exceptions/user.not-found.e
 import { UserNotFoundForbiddenException } from '@modules/user/exceptions/user.not-found-forbidden.exception';
 import { UserNotSelfException } from '@modules/user/exceptions/user.not-self.exception';
 import { UserPasswordAttemptMaxException } from '@modules/user/exceptions/user.password-attempt-max.exception';
-import { UserPasswordMustNewException } from '@modules/user/exceptions/user.password-must-new.exception';
 import { UserPasswordNotMatchException } from '@modules/user/exceptions/user.password-not-match.exception';
 import { UserPasswordNotSetException } from '@modules/user/exceptions/user.password-not-set.exception';
 import { UserTokenInvalidException } from '@modules/user/exceptions/user.token-invalid.exception';
@@ -67,7 +66,6 @@ import {
 } from '@modules/auth/interfaces/auth.interface';
 import { AuthUtil } from '@modules/auth/utils/auth.util';
 import { CountryRepository } from '@modules/country/repositories/country.repository';
-import { PasswordHistoryRepository } from '@modules/password-history/repositories/password-history.repository';
 import { RoleRepository } from '@modules/role/repositories/role.repository';
 import { SessionRepository } from '@modules/session/repositories/session.repository';
 import { SessionUtil } from '@modules/session/utils/session.util';
@@ -151,7 +149,6 @@ export class UserService implements IUserService {
         private readonly userRepository: UserRepository,
         private readonly countryRepository: CountryRepository,
         private readonly roleRepository: RoleRepository,
-        private readonly passwordHistoryRepository: PasswordHistoryRepository,
         private readonly helperService: HelperService,
         private readonly fileService: FileService,
         private readonly notificationUtil: NotificationUtil,
@@ -968,20 +965,6 @@ export class UserService implements IUserService {
             }
 
             await this.userRepository.resetPasswordAttempt(user.id);
-
-            const passwordHistories =
-                await this.passwordHistoryRepository.findActiveUser(user.id);
-            const passwordCheck = this.authUtil.checkPasswordPeriod(
-                passwordHistories,
-                newPassword
-            );
-            if (passwordCheck) {
-                throw new UserPasswordMustNewException(
-                    this.helperService.dateFormatToRFC2822(
-                        passwordCheck.expiredAt
-                    )
-                );
-            }
         }
 
         let twoFactorVerified: IAuthTwoFactorVerifyResult | undefined;
@@ -1212,11 +1195,6 @@ export class UserService implements IUserService {
                 passwordString
             );
             const randomUsername = this.userUtil.createRandomUsername();
-            const emailVerification =
-                this.userUtil.verificationCreateVerification(
-                    userId,
-                    EnumVerificationType.email
-                ) as IUserVerificationEmailCreate;
 
             const created = await this.userRepository.signUp(
                 userId,
@@ -1229,19 +1207,11 @@ export class UserService implements IUserService {
                     ...others,
                 },
                 password,
-                emailVerification,
                 requestLog
             );
 
-            // @note: send email after all creation
-            await this.notificationUtil.sendWelcome(created.id, {
-                expiredAt: this.helperService.dateFormatToIso(
-                    emailVerification.expiredAt
-                ),
-                reference: emailVerification.reference,
-                link: emailVerification.encryptedLink,
-                expiredInMinutes: emailVerification.expiredInMinutes,
-            });
+            // @note: email verification is handled in the profile flow, only welcome email at sign-up
+            await this.notificationUtil.sendWelcome(created.id);
 
             return;
         } catch (err: unknown) {
@@ -2103,11 +2073,7 @@ export class UserService implements IUserService {
         };
     }
 
-    async logout(
-        userId: string,
-        sessionId: string,
-        deviceOwnershipId: string
-    ): Promise<void> {
+    async logout(userId: string, sessionId: string): Promise<void> {
         const requestLog: IRequestLog =
             this.requestStoreService.get<IRequestLog>(RequestLogStoreKey)!;
 
@@ -2121,12 +2087,7 @@ export class UserService implements IUserService {
 
         try {
             await Promise.all([
-                this.userRepository.logout(
-                    userId,
-                    sessionId,
-                    deviceOwnershipId,
-                    requestLog
-                ),
+                this.userRepository.logout(userId, sessionId, requestLog),
                 this.sessionUtil.deleteOneLogin(userId, sessionId),
             ]);
 

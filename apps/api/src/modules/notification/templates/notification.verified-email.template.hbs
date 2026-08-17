@@ -1,22 +1,22 @@
 <html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Hi {{username}},</p>
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff; line-height: 1.6;">
+<p>Xin chào {{name}},</p>
 <br/>
-<p>Your email has been verified successfully.</p>
+<p>Địa chỉ email của bạn đã được <strong>xác minh thành công</strong>.</p>
+<p>Tài khoản của bạn hiện đã được xác nhận và bạn có thể tiếp tục sử dụng các tính năng được hỗ trợ trên hệ thống.</p>
 <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
   <thead>
     <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
+      <th style="text-align: left;">Thông tin</th>
+      <th style="text-align: left;">Chi tiết</th>
     </tr>
   </thead>
   <tbody>
-    <tr><td>Reference</td><td>{{reference}}</td></tr>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
+    <tr><td>Mã tham chiếu</td><td>{{reference}}</td></tr>
   </tbody>
 </table>
 <br/>
-<p>By: {{homeName}}.</p>
+<p>Nếu bạn không thực hiện yêu cầu xác minh này hoặc nhận thấy hoạt động bất thường, vui lòng liên hệ với bộ phận hỗ trợ.</p>
+{{> emailFooter}}
 </body>
 </html>

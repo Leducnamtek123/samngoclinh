@@ -3,13 +3,11 @@ import {
     INotificationEmailSendPayload,
     INotificationEmailWorkerBulkPayload,
     INotificationEmailWorkerPayload,
-    INotificationForgotPasswordPayload,
     INotificationNewDeviceLoginPayload,
     INotificationPublishTermPolicyPayload,
     INotificationTemporaryPasswordPayload,
     INotificationVerificationEmailPayload,
     INotificationVerifiedEmailPayload,
-    INotificationVerifiedMobileNumberPayload,
     INotificationWelcomeByAdminPayload,
 } from '@modules/notification/interfaces/notification.interface';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -108,35 +106,6 @@ export class NotificationEmailUtil {
                     ttl: 1000,
                 },
                 priority: EnumQueuePriority.medium,
-            }
-        );
-    }
-
-    /** Enqueues the password reset confirmation email. */
-    async sendResetPassword({
-        email,
-        username,
-        userId,
-        notificationId,
-    }: INotificationEmailSendPayload): Promise<void> {
-        const payload: INotificationEmailWorkerPayload = {
-            send: {
-                userId,
-                email,
-                username,
-                notificationId,
-            },
-        };
-
-        await this.emailQueue.add(
-            EnumNotificationProcess.resetPassword,
-            payload,
-            {
-                priority: EnumQueuePriority.low,
-                deduplication: {
-                    id: `${EnumNotificationProcess.resetPassword}-${userId}`,
-                    ttl: 1000,
-                },
             }
         );
     }
@@ -279,6 +248,7 @@ export class NotificationEmailUtil {
         {
             email,
             username,
+            name,
             userId,
             notificationId,
         }: INotificationEmailSendPayload,
@@ -290,6 +260,7 @@ export class NotificationEmailUtil {
                     userId,
                     email,
                     username,
+                    name,
                     notificationId,
                 },
                 data: {
@@ -305,95 +276,6 @@ export class NotificationEmailUtil {
                 deduplication: {
                     id: `${EnumNotificationProcess.verifiedEmail}-${userId}`,
                     ttl: 1000,
-                },
-                priority: EnumQueuePriority.low,
-            }
-        );
-    }
-
-    /** Enqueues the forgot-password reset link; the deduplication TTL matches the resend window. */
-    async sendForgotPassword(
-        {
-            email,
-            username,
-            userId,
-            notificationId,
-        }: INotificationEmailSendPayload,
-        {
-            expiredAt,
-            expiredInMinutes,
-            link,
-            reference,
-            resendInMinutes,
-        }: INotificationForgotPasswordPayload
-    ): Promise<void> {
-        const payload: INotificationEmailWorkerPayload<INotificationForgotPasswordPayload> =
-            {
-                send: {
-                    userId,
-                    email,
-                    username,
-                    notificationId,
-                },
-                data: {
-                    expiredAt,
-                    expiredInMinutes,
-                    link,
-                    reference,
-                    resendInMinutes,
-                },
-            };
-
-        await this.emailQueue.add(
-            EnumNotificationProcess.forgotPassword,
-            payload,
-            {
-                deduplication: {
-                    id: `${EnumNotificationProcess.forgotPassword}-${userId}`,
-                    ttl: resendInMinutes * 60 * 1000,
-                },
-                priority: EnumQueuePriority.high,
-            }
-        );
-    }
-
-    /** Enqueues the mobile-number-verified confirmation email. */
-    async sendVerifiedMobileNumber(
-        {
-            email,
-            username,
-            userId,
-            notificationId,
-        }: INotificationEmailSendPayload,
-        {
-            mobileNumber,
-            reference,
-            resendInMinutes,
-        }: INotificationVerifiedMobileNumberPayload
-    ): Promise<void> {
-        const payload: INotificationEmailWorkerPayload<INotificationVerifiedMobileNumberPayload> =
-            {
-                send: {
-                    userId,
-                    email,
-                    username,
-                    notificationId,
-                },
-                data: {
-                    mobileNumber,
-                    reference,
-                    resendInMinutes,
-                },
-            };
-
-        await this.emailQueue.add(
-            EnumNotificationProcess.verifiedMobileNumber,
-            payload,
-            {
-                jobId: `${EnumNotificationProcess.verifiedMobileNumber}-${userId}`,
-                deduplication: {
-                    id: `${EnumNotificationProcess.verifiedMobileNumber}-${userId}`,
-                    ttl: resendInMinutes * 60 * 1000,
                 },
                 priority: EnumQueuePriority.low,
             }

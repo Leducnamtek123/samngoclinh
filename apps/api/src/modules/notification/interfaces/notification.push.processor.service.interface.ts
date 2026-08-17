@@ -38,24 +38,6 @@ export interface INotificationPushProcessorService {
         IQueueResponse,
         EnumNotificationPushProcess
     >): Promise<IQueueResponse>;
-    processResetPassword({
-        data: {
-            send: { notificationTokens, username, notificationId, userId },
-        },
-    }: Job<
-        INotificationPushWorkerPayload,
-        IQueueResponse,
-        EnumNotificationPushProcess
-    >): Promise<IQueueResponse>;
-    processForgotPassword({
-        data: {
-            send: { notificationTokens, username, notificationId, userId },
-        },
-    }: Job<
-        INotificationPushWorkerPayload,
-        IQueueResponse,
-        EnumNotificationPushProcess
-    >): Promise<IQueueResponse>;
     processCleanupTokens({
         data: {
             data: { failureTokens, userId },

@@ -8,67 +8,55 @@ export const NotificationEmailTemplate: Record<
     { subject: string; file: string }
 > = {
     [EnumNotificationProcess.changePassword]: {
-        subject: 'Change Password',
+        subject: '[Sâm Ngọc Linh] Đổi mật khẩu thành công',
         file: 'notification.change-password.template.hbs',
     },
     [EnumNotificationProcess.welcome]: {
-        subject: 'Welcome',
+        subject: '[Sâm Ngọc Linh] Chào mừng bạn',
         file: 'notification.welcome.template.hbs',
     },
     [EnumNotificationProcess.welcomeSocial]: {
-        subject: 'Welcome Social',
+        subject: '[Sâm Ngọc Linh] Chào mừng bạn',
         file: 'notification.welcome-social.template.hbs',
     },
     [EnumNotificationProcess.welcomeByAdmin]: {
-        subject: 'Welcome By Admin',
+        subject: '[Sâm Ngọc Linh] Tài khoản của bạn đã được tạo',
         file: 'notification.welcome-by-admin.template.hbs',
     },
     [EnumNotificationProcess.temporaryPasswordByAdmin]: {
-        subject: 'Temporary Password By Admin',
+        subject: '[Sâm Ngọc Linh] Mật khẩu tạm thời',
         file: 'notification.temporary-password-by-admin.template.hbs',
     },
-    [EnumNotificationProcess.resetPassword]: {
-        subject: 'Reset Password',
-        file: 'notification.reset-password.template.hbs',
-    },
-    [EnumNotificationProcess.forgotPassword]: {
-        subject: 'Forgot Password',
-        file: 'notification.forgot-password.template.hbs',
-    },
     [EnumNotificationProcess.verificationEmail]: {
-        subject: 'Email Verification',
+        subject: '[Sâm Ngọc Linh] Xác thực Email',
         file: 'notification.verification-email.template.hbs',
     },
     [EnumNotificationProcess.verifiedEmail]: {
-        subject: 'Email Verified',
+        subject: '[Sâm Ngọc Linh] Xác thực Email thành công',
         file: 'notification.verified-email.template.hbs',
     },
-    [EnumNotificationProcess.verifiedMobileNumber]: {
-        subject: 'MobileNumber Verified',
-        file: 'notification.verified-mobile-number.template.hbs',
-    },
     [EnumNotificationProcess.resetTwoFactorByAdmin]: {
-        subject: 'Reset Two Factor By Admin',
+        subject: '[Sâm Ngọc Linh] Đặt lại xác thực hai lớp',
         file: 'notification.reset-two-factor-by-admin.template.hbs',
     },
     [EnumNotificationProcess.newDeviceLogin]: {
-        subject: 'Device Login',
+        subject: '[Sâm Ngọc Linh] Đăng nhập từ thiết bị mới',
         file: 'notification.new-device-login.template.hbs',
     },
     [EnumNotificationProcess.publishTermPolicy]: {
-        subject: 'Publish Term Policy',
+        subject: '[Sâm Ngọc Linh] Cập nhật điều khoản & chính sách',
         file: 'notification.publish-term-policy.template.hbs',
     },
     [EnumNotificationProcess.orderSuccess]: {
-        subject: 'Xác Nhận Đơn Hàng & Thanh Toán Thành Công - Rượu Sâm Ngọc Linh',
+        subject: '[Sâm Ngọc Linh] Xác nhận đơn hàng & thanh toán thành công',
         file: 'notification.order-success.template.hbs',
     },
     [EnumNotificationProcess.contractCreated]: {
-        subject: 'Thông Báo Khởi Tạo Hợp Đồng Điện Tử - Sâm Ngọc Linh',
+        subject: '[Sâm Ngọc Linh] Khởi tạo hợp đồng điện tử',
         file: 'notification.contract-created.template.hbs',
     },
     [EnumNotificationProcess.contractSigned]: {
-        subject: 'Xác Nhận Ký Kết Hợp Đồng Điện Tử Thành Công - Sâm Ngọc Linh',
+        subject: '[Sâm Ngọc Linh] Ký hợp đồng điện tử thành công',
         file: 'notification.contract-signed.template.hbs',
     },
 };

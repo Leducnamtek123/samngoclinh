@@ -65,14 +65,6 @@ export class NotificationPushProcessor extends QueueProcessorBase {
                             EnumNotificationPushProcess
                         >
                     );
-                case EnumNotificationPushProcess.resetPassword:
-                    return this.notificationPushProcessorService.processResetPassword(
-                        job as Job<
-                            INotificationPushWorkerPayload,
-                            IQueueResponse,
-                            EnumNotificationPushProcess
-                        >
-                    );
                 case EnumNotificationPushProcess.cleanupTokens:
                     return this.notificationPushProcessorService.processCleanupTokens(
                         job as Job<

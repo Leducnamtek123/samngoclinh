@@ -72,7 +72,7 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.logo}>
               <Ionicons name="leaf" size={44} color={colors.primary} />
             </View>
-            <Text style={styles.brand}>iWE FARM</Text>
+            <Text style={styles.brand}>Sâm Ngọc Linh</Text>
           </View>
 
           <View style={styles.body}>

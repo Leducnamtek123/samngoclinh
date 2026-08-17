@@ -50,27 +50,6 @@ export class NotificationPushUtil {
         );
     }
 
-    /** Enqueues the password reset confirmation push. */
-    async sendResetPassword(
-        sendPayload: INotificationSendPushPayload
-    ): Promise<void> {
-        const payload: INotificationPushWorkerPayload = {
-            send: sendPayload,
-        };
-
-        await this.notificationPushQueue.add(
-            EnumNotificationPushProcess.resetPassword,
-            payload,
-            {
-                priority: EnumQueuePriority.medium,
-                deduplication: {
-                    id: `${EnumNotificationPushProcess.resetPassword}-${sendPayload.userId}`,
-                    ttl: 1000,
-                },
-            }
-        );
-    }
-
     /** Enqueues the admin-triggered two-factor reset push. */
     async sendResetTwoFactorByAdmin(
         sendPayload: INotificationSendPushPayload

@@ -114,73 +114,43 @@ export class NotificationRepository {
 
     async createWelcome(
         welcomeNotificationId: string,
-        verificationEmailNotificationId: string,
         userId: string,
         username: string
-    ): Promise<Notification[]> {
+    ): Promise<Notification> {
         const today = this.helperService.dateCreate();
 
-        return this.databaseService.$transaction([
-            this.databaseService.notification.create({
-                data: {
-                    id: welcomeNotificationId,
-                    type: EnumNotificationType.userActivity,
-                    title: 'notification.notify.welcome.title',
-                    body: 'notification.notify.welcome.body',
-                    userId,
-                    metadata: { username },
-                    isRead: false,
-                    priority: EnumNotificationPriority.normal,
-                    createdBy: userId,
-                    deliveries: {
-                        createMany: {
-                            data: [
-                                {
-                                    channel: EnumNotificationChannel.silent,
-                                    processedAt: today,
-                                    sentAt: today,
-                                },
-                                {
-                                    channel: EnumNotificationChannel.email,
-                                },
-                                {
-                                    channel: EnumNotificationChannel.inApp,
-                                    processedAt: today,
-                                    sentAt: today,
-                                },
-                            ],
-                        },
+        return this.databaseService.notification.create({
+            data: {
+                id: welcomeNotificationId,
+                type: EnumNotificationType.userActivity,
+                title: 'notification.notify.welcome.title',
+                body: 'notification.notify.welcome.body',
+                userId,
+                metadata: { username },
+                isRead: false,
+                priority: EnumNotificationPriority.normal,
+                createdBy: userId,
+                deliveries: {
+                    createMany: {
+                        data: [
+                            {
+                                channel: EnumNotificationChannel.silent,
+                                processedAt: today,
+                                sentAt: today,
+                            },
+                            {
+                                channel: EnumNotificationChannel.email,
+                            },
+                            {
+                                channel: EnumNotificationChannel.inApp,
+                                processedAt: today,
+                                sentAt: today,
+                            },
+                        ],
                     },
                 },
-            }),
-            this.databaseService.notification.create({
-                data: {
-                    id: verificationEmailNotificationId,
-                    type: EnumNotificationType.userActivity,
-                    title: 'notification.notify.verificationEmail.title',
-                    body: 'notification.notify.verificationEmail.body',
-                    userId,
-                    metadata: { username },
-                    isRead: false,
-                    priority: EnumNotificationPriority.high,
-                    createdBy: userId,
-                    deliveries: {
-                        createMany: {
-                            data: [
-                                {
-                                    channel: EnumNotificationChannel.silent,
-                                    processedAt: today,
-                                    sentAt: today,
-                                },
-                                {
-                                    channel: EnumNotificationChannel.email,
-                                },
-                            ],
-                        },
-                    },
-                },
-            }),
-        ]);
+            },
+        });
     }
 
     async createWelcomeSocial(
@@ -354,113 +324,6 @@ export class NotificationRepository {
                             },
                             {
                                 channel: EnumNotificationChannel.email,
-                            },
-                        ],
-                    },
-                },
-            },
-        });
-    }
-
-    async createMobileNumberVerified(
-        notificationId: string,
-        userId: string,
-        username: string,
-        mobileNumber: string
-    ): Promise<Notification> {
-        const today = this.helperService.dateCreate();
-        return this.databaseService.notification.create({
-            data: {
-                id: notificationId,
-                type: EnumNotificationType.userActivity,
-                title: 'notification.notify.mobileNumberVerified.title',
-                body: 'notification.notify.mobileNumberVerified.body',
-                userId,
-                metadata: {
-                    username,
-                    mobileNumber: this.helperService.censorString(mobileNumber),
-                },
-                isRead: false,
-                priority: EnumNotificationPriority.normal,
-                createdBy: userId,
-                deliveries: {
-                    createMany: {
-                        data: [
-                            {
-                                channel: EnumNotificationChannel.silent,
-                                processedAt: today,
-                                sentAt: today,
-                            },
-                            {
-                                channel: EnumNotificationChannel.email,
-                            },
-                        ],
-                    },
-                },
-            },
-        });
-    }
-
-    async createForgotPassword(
-        notificationId: string,
-        userId: string,
-        username: string
-    ): Promise<Notification> {
-        const today = this.helperService.dateCreate();
-        return this.databaseService.notification.create({
-            data: {
-                id: notificationId,
-                type: EnumNotificationType.securityAlert,
-                title: 'notification.notify.forgotPassword.title',
-                body: 'notification.notify.forgotPassword.body',
-                userId,
-                metadata: { username },
-                isRead: false,
-                priority: EnumNotificationPriority.critical,
-                createdBy: userId,
-                deliveries: {
-                    createMany: {
-                        data: [
-                            { channel: EnumNotificationChannel.email },
-                            { channel: EnumNotificationChannel.push },
-                            {
-                                channel: EnumNotificationChannel.silent,
-                                processedAt: today,
-                                sentAt: today,
-                            },
-                        ],
-                    },
-                },
-            },
-        });
-    }
-
-    async createResetPassword(
-        notificationId: string,
-        userId: string,
-        username: string
-    ): Promise<Notification> {
-        const today = this.helperService.dateCreate();
-        return this.databaseService.notification.create({
-            data: {
-                id: notificationId,
-                type: EnumNotificationType.securityAlert,
-                title: 'notification.notify.resetPassword.title',
-                body: 'notification.notify.resetPassword.body',
-                userId,
-                metadata: { username },
-                isRead: false,
-                priority: EnumNotificationPriority.critical,
-                createdBy: userId,
-                deliveries: {
-                    createMany: {
-                        data: [
-                            { channel: EnumNotificationChannel.email },
-                            { channel: EnumNotificationChannel.push },
-                            {
-                                channel: EnumNotificationChannel.silent,
-                                processedAt: today,
-                                sentAt: today,
                             },
                         ],
                     },

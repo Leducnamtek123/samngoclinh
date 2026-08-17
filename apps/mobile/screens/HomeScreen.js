@@ -1,4 +1,4 @@
-// Trang chủ iWE FARM: header, banner, lối tắt, giới thiệu, số liệu, tin tức, liên hệ.
+// Trang chủ Sâm Ngọc Linh: header, banner, lối tắt, giới thiệu, số liệu, tin tức, liên hệ.
 // Banner/tin tức/số liệu/liên hệ lấy từ API (public), ẩn khi không có dữ liệu; quickActions tĩnh.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -29,7 +29,7 @@ import CartButton from '../components/CartButton';
 const FALLBACK_BANNERS = [
   {
     id: 'fallback',
-    title: 'iWE FARM',
+    title: 'Sâm Ngọc Linh',
     subtitle: 'Khám phá các dịch vụ chúng tôi và bắt đầu phát triển trại của bạn.',
   },
 ];
@@ -91,7 +91,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.brandLogo}>
             <Ionicons name="leaf" size={16} color={colors.primary} />
           </View>
-          <Text style={styles.brandText}>iWE FARM</Text>
+          <Text style={styles.brandText}>Sâm Ngọc Linh</Text>
         </View>
         <View style={styles.headerActions}>
           <CartButton />
@@ -224,7 +224,7 @@ function Banner({ banners }) {
             <View key={b.id} style={[styles.banner, { width: slideWidth }]}>
               <View style={styles.bannerBadge}>
                 <Ionicons name="leaf" size={12} color={colors.primary} />
-                <Text style={styles.bannerBadgeText}>iWE FARM</Text>
+                <Text style={styles.bannerBadgeText}>Sâm Ngọc Linh</Text>
               </View>
               <Text style={styles.bannerTitle} numberOfLines={2}>
                 {b.title}
@@ -270,11 +270,11 @@ function Intro({ user, about }) {
       <View style={styles.plant}>
         <Ionicons name="leaf" size={44} color={colors.primary} />
       </View>
-      <Text style={styles.introTitle}>iWE FARM</Text>
+      <Text style={styles.introTitle}>Sâm Ngọc Linh</Text>
       {name ? <Text style={styles.introHello}>Xin chào, {name}</Text> : null}
       <Text style={styles.introDesc}>
         {about ||
-          'Ứng dụng iWE FARM ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen – trồng đúng vùng ngay trên điện thoại.'}
+          'Ứng dụng Sâm Ngọc Linh ra đời với mục tiêu đưa người tiêu dùng chạm đến cây sâm thật – chuẩn gen – trồng đúng vùng ngay trên điện thoại.'}
       </Text>
     </View>
   );

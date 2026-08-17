@@ -1,4 +1,4 @@
-// Điều khoản sử dụng — iWE FARM. Trang tĩnh, mở từ màn đặt mua theo luống/vườn.
+// Điều khoản sử dụng — Sâm Ngọc Linh. Trang tĩnh, mở từ màn đặt mua theo luống/vườn.
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ const SECTIONS = [
     n: '1',
     title: 'Giới thiệu',
     paras: [
-      'Chào mừng bạn đến với IWEFARM ("Website/App"). Khi sử dụng dịch vụ, bạn đồng ý tuân thủ các điều khoản dưới đây. Vui lòng đọc kỹ trước khi tham gia.',
+      'Chào mừng bạn đến với Sâm Ngọc Linh ("Website/App"). Khi sử dụng dịch vụ, bạn đồng ý tuân thủ các điều khoản dưới đây. Vui lòng đọc kỹ trước khi tham gia.',
     ],
   },
   {
@@ -19,7 +19,7 @@ const SECTIONS = [
     title: 'Chấp nhận Điều khoản',
     bullets: [
       'Việc đăng ký tài khoản hoặc sử dụng dịch vụ đồng nghĩa với việc bạn đã đọc, hiểu và đồng ý với các Điều khoản này.',
-      'Nếu bạn không đồng ý, vui lòng ngừng sử dụng IWEFARM.',
+      'Nếu bạn không đồng ý, vui lòng ngừng sử dụng Sâm Ngọc Linh.',
     ],
   },
   {
@@ -35,7 +35,7 @@ const SECTIONS = [
     n: '4',
     title: 'Dịch vụ mua, ký gửi & chăm sóc cây',
     bullets: [
-      'iWE FARM cung cấp dịch vụ mua cây Sâm Ngọc Linh theo cây, theo luống hoặc cả vườn, kèm ký gửi và chăm sóc tại vườn.',
+      'Sâm Ngọc Linh cung cấp dịch vụ mua cây Sâm Ngọc Linh theo cây, theo luống hoặc cả vườn, kèm ký gửi và chăm sóc tại vườn.',
       'Giá cây được chốt theo thời điểm đặt mua; số cây và tổng tiền thực tế có thể thay đổi nhẹ nếu cây vừa được người khác mua.',
     ],
   },
@@ -61,21 +61,21 @@ const SECTIONS = [
     n: '7',
     title: 'Bảo mật thông tin',
     paras: [
-      'iWE FARM cam kết bảo mật thông tin cá nhân của khách hàng và chỉ sử dụng cho mục đích cung cấp dịch vụ theo quy định của pháp luật.',
+      'Sâm Ngọc Linh cam kết bảo mật thông tin cá nhân của khách hàng và chỉ sử dụng cho mục đích cung cấp dịch vụ theo quy định của pháp luật.',
     ],
   },
   {
     n: '8',
     title: 'Thay đổi điều khoản',
     paras: [
-      'iWE FARM có thể cập nhật các Điều khoản này theo từng thời điểm. Việc tiếp tục sử dụng dịch vụ sau khi cập nhật đồng nghĩa với việc bạn chấp nhận các thay đổi.',
+      'Sâm Ngọc Linh có thể cập nhật các Điều khoản này theo từng thời điểm. Việc tiếp tục sử dụng dịch vụ sau khi cập nhật đồng nghĩa với việc bạn chấp nhận các thay đổi.',
     ],
   },
   {
     n: '9',
     title: 'Liên hệ',
     paras: [
-      'Mọi thắc mắc về Điều khoản sử dụng, vui lòng liên hệ bộ phận hỗ trợ của iWE FARM.',
+      'Mọi thắc mắc về Điều khoản sử dụng, vui lòng liên hệ bộ phận hỗ trợ của Sâm Ngọc Linh.',
     ],
   },
 ];
@@ -100,7 +100,7 @@ export default function TermsOfUseScreen({ navigation }) {
         contentContainerStyle={[styles.scroll, { paddingBottom: spacing.xl }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>Điều Khoản Sử Dụng – iWE FARM</Text>
+        <Text style={styles.title}>Điều Khoản Sử Dụng – Sâm Ngọc Linh</Text>
 
         {SECTIONS.map((s) => (
           <View key={s.n} style={styles.section}>

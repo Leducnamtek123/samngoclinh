@@ -1,13 +1,11 @@
 import {
     INotificationEmailWorkerBulkPayload,
     INotificationEmailWorkerPayload,
-    INotificationForgotPasswordPayload,
     INotificationNewDeviceLoginPayload,
     INotificationPublishTermPolicyPayload,
     INotificationTemporaryPasswordPayload,
     INotificationVerificationEmailPayload,
     INotificationVerifiedEmailPayload,
-    INotificationVerifiedMobileNumberPayload,
     INotificationWelcomeByAdminPayload,
 } from '@modules/notification/interfaces/notification.interface';
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
@@ -50,13 +48,6 @@ export interface INotificationEmailProcessorService {
             EnumNotificationProcess
         >
     ): Promise<IQueueResponse>;
-    processForgotPassword(
-        job: Job<
-            INotificationEmailWorkerPayload<INotificationForgotPasswordPayload>,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse>;
     processVerificationEmail(
         job: Job<
             INotificationEmailWorkerPayload<INotificationVerificationEmailPayload>,
@@ -71,23 +62,9 @@ export interface INotificationEmailProcessorService {
             EnumNotificationProcess
         >
     ): Promise<IQueueResponse>;
-    processVerifiedMobileNumber(
-        job: Job<
-            INotificationEmailWorkerPayload<INotificationVerifiedMobileNumberPayload>,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse>;
     processNewDeviceLogin(
         job: Job<
             INotificationEmailWorkerPayload<INotificationNewDeviceLoginPayload>,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse>;
-    processResetPassword(
-        job: Job<
-            INotificationEmailWorkerPayload,
             IQueueResponse,
             EnumNotificationProcess
         >

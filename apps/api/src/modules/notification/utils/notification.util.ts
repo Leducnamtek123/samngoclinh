@@ -13,13 +13,11 @@ import { NotificationInvalidChannelException } from '@modules/notification/excep
 import { NotificationInvalidTypeException } from '@modules/notification/exceptions/notification.invalid-type.exception';
 import {
     INotificationAcceptTermPolicyPayload,
-    INotificationForgotPasswordPayload,
     INotificationNewDeviceLoginPayload,
     INotificationPublishTermPolicyPayload,
     INotificationTemporaryPasswordPayload,
     INotificationVerificationEmailPayload,
     INotificationVerifiedEmailPayload,
-    INotificationVerifiedMobileNumberPayload,
     INotificationWelcomeByAdminPayload,
     INotificationWorkerBulkPayload,
     INotificationWorkerPayload,
@@ -71,28 +69,14 @@ export class NotificationUtil {
         );
     }
 
-    /** Queues the welcome notification for a new user (bundles the email verification link). */
-    async sendWelcome(
-        userId: string,
-        {
-            link,
-            expiredAt,
-            expiredInMinutes,
-            reference,
-        }: INotificationVerificationEmailPayload
-    ): Promise<void> {
+    /** Queues the welcome notification for a new user; email verification is handled in the profile flow. */
+    async sendWelcome(userId: string): Promise<void> {
         await this.notificationQueue.add(
             EnumNotificationProcess.welcome,
             {
                 userId,
-                data: {
-                    link,
-                    expiredAt,
-                    expiredInMinutes,
-                    reference,
-                },
                 proceedBy: userId,
-            } as INotificationWorkerPayload<INotificationVerificationEmailPayload>,
+            } as INotificationWorkerPayload,
             {
                 priority: EnumQueuePriority.medium,
                 deduplication: {
@@ -226,58 +210,6 @@ export class NotificationUtil {
         );
     }
 
-    /** Queues the forgot-password reset link notification. */
-    async sendForgotPassword(
-        userId: string,
-        {
-            link,
-            expiredAt,
-            expiredInMinutes,
-            reference,
-            resendInMinutes,
-        }: INotificationForgotPasswordPayload
-    ): Promise<void> {
-        await this.notificationQueue.add(
-            EnumNotificationProcess.forgotPassword,
-            {
-                userId,
-                data: {
-                    link,
-                    expiredAt,
-                    expiredInMinutes,
-                    reference,
-                    resendInMinutes,
-                },
-                proceedBy: userId,
-            } as INotificationWorkerPayload<INotificationForgotPasswordPayload>,
-            {
-                priority: EnumQueuePriority.medium,
-                deduplication: {
-                    id: `${EnumNotificationProcess.forgotPassword}-${userId}`,
-                    ttl: 1000,
-                },
-            }
-        );
-    }
-
-    /** Queues the password reset confirmation notification. */
-    async sendResetPassword(userId: string): Promise<void> {
-        await this.notificationQueue.add(
-            EnumNotificationProcess.resetPassword,
-            {
-                userId,
-                proceedBy: userId,
-            } as INotificationWorkerPayload,
-            {
-                priority: EnumQueuePriority.medium,
-                deduplication: {
-                    id: `${EnumNotificationProcess.resetPassword}-${userId}`,
-                    ttl: 1000,
-                },
-            }
-        );
-    }
-
     /** Queues the admin-triggered two-factor reset notification. */
     async sendResetTwoFactorByAdmin(
         userId: string,
@@ -336,28 +268,6 @@ export class NotificationUtil {
                 priority: EnumQueuePriority.medium,
                 deduplication: {
                     id: `${EnumNotificationProcess.publishTermPolicy}-${payload.type}-${payload.version}`,
-                    ttl: 1000,
-                },
-            }
-        );
-    }
-
-    /** Queues the mobile-number-verified confirmation notification. */
-    async sendVerifiedMobileNumber(
-        userId: string,
-        verifiedMobile: INotificationVerifiedMobileNumberPayload
-    ): Promise<void> {
-        await this.notificationQueue.add(
-            EnumNotificationProcess.verifiedMobileNumber,
-            {
-                userId,
-                data: verifiedMobile,
-                proceedBy: userId,
-            } as INotificationWorkerPayload<INotificationVerifiedMobileNumberPayload>,
-            {
-                priority: EnumQueuePriority.medium,
-                deduplication: {
-                    id: `${EnumNotificationProcess.verifiedMobileNumber}-${userId}`,
                     ttl: 1000,
                 },
             }

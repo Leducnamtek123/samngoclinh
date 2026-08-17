@@ -9,14 +9,12 @@ import { EnumNotificationProcess } from '@modules/notification/enums/notificatio
 import {
     INotificationAcceptTermPolicyPayload,
     INotificationEmailSendPayload,
-    INotificationForgotPasswordPayload,
     INotificationNewDeviceLoginPayload,
     INotificationPublishTermPolicyPayload,
     INotificationSendPushPayload,
     INotificationTemporaryPasswordPayload,
     INotificationVerificationEmailPayload,
     INotificationVerifiedEmailPayload,
-    INotificationVerifiedMobileNumberPayload,
     INotificationWelcomeByAdminPayload,
     INotificationWorkerBulkPayload,
     INotificationWorkerPayload,
@@ -87,9 +85,9 @@ export class NotificationProcessorService implements INotificationProcessorServi
     }
 
     async processWelcome({
-        data: { userId, data },
+        data: { userId },
     }: Job<
-        INotificationWorkerPayload<INotificationVerificationEmailPayload>,
+        INotificationWorkerPayload,
         unknown,
         EnumNotificationProcess
     >): Promise<IQueueResponse> {
@@ -107,27 +105,13 @@ export class NotificationProcessorService implements INotificationProcessorServi
             notificationId: welcomeNotificationId,
         };
 
-        const verificationEmailNotificationId = this.databaseUtil.createId();
-        const verificationEmailPayload: INotificationEmailSendPayload = {
-            userId: user.id,
-            email: user.email,
-            username: user.username,
-            name: user.name ?? user.username,
-            notificationId: verificationEmailNotificationId,
-        };
-
         const results = await Promise.allSettled([
             this.notificationRepository.createWelcome(
                 welcomeNotificationId,
-                verificationEmailNotificationId,
                 user.id,
                 user.username
             ),
             this.notificationEmailUtil.sendWelcome(welcomePayload),
-            this.notificationEmailUtil.sendVerificationEmail(
-                verificationEmailPayload,
-                data!
-            ),
         ]);
 
         return { message: 'Welcome notification processed', results };
@@ -188,6 +172,7 @@ export class NotificationProcessorService implements INotificationProcessorServi
             userId: user.id,
             email: user.email,
             username: user.username,
+            name: user.name ?? user.username,
             notificationId,
         };
 
@@ -242,49 +227,6 @@ export class NotificationProcessorService implements INotificationProcessorServi
 
         return {
             message: 'Verification email notification processed',
-            results,
-        };
-    }
-
-    async processVerifiedMobileNumber({
-        data: { userId, data },
-    }: Job<
-        INotificationWorkerPayload<INotificationVerifiedMobileNumberPayload>,
-        unknown,
-        EnumNotificationProcess
-    >): Promise<IQueueResponse> {
-        const user = await this.userRepository.findOneActiveById(userId);
-
-        if (!user) {
-            return {
-                message:
-                    'User not found, skipping verified mobile number notification',
-            };
-        }
-
-        const notificationId = this.databaseUtil.createId();
-        const emailPayload: INotificationEmailSendPayload = {
-            userId: user.id,
-            email: user.email,
-            username: user.username,
-            notificationId,
-        };
-
-        const results = await Promise.allSettled([
-            this.notificationRepository.createMobileNumberVerified(
-                notificationId,
-                user.id,
-                user.username,
-                data!.mobileNumber
-            ),
-            this.notificationEmailUtil.sendVerifiedMobileNumber(
-                emailPayload,
-                data!
-            ),
-        ]);
-
-        return {
-            message: 'Mobile number verified notification processed',
             results,
         };
     }
@@ -390,97 +332,6 @@ export class NotificationProcessorService implements INotificationProcessorServi
         ]);
 
         return { message: 'Change password notification processed', results };
-    }
-
-    async processForgotPassword({
-        data: { userId, data },
-    }: Job<
-        INotificationWorkerPayload<INotificationForgotPasswordPayload>,
-        unknown,
-        EnumNotificationProcess
-    >): Promise<IQueueResponse> {
-        const user = await this.userRepository.findOneActiveById(userId);
-
-        if (!user) {
-            return {
-                message:
-                    'User not found, skipping forgot password notification',
-            };
-        }
-
-        const notificationId = this.databaseUtil.createId();
-        const emailPayload: INotificationEmailSendPayload = {
-            userId: user.id,
-            email: user.email,
-            username: user.username,
-            notificationId,
-        };
-
-        const results = await Promise.allSettled([
-            this.notificationRepository.createForgotPassword(
-                notificationId,
-                user.id,
-                user.username
-            ),
-            this.notificationEmailUtil.sendForgotPassword(emailPayload, data!),
-        ]);
-
-        return { message: 'Forgot password notification processed', results };
-    }
-
-    async processResetPassword({
-        data: { userId },
-    }: Job<
-        INotificationWorkerPayload,
-        unknown,
-        EnumNotificationProcess
-    >): Promise<IQueueResponse> {
-        const [user, devices] = await Promise.all([
-            this.userRepository.findOneActiveById(userId),
-            this.deviceOwnershipRepository.findTokensByUserId(userId),
-        ]);
-
-        if (!user) {
-            return {
-                message: 'User not found, skipping reset password notification',
-            };
-        }
-
-        const notificationId = this.databaseUtil.createId();
-        const emailPayload: INotificationEmailSendPayload = {
-            userId: user.id,
-            email: user.email,
-            username: user.username,
-            notificationId,
-        };
-
-        const promises = [
-            this.notificationRepository.createResetPassword(
-                notificationId,
-                user.id,
-                user.username
-            ),
-            this.notificationEmailUtil.sendResetPassword(emailPayload),
-        ];
-
-        if (devices.length > 0) {
-            const pushPayload: INotificationSendPushPayload = {
-                userId,
-                notificationId,
-                notificationTokens: devices
-                    .map(d => d.device.notificationToken)
-                    .filter((t): t is string => t !== null),
-                username: user.username,
-            };
-
-            promises.push(
-                this.notificationPushUtil.sendResetPassword(pushPayload)
-            );
-        }
-
-        const results = await Promise.allSettled(promises);
-
-        return { message: 'Reset password notification processed', results };
     }
 
     async processResetTwoFactorByAdmin({

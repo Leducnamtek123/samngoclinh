@@ -127,7 +127,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
           </svg>
-          <span>Tác giả: {(article.metadata as any)?.authorName || 'iWE FARM'}</span>
+          <span>Tác giả: {(article.metadata as any)?.authorName || 'Sâm Ngọc Linh'}</span>
         </div>
 
         {/* Article Body Content */}
@@ -209,7 +209,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 text-gray-400">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                       </svg>
-                      <span>{rel.author || 'iWE FARM'}</span>
+                      <span>{rel.author || 'Sâm Ngọc Linh'}</span>
                     </div>
                     <Link
                       href={`/news/${rel.slug}`}

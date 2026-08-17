@@ -25,17 +25,9 @@
             "title": "Đã xác thực email",
             "body": "Chào {username}, địa chỉ email của bạn đã được xác thực thành công."
         },
-        "mobileNumberVerified": {
-            "title": "Đã xác thực số điện thoại",
-            "body": "Chào {username}, số điện thoại {mobileNumber} của bạn đã được xác thực thành công."
-        },
         "changePassword": {
             "title": "Đã đổi mật khẩu",
             "body": "Chào {username}, mật khẩu của bạn đã được thay đổi thành công."
-        },
-        "forgotPassword": {
-            "title": "Quên mật khẩu",
-            "body": "Chào {username}, chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn."
         },
         "publishTermPolicy": {
             "title": "Cập nhật điều khoản chính sách",
@@ -52,10 +44,6 @@
         "temporaryPasswordByAdmin": {
             "title": "Mật khẩu tạm thời",
             "body": "Chào {username}, một mật khẩu tạm đã được thiết lập. Mật khẩu sẽ hết hạn vào {passwordExpiredAt}."
-        },
-        "resetPassword": {
-            "title": "Đặt lại mật khẩu",
-            "body": "Chào {username}, mật khẩu của bạn đã được đặt lại thành công."
         },
         "userAcceptTermPolicy": {
             "title": "Đã chấp nhận điều khoản chính sách",

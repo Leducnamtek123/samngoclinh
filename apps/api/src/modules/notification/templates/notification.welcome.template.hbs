@@ -1,21 +1,9 @@
 <html>
-<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff;">
-<p>Welcome {{username}},</p>
+<body style="font-family: Arial, sans-serif; color: #333; background-color: #ffffff; line-height: 1.6;">
+<p>Xin chào {{name}},</p>
 <br/>
-<p>Sign up successful.</p>
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f2f2f2;">
-      <th style="text-align: left;">Field</th>
-      <th style="text-align: left;">Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>Support Email</td><td>{{supportEmail}}</td></tr>
-    <tr><td>Website</td><td>{{homeUrl}}</td></tr>
-  </tbody>
-</table>
-<br/>
-<p>By: {{homeName}}.</p>
+<p>Chào mừng bạn đến với {{homeName}}. Tài khoản của bạn đã được đăng ký thành công.</p>
+<p>Bạn có thể bắt đầu sử dụng các tính năng được hỗ trợ trên hệ thống.</p>
+{{> emailFooter}}
 </body>
 </html>

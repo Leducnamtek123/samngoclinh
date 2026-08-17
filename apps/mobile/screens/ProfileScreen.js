@@ -26,6 +26,8 @@ const SECTIONS = [
       { icon: 'person-outline', label: 'Thông tin cá nhân', desc: 'Xem và cập nhật thông tin cá nhân', screen: 'PersonalInfo' },
       { icon: 'lock-closed-outline', label: 'Đổi mật khẩu', desc: 'Thay đổi mật khẩu tài khoản', screen: 'ChangePassword' },
       { icon: 'card-outline', label: 'Giấy tờ tùy thân', desc: 'Quản lý giấy tờ tùy thân của bạn', screen: 'Kyc' },
+      { icon: 'create-outline', label: 'Chữ ký số', desc: 'Tạo và quản lý chữ ký của bạn', screen: 'Signature' },
+      { icon: 'document-text-outline', label: 'Hợp đồng của tôi', desc: 'Xem và ký hợp đồng điện tử', screen: 'ContractsList' },
       { icon: 'receipt-outline', label: 'Đơn Hàng', desc: 'Quản lý đơn hàng của bạn' },
     ],
   },

@@ -16,7 +16,6 @@ import { HelperService } from '@common/helper/services/helper.service';
 import {
     EnumUserLoginFrom,
     EnumUserLoginWith,
-    PasswordHistory,
     User,
 } from '@generated/prisma-client';
 import { createPrivateKey, createPublicKey } from 'crypto';
@@ -556,22 +555,4 @@ export class AuthUtil {
         };
     }
 
-    /** Returns the matching history record if the password was used before, blocking recent reuse. */
-    checkPasswordPeriod(
-        histories: PasswordHistory[],
-        password: string
-    ): PasswordHistory | null {
-        for (const history of histories) {
-            if (this.helperService.bcryptCompare(password, history.password)) {
-                return history;
-            }
-        }
-
-        return null;
-    }
-
-    /** Converts the configured password reuse period from seconds to whole days. */
-    getPasswordPeriodInDays(): number {
-        return Math.floor(this.passwordPeriodInSeconds / (60 * 60 * 24));
-    }
 }

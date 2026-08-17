@@ -5,13 +5,11 @@ import { INotificationEmailProcessorService } from '@modules/notification/interf
 import {
     INotificationEmailWorkerBulkPayload,
     INotificationEmailWorkerPayload,
-    INotificationForgotPasswordPayload,
     INotificationNewDeviceLoginPayload,
     INotificationPublishTermPolicyPayload,
     INotificationTemporaryPasswordPayload,
     INotificationVerificationEmailPayload,
     INotificationVerifiedEmailPayload,
-    INotificationVerifiedMobileNumberPayload,
     INotificationWelcomeByAdminPayload,
 } from '@modules/notification/interfaces/notification.interface';
 import { UserRepository } from '@modules/user/repositories/user.repository';
@@ -61,6 +59,18 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         };
     }
 
+    private async resolveName(send: {
+        userId: string;
+        username: string;
+        name?: string;
+    }): Promise<string> {
+        if (send.name) {
+            return send.name;
+        }
+        const user = await this.userRepository.findOneActiveById(send.userId);
+        return user?.name ?? send.username;
+    }
+
     async processWelcome(
         job: Job<
             INotificationEmailWorkerPayload,
@@ -78,6 +88,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                 },
                 ...(cc?.length && { cc }),
                 ...(bcc?.length && { bcc }),
@@ -107,6 +118,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                 },
                 ...(cc?.length && { cc }),
                 ...(bcc?.length && { bcc }),
@@ -141,6 +153,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                     password: passwordString,
                     passwordExpiredAt: this.helperService.dateFormatToRFC2822(
                         this.helperService.dateCreateFromIso(passwordExpiredAt)
@@ -187,6 +200,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                     password: passwordString,
                     passwordExpiredAt: this.helperService.dateFormatToRFC2822(
                         this.helperService.dateCreateFromIso(passwordExpiredAt)
@@ -226,6 +240,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                 },
                 ...(cc?.length && { cc }),
                 ...(bcc?.length && { bcc }),
@@ -234,35 +249,6 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
             return { message: 'Change password email processed', result };
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to process change password email');
-            throw err;
-        }
-    }
-
-    async processResetPassword(
-        job: Job<
-            INotificationEmailWorkerPayload,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse> {
-        try {
-            const { email, username, cc, bcc } = job.data.send;
-
-            const result = await this.smtpService.send({
-                templateName: EnumNotificationProcess.resetPassword,
-                recipients: [email],
-                sender: this.noreplyEmail,
-                templateData: {
-                    ...this.defaultTemplateData,
-                    username,
-                },
-                ...(cc?.length && { cc }),
-                ...(bcc?.length && { bcc }),
-            });
-
-            return { message: 'Reset password email processed', result };
-        } catch (err: unknown) {
-            this.logger.error(err, 'Failed to process reset password email');
             throw err;
         }
     }
@@ -325,7 +311,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         >
     ): Promise<IQueueResponse> {
         try {
-            const { email, username, cc, bcc } = job.data.send;
+            const { email, username, name, cc, bcc } = job.data.send;
             const { reference } = job.data.data!;
 
             const result = await this.smtpService.send({
@@ -335,6 +321,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: name ?? username,
                     reference,
                 },
                 ...(cc?.length && { cc }),
@@ -344,87 +331,6 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
             return { message: 'Email verified email processed', result };
         } catch (err: unknown) {
             this.logger.error(err, 'Failed to process verified email');
-            throw err;
-        }
-    }
-
-    async processForgotPassword(
-        job: Job<
-            INotificationEmailWorkerPayload<INotificationForgotPasswordPayload>,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse> {
-        try {
-            const { email, username, cc, bcc, userId } = job.data.send;
-            const {
-                expiredAt,
-                link: encryptedLink,
-                reference,
-                expiredInMinutes,
-            } = job.data.data!;
-
-            const link = this.userUtil.decryptedLink(userId, encryptedLink);
-
-            const result = await this.smtpService.send({
-                templateName: EnumNotificationProcess.forgotPassword,
-                recipients: [email],
-                sender: this.noreplyEmail,
-                templateData: {
-                    ...this.defaultTemplateData,
-                    username,
-                    link,
-                    expiredAt: this.helperService.dateFormatToRFC2822(
-                        this.helperService.dateCreateFromIso(expiredAt)
-                    ),
-                    reference,
-                    expiredInMinutes: String(expiredInMinutes),
-                },
-                ...(cc?.length && { cc }),
-                ...(bcc?.length && { bcc }),
-            });
-
-            return { message: 'Forgot password email processed', result };
-        } catch (err: unknown) {
-            this.logger.error(err, 'Failed to process forgot password email');
-            throw err;
-        }
-    }
-
-    async processVerifiedMobileNumber(
-        job: Job<
-            INotificationEmailWorkerPayload<INotificationVerifiedMobileNumberPayload>,
-            IQueueResponse,
-            EnumNotificationProcess
-        >
-    ): Promise<IQueueResponse> {
-        try {
-            const { email, username, cc, bcc } = job.data.send;
-            const { reference, mobileNumber } = job.data.data!;
-
-            const result = await this.smtpService.send({
-                templateName: EnumNotificationProcess.verifiedMobileNumber,
-                recipients: [email],
-                sender: this.noreplyEmail,
-                templateData: {
-                    ...this.defaultTemplateData,
-                    username,
-                    reference,
-                    mobileNumber,
-                },
-                ...(cc?.length && { cc }),
-                ...(bcc?.length && { bcc }),
-            });
-
-            return {
-                message: 'Mobile number verified email processed',
-                result,
-            };
-        } catch (err: unknown) {
-            this.logger.error(
-                err,
-                'Failed to process verified mobile number email'
-            );
             throw err;
         }
     }
@@ -446,6 +352,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                 templateData: {
                     ...this.defaultTemplateData,
                     username,
+                    name: await this.resolveName(job.data.send),
                 },
                 ...(cc?.length && { cc }),
                 ...(bcc?.length && { bcc }),
@@ -538,7 +445,10 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
                     templateName: EnumNotificationProcess.publishTermPolicy,
                     recipients: chunk.map(u => ({
                         recipient: u.email,
-                        templateData: { username: u.username },
+                        templateData: {
+                            username: u.username,
+                            name: u.username,
+                        },
                     })),
                     sender: this.noreplyEmail,
                     defaultTemplateData: {

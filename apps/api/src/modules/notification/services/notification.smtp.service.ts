@@ -25,6 +25,14 @@ export class NotificationSmtpService implements OnModuleInit {
     constructor(private readonly configService: ConfigService) {}
 
     onModuleInit(): void {
+        Handlebars.registerPartial(
+            'emailFooter',
+            readFileSync(
+                join(this.templatesDir, 'notification.footer.partial.hbs'),
+                'utf8'
+            )
+        );
+
         const host = this.configService.get<string | null>('smtp.host');
         if (!host) {
             this.logger.warn(

@@ -27,6 +27,9 @@ import GardenPurchaseScreen from './screens/GardenPurchaseScreen';
 import GardenPurchaseScopeScreen from './screens/GardenPurchaseScopeScreen';
 import TermsOfUseScreen from './screens/TermsOfUseScreen';
 import ContractScreen from './screens/ContractScreen';
+import SignatureScreen from './screens/SignatureScreen';
+import ContractsListScreen from './screens/ContractsListScreen';
+import ContractDetailScreen from './screens/ContractDetailScreen';
 import CartScreen from './screens/CartScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import OrderDetailScreen from './screens/OrderDetailScreen';
@@ -125,6 +128,21 @@ function RootNavigator() {
       <Stack.Screen
         name="Contract"
         component={ContractScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Signature"
+        component={SignatureScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ContractsList"
+        component={ContractsListScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ContractDetail"
+        component={ContractDetailScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />

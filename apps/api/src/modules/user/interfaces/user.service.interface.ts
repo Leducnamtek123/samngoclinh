@@ -235,9 +235,5 @@ export interface IUserService {
         role?: Record<string, IPaginationEqual>,
         country?: Record<string, IPaginationEqual>
     ): Promise<IResponseFileReturn>;
-    logout(
-        userId: string,
-        sessionId: string,
-        deviceOwnershipId: string
-    ): Promise<void>;
+    logout(userId: string, sessionId: string): Promise<void>;
 }

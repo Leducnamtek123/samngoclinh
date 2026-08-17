@@ -261,7 +261,7 @@ function NewsSection({ t, latestArticles, newsImages }: { t: any; latestArticles
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
-                <span>{article.author || 'iWE FARM'}</span>
+                <span>{article.author || 'Sâm Ngọc Linh'}</span>
               </div>
               <Link
                 href={`/news/${article.slug}`}
@@ -442,7 +442,7 @@ function CtaBanner() {
         </ScrollReveal>
         <ScrollReveal variant="fade-up" delay={0.15}>
           <p className="text-white/90 text-sm sm:text-base max-w-2xl mx-auto font-normal leading-relaxed">
-            Tham gia cùng hàng nghìn khách hàng đã tin tưởng iWE FARM. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
+            Tham gia cùng hàng nghìn khách hàng đã tin tưởng Sâm Ngọc Linh. Nhận tư vấn miễn phí và ưu đãi đặc biệt cho đơn hàng đầu tiên.
           </p>
         </ScrollReveal>
         <ScrollReveal variant="scale" delay={0.3} scaleFrom={0.92} className="pt-2">

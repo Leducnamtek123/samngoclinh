@@ -194,7 +194,7 @@ export function NewsDialog({
                           authorName: e.target.value,
                         }))
                       }
-                      placeholder="Ví dụ: iWE FARM, Admin..."
+                      placeholder="Ví dụ: Sâm Ngọc Linh, Admin..."
                     />
                   </div>
                 </div>

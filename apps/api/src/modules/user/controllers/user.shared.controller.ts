@@ -491,10 +491,9 @@ export class UserSharedController {
     @HttpCode(HttpStatus.OK)
     @Post('/logout')
     async logout(
-        @AuthJwtPayload()
-        { sessionId, userId, deviceOwnershipId }: IAuthJwtAccessTokenPayload
+        @AuthJwtPayload() { sessionId, userId }: IAuthJwtAccessTokenPayload
     ): Promise<void> {
-        return this.userService.logout(userId, sessionId, deviceOwnershipId);
+        return this.userService.logout(userId, sessionId);
     }
 
     // TODO: Verify number implementation, but which provider?
