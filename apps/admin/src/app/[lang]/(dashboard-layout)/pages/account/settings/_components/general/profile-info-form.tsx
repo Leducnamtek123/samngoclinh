@@ -1,8 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { usersService } from "@/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 import type { ChangeEvent } from "react"
 import type { ProfileInfoFormType, UserType } from "../../../types"
@@ -15,6 +18,7 @@ import { PhotoUploadSection } from "./photo-upload-section"
 import { ProfileFieldsSection } from "./profile-fields-section"
 
 export function ProfileInfoForm({ user }: { user?: UserType }) {
+  const router = useRouter()
   const [photoPreview, setPhotoPreview] = useState<string | undefined>(
     user?.avatar
   )
@@ -40,11 +44,15 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
     const file = e.target.files?.[0]
 
     if (file) {
-      // Generate a temporary URL for the uploaded image for preview purposes
-      const imageUrl = URL.createObjectURL(file)
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setPhotoPreview(reader.result)
+        }
+      }
+      reader.readAsDataURL(file)
 
-      setPhotoPreview(imageUrl)
-      form.setValue("avatar", file)
+      form.setValue("avatar", file, { shouldDirty: true })
       form.trigger("avatar") // Trigger validation for the "avatar" field
     }
   }
@@ -52,6 +60,48 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
   function handleRemovePhoto() {
     form.resetField("avatar") // Reset the "avatar" field in the form to its initial state
     setPhotoPreview(undefined)
+  }
+
+  async function onSubmit(data: ProfileInfoFormType) {
+    try {
+      const fullName = [data.firstName, data.lastName]
+        .filter(Boolean)
+        .join(" ")
+        .trim()
+
+      await usersService.updateSelfProfile({
+        name: fullName || data.username,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        state: data.state,
+        country: data.country,
+        zipCode: data.zipCode,
+        language: data.language,
+        timeZone: data.timeZone,
+        currency: data.currency,
+        organization: data.organization,
+      })
+
+      if (data.avatar instanceof File) {
+        await usersService.uploadAvatar(data.avatar)
+      }
+
+      toast.success("Lưu thay đổi thông tin tài khoản thành công!")
+      form.reset({
+        ...data,
+        avatar: undefined,
+      })
+      router.refresh()
+    } catch (error: unknown) {
+      console.error("Save profile error:", error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Không thể lưu thông tin tài khoản."
+      )
+    }
   }
 
   return (
@@ -66,27 +116,25 @@ export function ProfileInfoForm({ user }: { user?: UserType }) {
         />
         <ProfileFieldsSection form={form} />
 
-        <div className="flex gap-x-2 mt-2">
+        <div className="flex gap-x-2 mt-4">
           <ButtonLoading
             isLoading={isSubmitting}
-            className="w-fit"
+            className="w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
             disabled={isDisabled}
           >
-            Save
+            Lưu thay đổi
           </ButtonLoading>
           <Button
             type="reset"
-            variant="secondary"
-            className="w-fit"
+            variant="outline"
+            className="w-fit text-xs"
             disabled={isDisabled}
             onClick={handleResetForm}
           >
-            Reset
+            Đặt lại
           </Button>
         </div>
       </form>
     </Form>
   )
 }
-
-async function onSubmit(_data: ProfileInfoFormType) {}

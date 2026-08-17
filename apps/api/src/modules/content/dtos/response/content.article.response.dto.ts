@@ -11,7 +11,7 @@ export class ContentArticleResponseDto {
 
     @ApiProperty({
         required: true,
-        example: 'bao-chi-noi-ve-iwe-farm',
+        example: 'bao-chi-noi-ve-sam-ngoc-linh',
     })
     @Expose()
     slug: string;

@@ -1,28 +1,26 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef } from 'react';
-import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+import React, { createContext, useEffect, useState, useMemo } from 'react';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface ScrollAnimationContextType {
+type ScrollAnimationContextType = {
   lenis: Lenis | null;
-}
+};
 
 const ScrollAnimationContext = createContext<ScrollAnimationContextType>({ lenis: null });
 
-export const useScrollAnimation = () => useContext(ScrollAnimationContext);
-
-interface ScrollAnimationProviderProps {
+type ScrollAnimationProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function ScrollAnimationProvider({ children }: ScrollAnimationProviderProps) {
-  const lenisRef = useRef<Lenis | null>(null);
+  const [lenisInstance, setLenisInstance] = useState<Lenis | null>(null);
 
   useEffect(() => {
     // Respect user's motion preference
@@ -34,32 +32,32 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
     // Initialize Lenis Smooth Scroll
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
       smoothWheel: true,
       touchMultiplier: 1.5,
     });
+    setLenisInstance(lenis);
 
-    lenisRef.current = lenis;
-
-    // Connect Lenis with GSAP ScrollTrigger
+    // Sync Lenis scroll with GSAP ScrollTrigger
     const handleScroll = () => {
       ScrollTrigger.update();
     };
-
     lenis.on('scroll', handleScroll);
 
+    // Integrate Lenis RAF with GSAP Ticker
     const updateTicker = (time: number) => {
       lenis.raf(time * 1000);
     };
-
     gsap.ticker.add(updateTicker);
+
+    // Disable GSAP lag smoothing to ensure synchronized momentum
     gsap.ticker.lagSmoothing(0);
 
-    // Refresh ScrollTrigger on DOM resize
+    // Handle document size changes
     const resizeObserver = new ResizeObserver(() => {
+      lenis.resize();
       ScrollTrigger.refresh();
     });
-
     resizeObserver.observe(document.body);
 
     return () => {
@@ -67,12 +65,14 @@ export function ScrollAnimationProvider({ children }: ScrollAnimationProviderPro
       gsap.ticker.remove(updateTicker);
       lenis.off('scroll', handleScroll);
       lenis.destroy();
-      lenisRef.current = null;
+      setLenisInstance(null);
     };
   }, []);
 
+  const contextValue = useMemo(() => ({ lenis: lenisInstance }), [lenisInstance]);
+
   return (
-    <ScrollAnimationContext.Provider value={{ lenis: lenisRef.current }}>
+    <ScrollAnimationContext.Provider value={contextValue}>
       {children}
     </ScrollAnimationContext.Provider>
   );

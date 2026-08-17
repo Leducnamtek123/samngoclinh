@@ -1,54 +1,35 @@
-import { useState, useEffect, useRef } from 'react';
-import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/lib/I18nNavigation';
-import { getCartCount } from '@/utils/cart';
-import { cartStore } from '@/lib/stores/useCartStore';
-import { useNotificationsList } from '@/hooks/queries/useNotifications';
+import { useLocale, useTranslations } from 'next-intl';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import type { OrderDetailData } from '@/components/orders/OrderDetailModal';
+import { useNotificationsList } from '@/hooks/queries/useNotifications';
+import { useProfileMe } from '@/hooks/queries/useProfile';
+import { usePathname, useRouter } from '@/lib/I18nNavigation';
+import { cartStore } from '@/lib/stores/useCartStore';
+import type { RawNotification } from '@/services/notification.service';
+import type { UserProfile } from '@/types';
+import { getCartCount } from '@/utils/cart';
 
-export function useUserHeaderMenu(profile: { fullName?: string; email?: string } | null) {
+const emptySubscribe = () => () => {};
+
+export function useUserHeaderMenu(
+  initialProfile: { fullName?: string; email?: string; name?: string } | null,
+  menuRef?: React.RefObject<HTMLDivElement | null>,
+) {
+  const tNav = useTranslations('nav');
   const [isOpen, setIsOpen] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [cartCount, setCartCount] = useState(() => (typeof window !== 'undefined' ? getCartCount() : 0));
+  const cartCount = useSyncExternalStore(cartStore.subscribe, getCartCount, () => 0);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderDetailData | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const fullName = profile?.fullName || 'Khách hàng';
-  const email = profile?.email || '';
-  const initial = fullName.charAt(0).toUpperCase();
-
-  const { data: notificationsData } = useNotificationsList(true);
-  const unreadNotifCount = Array.isArray(notificationsData)
-    ? notificationsData.filter((n: any) => !n.read && !n.isRead).length
-    : 0;
-
-  useEffect(() => {
-    const handleUpdate = () => {
-      setCartCount(getCartCount());
-    };
-
-    window.addEventListener('cart_updated', handleUpdate);
-    window.addEventListener('storage', handleUpdate);
-    const unsubscribe = cartStore.subscribe(handleUpdate);
-
-    // Initial update in case store updated during mount
-    handleUpdate();
-
-    return () => {
-      window.removeEventListener('cart_updated', handleUpdate);
-      window.removeEventListener('storage', handleUpdate);
-      unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (menuRef?.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         setShowLangMenu(false);
         setIsNotifOpen(false);
@@ -58,14 +39,36 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [menuRef]);
+
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const { data: dynamicProfile } = useProfileMe(
+    initialProfile ? (initialProfile as unknown as UserProfile) : undefined,
+  );
+  const effectiveProfile = dynamicProfile || initialProfile;
+
+  const displayName =
+    effectiveProfile?.fullName?.trim() ||
+    effectiveProfile?.name?.trim() ||
+    effectiveProfile?.email?.split('@')[0] ||
+    tNav('account');
+  const email = effectiveProfile?.email || '';
+  const initial = displayName.charAt(0).toUpperCase() || 'U';
+
+  const { data: notificationsData } = useNotificationsList(true);
+  const unreadNotifCount = Array.isArray(notificationsData)
+    ? notificationsData.filter((n: RawNotification) => !n.read && !n.isRead).length
+    : 0;
 
   const handleSignOut = async () => {
     try {
       await fetch('/api/auth/sign-out', { method: 'POST' });
       window.location.href = `/${locale}`;
-    } catch (e) {
-      console.error('Sign-out error:', e);
+    } catch (error) {
+      console.error('Sign-out error:', error);
       window.location.href = `/${locale}`;
     }
   };
@@ -76,7 +79,9 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
   };
 
   const switchLocale = (newLocale: string) => {
-    if (newLocale === locale) return;
+    if (newLocale === locale) {
+      return;
+    }
     const { search } = window.location;
     router.push(`${pathname}${search}`, { locale: newLocale, scroll: false });
     setIsOpen(false);
@@ -89,13 +94,13 @@ export function useUserHeaderMenu(profile: { fullName?: string; email?: string }
     showLangMenu,
     setShowLangMenu,
     cartCount,
+    mounted,
     isNotifOpen,
     setIsNotifOpen,
     selectedOrder,
     setSelectedOrder,
-    menuRef,
     locale,
-    fullName,
+    fullName: displayName,
     email,
     initial,
     unreadNotifCount,

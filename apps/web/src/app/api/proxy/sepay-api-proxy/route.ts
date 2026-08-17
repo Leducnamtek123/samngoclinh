@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -21,25 +22,49 @@ async function handleCorsProxy(request: NextRequest) {
   try {
     const rawTarget = request.nextUrl.searchParams.get('target');
     if (!rawTarget) {
-      return NextResponse.json({ error: 'Missing target URL parameter' }, { status: 400, headers: corsHeaders });
+      return NextResponse.json(
+        { error: 'Missing target URL parameter' },
+        { status: 400, headers: corsHeaders },
+      );
     }
 
-    const targetUrl = rawTarget;
-    const parsedTarget = new URL(targetUrl);
+    const ALLOWED_SEPAY_HOSTS = ['pay.sepay.vn', 'pay-sandbox.sepay.vn', 'my.sepay.vn', 'sepay.vn'];
+    let parsedTarget: URL;
+    try {
+      parsedTarget = new URL(rawTarget);
+      if (!ALLOWED_SEPAY_HOSTS.includes(parsedTarget.hostname)) {
+        return NextResponse.json(
+          { error: 'Invalid or untrusted target host' },
+          { status: 403, headers: corsHeaders },
+        );
+      }
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid target URL' },
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
+    const targetUrl = parsedTarget.toString();
     const originHost = `${parsedTarget.protocol}//${parsedTarget.host}`;
 
-    const method = request.method;
+    const { method } = request;
     const customHeaders: Record<string, string> = {
-      'User-Agent': request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-      'Referer': `${originHost}/`,
-      'Origin': originHost,
+      'User-Agent':
+        request.headers.get('user-agent') || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      Referer: `${originHost}/`,
+      Origin: originHost,
     };
 
     const contentType = request.headers.get('content-type');
-    if (contentType) customHeaders['Content-Type'] = contentType;
+    if (contentType) {
+      customHeaders['Content-Type'] = contentType;
+    }
 
     const auth = request.headers.get('authorization');
-    if (auth) customHeaders['Authorization'] = auth;
+    if (auth) {
+      customHeaders.Authorization = auth;
+    }
 
     // Forward SePay session cookies
     const cookie = request.headers.get('cookie');
@@ -50,7 +75,7 @@ async function handleCorsProxy(request: NextRequest) {
         .filter((c) => c.startsWith('sepay_') || c.startsWith('PHPSESSID') || c.startsWith('XSRF'))
         .join('; ');
       if (sepayCookies) {
-        customHeaders['Cookie'] = sepayCookies;
+        customHeaders.Cookie = sepayCookies;
       }
     }
 
@@ -63,10 +88,25 @@ async function handleCorsProxy(request: NextRequest) {
       method,
       headers: customHeaders,
       body,
-      redirect: 'follow',
+      redirect: 'manual',
     });
 
     const resContentType = sepayRes.headers.get('content-type') || 'text/plain';
+
+    if (!sepayRes.ok) {
+      console.warn(
+        `[SePay API Proxy] Upstream returned error status ${sepayRes.status} for ${targetUrl}`,
+      );
+      const errBuffer = await sepayRes.arrayBuffer();
+      return new NextResponse(errBuffer, {
+        status: sepayRes.status,
+        headers: {
+          'Content-Type': resContentType,
+          ...corsHeaders,
+        },
+      });
+    }
+
     const resBuffer = await sepayRes.arrayBuffer();
 
     const response = new NextResponse(resBuffer, {
@@ -79,26 +119,24 @@ async function handleCorsProxy(request: NextRequest) {
 
     const setCookie = sepayRes.headers.get('set-cookie');
     if (setCookie) {
-      const cleanedSetCookies = setCookie
-        .split(/,(?=[^;]+;)/)
-        .map((c) => {
-          const cleaned = c
-            .replace(/Domain=[^;]+;?/gi, '')
-            .replace(/Secure;?/gi, '')
-            .replace(/Path=[^;]+;?/gi, '')
-            .trim();
-          return `${cleaned}; Path=/; SameSite=Lax`;
-        });
+      const cleanedSetCookies = setCookie.split(/,(?=[^;]+;)/).map((c) => {
+        const cleaned = c
+          .replaceAll(/Domain=[^;]+;?/gi, '')
+          .replaceAll(/Secure;?/gi, '')
+          .replaceAll(/Path=[^;]+;?/gi, '')
+          .trim();
+        return `${cleaned}; Path=/; SameSite=Lax`;
+      });
       cleanedSetCookies.forEach((c) => {
         response.headers.append('Set-Cookie', c);
       });
     }
 
     return response;
-  } catch (err: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { error: err.message || 'CORS Proxy Error' },
-      { status: 500, headers: corsHeaders }
+      { error: error instanceof Error ? error.message : 'CORS Proxy Error' },
+      { status: 500, headers: corsHeaders },
     );
   }
 }

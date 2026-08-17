@@ -34,13 +34,24 @@ export function FileDropzone({
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
-      const newFiles = acceptedFiles.map((file) => ({
-        id: crypto.randomUUID(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-      }))
+      const readAsDataUrl = (file: File): Promise<string> =>
+        new Promise((resolve) => {
+          const reader = new FileReader()
+          reader.onload = () =>
+            resolve(typeof reader.result === "string" ? reader.result : "")
+          reader.onerror = () => resolve("")
+          reader.readAsDataURL(file)
+        })
+
+      const newFiles = await Promise.all(
+        acceptedFiles.map(async (file) => ({
+          id: crypto.randomUUID(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: await readAsDataUrl(file),
+        }))
+      )
 
       const updatedFiles = [...files, ...newFiles]
       setFiles(updatedFiles)
@@ -74,15 +85,7 @@ export function FileDropzone({
   })
 
   const removeFile = (fileId: string) => {
-    const updatedFiles = files.filter((file) => {
-      if (file.id === fileId) {
-        URL.revokeObjectURL(file.url)
-        return false
-      }
-
-      return true
-    })
-
+    const updatedFiles = files.filter((file) => file.id !== fileId)
     setFiles(updatedFiles)
     onFilesChange?.(updatedFiles)
   }

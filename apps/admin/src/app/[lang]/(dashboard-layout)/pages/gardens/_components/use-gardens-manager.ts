@@ -8,6 +8,7 @@ import type { GardenFormValues } from "@/schemas/garden-schema"
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
+import { useTranslation } from "@/providers/i18n-provider"
 
 interface Garden {
   id: string
@@ -28,7 +29,7 @@ interface Garden {
   managerPhone?: string
   establishedAt?: string
   maxBeds?: number
-  metadata?: any
+  metadata?: Record<string, unknown> | null
 }
 
 interface UseGardensManagerProps {
@@ -40,6 +41,7 @@ export function useGardensManager({
   initialGardens,
   initialError,
 }: UseGardensManagerProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -238,20 +240,25 @@ export function useGardensManager({
     })
   }
 
-  const handleSave = async (values: GardenFormValues) => {
+  const handleSave = async (data: GardenFormValues) => {
     setDialogState((prev) => ({ ...prev, loading: true, error: "" }))
+    setErrorMsg("")
     setSuccessMsg("")
 
     try {
-      const payloadBody = {
-        name: values.name,
-        location: values.location || undefined,
-        description: values.description || undefined,
-        area: values.area ? Number(values.area) : undefined,
-        managerName: values.managerName || undefined,
-        managerPhone: values.managerPhone || undefined,
-        maxBeds: values.maxBeds ? Number(values.maxBeds) : undefined,
+      const payloadBody: Record<string, unknown> = {
+        code: data.code,
+        name: data.name,
+        location: data.location || undefined,
+        description: data.description || undefined,
+        status: data.status,
       }
+      if (data.area) payloadBody.area = Number(data.area)
+      if (data.maxBeds) payloadBody.maxBeds = Number(data.maxBeds)
+      if (data.latitude) payloadBody.latitude = Number(data.latitude)
+      if (data.longitude) payloadBody.longitude = Number(data.longitude)
+      if (data.managerName) payloadBody.managerName = data.managerName
+      if (data.managerPhone) payloadBody.managerPhone = data.managerPhone
 
       if (dialogState.mode === "create") {
         const res = await fetchApi("/user/cultivation/gardens", {
@@ -265,11 +272,11 @@ export function useGardensManager({
         if (res.status >= 400) {
           setDialogState((prev) => ({
             ...prev,
-            error: payload?.message || "Không thể tạo khu vườn",
+            error: payload?.message || t("common.failed"),
           }))
         } else {
           setGardens((prev) => [payload.data, ...prev])
-          setSuccessMsg("Đã tạo khu vườn thành công!")
+          setSuccessMsg(t("trees.gardens.toasts.createSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
         }
       } else if (dialogState.mode === "edit" && dialogState.selectedGarden) {
@@ -287,7 +294,7 @@ export function useGardensManager({
         if (res.status >= 400) {
           setDialogState((prev) => ({
             ...prev,
-            error: payload?.message || "Không thể cập nhật khu vườn",
+            error: payload?.message || t("common.failed"),
           }))
         } else {
           setGardens((prev) =>
@@ -295,13 +302,16 @@ export function useGardensManager({
               g.id === dialogState.selectedGarden!.id ? payload.data : g
             )
           )
-          setSuccessMsg("Đã cập nhật khu vườn thành công!")
+          setSuccessMsg(t("trees.gardens.toasts.updateSuccess"))
           setDialogState((prev) => ({ ...prev, isOpen: false }))
         }
       }
     } catch (err) {
       console.error(err)
-      setDialogState((prev) => ({ ...prev, error: "Lỗi kết nối máy chủ" }))
+      setDialogState((prev) => ({
+        ...prev,
+        error: t("trees.gardens.toasts.deleteError"),
+      }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))
     }
@@ -319,16 +329,15 @@ export function useGardensManager({
       if (res.status >= 400) {
         const payload = await res.json()
         setErrorMsg(
-          payload?.message ||
-            "Không thể xóa khu vườn. Vui lòng kiểm tra xem vườn còn luống không."
+          payload?.message || t("trees.gardens.toasts.deleteErrorBedsExist")
         )
       } else {
         setGardens((prev) => prev.filter((g) => g.id !== id))
-        setSuccessMsg("Xóa khu vườn thành công!")
+        setSuccessMsg(t("trees.gardens.toasts.deleteSuccess"))
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg("Lỗi kết nối máy chủ khi xóa")
+      setErrorMsg(t("trees.gardens.toasts.deleteError"))
     } finally {
       setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
     }
@@ -338,8 +347,11 @@ export function useGardensManager({
     const garden = gardens.find((g) => g.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: "Xóa khu vườn này?",
-      description: `Hành động này sẽ xóa vĩnh viễn khu vườn "${garden?.name || ""}" (${garden?.code || ""}) khỏi hệ thống. Bạn không thể hoàn tác thao tác này.`,
+      title: t("trees.gardens.confirmDeleteTitle"),
+      description: t("trees.gardens.confirmDeleteDesc", {
+        name: garden?.name || "",
+        code: garden?.code || "",
+      }),
       action: () => performDelete(id),
       loading: false,
     })
@@ -376,16 +388,16 @@ export function useGardensManager({
         return prev.filter((g) => !set.has(g.id))
       })
       setSelectedGardenIds([])
-      setSuccessMsg(`Đã xóa thành công ${successCount} khu vườn!`)
+      setSuccessMsg(
+        t("trees.gardens.toasts.bulkDeleteSuccess", { count: successCount })
+      )
       if (failCount > 0) {
         setErrorMsg(
-          `Không thể xóa ${failCount} khu vườn vì chúng vẫn còn chứa luống sâm.`
+          t("trees.gardens.toasts.bulkDeleteFail", { count: failCount })
         )
       }
     } else {
-      setErrorMsg(
-        "Không thể xóa các khu vườn đã chọn vì chúng vẫn còn chứa luống sâm."
-      )
+      setErrorMsg(t("trees.gardens.toasts.bulkDeleteAllFail"))
     }
 
     setConfirmDialog((prev) => ({ ...prev, isOpen: false, loading: false }))
@@ -395,8 +407,10 @@ export function useGardensManager({
     if (selectedGardenIds.length === 0) return
     setConfirmDialog({
       isOpen: true,
-      title: "Xóa các khu vườn đã chọn?",
-      description: `Hành động này sẽ xóa vĩnh viễn ${selectedGardenIds.length} khu vườn được chọn khỏi hệ thống. Các khu vườn chứa luống sâm sẽ không bị xóa.`,
+      title: t("trees.gardens.confirmBulkDeleteTitle"),
+      description: t("trees.gardens.confirmBulkDeleteDesc", {
+        count: selectedGardenIds.length,
+      }),
       action: () => performBulkDelete(),
       loading: false,
     })

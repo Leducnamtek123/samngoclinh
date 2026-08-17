@@ -1,6 +1,5 @@
 import { Fragment } from "react"
 import { jsx, jsxs } from "react/jsx-runtime"
-// @ts-ignore
 import { toJsxRuntime } from "hast-util-to-jsx-runtime"
 import { codeToHast } from "shiki/bundle/web"
 

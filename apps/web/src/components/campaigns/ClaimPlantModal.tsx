@@ -1,21 +1,16 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { Minus, Plus, CheckCircle2, ShieldCheck, Gift } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import { 
-  Minus, 
-  Plus, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Gift, 
-  ExternalLink,
-} from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Button, ButtonLoading } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../ui/accordion';
-import { Card } from '../ui/card';
+import { useState, useSyncExternalStore } from 'react';
+import { cultivationService } from '@/services/cultivation.service';
+import { formatVNDPrice } from '@/utils/formatters';
 import { Badge } from '../ui/badge';
+import { Button, ButtonLoading } from '../ui/button';
+import { Card } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 
 const emptySubscribe = () => () => {};
@@ -23,11 +18,30 @@ const emptySubscribe = () => () => {};
 export type ClaimPlantModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  item?: any;
+  item?: {
+    id?: string;
+    name?: string;
+    title?: string;
+    plantCatalog?: { name?: string };
+    remainingSlots?: number | string;
+    ageYears?: number;
+    ageYear?: number;
+    image?: string;
+    imageUrl?: string;
+    [key: string]: unknown;
+  } | null;
 };
 
 export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps) {
-  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const t = useTranslations('freeTreeCampaign');
+  const tCart = useTranslations('cart');
+  const tActions = useTranslations('actions');
+
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   const [quantity, setQuantity] = useState(1);
   const [careYears, setCareYears] = useState(1);
@@ -36,11 +50,13 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  if (!isOpen || !mounted) return null;
+  if (!isOpen || !mounted) {
+    return null;
+  }
 
   // Base costs per unit for 1 year
-  const careCostPerYear = 50800;
-  const protectionCostPerYear = 23007;
+  const careCostPerYear = 50_800;
+  const protectionCostPerYear = 23_007;
 
   // Total cost calculations
   const totalCareFee = careCostPerYear * careYears * quantity;
@@ -50,15 +66,24 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
 
   const grandTotal = totalCareFee + vatCare + totalProtectionFee + vatProtection;
 
-  const formatVND = (num: number) => {
-    return num.toLocaleString('vi-VN') + ' đ';
-  };
-
   const handleClaimSubmit = async () => {
-    if (!agreed) return;
+    if (!agreed) {
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      if (item?.id) {
+        await cultivationService
+          .subscribePackage({
+            treeId: String(item.id),
+            packageType: 'care',
+            packageId: String(item.id),
+            months: careYears * 12,
+          })
+          .catch((error) => {
+            console.warn('Care package sub warning:', error);
+          });
+      }
       setIsSuccess(true);
     } catch (error) {
       console.error('Claim plant error:', error);
@@ -67,219 +92,205 @@ export function ClaimPlantModal({ isOpen, onClose, item }: ClaimPlantModalProps)
     }
   };
 
-  const plantName = item?.plantCatalog?.name ?? '—';
-  const imageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8";
+  const plantName = item?.plantCatalog?.name ?? item?.name ?? item?.title ?? '—';
+  const imageUrl =
+    'https://lh3.googleusercontent.com/aida-public/AB6AXuD0gUrpDrfeFU_Yv52ojl__qDMu2iJBO5s34hrrsjYkLHK6Bhkz9mXaPsd4VPh7xDjttnsKtxie18TWAQSN-a44V3A3J9nHUQ15fnz3b8q9I_jGsiyWBzQoJcFp_LxW2lLvdKKOkoavmo-dncTVg7pAmy5QugtUYr9GgiW25eWHkOaLN8OkMDTpDqT1KRBXZjmHNuWHC9b20wnUhbHEHn9I_7KyjAWxOoh3g2MxGyF4yMbVilr4Z-Q8';
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Nhận cây sâm 1 năm</DialogTitle>
-          <DialogDescription>
-            Ưu đãi tặng giá trị cây sâm 1 năm. Bạn chỉ cần chọn đủ gói chăm sóc và bảo vệ cây để nhận ưu đãi.
-          </DialogDescription>
+          <DialogTitle>{t('modalTitle')}</DialogTitle>
+          <DialogDescription>{t('subtitle')}</DialogDescription>
         </DialogHeader>
 
         {isSuccess ? (
-          <div className="py-8 text-center space-y-5 animate-in fade-in">
-            <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto shadow-xs">
-              <CheckCircle2 className="w-10 h-10" />
+          <div className="animate-in fade-in space-y-5 py-8 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary shadow-xs">
+              <CheckCircle2 className="h-10 w-10" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-extrabold text-foreground">Đăng Ký Nhận Cây Thành Công!</h3>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-                Đơn nhận cây sâm 1 năm đã được khởi tạo thành công trên hệ thống. Cây sâm đã được ghi nhận trực tiếp vào tài khoản của bạn tại vườn Kon Tum.
+              <h3 className="text-2xl font-extrabold text-foreground">{t('successToast')}</h3>
+              <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground">
+                {t('rule3')}
               </p>
             </div>
             <div className="pt-4">
-              <Button
-                onClick={onClose}
-                className="px-8"
-              >
-                Hoàn tất
+              <Button onClick={onClose} className="px-8">
+                {tActions('cancel')}
               </Button>
             </div>
           </div>
         ) : (
-          <div className="py-4 space-y-5">
+          <div className="space-y-5 py-4">
             {/* Product Summary Card */}
-            <Card className="p-4 flex items-center gap-4 bg-muted/40 border-border">
-              <div className="w-20 h-20 relative rounded-xl overflow-hidden bg-muted shrink-0 border border-border">
+            <Card className="flex items-center gap-4 border-border bg-muted/40 p-4">
+              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                 <Image
                   src={imageUrl}
                   alt={plantName}
                   fill
+                  sizes="80px"
                   unoptimized
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               </div>
-              <div className="space-y-1.5 flex-1">
-                <h4 className="font-extrabold text-foreground text-base leading-snug">{plantName}</h4>
-                <p className="text-xs text-muted-foreground font-medium">Tồn kho: {item?.remainingSlots ?? 0}</p>
-                <Badge variant="secondary">Giá cây được tặng</Badge>
+              <div className="flex-1 space-y-1.5">
+                <h4 className="text-base leading-snug font-extrabold text-foreground">
+                  {plantName}
+                </h4>
+                <p className="text-xs font-medium text-muted-foreground">
+                  {t('remainingCount', { count: Number(item?.remainingSlots ?? 0) })}
+                </p>
+                <Badge variant="secondary">{t('badge')}</Badge>
               </div>
             </Card>
 
             {/* Quantity Selector */}
-            <div className="flex items-center justify-between py-2 border-b border-border">
-              <span className="text-sm font-bold text-foreground">Số lượng</span>
-              <div className="flex items-center border border-border rounded-xl overflow-hidden bg-muted/50">
+            <div className="flex items-center justify-between border-b border-border py-2">
+              <span className="text-sm font-bold text-foreground">{tCart('itemCount')}</span>
+              <div className="flex items-center overflow-hidden rounded-xl border border-border bg-muted/50">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  onClick={() => {
+                    setQuantity((q) => Math.max(1, q - 1));
+                  }}
                   disabled={quantity <= 1}
                   className="h-8 px-2.5"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="h-4 w-4" />
                 </Button>
-                <span className="px-4 py-1 text-sm font-extrabold text-foreground border-x border-border">
+                <span className="border-x border-border px-4 py-1 text-sm font-extrabold text-foreground">
                   {quantity}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setQuantity((q) => q + 1)}
+                  onClick={() => {
+                    setQuantity((q) => q + 1);
+                  }}
                   className="h-8 px-2.5"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
             {/* Package Options */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Gift className="w-3.5 h-3.5 text-primary" />
-                  <span>Gói chăm sóc</span>
-                </label>
+                <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <Gift className="h-3.5 w-3.5 text-primary" />
+                  <span>{t('rule2')}</span>
+                </span>
                 <Select
                   value={String(careYears)}
-                  onValueChange={(val) => setCareYears(Number(val))}
+                  onValueChange={(val) => {
+                    setCareYears(Number(val));
+                  }}
                 >
                   <SelectTrigger className="border-border bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 năm - {formatVND(careCostPerYear * quantity)}</SelectItem>
-                    <SelectItem value="2">2 năm - {formatVND(careCostPerYear * 2 * quantity)}</SelectItem>
-                    <SelectItem value="3">3 năm - {formatVND(careCostPerYear * 3 * quantity)}</SelectItem>
+                    <SelectItem value="1">
+                      1 year - {formatVNDPrice(careCostPerYear * quantity)}
+                    </SelectItem>
+                    <SelectItem value="2">
+                      2 years - {formatVNDPrice(careCostPerYear * 2 * quantity)}
+                    </SelectItem>
+                    <SelectItem value="3">
+                      3 years - {formatVNDPrice(careCostPerYear * 3 * quantity)}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                  <span>Gói đảm bảo</span>
-                </label>
+                <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+                  <span>{t('rule1')}</span>
+                </span>
                 <Select
                   value={String(protectionYears)}
-                  onValueChange={(val) => setProtectionYears(Number(val))}
+                  onValueChange={(val) => {
+                    setProtectionYears(Number(val));
+                  }}
                 >
                   <SelectTrigger className="border-border bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 năm - {formatVND(protectionCostPerYear * quantity)}</SelectItem>
-                    <SelectItem value="2">2 năm - {formatVND(protectionCostPerYear * 2 * quantity)}</SelectItem>
-                    <SelectItem value="3">3 năm - {formatVND(protectionCostPerYear * 3 * quantity)}</SelectItem>
+                    <SelectItem value="1">
+                      1 year - {formatVNDPrice(protectionCostPerYear * quantity)}
+                    </SelectItem>
+                    <SelectItem value="2">
+                      2 years - {formatVNDPrice(protectionCostPerYear * 2 * quantity)}
+                    </SelectItem>
+                    <SelectItem value="3">
+                      3 years - {formatVNDPrice(protectionCostPerYear * 3 * quantity)}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             {/* Detailed Price Breakdown Table */}
-            <Card className="p-4 space-y-2 text-xs text-muted-foreground bg-muted/30 border-border">
+            <Card className="space-y-2 border-border bg-muted/30 p-4 text-xs text-muted-foreground">
               <div className="flex justify-between">
-                <span>VAT cây (5%):</span>
-                <span className="font-semibold text-foreground">0 đ</span>
+                <span>{tCart('subtotal')}:</span>
+                <span className="font-semibold text-foreground">
+                  {formatVNDPrice(totalCareFee)}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span>Phí chăm sóc:</span>
-                <span className="font-semibold text-foreground">{formatVND(totalCareFee)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>VAT chăm sóc (10%):</span>
-                <span className="font-semibold text-foreground">{formatVND(vatCare)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Phí bảo vệ cây:</span>
-                <span className="font-semibold text-foreground">{formatVND(totalProtectionFee)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>VAT bảo vệ (10%):</span>
-                <span className="font-semibold text-foreground">{formatVND(vatProtection)}</span>
+                <span>{tCart('shippingFee')}:</span>
+                <span className="font-semibold text-foreground">
+                  {formatVNDPrice(totalProtectionFee)}
+                </span>
               </div>
 
-              <div className="pt-3 border-t border-border flex items-center justify-between text-sm sm:text-base font-extrabold text-foreground">
-                <span>Tổng cộng:</span>
-                <span className="text-primary text-lg sm:text-xl font-black">{formatVND(grandTotal)}</span>
+              <div className="flex items-center justify-between border-t border-border pt-3 text-sm font-extrabold text-foreground sm:text-base">
+                <span>{tCart('total')}:</span>
+                <span className="text-lg font-black text-primary sm:text-xl">
+                  {formatVNDPrice(grandTotal)}
+                </span>
               </div>
             </Card>
 
             {/* Terms & Legal Contract Accordion Box */}
-            <div className="bg-muted/40 border border-border rounded-2xl p-4 sm:p-5 space-y-3">
-              <label htmlFor="claim-agreed-checkbox" className="flex items-center gap-3 cursor-pointer select-none group py-1">
+            <div className="space-y-3 rounded-2xl border border-border bg-muted/40 p-4 sm:p-5">
+              <label
+                htmlFor="claim-agreed-checkbox"
+                className="group flex cursor-pointer items-center gap-3 py-1 select-none"
+              >
                 <Checkbox
                   id="claim-agreed-checkbox"
                   checked={agreed}
-                  onCheckedChange={(checked: boolean | 'indeterminate') => setAgreed(!!checked)}
+                  onCheckedChange={(checked: boolean | 'indeterminate') => {
+                    setAgreed(!!checked);
+                  }}
                   className="shrink-0"
                 />
-                <span className="text-xs font-semibold text-foreground leading-normal group-hover:text-primary transition-colors">
-                  Tôi đã đọc và đồng ý với điều khoản sử dụng và hợp đồng mua bán, ký gửi, chăm sóc cây Sâm Ngọc Linh.
+                <span className="text-xs leading-normal font-semibold text-foreground transition-colors group-hover:text-primary">
+                  {t('agreeNotice')}
                 </span>
               </label>
-
-              <Accordion type="single" collapsible className="pt-2 border-t border-border">
-                <AccordionItem value="terms">
-                  <AccordionTrigger>Điều khoản sử dụng</AccordionTrigger>
-                  <AccordionContent>
-                    Điều khoản sử dụng áp dụng cho tất cả tài khoản đăng ký nhận cây ưu đãi và sử dụng dịch vụ chăm sóc tại vườn Sâm Ngọc Linh Kon Tum.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="contract">
-                  <AccordionTrigger>Hợp đồng mua bán cây</AccordionTrigger>
-                  <AccordionContent>
-                    <p className="leading-relaxed">
-                      Hợp đồng mua bán, ký gửi và chăm sóc cây Sâm Ngọc Linh áp dụng cho đơn hàng cây trồng và các dịch vụ đi kèm.
-                    </p>
-                    <div className="mt-2">
-                      <a
-                        href="/contracts/hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-primary hover:underline font-bold transition-colors"
-                      >
-                        <span>Mở hợp đồng mua bán, ký gửi và chăm sóc cây Sâm Ngọc Linh</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
             </div>
 
-            {/* Modal Footer Actions */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-              <Button
-                variant="outline"
-                onClick={onClose}
-                disabled={isSubmitting}
-              >
-                Hủy
+            {/* Submit Action */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={onClose}>
+                {tActions('cancel')}
               </Button>
-              <ButtonLoading
-                variant="default"
-                isLoading={isSubmitting}
-                disabled={!agreed}
-                onClick={handleClaimSubmit}
-              >
-                Nhận cây
-              </ButtonLoading>
+              {isSubmitting ? (
+                <ButtonLoading>...</ButtonLoading>
+              ) : (
+                <Button onClick={handleClaimSubmit} disabled={!agreed}>
+                  {t('claimBtn')}
+                </Button>
+              )}
             </div>
           </div>
         )}

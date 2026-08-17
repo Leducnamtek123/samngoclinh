@@ -4,7 +4,7 @@
     "modulePaths": ["."],
     "testEnvironment": "node",
     "testMatch": ["<rootDir>/test/**/*.spec.ts"],
-    "collectCoverage": true,
+    "collectCoverage": false,
     "coverageDirectory": "coverage",
     "collectCoverageFrom": [
         "<rootDir>/src/{modules,common}/**/services/**/*.service.ts",
@@ -34,11 +34,22 @@
     "transform": {
         "^.+\\.(t|j)sx?$": "ts-jest"
     },
+    "transformIgnorePatterns": [
+        "node_modules/(?!(@faker-js)/)"
+    ],
     "moduleNameMapper": {
+        "^otplib$": "<rootDir>/test/mocks/otplib.mock.ts",
+        "^uuid$": "<rootDir>/test/mocks/uuid.mock.ts",
+        "^@faker-js/faker$": "<rootDir>/test/mocks/faker.mock.ts",
+        "^@app/(.*)$": "<rootDir>/src/app/$1",
         "^@common/(.*)$": "<rootDir>/src/common/$1",
         "^@modules/(.*)$": "<rootDir>/src/modules/$1",
         "^@configs/(.*)$": "<rootDir>/src/configs/$1",
         "^@config$": "<rootDir>/src/configs/index.ts",
+        "^@routes/(.*)$": "<rootDir>/src/router/routes/$1",
+        "^@router$": "<rootDir>/src/router/router.module.ts",
+        "^@migration/(.*)$": "<rootDir>/src/migration/$1",
+        "^@test/(.*)$": "<rootDir>/test/$1",
         "^@generated/(.*)$": "<rootDir>/generated/$1",
         "^@queues/(.*)$": "<rootDir>/src/queues/$1",
         "^@prisma/client$": "<rootDir>/generated/prisma-client"

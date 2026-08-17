@@ -36,7 +36,10 @@ export interface IUserAddressCreate {
 
 export interface IUserIdentityDocumentSave {
     frontImageUrl: string;
-    backImageUrl: string;
+    backImageUrl?: string | null;
+    documentType?: string;
+    idCardNumber?: string | null;
+    fullName?: string | null;
 }
 
 export interface IUserLogin {

@@ -45,4 +45,13 @@ export class ContactService {
         item.isRead = true;
         return { data: item };
     }
+
+    async adminDelete(id: string): Promise<IResponseReturn<void>> {
+        const item = await this.contactRepository.getDetail(id);
+        if (!item) {
+            throw new NotFoundException('Contact request not found');
+        }
+        await this.contactRepository.delete(id);
+        return { data: undefined };
+    }
 }

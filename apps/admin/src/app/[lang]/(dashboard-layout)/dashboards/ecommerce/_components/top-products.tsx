@@ -1,4 +1,4 @@
-import { topProductsData } from "../_data/top-products"
+import type { ShopItem } from "@/types"
 
 import {
   DashboardCard,
@@ -6,15 +6,36 @@ import {
 } from "@/components/dashboards/dashboard-card"
 import { TopProductsList } from "./top-products-list"
 
-export function TopProducts() {
+interface TopProductsProps {
+  products?: ShopItem[] | null
+}
+
+export function TopProducts({ products }: TopProductsProps) {
+  const formattedProducts =
+    products && products.length > 0
+      ? products.slice(0, 5).map((p, idx) => ({
+          name: p.name,
+          sales: { value: p.stock || 0, percentageChange: 0.05 },
+          revenue: {
+            value: (p.price || 0) * (p.stock || 1),
+            percentageChange: 0.05,
+          },
+          order: idx + 1,
+          image: p.images?.[0] || "/images/placeholders/product.png",
+          sku: p.code || `PROD-${idx + 1}`,
+        }))
+      : []
+
   return (
     <DashboardCard
-      title="Top Products"
-      period={topProductsData.period}
+      title="Sản Phẩm & Cây Giống Bán Chạy"
+      period="Toàn hệ thống"
       action={<DashboardCardActionsDropdown />}
+      className="flex flex-col"
+      contentClassName="h-[29rem] overflow-y-auto pr-2 flex flex-col justify-start gap-y-3"
       size="lg"
     >
-      <TopProductsList data={topProductsData.products} />
+      <TopProductsList data={formattedProducts} />
     </DashboardCard>
   )
 }

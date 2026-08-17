@@ -48,10 +48,10 @@ export function PhotoUploadSection({
               <FormLabel
                 className={cn(
                   buttonVariants({ variant: "default" }),
-                  "cursor-pointer w-full"
+                  "cursor-pointer w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
                 )}
               >
-                Upload Photo
+                Tải ảnh đại diện
               </FormLabel>
               <FormControl>
                 <Input
@@ -65,8 +65,14 @@ export function PhotoUploadSection({
             </FormItem>
           )}
         />
-        <Button type="button" variant="destructive" onClick={handleRemovePhoto}>
-          Remove Photo
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="text-xs text-destructive hover:bg-destructive/10"
+          onClick={handleRemovePhoto}
+        >
+          Gỡ ảnh
         </Button>
       </div>
     </div>

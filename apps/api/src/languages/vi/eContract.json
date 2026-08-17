@@ -1,0 +1,20 @@
+{
+    "list": "Lấy danh sách hợp đồng thành công.",
+    "get": "Lấy thông tin chi tiết hợp đồng thành công.",
+    "create": "Khởi tạo hợp đồng thành công.",
+    "update": "Cập nhật thông tin hợp đồng thành công.",
+    "issue": "Phát hành hợp đồng điện tử thành công.",
+    "sign": "Ký số hợp đồng điện tử thành công.",
+    "renew": "Gia hạn hợp đồng thành công.",
+    "delete": "Xóa hợp đồng thành công.",
+    "verify": "Xác thực tính hợp pháp hợp đồng thành công.",
+    "checkExpiry": "Kiểm tra hạn hợp đồng thành công.",
+    "listTemplates": "Lấy danh sách mẫu hợp đồng thành công.",
+    "getTemplate": "Lấy chi tiết mẫu hợp đồng thành công.",
+    "updateTemplate": "Cập nhật mẫu hợp đồng thành công.",
+    "importTemplateHtml": "Nhập nội dung mẫu hợp đồng HTML thành công.",
+    "createAmendment": "Tạo phụ lục hợp đồng thành công.",
+    "getAmendments": "Lấy danh sách phụ lục hợp đồng thành công.",
+    "signAmendment": "Ký số phụ lục hợp đồng thành công.",
+    "cancelAmendment": "Hủy phụ lục hợp đồng thành công."
+}

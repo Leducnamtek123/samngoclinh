@@ -45,8 +45,32 @@ interface TreeItem {
   gardenName?: string
   bedName?: string
   plantedAt?: string
-  createdAt?: string
   status?: string
+  healthStatus?: string
+  ageYears?: number
+  garden?: { id: string; name: string }
+  bed?: { id: string; code: string; name: string }
+  owner?: { id: string; name: string; username: string }
+  createdAt?: string
+}
+
+const getQrUrl = (tree: TreeItem) => {
+  const baseUrl = process.env.NEXT_PUBLIC_WEB_URL || "https://samngoclinh.vn"
+  return `${baseUrl}/trace/${tree.code || tree.id}`
+}
+
+const formatDateVi = (dateStr?: string) => {
+  if (!dateStr) return "-"
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return "-"
+    const day = String(d.getDate()).padStart(2, "0")
+    const month = String(d.getMonth() + 1).padStart(2, "0")
+    const year = d.getFullYear()
+    return `${day}/${month}/${year}`
+  } catch {
+    return "-"
+  }
 }
 
 export default function QrCodeTraceabilityPage() {
@@ -56,12 +80,9 @@ export default function QrCodeTraceabilityPage() {
   const [page, setPage] = useState(1)
   const perPage = 10
 
-  const {
-    data: response,
-    isLoading,
-    isError,
-    refetch,
-  } = useApiQuery<any>(
+  const { data: response, isLoading, refetch } = useApiQuery<
+    TreeItem[] | { items?: TreeItem[]; data?: TreeItem[] }
+  >(
     ["trees-traceability", page],
     `/admin/cultivation/trees?page=${page}&perPage=${perPage}`
   )
@@ -69,7 +90,9 @@ export default function QrCodeTraceabilityPage() {
   const rawData = response?.data
   const treesList: TreeItem[] = Array.isArray(rawData)
     ? rawData
-    : (rawData as any)?.items || (rawData as any)?.data || []
+    : (rawData as { items?: TreeItem[]; data?: TreeItem[] })?.items ||
+      (rawData as { items?: TreeItem[]; data?: TreeItem[] })?.data ||
+      []
   const metadata = response?.metadata || null
 
   const handleSearch = (e: React.FormEvent) => {
@@ -90,14 +113,6 @@ export default function QrCodeTraceabilityPage() {
 
   const activeTree =
     selectedTree || (treesList.length > 0 ? treesList[0] : null)
-
-  const getQrUrl = (tree: TreeItem) => {
-    const baseUrl =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://samngoclinh.vn"
-    return `${baseUrl}/trace/${tree.code || tree.id}`
-  }
 
   const downloadQr = () => {
     const svgElement = document.getElementById("qr-code-svg")
@@ -147,10 +162,14 @@ export default function QrCodeTraceabilityPage() {
           <Button
             variant="outline"
             size="sm"
+            disabled={isLoading}
             onClick={() => refetch()}
             className="gap-2"
           >
-            <RefreshCw className="w-4 h-4" /> {t("common.actions.refresh")}
+            <RefreshCw
+              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+            />{" "}
+            {t("common.actions.refresh")}
           </Button>
         </div>
 
@@ -262,11 +281,9 @@ export default function QrCodeTraceabilityPage() {
                     <li className="flex items-center justify-between border-b pb-2">
                       <span>{t("trees.fields.plantedDate")}:</span>
                       <span className="font-medium text-foreground">
-                        {activeTree.plantedAt || activeTree.createdAt
-                          ? new Date(
-                              activeTree.plantedAt || activeTree.createdAt!
-                            ).toLocaleDateString("vi-VN")
-                          : "-"}
+                        {formatDateVi(
+                          activeTree.plantedAt || activeTree.createdAt
+                        )}
                       </span>
                     </li>
                     <li className="flex items-center justify-between">

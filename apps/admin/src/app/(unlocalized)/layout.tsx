@@ -1,5 +1,6 @@
 import { Lato } from "next/font/google"
 
+import { getDictionary } from "@/lib/get-dictionary"
 import { cn } from "@/lib/utils"
 
 import "../globals.css"
@@ -14,13 +15,21 @@ import { Toaster } from "@/components/ui/toaster"
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+const getMetadataBase = (): URL => {
+  try {
+    const base = process.env.BASE_URL || "http://localhost:3000"
+    return new URL(base.startsWith("http") ? base : `http://${base}`)
+  } catch {
+    return new URL("http://localhost:3000")
+  }
+}
+
 export const metadata: Metadata = {
   title: {
     template: "%s | Sâm Ngọc Linh Admin",
     default: "Sâm Ngọc Linh Admin",
   },
-  description: "",
-  metadataBase: new URL(process.env.BASE_URL as string),
+  metadataBase: getMetadataBase(),
 }
 
 // Define fonts for the application
@@ -32,7 +41,12 @@ const latoFont = Lato({
   variable: "--font-lato",
 })
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode
+}) {
+  const dictionary = await getDictionary("en")
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -42,7 +56,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           latoFont.variable // Include Lato font variable
         )}
       >
-        <Providers locale="en" direction="ltr" session={null}>
+        <Providers
+          locale="en"
+          direction="ltr"
+          session={null}
+          dictionary={dictionary}
+        >
           {children}
           <Toaster />
           <Sonner />

@@ -1,5 +1,6 @@
 import {
     Controller,
+    Delete,
     Get,
     Param,
     VERSION_NEUTRAL,
@@ -62,5 +63,17 @@ export class ContactAdminController {
         @Param('id') id: string
     ): Promise<IResponseReturn<ContactRequest>> {
         return this.contactService.adminGetDetail(id);
+    }
+
+    @Response('contact.delete')
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Delete('/:id')
+    async delete(
+        @Param('id') id: string
+    ): Promise<IResponseReturn<void>> {
+        return this.contactService.adminDelete(id);
     }
 }

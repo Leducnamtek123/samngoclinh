@@ -1,7 +1,10 @@
+import { ShieldCheck, Cpu, Sparkles, CheckCircle2, Award, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
-import { setRequestLocale } from 'next-intl/server';
-import { fetchApi } from '@/lib/Api';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ScrollReveal } from '@/components/animation';
 import { PageBannerSlider } from '@/components/PageBannerSlider';
+import { fetchApi } from '@/lib/Api';
+import { Link } from '@/lib/I18nNavigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,14 +12,16 @@ type AboutPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(props: AboutPageProps): Promise<Metadata> {
+  const { locale } = await props.params;
+  const t = await getTranslations({ locale, namespace: 'about' });
   return {
-    title: 'Giới Thiệu | Rượu Sâm Ngọc Linh',
-    description: 'Hành trình bảo tồn di sản Quốc bảo Sâm Ngọc Linh kết hợp công nghệ số hóa minh bạch.',
+    title: t('meta_title'),
+    description: t('heroDesc'),
   };
 }
 
-async function getAboutBanner() {
+async function getAboutBanner(locale: string) {
   try {
     const res = await fetchApi('/public/banners/about', { next: { revalidate: 60 } });
     if (res.ok) {
@@ -30,107 +35,153 @@ async function getAboutBanner() {
     {
       id: 'about-default',
       pageKey: 'about',
-      title: 'Hành Trình Rượu Sâm Ngọc Linh',
-      subtitle: 'Kết nối giá trị tự nhiên nguyên bản của Quốc bảo Sâm Ngọc Linh Quảng Nam với giải pháp công nghệ số minh bạch chuỗi cung ứng độc bản tại Việt Nam.',
+      title: locale === 'en' ? 'Journey of Ngoc Linh Ginseng' : 'Hành Trình Rượu Sâm Ngọc Linh',
+      subtitle:
+        locale === 'en'
+          ? 'Connecting authentic natural treasures of Vietnam with transparent digital supply-chain solutions.'
+          : 'Kết nối giá trị tự nhiên nguyên bản của Quốc bảo Sâm Ngọc Linh Quảng Nam với giải pháp công nghệ số minh bạch chuỗi cung ứng độc bản tại Việt Nam.',
       image: '/images/banners/about_banner.png',
-      order: 0
-    }
+      order: 0,
+    },
   ];
 }
 
 export default async function About(props: AboutPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'about' });
+  const tProd = await getTranslations({ locale, namespace: 'products' });
 
-  const banners = await getAboutBanner();
+  const banners = await getAboutBanner(locale);
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen pb-16">
-      
+    <div className="min-h-screen w-full bg-brand-bg pb-16">
       {/* Hero Header Section */}
       <PageBannerSlider banners={banners} />
 
       {/* Main Grid Content */}
-      <section className="max-w-6xl mx-auto px-4 md:px-8 py-16 space-y-20">
-        
-        {/* Core Values Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 space-y-4 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+      <section className="mx-auto max-w-6xl space-y-20 px-4 py-16 md:px-8">
+        {/* Core Values Bento Grid (Asymmetric Layout) */}
+        <div className="space-y-4">
+          <ScrollReveal variant="fade-up">
+            <div className="max-w-2xl space-y-2">
+              <span className="block text-xs font-bold tracking-widest text-emerald-800 uppercase">
+                {t('heroTitle')}
+              </span>
+              <h2 className="font-display text-2xl font-extrabold tracking-tight text-primary sm:text-4xl">
+                {t('meta_title')}
+              </h2>
             </div>
-            <h3 className="font-extrabold text-gray-900 text-lg">Cam kết Nguồn gốc</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              100% củ sâm Ngọc Linh được khai thác từ vùng trồng chính gốc Nam Trà My, tỉnh Quảng Nam, kiểm định độ tuổi và chứng nhận DNA chuẩn chỉ.
-            </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 space-y-4 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h3 className="font-extrabold text-gray-900 text-lg">Nông nghiệp Số hóa</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              Áp dụng công nghệ IoT và Blockchain để theo dõi chu trình sinh trưởng của từng gốc sâm, giúp nhà đầu tư dễ dàng giám sát tài sản số hóa từ xa.
-            </p>
-          </div>
+          <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-12">
+            {/* Featured Master Card (7 Cols) */}
+            <div className="flex flex-col justify-between space-y-6 rounded-3xl border border-gray-200/90 bg-white p-8 shadow-xs transition-shadow duration-300 hover:shadow-xl sm:p-10 lg:col-span-7">
+              <div className="space-y-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-emerald-200/60 bg-emerald-50 text-emerald-800 shadow-2xs">
+                  <ShieldCheck className="h-7 w-7 text-emerald-700" />
+                </div>
+                <div className="space-y-2">
+                  <span className="inline-block rounded-full bg-emerald-50 px-3 py-1 font-mono text-[11px] font-bold text-emerald-800">
+                    GACP-WHO Standard
+                  </span>
+                  <h3 className="font-display text-xl font-extrabold text-gray-900">
+                    {t('visionTitle')}
+                  </h3>
+                  <p className="text-xs leading-relaxed font-normal text-gray-600 sm:text-sm">
+                    {t('visionDesc')}
+                  </p>
+                </div>
+              </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl p-8 space-y-4 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <div className="flex items-center gap-6 border-t border-gray-100 pt-6 text-xs font-semibold text-gray-500">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  <span>52 Saponin MR2</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Award className="h-4 w-4 text-amber-600" />
+                  <span>100% DNA Verified</span>
+                </div>
+              </div>
             </div>
-            <h3 className="font-extrabold text-gray-900 text-lg">Chưng cất Thượng hạng</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              Sản phẩm rượu sâm được ngâm ủ tối thiểu 2 năm trong chum sành truyền thống, tách lọc độc tố Andehit, đảm bảo êm dịu, bổ dưỡng và an toàn tuyệt đối.
-            </p>
+
+            {/* Right Stacked Column (5 Cols) */}
+            <div className="flex flex-col justify-between space-y-6 lg:col-span-5">
+              {/* Stack 1: AgTech & IoT */}
+              <div className="space-y-3 rounded-3xl border border-gray-200/90 bg-white p-6 shadow-xs transition-shadow duration-300 hover:shadow-lg sm:p-7">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-emerald-800">
+                  <Cpu className="h-5 w-5 text-emerald-700" />
+                </div>
+                <h4 className="text-base font-extrabold text-gray-900">{t('missionTitle')}</h4>
+                <p className="text-xs leading-relaxed text-gray-500">{t('missionDesc')}</p>
+              </div>
+
+              {/* Stack 2: Ancient Brewing */}
+              <div className="space-y-3 rounded-3xl border border-gray-200/90 bg-white p-6 shadow-xs transition-shadow duration-300 hover:shadow-lg sm:p-7">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
+                  <Sparkles className="h-5 w-5 text-amber-600" />
+                </div>
+                <h4 className="text-base font-extrabold text-gray-900">{t('storyTitle')}</h4>
+                <p className="text-xs leading-relaxed text-gray-500">{t('storyP1')}</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Detailed Story Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">Hành trình phát triển</span>
-            <h2 className="text-3xl font-black text-gray-950 leading-tight">
-              Bảo Tồn Bản Sắc, Kiến Tạo Tương Lai Số
-            </h2>
-            <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
-              <p>
-                Sâm Ngọc Linh được vinh danh là Quốc bảo Việt Nam - loại nhân sâm quý hiếm nhất thế giới chứa 52 hợp chất Saponin quý giá. Tuy nhiên, việc tiếp cận nguồn sâm thật và kiểm soát chất lượng luôn là bài toán thách thức đối với người tiêu dùng.
-              </p>
-              <p>
-                Với sứ mệnh đưa sản phẩm sâm Ngọc Linh chuẩn nguồn gốc tới tay mọi nhà, chúng tôi xây dựng mô hình liên kết trực tiếp giữa các hộ trồng sâm địa phương tại Quảng Nam với nền tảng quản lý vườn sâm số hóa. Người tiêu dùng không chỉ mua sản phẩm mà còn có thể đồng hành, sở hữu và theo dõi sự phát triển của từng cây sâm thật trên hệ thống.
-              </p>
-            </div>
-          </div>
-          
-          {/* Aesthetic Side Box */}
-          <div className="bg-[#1C3F24] text-white p-8 sm:p-12 rounded-3xl space-y-6 relative overflow-hidden shadow-xl">
-            <div className="absolute -right-16 -bottom-16 w-44 h-44 rounded-full bg-emerald-800/30"></div>
-            <h4 className="font-bold text-xl sm:text-2xl text-secondary">Tầm nhìn chiến lược</h4>
-            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
-              Trở thành hệ sinh thái số dẫn đầu trong việc bảo tồn, thương mại hóa minh bạch và nâng tầm giá trị các sản phẩm thảo dược quý hiếm của Việt Nam ra thị trường quốc tế.
-            </p>
-            <div className="border-t border-emerald-800 pt-6 flex gap-8">
-              <div>
-                <p className="text-2xl font-black text-white">52+</p>
-                <p className="text-[10px] text-gray-400 font-medium">Hợp chất Saponin</p>
+        <ScrollReveal variant="fade-up">
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
+            <div className="space-y-5 lg:col-span-7">
+              <span className="text-xs font-bold tracking-widest text-emerald-800 uppercase">
+                {t('heroTitle')}
+              </span>
+              <h2 className="font-display text-2xl leading-tight font-extrabold tracking-tight text-gray-950 sm:text-4xl">
+                {t('storyTitle')}
+              </h2>
+              <div className="space-y-4 text-xs leading-relaxed font-normal text-gray-600 sm:text-sm">
+                <p>{t('storyP1')}</p>
+                <p>{t('storyP2')}</p>
               </div>
-              <div>
-                <p className="text-2xl font-black text-white">100%</p>
-                <p className="text-[10px] text-gray-400 font-medium">Sâm thật DNA kiểm định</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
+              <div className="pt-2">
+                <Link
+                  href={`/${locale}/products`}
+                  className="inline-flex items-center gap-2 text-xs font-bold text-emerald-800 transition-colors hover:text-emerald-950"
+                >
+                  <span>{tProd('viewDetails')}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Aesthetic Side Box */}
+            <div className="relative space-y-6 overflow-hidden rounded-3xl border border-emerald-800/40 bg-gradient-to-br from-emerald-950 via-[#122B18] to-slate-950 p-8 text-white shadow-2xl sm:p-10 lg:col-span-5">
+              <div className="pointer-events-none absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-amber-400/10 blur-2xl" />
+              <h4 className="font-display text-xl font-black text-amber-300 sm:text-2xl">
+                {t('visionTitle')}
+              </h4>
+              <p className="text-xs leading-relaxed font-normal text-emerald-100/90 sm:text-sm">
+                {t('visionDesc')}
+              </p>
+              <div className="grid grid-cols-2 gap-4 border-t border-emerald-800/80 pt-6">
+                <div>
+                  <p className="font-display text-3xl font-black text-amber-400">52+</p>
+                  <p className="mt-0.5 text-[10px] font-bold tracking-wider text-emerald-300 uppercase">
+                    Saponin MR2
+                  </p>
+                </div>
+                <div>
+                  <p className="font-display text-3xl font-black text-emerald-400">100%</p>
+                  <p className="mt-0.5 text-[10px] font-bold tracking-wider text-emerald-300 uppercase">
+                    DNA Certified
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
       </section>
-
     </div>
   );
 }

@@ -1,5 +1,7 @@
 "use client"
 
+import type * as RechartsModule from "recharts"
+
 import { useRecharts } from "@/hooks/use-recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -7,6 +9,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+
+type RechartsType = typeof RechartsModule
 
 const lineChartData = [
   { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
@@ -46,7 +50,7 @@ export function LineCharts() {
   )
 }
 
-function BasicLineChart({ recharts }: { recharts: any }) {
+function BasicLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -69,7 +73,7 @@ function BasicLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function TinyLineChart({ recharts }: { recharts: any }) {
+function TinyLineChart({ recharts }: { recharts: RechartsType }) {
   const { Line, LineChart } = recharts
   return (
     <Card>
@@ -92,7 +96,7 @@ function TinyLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function DashedLineChart({ recharts }: { recharts: any }) {
+function DashedLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -116,7 +120,7 @@ function DashedLineChart({ recharts }: { recharts: any }) {
               type="monotone"
               dataKey="uv"
               stroke="hsl(var(--chart-2))"
-              strokeDasharray="3 3"
+              strokeDasharray="3 4 5 2"
             />
           </LineChart>
         </ChartContainer>
@@ -125,7 +129,7 @@ function DashedLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function VerticalLineChart({ recharts }: { recharts: any }) {
+function VerticalLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -139,8 +143,8 @@ function VerticalLineChart({ recharts }: { recharts: any }) {
             <XAxis type="number" />
             <YAxis dataKey="name" type="category" />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Line dataKey="pv" stroke="hsl(var(--chart-1))" />
-            <Line dataKey="uv" stroke="hsl(var(--chart-2))" />
+            <Line type="monotone" dataKey="pv" stroke="hsl(var(--chart-1))" />
+            <Line type="monotone" dataKey="uv" stroke="hsl(var(--chart-2))" />
           </LineChart>
         </ChartContainer>
       </CardContent>
@@ -148,7 +152,7 @@ function VerticalLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function BiaxialLineChart({ recharts }: { recharts: any }) {
+function BiaxialLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -168,6 +172,7 @@ function BiaxialLineChart({ recharts }: { recharts: any }) {
               type="monotone"
               dataKey="pv"
               stroke="hsl(var(--chart-1))"
+              activeDot={{ r: 8 }}
             />
             <Line
               yAxisId="right"
@@ -182,12 +187,12 @@ function BiaxialLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function VerticalLineChartDomain({ recharts }: { recharts: any }) {
+function VerticalLineChartDomain({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Vertical Line Chart With Specified Domain</CardTitle>
+        <CardTitle>Vertical Line Chart Domain</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={{}} className="w-full">
@@ -196,8 +201,8 @@ function VerticalLineChartDomain({ recharts }: { recharts: any }) {
             <XAxis type="number" domain={[0, "dataMax + 1000"]} />
             <YAxis dataKey="name" type="category" />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Line dataKey="pv" stroke="hsl(var(--chart-1))" />
-            <Line dataKey="uv" stroke="hsl(var(--chart-2))" />
+            <Line type="monotone" dataKey="pv" stroke="hsl(var(--chart-1))" />
+            <Line type="monotone" dataKey="uv" stroke="hsl(var(--chart-2))" />
           </LineChart>
         </ChartContainer>
       </CardContent>
@@ -205,12 +210,12 @@ function VerticalLineChartDomain({ recharts }: { recharts: any }) {
   )
 }
 
-function LineChartPadding({ recharts }: { recharts: any }) {
+function LineChartPadding({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart With XAxis Padding</CardTitle>
+        <CardTitle>Line Chart with Padding</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={{}} className="w-full">
@@ -228,13 +233,13 @@ function LineChartPadding({ recharts }: { recharts: any }) {
   )
 }
 
-function LineChartReferenceLines({ recharts }: { recharts: any }) {
+function LineChartReferenceLines({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } =
     recharts
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart With Reference Lines</CardTitle>
+        <CardTitle>Line Chart with Reference Lines</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={{}} className="w-full">
@@ -243,12 +248,8 @@ function LineChartReferenceLines({ recharts }: { recharts: any }) {
             <XAxis dataKey="name" />
             <YAxis />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <ReferenceLine
-              x="Page C"
-              stroke="hsl(var(--chart-3))"
-              label="Max PV PAGE"
-            />
-            <ReferenceLine y={9800} label="Max" stroke="hsl(var(--chart-4))" />
+            <ReferenceLine x="Page C" stroke="red" label="Max PV PAGE" />
+            <ReferenceLine y={9800} label="Max" stroke="red" />
             <Line type="monotone" dataKey="pv" stroke="hsl(var(--chart-1))" />
             <Line type="monotone" dataKey="uv" stroke="hsl(var(--chart-2))" />
           </LineChart>
@@ -258,7 +259,7 @@ function LineChartReferenceLines({ recharts }: { recharts: any }) {
   )
 }
 
-function CustomizedDotLineChart({ recharts }: { recharts: any }) {
+function CustomizedDotLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -276,12 +277,13 @@ function CustomizedDotLineChart({ recharts }: { recharts: any }) {
               type="monotone"
               dataKey="pv"
               stroke="hsl(var(--chart-1))"
-              dot={(props: any) => {
-                const { cx, cy, value } = props
+              dot={(props: { cx?: number; cy?: number; value?: number }) => {
+                const { cx = 0, cy = 0, value = 0 } = props
 
                 if (value > 2500) {
                   return (
                     <svg
+                      key={`dot-${cx}-${cy}`}
                       x={cx - 10}
                       y={cy - 10}
                       width={20}
@@ -296,6 +298,7 @@ function CustomizedDotLineChart({ recharts }: { recharts: any }) {
 
                 return (
                   <svg
+                    key={`dot-${cx}-${cy}`}
                     x={cx - 10}
                     y={cy - 10}
                     width={20}
@@ -316,7 +319,7 @@ function CustomizedDotLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function CustomizedLabelLineChart({ recharts }: { recharts: any }) {
+function CustomizedLabelLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -334,11 +337,17 @@ function CustomizedLabelLineChart({ recharts }: { recharts: any }) {
               type="monotone"
               dataKey="pv"
               stroke="hsl(var(--chart-1))"
-              label={(props: any) => {
-                const { x, y, stroke, value } = props
+              label={(props: {
+                x?: number
+                y?: number
+                stroke?: string
+                value?: string | number
+              }) => {
+                const { x = 0, y = 0, stroke = "#000", value = "" } = props
 
                 return (
                   <text
+                    key={`lbl-${x}-${y}`}
                     x={x}
                     y={y}
                     dy={-4}
@@ -359,7 +368,7 @@ function CustomizedLabelLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function MultiSeriesLineChart({ recharts }: { recharts: any }) {
+function MultiSeriesLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -383,7 +392,7 @@ function MultiSeriesLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function SynchronizedLineChart({ recharts }: { recharts: any }) {
+function SynchronizedLineChart({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>
@@ -414,7 +423,7 @@ function SynchronizedLineChart({ recharts }: { recharts: any }) {
   )
 }
 
-function LineChartConnectNulls({ recharts }: { recharts: any }) {
+function LineChartConnectNulls({ recharts }: { recharts: RechartsType }) {
   const { CartesianGrid, Line, LineChart, XAxis, YAxis } = recharts
   return (
     <Card>

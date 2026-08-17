@@ -11,7 +11,7 @@ async function verifyAuth() {
   return !!session
 }
 
-export async function createArticleAction(payload: any) {
+export async function createArticleAction(payload: Record<string, unknown>) {
   try {
     if (!(await verifyAuth())) {
       return { success: false, error: "Unauthorized. Bạn cần đăng nhập." }
@@ -26,12 +26,16 @@ export async function createArticleAction(payload: any) {
     }
     revalidatePath("/[lang]/content")
     return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Có lỗi xảy ra"
+    return { success: false, error: message }
   }
 }
 
-export async function updateArticleAction(id: string, payload: any) {
+export async function updateArticleAction(
+  id: string,
+  payload: Record<string, unknown>
+) {
   try {
     if (!(await verifyAuth())) {
       return { success: false, error: "Unauthorized. Bạn cần đăng nhập." }
@@ -49,8 +53,9 @@ export async function updateArticleAction(id: string, payload: any) {
     }
     revalidatePath("/[lang]/content")
     return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Có lỗi xảy ra"
+    return { success: false, error: message }
   }
 }
 
@@ -64,12 +69,43 @@ export async function deleteArticleAction(id: string) {
     })
     if (!res.ok) {
       const err = await res.json()
-      return { success: false, error: err.message || "Lỗi khi xóa bài viết." }
+      return {
+        success: false,
+        error: err.message || "Lỗi khi xóa bài viết.",
+      }
     }
     revalidatePath("/[lang]/content")
     return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Có lỗi xảy ra"
+    return { success: false, error: message }
+  }
+}
+
+export async function updateBannersAction(
+  page: string,
+  banners: Array<Record<string, unknown>>
+) {
+  try {
+    if (!(await verifyAuth())) {
+      return { success: false, error: "Unauthorized. Bạn cần đăng nhập." }
+    }
+    const res = await fetchApi(`/admin/content/banners/${page}`, {
+      method: "PUT",
+      body: JSON.stringify({ banners }),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      return {
+        success: false,
+        error: err.message || "Lỗi khi cập nhật banner.",
+      }
+    }
+    revalidatePath("/[lang]/content")
+    return { success: true }
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Có lỗi xảy ra"
+    return { success: false, error: message }
   }
 }
 
@@ -86,12 +122,13 @@ export async function updateSettingAction(key: string, value: string) {
       const err = await res.json()
       return {
         success: false,
-        error: err.message || "Lỗi khi cập nhật cài đặt hệ thống.",
+        error: err.message || "Lỗi khi cập nhật cài đặt.",
       }
     }
     revalidatePath("/[lang]/content")
     return { success: true }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Có lỗi xảy ra"
+    return { success: false, error: message }
   }
 }

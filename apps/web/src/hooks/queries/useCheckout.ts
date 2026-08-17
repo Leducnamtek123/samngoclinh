@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { settingsService } from '@/services/content.service';
+import { ordersService } from '@/services/orders.service';
 
-export interface CreateOrderPayload {
+export type CreateOrderPayload = {
   customerName: string;
   customerPhone: string;
   customerEmail?: string;
@@ -9,23 +10,29 @@ export interface CreateOrderPayload {
   shippingAddress?: string;
   paymentMethod: 'online';
   note?: string;
+  identityNumber?: string;
+  legalName?: string;
+  signatureData?: string;
+  metadata?: Record<string, unknown>;
   items: { productId: string; quantity: number }[];
-}
+};
 
 export function useShippingFee() {
   return useQuery({
     queryKey: ['shippingFee'],
     queryFn: async () => {
       try {
-        const res = await fetchApiClient('/v1/public/settings/shipping_fee');
-        const val = res?.data?.value || res?.value;
-        if (val) {
-          const parsed = parseInt(val, 10);
-          if (!isNaN(parsed)) return parsed;
+        const res = await settingsService.getShippingFee();
+        const val = res?.value ?? res?.fixedFee;
+        if (val != null) {
+          const parsed = Number(val);
+          if (!isNaN(parsed) && parsed >= 0) {
+            return parsed;
+          }
         }
-        return 30000;
+        return 30_000;
       } catch {
-        return 30000;
+        return 30_000;
       }
     },
     staleTime: 1000 * 60 * 10,
@@ -36,13 +43,7 @@ export function useCreateOrderMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: CreateOrderPayload) => {
-      const res = await fetchApiClient('/user/orders/checkout', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return res?.data || res;
-    },
+    mutationFn: async (payload: CreateOrderPayload) => await ordersService.checkout(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['cart'] });

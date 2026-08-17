@@ -8,6 +8,7 @@ import type { LocaleType } from "@/types"
 import { fetchApi } from "@/lib/api"
 import { ensureLocalizedPathname } from "@/lib/i18n"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
@@ -39,6 +40,7 @@ interface AddBedFormProps {
 }
 
 export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const params = useParams()
   const locale = params.lang as LocaleType
@@ -72,11 +74,11 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.name) {
-      setErrorMsg("Vui lòng nhập tên luống trồng")
+      setErrorMsg(t("validation.required"))
       return
     }
     if (!formData.gardenCode) {
-      setErrorMsg("Vui lòng chọn khu vườn")
+      setErrorMsg(t("validation.required"))
       return
     }
 
@@ -98,16 +100,16 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
 
       const payload = await res.json()
       if (res.status >= 400) {
-        setErrorMsg(payload?.message || "Đã xảy ra lỗi khi tạo luống trồng")
+        setErrorMsg(payload?.message || t("common.status.error"))
       } else {
-        setSuccessMsg("Thêm luống trồng thành công! Đang chuyển hướng...")
+        setSuccessMsg(t("common.status.success"))
         setTimeout(() => {
           router.push(ensureLocalizedPathname("/pages/beds", locale))
         }, 1500)
       }
     } catch (err) {
       console.error(err)
-      setErrorMsg("Không thể kết nối đến máy chủ API")
+      setErrorMsg(t("common.status.error"))
     } finally {
       setLoading(false)
     }
@@ -117,33 +119,31 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
     <div className="space-y-6">
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader>
-          <CardTitle>Thêm luống sâm mới</CardTitle>
-          <CardDescription>
-            Khai báo luống mới xuống giống sâm Ngọc Linh vào vườn.
-          </CardDescription>
+          <CardTitle>{t("trees.gardens.addGarden")}</CardTitle>
+          <CardDescription>{t("trees.gardens.dialogDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {successMsg && (
             <Alert className="mb-4 border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-              <AlertTitle>Thành công</AlertTitle>
+              <AlertTitle>{t("common.status.success")}</AlertTitle>
               <AlertDescription>{successMsg}</AlertDescription>
             </Alert>
           )}
 
           {errorMsg && (
             <Alert variant="destructive" className="mb-4">
-              <AlertTitle>Lỗi</AlertTitle>
+              <AlertTitle>{t("common.status.error")}</AlertTitle>
               <AlertDescription>{errorMsg}</AlertDescription>
             </Alert>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Tên luống trồng</Label>
+              <Label htmlFor="name">{t("trees.gardens.name")}</Label>
               <Input
                 id="name"
                 name="name"
-                placeholder="Ví dụ: Luống 04"
+                placeholder={t("trees.gardens.name")}
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -151,10 +151,10 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gardenCode">Thuộc khu vườn</Label>
+              <Label htmlFor="gardenCode">{t("trees.gardens.location")}</Label>
               {gardens.length === 0 ? (
                 <div className="text-sm text-red-500 font-semibold py-1">
-                  Chưa có khu vườn nào khả dụng. Hãy tạo vườn trước!
+                  {t("common.table.noResults")}
                 </div>
               ) : (
                 <Select
@@ -162,7 +162,7 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
                   onValueChange={handleSelectGarden}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Chọn khu vườn" />
+                    <SelectValue placeholder={t("trees.gardens.name")} />
                   </SelectTrigger>
                   <SelectContent>
                     {gardens.map((garden) => (
@@ -177,7 +177,7 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="ageYear">Tuổi sâm (năm)</Label>
+                <Label htmlFor="ageYear">{t("trees.fields.ageYear")}</Label>
                 <Input
                   id="ageYear"
                   name="ageYear"
@@ -190,7 +190,7 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="treeCount">Số ô / gốc sâm</Label>
+                <Label htmlFor="treeCount">{t("contracts.fields.tree")}</Label>
                 <Input
                   id="treeCount"
                   name="treeCount"
@@ -211,14 +211,14 @@ export function AddBedForm({ gardens, initialError }: AddBedFormProps) {
                   router.push(ensureLocalizedPathname("/pages/beds", locale))
                 }
               >
-                Hủy bỏ
+                {t("common.actions.cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={loading || gardens.length === 0}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
               >
-                {loading ? "Đang xử lý..." : "Thêm mới"}
+                {loading ? t("common.table.loading") : t("common.actions.add")}
               </Button>
             </div>
           </form>

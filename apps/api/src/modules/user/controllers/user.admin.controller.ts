@@ -101,7 +101,7 @@ export class UserAdminController {
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
-    @Get('/list')
+    @Get(['/list', '/'])
     async list(
         @PaginationOffsetQuery({
             availableSearch: UserDefaultAvailableSearch,

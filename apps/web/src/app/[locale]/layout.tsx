@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
+import { Inter } from 'next/font/google';
 import { notFound } from 'next/navigation';
-import { routing } from '@/lib/I18nRouting';
-import { Toaster } from '@/components/ui/Toaster';
 import { ScrollAnimationProvider } from '@/components/animation/ScrollAnimationProvider';
+import { Toaster } from '@/components/ui/Toaster';
+import { routing } from '@/lib/I18nRouting';
 import '@/styles/global.css';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
-  variable: '--font-inter',
+  variable: '--font-sans',
   display: 'swap',
 });
 

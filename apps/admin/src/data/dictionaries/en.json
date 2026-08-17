@@ -6,6 +6,7 @@
     "dashboards": "Dashboards",
     "analytics": "Analytics",
     "cultivation": "Cultivation",
+    "customerLegal": "Customers & Legal",
     "ginsengGardens": "Ginseng Gardens",
     "ginsengBeds": "Ginseng Beds",
     "managePlants": "Manage Plants",
@@ -311,6 +312,7 @@
     },
     "status": {
       "active": "Active",
+      "inactive": "Inactive",
       "blocked": "Blocked",
       "pending": "Pending",
       "verified": "Verified",
@@ -450,16 +452,22 @@
   },
   "kyc": {
     "title": "Investor eKYC Approval & Verification",
-    "subtitle": "Review citizen identity cards (CCCD/ID) and digital signatures for electronic contract signing and transaction authorization",
+    "subtitle": "Review identity documents (Citizen ID, Driver's License, Passport) and digital signatures for electronic contract signing",
     "requestListTitle": "eKYC Verification Request Queue",
     "loadingList": "Loading eKYC document list...",
     "emptyList": "No pending eKYC verification requests.",
     "columns": {
       "user": "User",
-      "idCardNumber": "ID Card Number",
+      "documentType": "Document Type",
+      "idCardNumber": "Document No.",
       "submitDate": "Submitted Date",
       "status": "Status",
       "actions": "Actions"
+    },
+    "documentTypes": {
+      "cccd": "Citizen ID (CCCD)",
+      "driver_license": "Driver's License",
+      "passport": "Passport"
     },
     "status": {
       "approved": "Approved",
@@ -476,19 +484,20 @@
     "modal": {
       "title": "eKYC Document Details",
       "fullName": "Full Name:",
-      "idNumber": "ID Number:",
-      "frontImage": "Front ID Photo",
-      "backImage": "Back ID Photo",
+      "documentType": "Document Type:",
+      "idNumber": "Document No.:",
+      "frontImage": "Front Photo / Info Page",
+      "backImage": "Back Photo",
       "digitalSignature": "Personal Digital Signature",
       "noSignature": "No digital signature registered yet",
       "rejectReasonTitle": "eKYC Rejection Reason:",
       "rejectReasonPlaceholder": "Enter detailed reason so the user can fix and re-submit...",
       "presets": {
-        "blurry": "Image is blurry / illegible ID number",
-        "glare": "Flash glare / cropped corners on card",
-        "mismatch": "Full name or birth date does not match profile",
-        "expired": "Identification card has expired",
-        "notOriginal": "Not an original photo of government ID card"
+        "blurry": "Image is blurry / illegible document details",
+        "glare": "Flash glare / cropped corners on document",
+        "mismatch": "Full name or details do not match profile",
+        "expired": "Identification document has expired",
+        "notOriginal": "Not an original photo of identity document"
       }
     },
     "notifications": {

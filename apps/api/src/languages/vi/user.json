@@ -62,5 +62,15 @@
         "verificationEmailResendLimitExceeded": "Bạn đã vượt quá giới hạn gửi lại email xác thực. Vui lòng thử lại sau {resendIn} phút.",
         "forgotPasswordRequestLimitExceeded": "Bạn đã vượt quá giới hạn yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau {minutes} phút.",
         "importEmailExist": "Đã tồn tại người dùng với các email được cung cấp. Email: {emails}"
-    }
+    },
+    "approveKyc": "Phê duyệt xác thực danh tính (eKYC) thành công.",
+    "rejectKyc": "Từ chối xác thực danh tính (eKYC) thành công.",
+    "kycList": "Lấy danh sách hồ sơ eKYC thành công.",
+    "getIdentityDocument": "Lấy thông tin CCCD thành công.",
+    "saveIdentityDocument": "Lưu thông tin CCCD và hình ảnh thành công.",
+    "getIdentityDocumentHistories": "Lấy lịch sử thay đổi CCCD thành công.",
+    "getSignature": "Lấy thông tin chữ ký số thành công.",
+    "saveSignature": "Lưu chữ ký số điện tử thành công.",
+    "requestEmailVerification": "Đã gửi mã xác minh email thành công.",
+    "confirmEmailVerification": "Xác minh địa chỉ email thành công."
 }

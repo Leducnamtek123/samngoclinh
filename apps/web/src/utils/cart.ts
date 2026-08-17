@@ -13,10 +13,15 @@ export const getCartCount = (): number => {
 export const addToCart = (
   product: { id: string; name: string; price: number; image?: string; category?: string },
   quantity = 1,
-) => cartStore.addItem(product, quantity);
+) => {
+  cartStore.addItem(product, quantity);
+};
 
-export const updateCartQuantity = (id: string, delta: number): CartItem[] => cartStore.updateQuantity(id, delta);
+export const updateCartQuantity = (id: string, delta: number): CartItem[] =>
+  cartStore.updateQuantity(id, delta);
 
 export const removeFromCart = (id: string): CartItem[] => cartStore.removeItem(id);
 
-export const clearCart = () => cartStore.clear();
+export const clearCart = () => {
+  cartStore.clear();
+};

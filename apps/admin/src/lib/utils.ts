@@ -136,50 +136,85 @@ const compactFormatterVi = new Intl.NumberFormat("vi-VN", {
 
 export function formatCurrency(
   value: number,
-  locales: LocaleType = "en",
-  currency: string = "USD"
+  locales: LocaleType = "vi",
+  currency: string = "VND"
 ) {
-  if (locales === "vi" || currency === "VND") {
-    return vndFormatterVi.format(value)
+  const safeValue = typeof value === "number" && !isNaN(value) ? value : 0
+  if (locales === "en" && currency === "USD") {
+    return usdFormatterEn.format(safeValue)
   }
-  return usdFormatterEn.format(value)
+  return vndFormatterVi.format(safeValue)
 }
 
 export function formatPercent(value: number, locales: LocaleType = "en") {
+  const safeValue = typeof value === "number" && !isNaN(value) ? value : 0
   if (locales === "vi") {
-    return percentFormatterVi.format(value)
+    return percentFormatterVi.format(safeValue)
   }
-  return percentFormatterEn.format(value)
+  return percentFormatterEn.format(safeValue)
 }
 
-export function formatDate(value: string | number | Date) {
-  return format(value, "PP")
+export function formatDate(value?: string | number | Date | null) {
+  if (!value) return ""
+  try {
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return String(value)
+    return format(date, "dd/MM/yyyy")
+  } catch {
+    return String(value)
+  }
 }
 
-export function formatRelativeDate(value?: string | number | Date) {
-  if (!value) return "No Date"
+export function formatRelativeDate(value?: string | number | Date | null) {
+  if (!value) return "Chưa có ngày"
 
-  const date = new Date(value)
-  const today = new Date()
-  const yesterday = new Date()
-  yesterday.setDate(today.getDate() - 1)
+  try {
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return String(value)
+    const today = new Date()
+    const yesterday = new Date()
+    yesterday.setDate(today.getDate() - 1)
 
-  if (date.toDateString() === today.toDateString()) return "Today"
-  if (date.toDateString() === yesterday.toDateString()) return "Yesterday"
+    if (date.toDateString() === today.toDateString()) return "Hôm nay"
+    if (date.toDateString() === yesterday.toDateString()) return "Hôm qua"
 
-  return formatDate(value)
+    return formatDate(value)
+  } catch {
+    return String(value)
+  }
 }
 
-export function formatDateWithTime(value: string | number | Date) {
-  return format(value, "PP hh:mm a")
+export function formatDateWithTime(value?: string | number | Date | null) {
+  if (!value) return ""
+  try {
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return String(value)
+    return format(date, "dd/MM/yyyy HH:mm")
+  } catch {
+    return String(value)
+  }
 }
 
-export function formatDateShort(value: string | number | Date) {
-  return format(value, "MMM dd")
+export function formatDateShort(value?: string | number | Date | null) {
+  if (!value) return ""
+  try {
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return String(value)
+    return format(date, "dd/MM")
+  } catch {
+    return String(value)
+  }
 }
 
-export function formatTime(value: string | number | Date) {
-  return format(value, "h:mm a")
+export function formatTime(value?: string | number | Date | null) {
+  if (!value) return ""
+  try {
+    const date = new Date(value)
+    if (isNaN(date.getTime())) return String(value)
+    return format(date, "h:mm a")
+  } catch {
+    return String(value)
+  }
 }
 
 export function formatDuration(value: string | number | Date) {
@@ -227,10 +262,7 @@ export function formatDistance(value: string | number | Date) {
     .replace(/\b(over|almost|about)\b/g, "")
 }
 
-export function formatNumberToCompact(
-  value: number = 0,
-  locales: LocaleType = "en"
-) {
+export function formatNumberToCompact(value: number = 0, locales: LocaleType = "en") {
   const safeValue = typeof value === "number" && !isNaN(value) ? value : 0
   if (locales === "vi") {
     return compactFormatterVi.format(safeValue)

@@ -223,20 +223,20 @@ export function useContentManager({
     if (res.success) {
       setIsOpen(false)
       router.refresh()
-      const updatedArticle = {
+      const updatedArticle: Article = {
         id: editingArticle?.id || "new-" + Math.random(),
-        ...payload,
+        title: payload.title,
+        category: payload.category,
+        summary: payload.summary,
         image: payload.coverImage,
         publishedAt: new Date().toLocaleDateString("vi-VN"),
       }
       if (editingArticle) {
         setArticles(
-          articles.map((a) =>
-            a.id === editingArticle.id ? (updatedArticle as any) : a
-          )
+          articles.map((a) => (a.id === editingArticle.id ? updatedArticle : a))
         )
       } else {
-        setArticles([updatedArticle as any, ...articles])
+        setArticles([updatedArticle, ...articles])
       }
     } else {
       setError(res.error || t("messages.errorOccurred"))
@@ -301,8 +301,10 @@ export function useContentManager({
       } else {
         setBannerError(failedResult.error || t("messages.errorOccurred"))
       }
-    } catch (err: any) {
-      setBannerError(err.message || t("messages.networkError"))
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : t("messages.networkError")
+      setBannerError(message)
     } finally {
       setBannerLoading(false)
     }

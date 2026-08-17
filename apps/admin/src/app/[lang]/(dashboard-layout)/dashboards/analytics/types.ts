@@ -32,7 +32,7 @@ export interface TrafficSourcesType {
     visitors: number
     fill: string
     percentageChange: number
-    icon: DynamicIconNameType
+    icon?: DynamicIconNameType | string
   }>
 }
 
@@ -127,7 +127,7 @@ export interface AnalyticsDashboardStats {
     visitors: number
     fill: string
     percentageChange: number
-    icon: DynamicIconNameType
+    icon?: DynamicIconNameType | string
   }>
   monthlyRevenue?: Array<{
     month: string

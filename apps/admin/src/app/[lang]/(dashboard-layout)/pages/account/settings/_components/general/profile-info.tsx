@@ -11,10 +11,14 @@ import { ProfileInfoForm } from "./profile-info-form"
 
 export function ProfileInfo({ user }: { user?: UserType }) {
   return (
-    <Card>
+    <Card className="rounded-2xl border-border shadow-xs">
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
-        <CardDescription>Update your public profile details.</CardDescription>
+        <CardTitle className="text-lg font-extrabold text-foreground">
+          Thông tin tài khoản quản trị
+        </CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
+          Cập nhật thông tin định danh cá nhân và cơ sở nông trường phụ trách.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ProfileInfoForm user={user} />

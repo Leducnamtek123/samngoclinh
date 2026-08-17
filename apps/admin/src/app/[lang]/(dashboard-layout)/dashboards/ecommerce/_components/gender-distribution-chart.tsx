@@ -1,25 +1,16 @@
 "use client"
 
 import type { ComponentProps } from "react"
-import type { ScatterPointItem } from "recharts/types/cartesian/Scatter"
 import type { GenderDistributionType } from "../../analytics/types"
 
 import { formatPercent } from "@/lib/utils"
 
-import { useIsRtl } from "@/hooks/use-is-rtl"
 import { useRecharts } from "@/hooks/use-recharts"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-// Function to normalize values to proportional sizes
-const getNormalizedSize = (value: number, min: number, max: number) => {
-  const minSize = 25 // Minimum bubble radius
-  const maxSize = 45 // Maximum bubble radius
-  return minSize + ((value - min) / (max - min)) * (maxSize - minSize)
-}
 
 function ModifiedChartTooltipContent(
   props: ComponentProps<typeof ChartTooltipContent>
@@ -34,8 +25,8 @@ function ModifiedChartTooltipContent(
       payload={[
         {
           ...item,
-          name: item.payload.name,
-          value: item.payload.value,
+          name: item.name,
+          value: `${item.value} (${formatPercent(Number(item.payload?.percentage || 0))})`,
         },
       ]}
     />
@@ -48,78 +39,67 @@ export function GenderDistributionChart({
   data: GenderDistributionType[]
 }) {
   const recharts = useRecharts()
-  const isRtl = useIsRtl()
   if (!recharts)
     return (
-      <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+      <div className="h-[200px] w-full flex items-center justify-center text-muted-foreground text-sm">
         Đang tải...
       </div>
     )
-  const { Scatter, ScatterChart, XAxis, YAxis } = recharts
+  const { Pie, PieChart, Cell } = recharts
 
-  const values = data.map((item) => item.value)
-  const minValue = Math.min(...values)
-  const maxValue = Math.max(...values)
+  const chartData = data.map((item) => ({
+    name: item.name,
+    value: item.value || 1,
+    percentage: item.percentage,
+    fill: item.fill,
+  }))
 
   return (
-    <ChartContainer
-      config={{}}
-      className="aspect-square max-w-56 h-full w-full mx-auto"
-    >
-      <ScatterChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-        <ChartTooltip
-          cursor={false}
-          content={<ModifiedChartTooltipContent />}
-        />
-        <XAxis
-          reversed={isRtl}
-          type="number"
-          dataKey="x"
-          domain={[0, 5]}
-          hide
-        />
-        <YAxis type="number" dataKey="y" domain={[0, 5]} hide />
-        <Scatter
-          name="Gender Distribution"
-          data={data}
-          isAnimationActive
-          shape={(props: ScatterPointItem) => {
-            const { cx, cy, payload } = props
-            const radius = getNormalizedSize(payload.value, minValue, maxValue)
-            const percentage = formatPercent(payload.percentage)
+    <div className="w-full flex flex-col items-center justify-center gap-2 p-2">
+      <ChartContainer config={{}} className="aspect-square h-36 w-36 mx-auto">
+        <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <ChartTooltip
+            cursor={false}
+            content={<ModifiedChartTooltipContent hideLabel />}
+          />
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius={30}
+            outerRadius={55}
+            paddingAngle={3}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.fill} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ChartContainer>
 
-            return (
-              <g>
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r={radius}
-                  fill={payload.fill}
-                  opacity={0.8}
-                />
-                <text
-                  x={cx}
-                  y={(cy || 0) - 4}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="fill-white text-xs font-semibold"
-                >
-                  {payload.name}
-                </text>
-                <text
-                  x={cx}
-                  y={(cy || 0) + 8.5}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className="fill-white text-base font-semibold"
-                >
-                  {percentage}
-                </text>
-              </g>
-            )
-          }}
-        />
-      </ScatterChart>
-    </ChartContainer>
+      <div className="w-full grid grid-cols-1 gap-1 text-xs px-2">
+        {chartData.map((item) => (
+          <div
+            key={item.name}
+            className="flex items-center justify-between py-0.5"
+          >
+            <div className="flex items-center gap-1.5 truncate">
+              <span
+                className="h-2.5 w-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: item.fill }}
+              />
+              <span className="text-muted-foreground truncate">
+                {item.name}
+              </span>
+            </div>
+            <span className="font-semibold shrink-0">
+              {formatPercent(item.percentage)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

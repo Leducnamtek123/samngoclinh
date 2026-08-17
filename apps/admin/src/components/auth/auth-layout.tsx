@@ -45,7 +45,7 @@ export function Auth({
             className="flex items-center gap-2 text-foreground font-black z-50"
           >
             <Image
-              src="/images/logo_ruou_sam.png?v=2"
+              src="/images/logo_ruou_sam.png"
               alt="Logo"
               height={24}
               width={24}
@@ -115,6 +115,6 @@ export function AuthForm({ className, ...props }: ComponentProps<"div">) {
   return <div className={className} {...props} />
 }
 
-export function AuthFooter({ className, ...props }: ComponentProps<"div">) {
+function AuthFooter({ className, ...props }: ComponentProps<"div">) {
   return <div className={cn("grid gap-6", className)} {...props} />
 }

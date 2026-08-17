@@ -2,8 +2,7 @@
   "RootLayout": {
     "home_link": "Trang chủ",
     "about_link": "Giới thiệu",
-    "counter_link": "Bộ đếm",
-    "portfolio_link": "Danh mục",
+    "portfolio_link": "Bộ sưu tập",
     "sign_in_link": "Đăng nhập",
     "sign_up_link": "Đăng ký"
   },
@@ -14,43 +13,19 @@
   },
   "Index": {
     "meta_title": "Rượu Sâm Ngọc Linh | Số Hóa Chuỗi Giá Trị Sâm Ngọc Linh",
-    "meta_description": "Rượu Sâm Ngọc Linh là ứng dụng đầu tiên tại Việt Nam cho phép bạn mua - sở hữu - chăm sóc và theo dõi sản phẩm Rượu Sâm Ngọc Linh thật chỉ bằng điện thoại.",
-    "sponsors_title": "Đối tác",
-    "zap_emoji_label": "Tia sét"
-  },
-  "Counter": {
-    "meta_title": "Bộ đếm",
-    "meta_description": "Ví dụ về hoạt động DB",
-    "security_powered_by": "Bảo mật, phát hiện bot và giới hạn tần suất được hỗ trợ bởi"
-  },
-  "CounterForm": {
-    "presentation": "Bộ đếm được lưu trong cơ sở dữ liệu và được tăng lên theo giá trị bạn cung cấp.",
-    "label_increment": "Tăng thêm",
-    "button_increment": "Tăng",
-    "error_increment_range": "Giá trị phải từ 1 đến 3"
-  },
-  "CurrentCount": {
-    "count": "Số lượng : {count}"
+    "meta_description": "Rượu Sâm Ngọc Linh là nền tảng đầu tiên tại Việt Nam cho phép bạn sở hữu, chăm sóc và theo dõi quá trình sinh trưởng của cây sâm Ngọc Linh thật.",
+    "sponsors_title": "Đối tác"
   },
   "About": {
     "meta_title": "Giới thiệu",
-    "meta_description": "Mô tả giới thiệu",
-    "about_paragraph": "Chào mừng bạn đến với trang giới thiệu của chúng tôi! Chúng tôi là một đội ngũ đam mê và tận tâm trong việc phát triển phần mềm.",
-    "translation_powered_by": "Bản dịch được cung cấp bởi"
+    "meta_description": "Hành trình bảo tồn di sản Quốc bảo Sâm Ngọc Linh kết hợp công nghệ số hóa minh bạch.",
+    "about_paragraph": "Chúng tôi là đội ngũ tâm huyết gìn giữ và phát triển chuỗi giá trị Quốc bảo Sâm Ngọc Linh."
   },
   "Portfolio": {
-    "meta_title": "Danh mục",
-    "meta_description": "Chào mừng bạn đến với trang danh mục của tôi !",
-    "presentation": "Chào mừng đến với trang danh mục của chúng tôi! Ở đây bạn sẽ tìm thấy bộ sưu tập các sản phẩm và thành tựu được chọn lọc cẩn thận.",
-    "portfolio_name": "Danh mục {name}",
-    "error_reporting_powered_by": "Báo cáo lỗi được cung cấp bởi"
-  },
-  "PortfolioSlug": {
-    "meta_title": "Danh mục {slug}",
-    "meta_description": "Mô tả danh mục {slug}",
-    "header": "Danh mục {slug}",
-    "content": "Thiết kế tài liệu truyền thông và nhận diện thương hiệu cho doanh nghiệp. Thiết kế đồng bộ bao gồm logo, tờ rơi, banner và tài sản số.",
-    "code_review_powered_by": "Đánh giá mã nguồn được cung cấp bởi"
+    "meta_title": "Bộ Sưu Tập",
+    "meta_description": "Khám phá các dòng bình rượu Sâm Ngọc Linh thượng hạng ngâm ủ lâu năm.",
+    "presentation": "Chào mừng đến với bộ sưu tập các bình rượu Sâm Ngọc Linh quý hiếm và độc bản.",
+    "portfolio_name": "Bộ sưu tập {name}"
   },
   "SignIn": {
     "meta_title": "Đăng nhập",
@@ -76,6 +51,13 @@
     "change_language": "Thay đổi ngôn ngữ"
   },
   "homepage": {
+    "heroBadge": "QUỐC BẢO VIỆT NAM",
+    "heroTitle": "Rượu Sâm Ngọc Linh",
+    "heroSubtitle": "Nền tảng số hóa chuỗi giá trị và sở hữu cây Sâm Ngọc Linh",
+    "ctaTitle": "Khám Phá Hệ Sinh Thái Sâm Ngọc Linh",
+    "ctaSubtitle": "Sở hữu cây giống chuẩn nguồn gốc Kon Tum và đồng hành chăm sóc cùng chuyên gia nông trường.",
+    "exploreProducts": "Khám phá sản phẩm",
+    "bannerDefaultSubtitle": "Nâng tầm giá trị Quốc bảo Việt Nam",
     "aboutUsBadge": "VỀ CHÚNG TÔI",
     "aboutTitle": "Hành trình gìn giữ tinh hoa Việt",
     "aboutDesc": "Chúng tôi tâm huyết gìn giữ và phát huy giá trị của Sâm Ngọc Linh – báu vật của đại ngàn, kết hợp cùng bí quyết truyền thống để tạo ra những sản phẩm rượu sâm chất lượng, mang lại giá trị thật cho cộng đồng.",
@@ -222,12 +204,12 @@
     "verified": "Đã Kiểm Định Chuẩn Sâm Ngọc Linh"
   },
   "addressSelector": {
-    "title": "ĐỊA CHỈ NHẬN HÀNG (BẮT BUỘC CHO SẢN PHẨM VẬT LÝ)",
+    "title": "ĐỊA CHỈ NHẬN HÀNG",
     "addNewAddress": "+ Thêm địa chỉ mới",
     "addAddress": "+ Thêm địa chỉ mới",
     "defaultBadge": "Mặc định",
     "emptyState": {
-      "description": "Bạn chưa có địa chỉ giao hàng nào. Vui lòng bấm \"+ Thêm địa chỉ mới\".",
+      "description": "Bạn chưa có địa chỉ nhận hàng nào. Vui lòng bấm \"+ Thêm địa chỉ mới\".",
       "addAddress": "Thêm địa chỉ"
     }
   },
@@ -240,17 +222,17 @@
     "defaultProtectionDesc": "Bảo vệ & bảo hiểm toàn diện 100% rủi ro"
   },
   "addAddressModal": {
-    "title": "Thêm địa chỉ giao hàng",
-    "subtitle": "Định vị GPS hoặc chọn trên bản đồ OpenStreetMap",
+    "title": "Thêm địa chỉ nhận hàng",
+    "subtitle": "Chọn địa chỉ nhận hàng trên bản đồ hoặc nhập thủ công",
     "recipientNameLabel": "Họ và tên người nhận",
     "recipientNamePlaceholder": "Nhập tên người nhận hàng...",
     "phoneLabel": "Số điện thoại",
     "phonePlaceholder": "Nhập số điện thoại...",
-    "addressLabel": "Địa chỉ chi tiết (Số nhà, Tên đường...)",
-    "addressPlaceholder": "Nhập hoặc định vị địa chỉ...",
-    "cancel": "Hủy",
+    "addressLabel": "Địa chỉ chi tiết",
+    "addressPlaceholder": "Nhập số nhà, tên đường hoặc chọn trên bản đồ...",
+    "cancel": "Hủy bỏ",
     "saveAndUse": "Lưu & Sử dụng địa chỉ này",
-    "savedSuccess": "Đã lưu địa chỉ mới vào Sổ địa chỉ!"
+    "savedSuccess": "Đã lưu địa chỉ nhận hàng thành công!"
   },
   "changeAddressModal": {
     "title": "Sổ địa chỉ nhận hàng",

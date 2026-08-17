@@ -8,6 +8,7 @@ import type { NotificationPreferencesFormType } from "../../../types"
 
 import { NotificationPreferencesSchema } from "../_schemas/notifications-preferenes-schema"
 
+import { useTranslation } from "@/providers/i18n-provider"
 import { Button, ButtonLoading } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/form"
 
 export function NotificationPreferencesForm() {
+  const { t } = useTranslation()
   const form = useForm<NotificationPreferencesFormType>({
     resolver: zodResolver(NotificationPreferencesSchema),
     defaultValues: {
@@ -56,16 +58,17 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="security"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel>Security Notifications</FormLabel>
-                <FormDescription>
-                  Set preferences for alerts related to account security, such
-                  as login attempts and changes.
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.securityTitle")}
+                </FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  {t("users.notificationsPreferences.securityDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -74,16 +77,17 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="communication"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2 border-b border-border/40">
               <div>
-                <FormLabel>Communication Notifications</FormLabel>
-                <FormDescription>
-                  Manage notifications for general communications, including
-                  messages and updates.
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.communicationTitle")}
+                </FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  {t("users.notificationsPreferences.communicationDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -92,16 +96,17 @@ export function NotificationPreferencesForm() {
           control={form.control}
           name="meetups"
           render={({ field }) => (
-            <FormItem className="flex justify-between items-center gap-8">
+            <FormItem className="flex justify-between items-center gap-8 py-2">
               <div>
-                <FormLabel>Meetups Notifications</FormLabel>
-                <FormDescription>
-                  Customize notifications for upcoming meetups, events, and
-                  related activities.
+                <FormLabel className="text-sm font-bold text-foreground">
+                  {t("users.notificationsPreferences.maintenanceTitle")}
+                </FormLabel>
+                <FormDescription className="text-xs text-muted-foreground">
+                  {t("users.notificationsPreferences.maintenanceDesc")}
                 </FormDescription>
               </div>
               <FormControl>
-                <ChangeButton form={form} field={field} />
+                <ChangeButton form={form} field={field} t={t} />
               </FormControl>
             </FormItem>
           )}
@@ -110,9 +115,9 @@ export function NotificationPreferencesForm() {
         <ButtonLoading
           isLoading={isSubmitting}
           disabled={isDisabled}
-          className="mt-2 w-fit"
+          className="mt-4 w-fit bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
         >
-          Save
+          {t("users.notificationsPreferences.saveChanges")}
         </ButtonLoading>
       </form>
     </Form>
@@ -125,15 +130,18 @@ interface ChangeButtonProps {
     name: FieldPath<NotificationPreferencesFormType>
     value: { email: boolean; browser: boolean; sms: boolean }
   }
+  t: (key: string, values?: Record<string, any>) => string
 }
 
-function ChangeButton({ form, field }: ChangeButtonProps) {
+function ChangeButton({ form, field, t }: ChangeButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Change</Button>
+        <Button variant="outline" size="sm" className="text-xs">
+          {t("users.notificationsPreferences.changeBtn")}
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <DropdownMenuCheckboxItem
           checked={field.value.email}
           onCheckedChange={() =>
@@ -147,7 +155,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Email
+          {t("users.notificationsPreferences.email")}
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={field.value.browser}
@@ -162,7 +170,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          Browser
+          {t("users.notificationsPreferences.browser")}
         </DropdownMenuCheckboxItem>
         <DropdownMenuCheckboxItem
           checked={field.value.sms}
@@ -177,7 +185,7 @@ function ChangeButton({ form, field }: ChangeButtonProps) {
             )
           }
         >
-          SMS
+          {t("users.notificationsPreferences.sms")}
         </DropdownMenuCheckboxItem>
       </DropdownMenuContent>
     </DropdownMenu>

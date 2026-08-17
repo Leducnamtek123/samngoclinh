@@ -1,4 +1,4 @@
-import { customerInsightsData } from "../_data/customer-insights"
+import type { BackofficeOverview } from "@/types"
 
 import {
   DashboardCard,
@@ -6,17 +6,36 @@ import {
 } from "@/components/dashboards/dashboard-card"
 import { CustomerInsightList } from "./customer-insight-list"
 
-export function CustomerInsights() {
+interface CustomerInsightsProps {
+  overview?: BackofficeOverview | null
+}
+
+export function CustomerInsights({ overview }: CustomerInsightsProps) {
+  const total = overview?.totalUsers || 0
+  const returning = overview?.newVsReturning?.summary?.returningVisitors
+    ? Math.round(overview.newVsReturning.summary.returningVisitors / 120)
+    : 0
+  const newCust = Math.max(total - returning, 0)
+  const vip = Math.round(total * 0.15)
+
+  const data = {
+    period: "Toàn hệ thống",
+    totalCustomers: total,
+    newCustomers: newCust,
+    returningCustomers: returning,
+    vipCustomers: vip,
+  }
+
   return (
     <DashboardCard
-      title="Customer Insights"
-      period={customerInsightsData.period}
+      title="Khách Hàng & Nhà Đầu Tư"
+      period={data.period}
       action={<DashboardCardActionsDropdown />}
       size="xs"
       className="md:col-span-3"
       contentClassName="justify-center"
     >
-      <CustomerInsightList data={customerInsightsData} />
+      <CustomerInsightList data={data} />
     </DashboardCard>
   )
 }

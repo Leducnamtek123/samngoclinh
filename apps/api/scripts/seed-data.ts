@@ -1,7 +1,4 @@
 import { PrismaClient } from '../generated/prisma-client';
-import { v2 as cloudinary } from 'cloudinary';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import * as bcrypt from 'bcryptjs';
 
@@ -10,46 +7,20 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-async function uploadToCloudinary(localPath: string): Promise<string> {
-  const absPath = path.join(__dirname, '..', '..', 'web', 'public', localPath);
-  
-  if (!fs.existsSync(absPath)) {
-    console.warn(`File not found: ${absPath}, using default placeholder image.`);
-    return 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg';
-  }
-
-  try {
-    console.log(`Uploading ${localPath} to Cloudinary...`);
-    const result = await cloudinary.uploader.upload(absPath, {
-      folder: 'seed_assets',
-      resource_type: 'image',
-    });
-    console.log(`Uploaded successfully: ${result.secure_url}`);
-    return result.secure_url;
-  } catch (error) {
-    console.error(`Error uploading ${localPath} to Cloudinary:`, error);
-    return 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg';
-  }
+function getLocalImageUrl(localPath: string): string {
+  return localPath;
 }
 
 async function main(): Promise<void> {
-  console.log('--- Starting Business Data Seeding Script with Cloudinary Assets ---');
+  console.log('--- Starting Business Data Seeding Script with Local Assets ---');
 
-  // Upload Assets
-  console.log('Uploading images to Cloudinary...');
-  const ginsengUrl = await uploadToCloudinary('/images/kon_tum_ginseng.png');
-  const wineUrl = await uploadToCloudinary('/images/banners/homepage_banner_3.png');
-  const honeyUrl = await uploadToCloudinary('/images/news/news1.png');
-  const teaUrl = await uploadToCloudinary('/images/news/news2.png');
-  const avatarHaUrl = await uploadToCloudinary('/images/news/news3.png');
-  const avatarTuanUrl = await uploadToCloudinary('/images/news/news4.png');
+  // Local Assets
+  const ginsengUrl = getLocalImageUrl('/images/kon_tum_ginseng.png');
+  const wineUrl = getLocalImageUrl('/images/banners/homepage_banner_3.png');
+  const honeyUrl = getLocalImageUrl('/images/news/news1.png');
+  const teaUrl = getLocalImageUrl('/images/news/news2.png');
+  const avatarHaUrl = getLocalImageUrl('/images/news/news3.png');
+  const avatarTuanUrl = getLocalImageUrl('/images/news/news4.png');
 
   // 1. Ensure Roles exist
   console.log('Ensuring roles exist...');

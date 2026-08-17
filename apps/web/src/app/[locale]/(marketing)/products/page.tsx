@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { cookies } from 'next/headers';
-import { GinsengClient } from '@/components/GinsengClient';
+import { ProductsClient } from '@/components/ProductsClient';
 import { fetchApi } from '@/lib/Api';
 
 type ProductsPageProps = {
@@ -10,20 +10,21 @@ type ProductsPageProps = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Trồng Sâm Ngọc Linh | Rượu Sâm Ngọc Linh',
-    description: 'Trải nghiệm mô hình trồng sâm cùng Rượu Sâm Ngọc Linh qua nền tảng công nghệ số.',
+    title: 'Cửa Hàng Rượu Sâm & Chế Phẩm Cao Cấp | Sâm Ngọc Linh',
+    description:
+      'Bộ sưu tập Rượu Sâm Ngọc Linh thượng hạng, củ sâm tươi nguyên khối và các chế phẩm chiết xuất cao cấp.',
   };
 }
 
-async function getInitialPlants() {
+async function getInitialShopItems() {
   try {
-    const res = await fetchApi('/public/catalog/plants', { next: { revalidate: 60 } });
+    const res = await fetchApi('/public/catalog/shop-items', { next: { revalidate: 60 } });
     if (res.ok) {
       const json = await res.json();
       return json.data || [];
     }
-  } catch (e) {
-    console.error('Error fetching initial plants for products page:', e);
+  } catch (error) {
+    console.error('Error fetching initial shop items for products page:', error);
   }
   return [];
 }
@@ -32,16 +33,13 @@ export default async function ProductsPage(props: ProductsPageProps) {
   const { locale } = await props.params;
   setRequestLocale(locale);
 
-  const [cookieStore, initialItems] = await Promise.all([
-    cookies(),
-    getInitialPlants(),
-  ]);
+  const [cookieStore, initialItems] = await Promise.all([cookies(), getInitialShopItems()]);
 
   const isLoggedIn = !!cookieStore.get('user_session')?.value;
 
   return (
     <div className="w-full">
-      <GinsengClient locale={locale} initialItems={initialItems} isLoggedIn={isLoggedIn} />
+      <ProductsClient locale={locale} initialItems={initialItems} isLoggedIn={isLoggedIn} />
     </div>
   );
 }

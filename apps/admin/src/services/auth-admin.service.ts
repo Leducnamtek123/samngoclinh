@@ -1,3 +1,5 @@
+import { fetchApi } from "@/lib/api"
+
 export interface AdminRegisterRequest {
   firstName: string
   lastName: string
@@ -7,36 +9,66 @@ export interface AdminRegisterRequest {
 }
 
 export interface AdminVerifyEmailRequest {
-  token?: string
-  email?: string
+  email: string
+  otp?: string
 }
 
 export async function apiAdminRegister(payload: AdminRegisterRequest) {
-  const res = await fetch("/api/register", {
+  const name =
+    `${payload.lastName || ""} ${payload.firstName || ""}`.trim() ||
+    payload.username
+  const body = {
+    email: payload.email,
+    name,
+    password: payload.password,
+    username: payload.username,
+    marketing: true,
+    cookies: true,
+    from: "website",
+  }
+
+  const res = await fetchApi("/v1/public/user/sign-up", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(body),
   })
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.message || "Registration failed.")
+    throw new Error(data.message || "Đăng ký không thành công.")
   }
 
   return res.json()
 }
 
 export async function apiAdminVerifyEmail(payload: AdminVerifyEmailRequest) {
-  const response = await fetch("/api/auth/verify-email", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  })
+  if (payload.otp) {
+    const res = await fetchApi("/v1/public/user/verify/email", {
+      method: "PATCH",
+      body: JSON.stringify({
+        email: payload.email,
+        otp: payload.otp,
+      }),
+    })
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}))
-    throw new Error(data.message || "Email verification failed.")
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.message || "Xác thực email thất bại.")
+    }
+
+    return res.json()
+  } else {
+    const res = await fetchApi("/v1/public/user/send/email", {
+      method: "POST",
+      body: JSON.stringify({
+        email: payload.email,
+      }),
+    })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.message || "Gửi email xác thực thất bại.")
+    }
+
+    return res.json()
   }
-
-  return response.json()
 }

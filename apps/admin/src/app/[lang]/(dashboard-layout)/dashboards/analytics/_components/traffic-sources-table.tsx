@@ -1,5 +1,6 @@
 "use client"
 
+import type { DynamicIconNameType } from "@/types"
 import type { TrafficSourcesType } from "../types"
 
 import {
@@ -29,11 +30,11 @@ export function TrafficSourcesTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((item) => (
+        {(data || []).map((item) => (
           <TableRow key={item.name}>
             <TableCell className="w-6" aria-hidden>
               <DynamicIcon
-                name={item.icon}
+                name={(item.icon as DynamicIconNameType) || "Globe"}
                 style={{ color: item.fill }}
                 className="h-3 w-3 stroke-3"
               />
@@ -41,14 +42,14 @@ export function TrafficSourcesTable({
             <TableCell className="font-semibold">{item.name}</TableCell>
             <TableCell>
               <span className="text-muted-foreground" aria-hidden>
-                Visitors:{" "}
+                Lượt:{" "}
               </span>
-              <span className="font-semibold">
-                {item.visitors.toLocaleString()}
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                {Number(item.visitors ?? 0).toLocaleString()}
               </span>
             </TableCell>
             <TableCell className="text-end">
-              <PercentageChangeBadge value={item.percentageChange} />
+              <PercentageChangeBadge value={Number(item.percentageChange ?? 0)} />
             </TableCell>
           </TableRow>
         ))}

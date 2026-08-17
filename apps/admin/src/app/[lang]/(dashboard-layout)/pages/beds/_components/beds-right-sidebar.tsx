@@ -15,7 +15,8 @@ import {
   User,
 } from "lucide-react"
 
-import type { CultivationBedLocation, Tree } from "./use-beds-table"
+import type { CareLog, Tree } from "@/types"
+import type { CultivationBedLocation } from "./use-beds-table"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,8 +28,8 @@ interface BedsRightSidebarProps {
   selectedLocationId: string | null
   locations: CultivationBedLocation[]
   loadingTreeDetails: boolean
-  selectedTreeDetails: any | null
-  selectedTreeCareLogs: any[]
+  selectedTreeDetails: Tree | null
+  selectedTreeCareLogs: CareLog[]
   handleSingleWatering: (loc: CultivationBedLocation) => void
   handleSingleFertilizing: (loc: CultivationBedLocation) => void
   getOwnerName: (userId: string | undefined) => string
@@ -94,7 +95,7 @@ export function BedsRightSidebar({
 
   return (
     <div
-      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-all duration-300 ${
+      className={`flex flex-col h-full bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-xs transition-[width,opacity] duration-300 ${
         rightSidebarOpen
           ? "w-full lg:w-80"
           : "w-0 lg:w-0 opacity-0 pointer-events-none hidden"
@@ -197,9 +198,12 @@ export function BedsRightSidebar({
                         Dự kiến thu hoạch:
                       </span>
                       <span className="font-bold text-emerald-600 font-mono">
-                        {selectedTreeDetails.expectedHarvestAt
+                        {selectedTreeDetails.expectedHarvestAt ||
+                        selectedTreeDetails.estimatedHarvestDate
                           ? new Date(
-                              selectedTreeDetails.expectedHarvestAt
+                              selectedTreeDetails.expectedHarvestAt ||
+                                selectedTreeDetails.estimatedHarvestDate ||
+                                ""
                             ).toLocaleDateString("vi-VN", {
                               timeZone: "Asia/Ho_Chi_Minh",
                             })
@@ -257,7 +261,7 @@ export function BedsRightSidebar({
                       </div>
                     ) : (
                       <div className="space-y-3 relative before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-100 dark:before:bg-slate-800">
-                        {selectedTreeCareLogs.map((log: any) => (
+                        {selectedTreeCareLogs.map((log: CareLog) => (
                           <div
                             key={log.id}
                             className="relative pl-5 text-[10px]"
@@ -296,12 +300,16 @@ export function BedsRightSidebar({
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-32 text-center text-slate-455 font-semibold gap-2.5">
-            <Sprout className="h-7 w-7 text-slate-350 animate-pulse" />
-            <div className="text-xs">Chưa chọn vị trí ô đất</div>
-            <p className="text-[10px] text-slate-400 max-w-[220px] font-medium leading-relaxed">
-              Vui lòng nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới trung
-              tâm để xem và biên soạn hồ sơ cây sâm.
+          <div className="flex flex-col items-center justify-center py-24 px-4 text-center border-2 border-dashed border-emerald-500/20 rounded-2xl bg-emerald-500/[0.02]">
+            <div className="size-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
+              <Sprout className="h-6 w-6 text-emerald-600 dark:text-emerald-400 animate-pulse" />
+            </div>
+            <div className="text-xs font-bold text-slate-700 dark:text-slate-200">
+              Chưa chọn vị trí ô đất
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1 max-w-[200px] leading-relaxed">
+              Nhấp vào bất kỳ tọa độ ô đất nào trên sơ đồ lưới để tra cứu hồ sơ
+              và chăm sóc cây sâm.
             </p>
           </div>
         )}

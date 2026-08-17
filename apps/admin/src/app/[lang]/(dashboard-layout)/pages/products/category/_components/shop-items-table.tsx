@@ -2,6 +2,8 @@
 
 import { Plus } from "lucide-react"
 
+import type { PaginationMeta, ShopItem } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -28,29 +30,9 @@ import { ShopItemDialog } from "./shop-item-dialog"
 import { ShopItemsList } from "./shop-items-list"
 import { useShopItemsManager } from "./use-shop-items-manager"
 
-interface ShopItem {
-  id: string
-  code: string
-  name: string
-  price: number
-  unit: string
-  category: string
-  stock?: number
-  status?: string
-  images?: string[]
-  description?: string
-}
-
 interface ShopItemsTableProps {
   initialItems: ShopItem[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

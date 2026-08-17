@@ -1,0 +1,7 @@
+{
+    "list": "Successfully retrieved banners list.",
+    "get": "Successfully retrieved banner details.",
+    "create": "Successfully created new banner.",
+    "update": "Successfully updated banner.",
+    "delete": "Successfully deleted banner."
+}

@@ -1,7 +1,5 @@
 import type { AnalyticsDashboardStats } from "../types"
 
-import { newVsReturningVisitors } from "../_data/new-vs-returning-visitors"
-
 import { DashboardCard } from "@/components/dashboards/dashboard-card"
 import { NewVsReturningVisitorsChart } from "./new-vs-returning-visitors-chart"
 import { NewVsReturningVisitorsList } from "./new-vs-returning-visitors-list"
@@ -11,20 +9,35 @@ export function NewVsReturningVisitors({
 }: {
   stats?: AnalyticsDashboardStats
 }) {
-  const visitors = stats?.newVsReturning
-    ? {
-        new: {
-          value: stats.newVsReturning.summary.newVisitors,
-          percentageChange: 0.65,
-          fill: "hsl(var(--chart-1))",
-        },
-        returning: {
-          value: stats.newVsReturning.summary.returningVisitors,
-          percentageChange: 0.35,
-          fill: "hsl(var(--chart-2))",
-        },
+  const summary = stats?.newVsReturning?.summary as
+    | {
+        newVisitors?: number
+        returningVisitors?: number
+        singleOrderUsers?: number
+        returningUsers?: number
       }
-    : newVsReturningVisitors.visitors
+    | undefined
+
+  const newCount = Number(
+    summary?.newVisitors ?? summary?.singleOrderUsers ?? 0
+  )
+  const returningCount = Number(
+    summary?.returningVisitors ?? summary?.returningUsers ?? 0
+  )
+  const total = newCount + returningCount || 1
+
+  const visitors = {
+    new: {
+      value: newCount,
+      percentageChange: +(newCount / total).toFixed(2),
+      fill: "hsl(var(--chart-1))",
+    },
+    returning: {
+      value: returningCount,
+      percentageChange: +(returningCount / total).toFixed(2),
+      fill: "hsl(var(--chart-2))",
+    },
+  }
 
   return (
     <DashboardCard

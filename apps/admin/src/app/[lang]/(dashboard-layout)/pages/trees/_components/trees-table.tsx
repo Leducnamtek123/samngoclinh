@@ -2,6 +2,8 @@
 
 import { Plus } from "lucide-react"
 
+import type { Bed, PaginationMeta, Tree } from "@/types"
+
 import { useTranslation } from "@/providers/i18n-provider"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +15,6 @@ import {
 } from "@/components/ui/card"
 import {
   ConfirmationDialog,
-  ErrorState,
   ToastCard,
 } from "@/components/ui/feedback-components"
 import { Input } from "@/components/ui/input"
@@ -28,46 +29,10 @@ import { TreeDialog } from "./tree-dialog"
 import { TreesList } from "./trees-list"
 import { useTreesManager } from "./use-trees-manager"
 
-interface Tree {
-  id: string
-  code: string
-  name: string
-  ageYear: number
-  quantity: number
-  status: string
-  bedCode?: string
-  ownerUserId?: string
-  carePackageCode?: string
-  carePackageExpiredAt?: string
-  protectionPackageCode?: string
-  protectionPackageExpiredAt?: string
-  plantedAt?: string
-  healthStatus?: string
-  lastCareDate?: string
-  nextCareDate?: string
-  expectedHarvestAt?: string
-  images?: string[]
-  priceBought?: number
-  metadata?: any
-}
-
-interface Bed {
-  id: string
-  code: string
-  name: string
-}
-
 interface TreesTableProps {
   initialTrees: Tree[]
   beds: Bed[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 
@@ -79,41 +44,32 @@ export function TreesTable({
 }: TreesTableProps) {
   const { t } = useTranslation()
   const {
-    trees,
     filteredTrees,
-    searchQuery,
-    setSearchQuery,
-    statusFilter,
     users,
-    getOwnerName,
+    searchVal,
+    setSearchVal,
     errorMsg,
     setErrorMsg,
     successMsg,
     setSuccessMsg,
+    selectedTreeIds,
     confirmDialog,
     setConfirmDialog,
     dialogState,
     setDialogState,
-    handlePageChange,
-    handleStatusFilterChange,
+    handleToggleSelect,
+    handleToggleAll,
     handleOpenCreate,
     handleOpenEdit,
     handleSave,
     handleDelete,
-    handleFormChange: _handleFormChange,
+    handleBulkDelete,
+    handlePageChange,
+    handleFilterStatus,
+    handleFilterBed,
   } = useTreesManager({ initialTrees, beds, initialError })
 
-  if (trees.length === 0 && errorMsg) {
-    return (
-      <div className="py-12">
-        <ErrorState
-          title={t("messages.errorOccurred")}
-          description={errorMsg}
-          onRetry={() => window.location.reload()}
-        />
-      </div>
-    )
-  }
+  const selectedTreeIdsSet = new Set(selectedTreeIds)
 
   return (
     <div className="space-y-6">
@@ -135,54 +91,82 @@ export function TreesTable({
       <Card className="border-slate-200 shadow-sm dark:border-slate-800">
         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4">
           <div>
-            <CardTitle>{t("trees.title")}</CardTitle>
+            <CardTitle>{t("trees.tableTitle")}</CardTitle>
             <CardDescription>
-              {filteredTrees.length} total entries
+              {t("trees.tableDescription").replace(
+                "{count}",
+                String(filteredTrees.length)
+              )}
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <Input
-              placeholder={t("common.actions.search")}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="max-w-[250px]"
+              placeholder={t("trees.placeholders.search")}
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              className="max-w-[200px]"
             />
-            <Select
-              value={statusFilter}
-              onValueChange={handleStatusFilterChange}
-            >
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder={t("trees.fields.healthStatus")} />
+
+            {/* Filter by Bed */}
+            <Select defaultValue="all" onValueChange={handleFilterBed}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder={t("trees.filters.bed")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">
-                  {t("common.actions.filter")}: All
+                  {t("trees.filters.allBeds")}
+                </SelectItem>
+                {beds.map((b) => (
+                  <SelectItem key={b.id} value={b.code}>
+                    {b.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Filter by Status */}
+            <Select defaultValue="all" onValueChange={handleFilterStatus}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder={t("trees.filters.status")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {t("trees.filters.allStatus")}
                 </SelectItem>
                 <SelectItem value="active">
-                  {t("common.status.active")}
+                  {t("trees.status.active")}
                 </SelectItem>
                 <SelectItem value="harvested">
-                  {t("common.status.completed")}
+                  {t("trees.status.harvested")}
                 </SelectItem>
+                <SelectItem value="diseased">
+                  {t("trees.status.diseased")}
+                </SelectItem>
+                <SelectItem value="dead">{t("trees.status.dead")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent>
           <TreesList
-            filteredTrees={filteredTrees}
-            searchQuery={searchQuery}
-            onClearSearch={() => setSearchQuery("")}
-            onOpenCreate={handleOpenCreate}
+            trees={filteredTrees}
+            selectedTreeIdsSet={selectedTreeIdsSet}
+            onToggleSelect={handleToggleSelect}
+            onToggleAll={handleToggleAll}
             onOpenEdit={handleOpenEdit}
             onDelete={handleDelete}
-            getOwnerName={getOwnerName}
+            onBulkDelete={handleBulkDelete}
+            deletingId={null}
+            searchVal={searchVal}
+            onClearSearch={() => setSearchVal("")}
+            onOpenCreate={handleOpenCreate}
             metadata={metadata}
-            handlePageChange={handlePageChange}
+            onPageChange={handlePageChange}
           />
         </CardContent>
       </Card>
 
+      {/* Create / Edit Dialog */}
       <TreeDialog
         isOpen={dialogState.isOpen}
         onClose={() => setDialogState((prev) => ({ ...prev, isOpen: false }))}

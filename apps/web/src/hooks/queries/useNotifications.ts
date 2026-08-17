@@ -1,18 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { notificationService } from '@/services/notification.service';
 
 export function useNotificationsList(enabled = true) {
   return useQuery({
     queryKey: ['notifications', 'list'],
-    queryFn: async () => {
-      try {
-        const res = await fetchApiClient('/v1/shared/notification/list');
-        return res?.data || res || [];
-      } catch (e) {
-        console.warn('Failed to fetch notifications from API:', e);
-        return [];
-      }
-    },
+    queryFn: async () => await notificationService.getList(),
     enabled,
     staleTime: 1000 * 30, // 30s
   });
@@ -21,11 +13,7 @@ export function useNotificationsList(enabled = true) {
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      return fetchApiClient(`/v1/shared/notification/update/read/${id}`, {
-        method: 'PATCH',
-      });
-    },
+    mutationFn: async (id: string) => await notificationService.markAsRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -35,11 +23,7 @@ export function useMarkNotificationRead() {
 export function useMarkAllNotificationsRead() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => {
-      return fetchApiClient('/v1/shared/notification/update/read-all', {
-        method: 'POST',
-      });
-    },
+    mutationFn: async () => await notificationService.markAllAsRead(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
@@ -49,15 +33,7 @@ export function useMarkAllNotificationsRead() {
 export function useNotificationSettings(enabled = true) {
   return useQuery({
     queryKey: ['notifications', 'settings'],
-    queryFn: async () => {
-      try {
-        const res = await fetchApiClient('/v1/shared/notification/list/user-setting');
-        return res?.data || res || null;
-      } catch (e) {
-        console.warn('Failed to fetch notification settings:', e);
-        return null;
-      }
-    },
+    queryFn: async () => await notificationService.getUserSetting(),
     enabled,
   });
 }
@@ -65,12 +41,8 @@ export function useNotificationSettings(enabled = true) {
 export function useUpdateNotificationSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: any) => {
-      return fetchApiClient('/v1/shared/notification/update/setting', {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-    },
+    mutationFn: async (payload: Parameters<typeof notificationService.updateUserSetting>[0]) =>
+      await notificationService.updateUserSetting(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications', 'settings'] });
     },

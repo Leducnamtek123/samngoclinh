@@ -8,9 +8,8 @@ import {
   Users,
 } from "lucide-react"
 
+import type { BackofficeOverview } from "@/types"
 import type { Metadata } from "next"
-
-import { fetchApi } from "@/lib/api"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -23,6 +22,7 @@ import { Overview } from "./_components/overview"
 import { PerformanceOverTime } from "./_components/performance-over-time"
 import { TrafficSources } from "./_components/traffic-sources"
 import { VisitorsByCountry } from "./_components/visitors-by-country"
+import { backofficeService } from "@/services/backoffice.service"
 
 export const metadata: Metadata = {
   title: "Bảng điều khiển | Sâm Ngọc Linh Admin",
@@ -30,47 +30,53 @@ export const metadata: Metadata = {
     "Báo cáo thống kê hiệu năng, canh tác và kinh doanh hệ thống Sâm Ngọc Linh",
 }
 
-interface OverviewData {
-  totalPendingApprovals: number
-  totalActiveProviders: number
-  totalArticles: number
-  totalGardens: number
-  totalBeds: number
-  totalTrees: number
-  totalOrders: number
-  totalRevenue: number
-  totalContracts: number
-  totalSignedContracts: number
-  totalUsers: number
+const INITIAL_ZERO_STATS: BackofficeOverview = {
+  domains: ["cultivation", "orders", "catalog", "wallet", "contracts"],
+  totalPendingApprovals: 0,
+  totalActiveProviders: 0,
+  totalArticles: 0,
+  totalGardens: 0,
+  totalBeds: 0,
+  totalTrees: 0,
+  totalOrders: 0,
+  totalRevenue: 0,
+  totalContracts: 0,
+  totalSignedContracts: 0,
+  totalUsers: 0,
+  monthlyRevenue: [],
+  trafficSources: [],
+  newVsReturning: {
+    summary: { newVisitors: 0, returningVisitors: 0 },
+    data: [],
+  },
+  visitorsByCountry: [],
+  engagementByDevice: [],
 }
 
-export default async function AnalyticsPage() {
-  let stats: OverviewData = {
-    totalPendingApprovals: 0,
-    totalActiveProviders: 0,
-    totalArticles: 0,
-    totalGardens: 0,
-    totalBeds: 0,
-    totalTrees: 0,
-    totalOrders: 0,
-    totalRevenue: 0,
-    totalContracts: 0,
-    totalSignedContracts: 0,
-    totalUsers: 0,
-  }
+interface AnalyticsPageProps {
+  params: Promise<{
+    lang: string
+  }>
+}
+
+export default async function AnalyticsPage(props: AnalyticsPageProps) {
+  await props.params
+  let stats: BackofficeOverview = INITIAL_ZERO_STATS
   let errorMsg = ""
 
   try {
-    const res = await fetchApi("/admin/backoffice/overview")
-    const payload = await res.json()
-    if (res.status >= 400) {
-      errorMsg = payload?.message || "Không thể tải báo cáo từ hệ thống"
-    } else if (payload.data) {
-      stats = payload.data
+    const res = await backofficeService.getOverview()
+    if (res && res.data) {
+      stats = {
+        ...INITIAL_ZERO_STATS,
+        ...res.data,
+      }
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : "Không thể kết nối đến máy chủ API"
     console.error("Error fetching admin backoffice overview:", e)
-    errorMsg = "Không thể kết nối đến máy chủ API"
+    errorMsg = message
   }
 
   return (
@@ -96,7 +102,7 @@ export default async function AnalyticsPage() {
             variant="outline"
             className="bg-blue-50 border-blue-200 text-blue-700 font-semibold px-3 py-1"
           >
-            Hợp tác xã sâm Ngọc Linh
+            Nông trại Sâm Ngọc Linh
           </Badge>
         </div>
       </div>
@@ -121,7 +127,7 @@ export default async function AnalyticsPage() {
               </AlertDescription>
             </div>
           </div>
-          <Link href="/pages/users">
+          <Link href="/pages/kyc-approvals">
             <Button
               size="sm"
               className="bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs gap-1.5"
@@ -138,7 +144,7 @@ export default async function AnalyticsPage() {
       {/* Main visual charts grid */}
       <section className="grid gap-6 md:grid-cols-2">
         <TrafficSources stats={stats} />
-        <ConversionFunnel />
+        <ConversionFunnel stats={stats} />
         <NewVsReturningVisitors stats={stats} />
         <PerformanceOverTime stats={stats} />
         <VisitorsByCountry stats={stats} />

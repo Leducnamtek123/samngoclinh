@@ -1,27 +1,21 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { MapPin, User, X, Check, Loader2, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
-import { MapPin, User, X, Check, Loader2, Plus } from 'lucide-react';
-import {
-  Form,
-  FormInput,
-  FormPhoneInput,
-} from '@/components/ui/form';
+import { toast } from 'sonner';
 import { FormAddressPicker } from '@/components/address/FormAddressPicker';
 import { Button } from '@/components/ui/button';
-import { fetchApiClient } from '@/lib/ApiClient';
-import { toast } from 'sonner';
-import {
-  shippingAddressSchema,
-  type ShippingAddressFormValues,
-} from '@/lib/validation/schemas';
-import { AddressCardItem } from './AddressCardItem';
+import { Form, FormInput, FormPhoneInput } from '@/components/ui/form';
+import { shippingAddressSchema } from '@/lib/validation/schemas';
+import type { ShippingAddressFormValues } from '@/lib/validation/schemas';
+import { userService } from '@/services/user.service';
 import type { AddressItem } from '@/types';
+import { AddressCardItem } from './AddressCardItem';
 
-export interface AddressModalProps {
+export type AddressModalProps = {
   isOpen: boolean;
   mode?: 'add' | 'select';
   onClose: () => void;
@@ -31,9 +25,13 @@ export interface AddressModalProps {
   onSelectAddress?: (id: string) => void;
   onOpenAddModal?: () => void;
   // Add mode props
-  onSubmitSuccess?: (data: ShippingAddressFormValues & { newId?: string }) => void;
+  onSubmitSuccess?: (
+    data: (ShippingAddressFormValues & { newId?: string }) | Partial<AddressItem>,
+  ) => void;
   initialValues?: Partial<ShippingAddressFormValues>;
-}
+};
+
+const generateLocalId = () => Date.now().toString();
 
 export function AddressModal({
   isOpen,
@@ -51,7 +49,9 @@ export function AddressModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      return;
+    }
     const origOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
@@ -70,41 +70,48 @@ export function AddressModal({
   });
 
   const handleFormSubmit = async (data: ShippingAddressFormValues) => {
+    if (isSubmitting) {
+      return;
+    }
     setIsSubmitting(true);
-    let createdId = Date.now().toString();
+    let createdId = generateLocalId();
     try {
-      const res: any = await fetchApiClient('/v1/shared/user/address/add', {
-        method: 'POST',
-        body: JSON.stringify({
-          detail: data.shippingAddress,
-          recipient: data.recipientName,
-          phone: data.recipientPhone,
-          isDefault: false,
-        }),
-      });
-      if (res?.data?.id) {
-        createdId = res.data.id;
+      const res = (await userService.addAddress({
+        detail: data.shippingAddress,
+        recipient: data.recipientName,
+        phone: data.recipientPhone,
+        isDefault: false,
+      })) as { data?: { id?: string }; id?: string } | undefined;
+      if (res?.data?.id || res?.id) {
+        createdId = res.data?.id || res.id || createdId;
       }
       toast.success(tAdd('savedSuccess'));
     } catch {
       // Local fallback
-    } finally {
-      setIsSubmitting(false);
-      onSubmitSuccess?.({ ...data, newId: createdId });
-      onClose();
     }
+    setIsSubmitting(false);
+    onSubmitSuccess?.({ ...data, newId: createdId });
+    onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
-      <div data-lenis-prevent className="bg-white dark:bg-slate-900 bg-card text-card-foreground border border-border w-full max-w-lg rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[88vh] shrink-0">
+    <div
+      data-lenis-prevent
+      className="animate-in fade-in fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-black/60 p-3 backdrop-blur-xs transition-opacity duration-200 sm:p-4"
+    >
+      <div
+        data-lenis-prevent
+        className="flex max-h-[88vh] w-full max-w-lg shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-card bg-white text-card-foreground shadow-xl dark:bg-slate-900"
+      >
         {/* Sticky Header */}
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card z-10 shrink-0">
+        <div className="z-10 flex shrink-0 items-center justify-between border-border bg-card bg-white px-6 py-4 dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-primary dark:text-emerald-400 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60">
-              <MapPin className="w-5 h-5" />
+            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50 p-2 text-primary dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-400">
+              <MapPin className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">
@@ -117,17 +124,21 @@ export function AddressModal({
           </div>
           <button
             type="button"
+            aria-label={tChange('close')}
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+            className="cursor-pointer rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-gray-200"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Modal Body */}
         {mode === 'select' ? (
           <>
-            <div data-lenis-prevent className="p-6 space-y-3 flex-1 overflow-y-auto overscroll-contain min-h-0">
+            <div
+              data-lenis-prevent
+              className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-6"
+            >
               {savedAddresses.map((addr) => (
                 <AddressCardItem
                   key={addr.id}
@@ -143,7 +154,7 @@ export function AddressModal({
             </div>
 
             {/* Selection Footer */}
-            <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 flex items-center justify-between z-10 rounded-b-[20px] shrink-0">
+            <div className="z-10 flex shrink-0 items-center justify-between rounded-b-[20px] border-t border-gray-100 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-slate-900/50">
               <Button
                 type="button"
                 variant="outline"
@@ -152,9 +163,9 @@ export function AddressModal({
                   onClose();
                   onOpenAddModal?.();
                 }}
-                className="text-xs font-bold text-emerald-800 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5"
+                className="flex items-center gap-1.5 border-emerald-200 text-xs font-bold text-emerald-800 dark:border-emerald-800 dark:text-emerald-400"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 <span>{tChange('addNewAddress')}</span>
               </Button>
 
@@ -163,7 +174,7 @@ export function AddressModal({
                 variant="secondary"
                 size="sm"
                 onClick={onClose}
-                className="text-xs font-bold px-4"
+                className="px-4 text-xs font-bold"
               >
                 {tChange('close')}
               </Button>
@@ -174,16 +185,19 @@ export function AddressModal({
           <Form
             form={form}
             onSubmit={form.handleSubmit(handleFormSubmit)}
-            className="flex-1 flex flex-col min-h-0 overflow-hidden"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden"
           >
-            <div data-lenis-prevent className="p-6 space-y-4 flex-1 overflow-y-auto overscroll-contain min-h-0">
+            <div
+              data-lenis-prevent
+              className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-6"
+            >
               <FormInput
                 control={form.control}
                 name="recipientName"
                 label={tAdd('recipientNameLabel')}
                 required
                 placeholder={tAdd('recipientNamePlaceholder')}
-                prefixIcon={<User className="w-4 h-4 text-primary" />}
+                prefixIcon={<User className="h-4 w-4 text-primary" />}
               />
 
               <FormPhoneInput
@@ -205,7 +219,7 @@ export function AddressModal({
             </div>
 
             {/* Add Mode Footer */}
-            <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-slate-900/50 shrink-0 z-10 rounded-b-[20px]">
+            <div className="z-10 flex shrink-0 items-center justify-end gap-3 rounded-b-[20px] border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-gray-800 dark:bg-slate-900/50">
               <Button
                 type="button"
                 variant="secondary"
@@ -219,12 +233,12 @@ export function AddressModal({
                 type="submit"
                 variant="emerald"
                 disabled={isSubmitting}
-                className="px-6 py-2 text-xs font-bold flex items-center gap-1.5"
+                className="flex items-center gap-1.5 px-6 py-2 text-xs font-bold"
               >
                 {isSubmitting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Check className="w-4 h-4" />
+                  <Check className="h-4 w-4" />
                 )}
                 <span>{tAdd('saveAndUse')}</span>
               </Button>

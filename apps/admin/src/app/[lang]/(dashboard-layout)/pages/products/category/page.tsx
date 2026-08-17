@@ -6,9 +6,8 @@ import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { CategoriesTable } from "./_components/categories-table"
 
 export const metadata: Metadata = {
-  title: "Product Categories | Sâm Ngọc Linh Admin",
-  description:
-    "Manage commercial product categories and agricultural classifications",
+  title: "Danh mục sản phẩm | Sâm Ngọc Linh Admin",
+  description: "Quản lý danh mục sản phẩm thương mại và phân loại sản phẩm",
 }
 
 interface CategoryPageProps {

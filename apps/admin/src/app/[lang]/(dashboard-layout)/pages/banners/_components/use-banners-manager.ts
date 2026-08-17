@@ -16,7 +16,7 @@ interface Banner {
 // Helper to crop image
 async function getCroppedImg(
   imageSrc: string,
-  pixelCrop: any
+  pixelCrop: { x: number; y: number; width: number; height: number }
 ): Promise<Blob | null> {
   const image = new window.Image()
   image.src = imageSrc
@@ -220,9 +220,11 @@ export function useBannersManager(
           image: payload.data?.url || "",
         }))
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setDialogError(err?.message || "Lỗi kết nối khi tải ảnh lên")
+      const message =
+        err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
+      setDialogError(message)
     } finally {
       setUploadingImage(false)
       setCropImageSrc(null)
@@ -355,7 +357,10 @@ export function useBannersManager(
     handleDeleteConfirm,
     sortedBanners,
     pageNameMap,
-    handleCropComplete: (_croppedArea: any, croppedAreaPixels: any) => {
+    handleCropComplete: (
+      _croppedArea: { x: number; y: number; width: number; height: number },
+      croppedAreaPixels: { x: number; y: number; width: number; height: number }
+    ) => {
       croppedAreaPixelsRef.current = croppedAreaPixels
     },
   }

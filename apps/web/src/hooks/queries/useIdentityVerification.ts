@@ -1,9 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
+
+export type IdentityDocumentType = 'cccd' | 'driver_license' | 'passport';
 
 export type UserIdentityDocument = {
   id?: string;
   userId?: string;
+  documentType?: IdentityDocumentType | string;
   frontImageUrl?: string;
   backImageUrl?: string;
   front?: string;
@@ -21,16 +24,20 @@ export type UserIdentityDocument = {
 export type UserIdentityHistoryItem = {
   id: string;
   userId: string;
+  documentType?: IdentityDocumentType | string;
   frontImageUrl: string;
-  backImageUrl: string;
+  backImageUrl?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | string;
   rejectionReason?: string;
+  idCardNumber?: string;
+  fullName?: string;
   reviewedAt?: string;
   reviewedBy?: string;
   createdAt: string;
 };
 
 export type SaveIdentityDocumentPayload = {
+  documentType?: IdentityDocumentType | string;
   front?: File | null;
   back?: File | null;
   frontBase64?: string;
@@ -39,25 +46,19 @@ export type SaveIdentityDocumentPayload = {
   fullName?: string;
 };
 
-export function useIdentityVerificationStatus(initialData?: any) {
+export function useIdentityVerificationStatus(initialData?: UserIdentityDocument | null) {
   return useQuery({
     queryKey: ['identity-document'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/identity-document')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
-    initialData: initialData ?? null,
+    queryFn: async () => await userService.getIdentityDocument(),
+    initialData,
   });
 }
 
-export function useIdentityVerificationHistory(initialData?: any) {
+export function useIdentityVerificationHistory(initialData?: UserIdentityDocument[]) {
   return useQuery({
     queryKey: ['identity-document-history'],
-    queryFn: () =>
-      fetchApiClient('/v1/shared/user/identity-document/history')
-        .then((res) => (Array.isArray(res?.data) ? res.data : []))
-        .catch(() => []),
-    initialData: initialData ?? [],
+    queryFn: async () => await userService.getIdentityDocumentHistories(),
+    initialData,
   });
 }
 
@@ -65,29 +66,42 @@ export function useSubmitIdentityVerification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: SaveIdentityDocumentPayload) => {
-      if (payload.frontBase64 && payload.backBase64) {
-        return fetchApiClient('/v1/shared/user/identity-document', {
-          method: 'PUT',
-          body: JSON.stringify({
-            frontBase64: payload.frontBase64,
-            backBase64: payload.backBase64,
-            idCardNumber: payload.idCardNumber,
-            fullName: payload.fullName,
-          }),
+    mutationFn: async (payload: SaveIdentityDocumentPayload | FormData) => {
+      if (typeof FormData !== 'undefined' && payload instanceof FormData) {
+        return await userService.saveIdentityDocument(payload);
+      }
+
+      const pay = payload as SaveIdentityDocumentPayload;
+      if (pay.frontBase64) {
+        return await userService.saveIdentityDocument({
+          documentType: pay.documentType || 'cccd',
+          frontBase64: pay.frontBase64,
+          backBase64: pay.backBase64,
+          idCardNumber: pay.idCardNumber,
+          fullName: pay.fullName,
         });
       }
 
       const formData = new FormData();
-      if (payload.front) formData.append('front', payload.front);
-      if (payload.back) formData.append('back', payload.back);
-      if (payload.idCardNumber) formData.append('idCardNumber', payload.idCardNumber);
-      if (payload.fullName) formData.append('fullName', payload.fullName);
+      if (pay.documentType) {
+        formData.append('documentType', pay.documentType);
+      }
+      if (pay.front) {
+        formData.append('front', pay.front);
+        formData.append('frontImage', pay.front);
+      }
+      if (pay.back) {
+        formData.append('back', pay.back);
+        formData.append('backImage', pay.back);
+      }
+      if (pay.idCardNumber) {
+        formData.append('idCardNumber', pay.idCardNumber);
+      }
+      if (pay.fullName) {
+        formData.append('fullName', pay.fullName);
+      }
 
-      return fetchApiClient('/v1/shared/user/identity-document', {
-        method: 'PUT',
-        body: formData,
-      });
+      return await userService.saveIdentityDocument(formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['identity-document'] });
@@ -96,4 +110,3 @@ export function useSubmitIdentityVerification() {
     },
   });
 }
-

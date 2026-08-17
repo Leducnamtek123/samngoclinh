@@ -1,17 +1,18 @@
 'use client';
 
+import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import * as React from 'react';
-import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { FormItem, FormDescription, FormMessage } from './Form';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { FloatingInput } from '../floating-input';
 import { Input } from '../input';
+import { FormItem, FormDescription, FormMessage } from './Form';
 
-export interface FormInputProps<
+export type FormInputProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name'> {
-  control: Control<TFieldValues, any>;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  control: Control<TFieldValues>;
   name: TName;
   label?: string;
   description?: string;
@@ -24,11 +25,11 @@ export interface FormInputProps<
   clearButton?: boolean;
   characterCounter?: boolean;
   fullWidth?: boolean;
-}
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name'>;
 
 export function FormInput<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,
@@ -68,9 +69,9 @@ export function FormInput<
   };
 
   const renderedSuffix = (
-    <div className="flex items-center gap-1.5 shrink-0">
+    <div className="flex shrink-0 items-center gap-1.5">
       {loading && (
-        <span className="w-4 h-4 border-2 border-emerald-700 border-t-transparent rounded-full animate-spin shrink-0" />
+        <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-emerald-700 border-t-transparent" />
       )}
 
       {!loading && clearButton && valueStr.length > 0 && !disabled && (
@@ -78,19 +79,18 @@ export function FormInput<
           type="button"
           tabIndex={-1}
           onClick={handleClear}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded-full text-xs font-bold transition-colors cursor-pointer"
-          title="Xóa nội dung"
+          className="cursor-pointer rounded-full p-0.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
+          title="Clear"
+          aria-label="Clear"
         >
-          ✕
+          <X className="h-3.5 w-3.5" />
         </button>
       )}
 
-      {!loading && hasError && (
-        <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-      )}
+      {!loading && hasError && <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />}
 
       {!loading && !hasError && success && (
-        <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" />
       )}
 
       {!loading && !hasError && !success && suffixIcon && (
@@ -118,19 +118,21 @@ export function FormInput<
           value={valueStr}
           onChange={(e) => {
             field.onChange(e);
-            if (onChange) onChange(e);
+            if (onChange) {
+              onChange(e);
+            }
           }}
         />
       </FloatingInput>
 
-      <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <div>
           {(description || helperText) && (
             <FormDescription>{description || helperText}</FormDescription>
           )}
         </div>
         {characterCounter && maxLength && (
-          <span className="font-mono text-[11px] text-gray-400 font-medium">
+          <span className="font-mono text-[11px] font-medium text-gray-400">
             {valueStr.length}/{maxLength}
           </span>
         )}

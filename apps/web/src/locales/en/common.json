@@ -9,8 +9,21 @@
   },
   "BaseTemplate": {
     "description": "Ngoc Linh Ginseng Liquor",
-    "footer_text": "© {year} {name}.",
-    "main_navigation_label": "Main Navigation"
+    "footer_text": "© {year} {name}. All rights reserved.",
+    "main_navigation_label": "Main navigation",
+    "company_name": "Ngoc Linh Ginseng Joint Stock Company",
+    "company_address": "Tra Linh Commune, Nam Tra My District, Quang Nam Province, Vietnam",
+    "company_hotline": "Consultation Hotline: 0967 234 234",
+    "company_email": "Email: lienhe@samngoclinh.vn",
+    "certified_origin": "100% Certified National Treasure Ngoc Linh Ginseng",
+    "quick_links": "Quick Links",
+    "customer_support": "Customer Support",
+    "legal_policies": "Legal Policies",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "shipping_policy": "Shipping Policy",
+    "return_policy": "Return & Refund Policy",
+    "connect_with_us": "Connect With Us"
   },
   "nav": {
     "home": "Home",
@@ -24,24 +37,181 @@
     "profile": "Profile",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "contracts": "My Contracts",
+    "trace": "Traceability",
+    "news": "News & Events",
+    "terms": "Policies & Terms",
+    "portfolio": "Portfolio",
+    "search_placeholder": "Search Ngoc Linh ginseng, liquor...",
+    "my_account": "My Account",
+    "my_orders": "My Orders",
+    "my_farm": "My Farm",
+    "security": "Security & Password",
+    "points_balance": "{points} Ginseng Points",
+    "member_rank": "Member Rank",
+    "ginseng": "Ginseng Plants",
+    "account": "Account"
+  },
+  "topBanner": {
+    "announcement": "🌾 2026 Planting Season Offer: Free 100% agricultural insurance when owning ginseng seedlings!",
+    "hotline": "Hotline: 0967 234 234",
+    "consultation": "Expert Consultation"
   },
   "categories": {
     "news": "News",
     "event": "Events",
     "guide": "User Guide",
-    "faq": "Knowledge Base"
+    "faq": "Knowledge & FAQ",
+    "wine": "Ginseng Wine",
+    "plants": "Seedling Plants",
+    "products": "Herbal Extracts & Tea",
+    "package": "Care Package"
   },
   "LocaleSwitcher": {
-    "change_language": "Change Language"
+    "change_language": "Change Language",
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "viewDetails": "View Details",
+    "create": "Create",
+    "update": "Update",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "close": "Close",
+    "back": "Back",
+    "backHome": "Back to Home",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "download": "Download",
+    "downloadPdf": "Download PDF",
+    "sign": "Sign Digitally",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "selectAll": "Select All",
+    "clearAll": "Clear All",
+    "apply": "Apply",
+    "loading": "Processing...",
+    "saving": "Saving...",
+    "submitting": "Submitting...",
+    "clearFilters": "Clear Filters",
+    "error": "Error",
+    "checkout": "Checkout",
+    "viewAll": "View All"
+  },
+  "status": {
+    "draft": "Draft",
+    "pending": "Pending",
+    "pending_confirmation": "Pending Confirmation",
+    "pending_payment": "Pending Payment",
+    "processing": "Processing",
+    "shipping": "Shipping",
+    "delivered": "Delivered",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "refunded": "Refunded",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "failed": "Failed",
+    "active": "Active",
+    "inactive": "Inactive",
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "signed": "Signed",
+    "unsigned": "Unsigned",
+    "unknown": "Unknown",
+    "pending_issue": "Pending Issue",
+    "pending_signature": "Pending Signature",
+    "shipped": "Shipped",
+    "in_transit": "In Transit"
+  },
+  "memberRank": {
+    "standard": "Standard Member",
+    "silver": "Silver Rank",
+    "gold": "Gold Rank",
+    "platinum": "Platinum Rank",
+    "diamond": "Diamond Rank",
+    "badge": "{rank} Member",
+    "pointsSuffix": "pts",
+    "bronze": "Bronze",
+    "vip": "VIP"
   },
   "confirmModal": {
+    "title": "Confirm Action",
+    "description": "Are you sure you want to perform this action?",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "deleteTitle": "Confirm Deletion",
+    "deleteDesc": "This action cannot be undone. Are you sure you want to delete?",
+    "logoutTitle": "Confirm Sign Out",
+    "logoutDesc": "Are you sure you want to sign out of your account?"
   },
   "errorState": {
     "title": "An error occurred",
     "description": "Unable to load data. Please try again later.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "notFoundTitle": "Content Not Found",
+    "notFoundDesc": "The content you are looking for does not exist or has been removed.",
+    "backHome": "Back to Home"
+  },
+  "emptyState": {
+    "title": "No Data",
+    "description": "There is currently no information to display.",
+    "noOrders": "You have no orders yet.",
+    "noContracts": "You have no electronic contracts yet.",
+    "noAddresses": "You have no saved delivery addresses.",
+    "noProducts": "No matching products found.",
+    "noNotifications": "You have no new notifications.",
+    "actionShop": "Explore Products Now",
+    "actionAddAddress": "Add New Address"
+  },
+  "pagination": {
+    "page": "Page {current} of {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "showing": "Showing {from}-{to} of {total} results"
+  },
+  "toasts": {
+    "success": "Action completed successfully!",
+    "error": "An error occurred, please try again.",
+    "copied": "Copied to clipboard!",
+    "loginRequired": "Please sign in to continue!",
+    "networkError": "Network connection error, please check your connection."
+  },
+  "formatters": {
+    "currencyUnit": "₫",
+    "currencyVND": "VND",
+    "treeUnit": "plant(s)",
+    "bottleUnit": "bottle(s)",
+    "itemUnit": "item(s)",
+    "yearUnit": "year(s)",
+    "pointUnit": "Ginseng Points"
+  },
+  "common": {
+    "close": "Close",
+    "noImage": "No Image",
+    "loading": "Loading...",
+    "searchPlaceholder": "Search products, news...",
+    "clear": "Clear search"
+  },
+  "notification": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
   }
 }

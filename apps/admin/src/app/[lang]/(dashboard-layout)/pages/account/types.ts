@@ -7,35 +7,35 @@ import type { NotificationPreferencesSchema } from "./settings/notifications/_sc
 import type { ChangePlanSchema } from "./settings/plan-and-billing/_schemas/change-plan-schema"
 import type { PaymentMethodSchema } from "./settings/plan-and-billing/_schemas/payment-method-schema"
 import type { AccountRecoveryOptionsSchema } from "./settings/security/_schemas/account-recovery-options-schema"
-import type { ChangePasswordSchema } from "./settings/security/_schemas/chnage-password-schema"
+import type { ChangePasswordSchema } from "./settings/security/_schemas/change-password-schema"
 import type { SecurityPreferencesSchema } from "./settings/security/_schemas/security-preferences-form-schema"
 
 export interface UserType {
-  id: string
-  firstName: string
-  lastName: string
-  name: string
-  password: string
-  username: string
-  role: string
-  avatar: string
-  background: string
-  status: string
-  phoneNumber: string
-  email: string
-  state: string
-  country: string
-  address: string
-  zipCode: string
-  language: string
-  timeZone: string
-  currency: string
-  organization: string
-  twoFactorAuth: boolean
-  loginAlerts: boolean
+  id?: string
+  firstName?: string
+  lastName?: string
+  name?: string
+  password?: string
+  username?: string
+  role?: string
+  avatar?: string
+  background?: string
+  status?: string
+  phoneNumber?: string
+  email?: string
+  state?: string
+  country?: string
+  address?: string
+  zipCode?: string
+  language?: string
+  timeZone?: string
+  currency?: string
+  organization?: string
+  twoFactorAuth?: boolean
+  loginAlerts?: boolean
   accountReoveryOption?: "email" | "sms" | "codes"
-  connections: number
-  followers: number
+  connections?: number
+  followers?: number
 }
 
 export interface PlanType {

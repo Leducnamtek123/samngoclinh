@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react"
 
-let rechartsCache: any = null
+import type * as RechartsModule from "recharts"
 
-export function useRecharts() {
-  const [recharts, setRecharts] = useState<any>(rechartsCache)
+let rechartsCache: typeof RechartsModule | null = null
+
+export function useRecharts(): typeof RechartsModule | null {
+  const [recharts, setRecharts] = useState<typeof RechartsModule | null>(
+    rechartsCache
+  )
 
   useEffect(() => {
     if (rechartsCache) {
@@ -11,12 +15,16 @@ export function useRecharts() {
     }
 
     let isMounted = true
-    import("recharts").then((m) => {
-      if (isMounted) {
-        rechartsCache = m
-        setRecharts(m)
-      }
-    })
+    import("recharts")
+      .then((m) => {
+        if (isMounted) {
+          rechartsCache = m
+          setRecharts(m)
+        }
+      })
+      .catch((err: unknown) => {
+        console.warn("Failed to load recharts:", err)
+      })
 
     return () => {
       isMounted = false

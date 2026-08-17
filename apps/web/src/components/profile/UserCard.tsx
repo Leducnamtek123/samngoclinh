@@ -1,6 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React from 'react';
+import { MemberRankBadge } from './MemberRankBadge';
 
 type UserCardProps = {
   fullName?: string;
@@ -10,32 +12,29 @@ type UserCardProps = {
 };
 
 export const UserCard: React.FC<UserCardProps> = ({
-  fullName = 'Khách hàng',
+  fullName = '',
   email = '',
-  rank = 'Khách hàng',
+  rank = 'bronze',
 }) => {
-  const initial = fullName.charAt(0).toUpperCase() || 'U';
+  const t = useTranslations('profile');
+  const displayName = fullName.trim() || email.split('@')[0] || t('fullName');
+  const initial = displayName.charAt(0).toUpperCase() || 'U';
 
   return (
-    <div className="p-4 bg-gradient-to-br from-emerald-900/90 to-emerald-950 text-white rounded-2xl shadow-sm border border-emerald-800/40 relative overflow-hidden mb-5">
-      {/* Subtle Background Pattern */}
-      <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl pointer-events-none" />
-
-      <div className="flex items-center gap-3.5 relative z-10">
-        <div className="w-11 h-11 rounded-full bg-emerald-700/80 border border-emerald-400/30 text-white flex items-center justify-center font-bold text-base shadow-inner flex-shrink-0">
+    <div className="relative mb-5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <div className="relative z-10 flex items-center gap-3.5">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-800 text-lg font-black text-white shadow-md shadow-emerald-950/20">
           {initial}
         </div>
-        <div className="overflow-hidden min-w-0 flex-1">
-          <h3 className="font-bold text-sm text-white truncate leading-tight">
-            {fullName}
+        <div className="min-w-0 flex-1 overflow-hidden">
+          <h3 className="truncate text-sm leading-tight font-bold text-slate-900 dark:text-slate-100">
+            {displayName}
           </h3>
-          <p className="text-xs text-emerald-200/80 font-medium truncate mt-0.5">
+          <p className="mt-0.5 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
             {email}
           </p>
           <div className="mt-2 flex items-center gap-2">
-            <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/20 uppercase tracking-wider">
-              {rank}
-            </span>
+            <MemberRankBadge rank={rank} size="sm" />
           </div>
         </div>
       </div>

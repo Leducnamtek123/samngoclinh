@@ -2,6 +2,8 @@
 
 import { Plus, Trash2 } from "lucide-react"
 
+import type { Garden, PaginationMeta } from "@/types"
+
 import { Pagination } from "@/components/ui/app-pagination"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,38 +23,9 @@ import { GardenDialog } from "./garden-dialog"
 import { GardensList } from "./gardens-list"
 import { useGardensManager } from "./use-gardens-manager"
 
-interface Garden {
-  id: string
-  code: string
-  name: string
-  status: string
-  totalBeds: number
-  activeBeds: number
-  totalTrees: number
-  createdAt: string
-  location?: string
-  description?: string
-  area?: number
-  images?: string[]
-  latitude?: number
-  longitude?: number
-  managerName?: string
-  managerPhone?: string
-  establishedAt?: string
-  maxBeds?: number
-  metadata?: any
-}
-
 interface GardensTableProps {
   initialGardens: Garden[]
-  metadata: {
-    page: number
-    perPage: number
-    totalPage: number
-    count: number
-    hasNext: boolean
-    hasPrevious: boolean
-  } | null
+  metadata: PaginationMeta | null
   errorMsg?: string
 }
 

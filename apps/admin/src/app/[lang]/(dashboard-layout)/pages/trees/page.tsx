@@ -1,15 +1,15 @@
 import { Suspense } from "react"
 
+import type { Bed, PaginationMeta, Tree } from "@/types"
 import type { Metadata } from "next"
-
-import { fetchApi } from "@/lib/api"
 
 import { TableSkeleton } from "@/components/ui/loading-skeletons"
 import { TreesTable } from "./_components/trees-table"
+import { cultivationService } from "@/services/cultivation.service"
 
 export const metadata: Metadata = {
-  title: "Manage Plants & Trees | Sâm Ngọc Linh Admin",
-  description: "Track and manage Ginseng trees and gardens",
+  title: "Quản lý cây sâm | Sâm Ngọc Linh Admin",
+  description: "Theo dõi và quản lý danh sách cây sâm giống và vườn canh tác",
 }
 
 interface TreesPageProps {
@@ -31,42 +31,33 @@ export default async function TreesPage({ searchParams }: TreesPageProps) {
   const perPage = resolvedSearchParams.perPage || "10"
   const search = resolvedSearchParams.search || ""
   const status = resolvedSearchParams.status || ""
-  const ageYear = resolvedSearchParams.ageYear || ""
 
-  let trees: any[] = []
-  let beds: any[] = []
-  let metadata: any = null
+  let trees: Tree[] = []
+  let beds: Bed[] = []
+  let metadata: PaginationMeta | null = null
   let errorMsg = ""
 
   try {
-    const treeQueryParams = new URLSearchParams()
-    treeQueryParams.append("page", page)
-    treeQueryParams.append("perPage", perPage)
-    if (search) treeQueryParams.append("search", search)
-    if (status && status !== "all") treeQueryParams.append("status", status)
-    if (ageYear && ageYear !== "all") treeQueryParams.append("ageYear", ageYear)
+    const [treesRes, bedsRes] = await Promise.all([
+      cultivationService
+        .getTrees({ page, perPage, search, status })
+        .catch(() => null),
+      cultivationService.getBeds({ perPage: 100 }).catch(() => null),
+    ])
 
-    const treesRes = await fetchApi(
-      `/admin/cultivation/trees?${treeQueryParams.toString()}`
-    )
-    const treesPayload = await treesRes.json()
-    if (treesRes.status >= 400) {
-      errorMsg = treesPayload?.message || "Failed to load trees"
-    } else {
-      trees = Array.isArray(treesPayload.data) ? treesPayload.data : []
-      metadata = treesPayload.metadata || null
+    if (treesRes?.data && Array.isArray(treesRes.data)) {
+      trees = treesRes.data
+      metadata = treesRes.metadata || null
     }
 
-    const bedsRes = await fetchApi("/user/cultivation/beds?perPage=100")
-    const bedsPayload = await bedsRes.json()
-    if (bedsRes.status < 400) {
-      beds = Array.isArray(bedsPayload.data?.items)
-        ? bedsPayload.data.items
-        : bedsPayload.data || []
+    if (bedsRes?.data && Array.isArray(bedsRes.data)) {
+      beds = bedsRes.data
     }
-  } catch (e) {
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : "Unable to connect to server"
     console.error("Error fetching trees data on server:", e)
-    errorMsg = "Unable to connect to server"
+    errorMsg = message
   }
 
   return (

@@ -1,5 +1,5 @@
 import { GinsengDetailClient } from '@/components/ginseng/GinsengDetailClient';
-import { getUserSessionToken } from '@/lib/Api';
+import { fetchApi, getUserSessionToken } from '@/lib/Api';
 
 type PageProps = {
   params: Promise<{
@@ -9,9 +9,28 @@ type PageProps = {
 };
 
 export default async function GinsengDetailPage({ params }: PageProps) {
-  const { locale, id } = await params;
-  const token = await getUserSessionToken();
+  const [{ locale, id }, token] = await Promise.all([params, getUserSessionToken()]);
   const isLoggedIn = !!token;
 
-  return <GinsengDetailClient id={id} locale={locale} isLoggedIn={isLoggedIn} />;
+  let initialData = null;
+  try {
+    const res = await fetchApi(`/public/catalog/plants/${id}`, {
+      next: { revalidate: 60 },
+    });
+    const payload = await res.json();
+    if (payload?.data) {
+      initialData = payload.data;
+    }
+  } catch (error) {
+    console.warn('[GinsengDetailPage] Could not prefetch plant:', error);
+  }
+
+  return (
+    <GinsengDetailClient
+      id={id}
+      locale={locale}
+      isLoggedIn={isLoggedIn}
+      initialData={initialData}
+    />
+  );
 }

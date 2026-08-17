@@ -139,7 +139,7 @@ export function useCategoriesManager() {
         createdAt: new Date().toISOString().split("T")[0],
       }
       setCategories((prev) => [newCategory, ...prev])
-      setSuccessMsg("Tạo danh mục sản phẩm mới thành công")
+      setSuccessMsg(t("messages.createSuccess"))
     } else if (dialogState.selectedCategory) {
       setCategories((prev) =>
         prev.map((item) =>
@@ -155,7 +155,7 @@ export function useCategoriesManager() {
             : item
         )
       )
-      setSuccessMsg("Cập nhật danh mục sản phẩm thành công")
+      setSuccessMsg(t("messages.updateSuccess"))
     }
     setDialogState((prev) => ({ ...prev, isOpen: false }))
     router.refresh()
@@ -165,11 +165,11 @@ export function useCategoriesManager() {
     const item = categories.find((c) => c.id === id)
     setConfirmDialog({
       isOpen: true,
-      title: "Xác nhận xóa danh mục",
-      description: `Bạn có chắc chắn muốn xóa danh mục "${item?.name}" không? Thao tác này không thể hoàn tác.`,
+      title: t("common.confirmations.deleteTitle"),
+      description: t("common.confirmations.deleteDescription"),
       action: () => {
         setCategories((prev) => prev.filter((c) => c.id !== id))
-        setSuccessMsg("Đã xóa danh mục sản phẩm")
+        setSuccessMsg(t("messages.deleteSuccess"))
         setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
       },
       loading: false,

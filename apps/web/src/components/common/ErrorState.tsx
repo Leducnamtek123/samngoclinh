@@ -1,11 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export interface ErrorStateProps {
+export type ErrorStateProps = {
   /** Error message or title */
   title?: string;
   /** Alias for description */
@@ -18,7 +18,7 @@ export interface ErrorStateProps {
   retryLabel?: string;
   /** Additional CSS class names */
   className?: string;
-}
+};
 
 export function ErrorState({
   title,
@@ -37,20 +37,20 @@ export function ErrorState({
     <div
       className={cn(
         'flex flex-col items-center justify-center p-8 text-center rounded-xl border border-destructive/20 bg-destructive/5 my-4',
-        className
+        className,
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-3">
+      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
         <AlertTriangle className="h-6 w-6" />
       </div>
-      <h3 className="text-base font-semibold text-foreground mb-1">{displayTitle}</h3>
+      <h3 className="mb-1 text-base font-semibold text-foreground">{displayTitle}</h3>
       {displayDescription && (
-        <p className="text-sm text-muted-foreground max-w-sm mb-4 leading-relaxed">
+        <p className="mb-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
           {displayDescription}
         </p>
       )}
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry} className="gap-2 mt-1">
+        <Button variant="outline" size="sm" onClick={onRetry} className="mt-1 gap-2">
           <RefreshCw className="h-3.5 w-3.5" />
           {displayRetryLabel}
         </Button>

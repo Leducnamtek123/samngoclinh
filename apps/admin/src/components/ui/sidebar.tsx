@@ -283,7 +283,7 @@ export function SidebarTrigger({
   )
 }
 
-export function SidebarRail({ className, ...props }: ComponentProps<"button">) {
+function SidebarRail({ className, ...props }: ComponentProps<"button">) {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -308,7 +308,7 @@ export function SidebarRail({ className, ...props }: ComponentProps<"button">) {
   )
 }
 
-export function SidebarInset({ className, ...props }: ComponentProps<"main">) {
+function SidebarInset({ className, ...props }: ComponentProps<"main">) {
   return (
     <main
       data-slot="sidebar-inset"
@@ -322,10 +322,7 @@ export function SidebarInset({ className, ...props }: ComponentProps<"main">) {
   )
 }
 
-export function SidebarInput({
-  className,
-  ...props
-}: ComponentProps<typeof Input>) {
+function SidebarInput({ className, ...props }: ComponentProps<typeof Input>) {
   return (
     <Input
       data-slot="sidebar-input"
@@ -350,7 +347,7 @@ export function SidebarHeader({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
-export function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
+function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="sidebar-footer"
@@ -361,7 +358,7 @@ export function SidebarFooter({ className, ...props }: ComponentProps<"div">) {
   )
 }
 
-export function SidebarSeparator({
+function SidebarSeparator({
   className,
   ...props
 }: ComponentProps<typeof Separator>) {
@@ -424,7 +421,7 @@ export function SidebarGroupLabel({
 
 type SidebarGroupActionProps = ComponentProps<"button"> & { asChild?: boolean }
 
-export function SidebarGroupAction({
+function SidebarGroupAction({
   className,
   asChild = false,
   ...props
@@ -562,7 +559,7 @@ type SidebarMenuActionProps = ComponentProps<"button"> & {
   showOnHover?: boolean
 }
 
-export function SidebarMenuAction({
+function SidebarMenuAction({
   className,
   asChild = false,
   showOnHover = false,
@@ -591,10 +588,7 @@ export function SidebarMenuAction({
   )
 }
 
-export function SidebarMenuBadge({
-  className,
-  ...props
-}: ComponentProps<"div">) {
+function SidebarMenuBadge({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="sidebar-menu-badge"
@@ -617,7 +611,7 @@ type SidebarMenuSkeletonProps = ComponentProps<"div"> & {
   showIcon?: boolean
 }
 
-export function SidebarMenuSkeleton({
+function SidebarMenuSkeleton({
   className,
   showIcon = false,
   ...props
@@ -668,7 +662,7 @@ export function SidebarMenuSub({ className, ...props }: ComponentProps<"ul">) {
   )
 }
 
-export function SidebarMenuSubItem({ ...props }: ComponentProps<"li">) {
+function SidebarMenuSubItem({ ...props }: ComponentProps<"li">) {
   return <li data-slot="sidebar-menu-sub-item" {...props} />
 }
 
@@ -678,7 +672,7 @@ type SidebarMenuSubButtonProps = ComponentProps<"a"> & {
   isActive?: boolean
 }
 
-export function SidebarMenuSubButton({
+function SidebarMenuSubButton({
   asChild = false,
   size = "md",
   isActive = false,

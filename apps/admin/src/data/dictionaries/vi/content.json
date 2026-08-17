@@ -14,7 +14,21 @@
     "articleTitle": "Tiêu đề bài viết",
     "author": "Tác giả",
     "publishedDate": "Ngày đăng",
-    "category": "Chuyên mục"
+    "category": "Chuyên mục",
+    "allCategories": "Tất cả danh mục",
+    "allStatus": "Tất cả trạng thái",
+    "searchPlaceholder": "Tìm kiếm bài viết...",
+    "categories": {
+      "news": "Tin tức",
+      "event": "Sự kiện",
+      "guide": "Hướng dẫn sử dụng",
+      "faq": "Kiến thức & FAQ"
+    },
+    "status": {
+      "published": "Đã xuất bản",
+      "draft": "Bản nháp",
+      "inactive": "Ngưng hiển thị"
+    }
   },
   "contacts": {
     "title": "Yêu cầu liên hệ",
@@ -22,6 +36,23 @@
     "email": "Email",
     "subject": "Tiêu đề",
     "message": "Nội dung",
-    "receivedAt": "Thời gian nhận"
+    "receivedAt": "Thời gian nhận",
+    "read": "Đã đọc",
+    "unread": "Chưa đọc"
+  },
+  "templates": {
+    "title": "Mẫu Hợp Đồng & Văn Bản",
+    "subtitle": "Quản lý và soạn thảo các mẫu văn bản quy chuẩn",
+    "templateName": "Tên mẫu hiển thị",
+    "templateNamePlaceholder": "Tên mẫu biểu...",
+    "version": "Phiên bản",
+    "versionTooltip": "Định dạng SemVer: 1.0.0, 2.1.0,...",
+    "description": "Mô tả mục đích áp dụng",
+    "descriptionPlaceholder": "Mô tả tóm tắt văn bản quy chuẩn này...",
+    "sourceHtml": "Mã nguồn HTML mẫu biểu",
+    "sourceHtmlHelp": "Hỗ trợ định dạng HTML, CSS nội dòng và các biến placeholder {{...}}",
+    "visualPreview": "Xem trước trực quan (Dữ liệu mô phỏng)",
+    "visualPreviewHelp": "Khung hiển thị mô phỏng khi tài liệu được render sang PDF / Ký số",
+    "iframeTitle": "Xem trước mẫu hợp đồng"
   }
 }

@@ -83,7 +83,8 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             'sepay.webhookApiKey'
         );
         if (!expectedSecret) {
-            return true;
+            this.logger.error('CRITICAL: SEPAY_WEBHOOK_API_KEY is not configured in environment. Rejecting webhook.');
+            return false;
         }
 
         if (!authHeader) {
@@ -186,6 +187,10 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
         code: string;
         status: string;
         total: number;
+        hasContract?: boolean;
+        contractId?: string | null;
+        contractCode?: string | null;
+        contractStatus?: string | null;
         qrUrl?: string;
         accountNumber?: string;
         bankBrand?: string;
@@ -249,6 +254,11 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
 
         const fresh = await this.databaseService.order.findUnique({
             where: { id: order.id },
+            include: {
+                contract: {
+                    select: { id: true, code: true, status: true },
+                },
+            },
         });
         const paymentInfo = await this.getPaymentInfo(
             fresh?.code ?? order.code,
@@ -259,6 +269,10 @@ export class SepayService implements IPaymentGatewayProvider, OnModuleInit {
             code: fresh?.code ?? order.code,
             status: fresh?.status ?? order.status,
             total: fresh?.total ?? order.total,
+            hasContract: Boolean(fresh?.contract),
+            contractId: fresh?.contract?.id ?? null,
+            contractCode: fresh?.contract?.code ?? null,
+            contractStatus: fresh?.contract?.status ?? null,
             accountNumber: paymentInfo.accountNumber,
             bankBrand: paymentInfo.bankBrand,
             accountName: paymentInfo.accountName,

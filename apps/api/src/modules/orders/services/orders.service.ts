@@ -26,6 +26,7 @@ import { IPaymentQrInfo } from '@modules/payment-gateway/interfaces/payment-gate
 import { ConfigService } from '@nestjs/config';
 import { NotificationSmtpService } from '@modules/notification/services/notification.smtp.service';
 import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
+import { EContractTemplateService } from '@modules/e-contract/services/e-contract.template.service';
 
 @Injectable()
 export class OrdersService implements IOrdersService, OnModuleInit {
@@ -37,7 +38,8 @@ export class OrdersService implements IOrdersService, OnModuleInit {
         private readonly paginationService: PaginationService,
         private readonly paymentGatewayRegistry: PaymentGatewayRegistry,
         private readonly configService: ConfigService,
-        private readonly notificationSmtpService: NotificationSmtpService
+        private readonly notificationSmtpService: NotificationSmtpService,
+        private readonly eContractTemplateService: EContractTemplateService
     ) {}
 
     async onModuleInit() {
@@ -53,7 +55,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
             for (const order of ordersWithoutItems) {
                 const rawItems = Array.isArray(order.items) ? (order.items as any[]) : [];
-                if (rawItems.length === 0) continue;
+                if (rawItems.length === 0) {continue;}
 
                 const createData = rawItems.map((item) => {
                     const code = String(item.code || '').toLowerCase();
@@ -75,7 +77,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                 });
             }
         } catch (e) {
-            console.error('Failed to auto-sync OrderItems:', e);
+            this.logger.error(`Failed to auto-sync OrderItems: ${e instanceof Error ? e.message : String(e)}`);
         }
     }
 
@@ -563,6 +565,10 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         pointsRedeemed: pointsToRedeem,
                         vat,
                         customerEmail: dto.customerEmail ?? null,
+                        identityNumber: dto.identityNumber ?? null,
+                        legalName: dto.legalName ?? dto.customerName,
+                        signatureData: dto.signatureData ?? null,
+                        ...(dto.metadata || {}),
                     },
                     orderItems: {
                         create: orderItemsCreate,
@@ -721,7 +727,14 @@ export class OrdersService implements IOrdersService, OnModuleInit {
         const webhookSecret = this.configService.get<string>(
             'payment.webhookSecret'
         );
-        if (webhookSecret && payload.signature) {
+        if (webhookSecret) {
+            if (!payload.signature) {
+                throw new UnauthorizedException({
+                    statusCode: 401,
+                    message: 'Missing webhook signature',
+                });
+            }
+
             const rawData = `${payload.orderCode}|${payload.amount}|${payload.status}|${payload.gatewayRef}`;
             const expectedSig = crypto
                 .createHmac('sha256', webhookSecret)
@@ -824,6 +837,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         paidAt: isSuccess ? new Date() : null,
                         cancelledAt: isSuccess ? null : new Date(),
                         metadata: {
+                            ...((order.metadata as object) || {}),
                             gatewayRef: payload.gatewayRef,
                             amountPaid: payload.amount,
                         },
@@ -908,6 +922,15 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                     }[];
 
                     let totalPlantsPurchased = 0;
+                    const allocatedTrees: Array<{
+                        id: string;
+                        code: string;
+                        name: string;
+                        ageYear: number;
+                        gardenCode?: string | null;
+                        bedCode?: string | null;
+                        unitPrice: number;
+                    }> = [];
 
                     for (const item of orderItems) {
                         // Check if standard plant catalog product
@@ -924,18 +947,28 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
                             const providerTrees = await tx.cultivationTree.findMany({
                                 where: {
-                                    ownerUserId: { not: order.userId },
+                                    ownerUserId: null,
                                     ageYear: ageYear,
                                     status: 'active',
                                 },
+                                include: { bed: true },
                                 take: item.quantity,
                             });
 
                             let assignedCount = 0;
                             for (const tree of providerTrees) {
-                                await tx.cultivationTree.update({
+                                const updatedTree = await tx.cultivationTree.update({
                                     where: { id: tree.id },
                                     data: { ownerUserId: order.userId },
+                                });
+                                allocatedTrees.push({
+                                    id: updatedTree.id,
+                                    code: updatedTree.code,
+                                    name: updatedTree.name || item.name,
+                                    ageYear: updatedTree.ageYear,
+                                    gardenCode: tree.bed?.gardenCode || null,
+                                    bedCode: updatedTree.bedCode || null,
+                                    unitPrice: item.price || 0,
                                 });
                                 assignedCount++;
                             }
@@ -944,7 +977,7 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                             const remaining = item.quantity - assignedCount;
                             for (let i = 0; i < remaining; i++) {
                                 const treeCode = 'tree-' + Math.random().toString(36).substring(2, 11);
-                                await tx.cultivationTree.create({
+                                const newTree = await tx.cultivationTree.create({
                                     data: {
                                         code: treeCode,
                                         ownerUserId: order.userId,
@@ -952,8 +985,18 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                                         ageYear: ageYear,
                                         quantity: 1,
                                         status: 'active',
+                                        priceBought: item.price || 0,
                                         metadata: { source: 'purchase', orderCode: order.code } as Prisma.InputJsonValue,
                                     },
+                                });
+                                allocatedTrees.push({
+                                    id: newTree.id,
+                                    code: newTree.code,
+                                    name: newTree.name,
+                                    ageYear: newTree.ageYear,
+                                    gardenCode: null,
+                                    bedCode: null,
+                                    unitPrice: item.price || 0,
                                 });
                             }
                         }
@@ -984,7 +1027,11 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         });
 
                         // Auto-generate E-Contract for plant ownership & care
-                        const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                        const contractCode = order.code.startsWith('ORD-')
+                            ? order.code.replace(/^ORD-/, 'CTR-')
+                            : (order.code.startsWith('ORD')
+                                ? order.code.replace(/^ORD/, 'CTR')
+                                : `CTR-${order.code}`);
                         const existingContract = await tx.eContract.findUnique({
                             where: { code: contractCode },
                         });
@@ -1002,25 +1049,78 @@ export class OrdersService implements IOrdersService, OnModuleInit {
 
                             const customerName = order.customerName || userProfile?.fullName || userAcc?.name || 'Khách hàng';
 
+                            const profileMeta = (userProfile?.metadata || {}) as any;
+                            const identityNo = profileMeta?.identityNumber || profileMeta?.taxCode || (userProfile as any)?.phone || '—';
+                            const customerAddr = profileMeta?.address || order.shippingAddress || '—';
+                            const customerPhone = order.customerPhone || (userProfile as any)?.phone || '—';
+
+                            let contractContent = `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`;
+                            try {
+                                const template = await this.eContractTemplateService.getTemplate(
+                                    'hop-dong-mua-ban-ky-gui-cham-soc-sam-ngoc-linh',
+                                    {
+                                        TEN_KHACH_HANG: customerName,
+                                        CCCD_MST: identityNo,
+                                        DIA_CHI: customerAddr,
+                                        SO_DIEN_THOAI: customerPhone,
+                                        MA_HOP_DONG: contractCode,
+                                        SO_LUONG_CAY: String(totalPlantsPurchased),
+                                        SO_LUONG_CAY_CHU: `${totalPlantsPurchased} cây`,
+                                        TONG_GIA_TRI: Number(order.total || 0).toLocaleString('vi-VN'),
+                                        TONG_GIA_TRI_CHU: `${Number(order.total || 0).toLocaleString('vi-VN')} đồng`,
+                                        PHI_CHAM_SOC: 'Miễn phí năm đầu',
+                                        PHI_CHAM_SOC_CHU: 'Theo chính sách bảo trợ vườn',
+                                        NGAY_KY: new Date().toLocaleDateString('vi-VN'),
+                                    }
+                                );
+                                if (template?.contentHtml) {
+                                    contractContent = template.contentHtml;
+                                }
+                            } catch (tmplErr: any) {
+                                this.logger.warn(`Could not load full HTML contract template for order ${order.code}: ${tmplErr?.message}`);
+                            }
+
+                            const orderMeta = (order.metadata || {}) as any;
+                            const clientSignature = orderMeta.signatureData || null;
+                            const clientIdentityNo = orderMeta.identityNumber || identityNo;
+                            const isSignedAtCheckout = Boolean(clientSignature);
+
                             await tx.eContract.create({
                                 data: {
                                     code: contractCode,
                                     userId: order.userId,
+                                    orderId: order.id,
                                     title: `Hợp đồng Mua bán, Ký gửi & Chăm sóc Cây Sâm Ngọc Linh #${order.code}`,
-                                    content: `Hợp đồng mua bán và ủy quyền chăm sóc ${totalPlantsPurchased} cây Sâm Ngọc Linh tại vùng trồng Nam Trà My, Kon Tum.`,
-                                    status: 'pending',
+                                    content: contractContent,
+                                    status: 'draft',
+                                    signedAt: null,
+                                    signatureUrl: clientSignature || null,
                                     contractValue: order.total,
                                     paymentStatus: 'paid',
                                     expiredAt,
                                     contractType: 'purchase_and_care',
                                     partyA: 'Công ty Cổ phần Sâm Ngọc Linh',
-                                    partyB: `${customerName} (SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
+                                    partyB: `${customerName} (CCCD: ${clientIdentityNo}, SĐT: ${order.customerPhone || userProfile?.phone || '—'})`,
                                     metadata: {
                                         orderId: order.id,
                                         orderCode: order.code,
                                         totalPlants: totalPlantsPurchased,
                                         createdAt: new Date().toISOString(),
+                                        customerSignature: clientSignature || null,
+                                        checkoutSigned: isSignedAtCheckout,
+                                        identityNumber: clientIdentityNo,
                                     } as Prisma.InputJsonValue,
+                                    items: {
+                                        create: allocatedTrees.map(t => ({
+                                            treeId: t.id,
+                                            treeCode: t.code,
+                                            treeName: t.name,
+                                            ageYearAtSign: t.ageYear,
+                                            gardenCode: t.gardenCode || null,
+                                            bedCode: t.bedCode || null,
+                                            unitPrice: t.unitPrice || 0,
+                                        })),
+                                    },
                                 },
                             });
                         }
@@ -1099,7 +1199,14 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                 if (customerEmail && this.notificationSmtpService?.isInitialized()) {
                     const webUrl = this.configService.get<string>('HOME_URL') || 'http://localhost:3002';
                     const customerName = order.customerName || userAcc?.name || 'Quý khách';
-                    const sender = this.configService.get<string>('smtp.from') || 'noreply@wefarm.com.vn';
+                    const sender = this.configService.get<string>('smtp.from') || 'noreply@samngoclinh.vn';
+
+                    const orderMeta = (order.metadata || {}) as any;
+                    const shippingInfo = orderMeta.shipping || {};
+                    const phone = (order as any).recipientPhone || (order as any).phone || shippingInfo.phone || shippingInfo.recipientPhone || '';
+                    const address = (order as any).shippingAddress || (order as any).address || shippingInfo.address || shippingInfo.shippingAddress || '';
+                    const orderDateStr = new Date(order.createdAt || Date.now()).toLocaleDateString('vi-VN');
+                    const totalFormatted = Number(order.total || 0).toLocaleString('vi-VN') + ' VNĐ';
 
                     // 1. Send Order Success Email
                     await this.notificationSmtpService.send({
@@ -1108,35 +1215,54 @@ export class OrdersService implements IOrdersService, OnModuleInit {
                         templateData: {
                             customerName,
                             orderCode: order.code,
-                            createdAt: new Date().toLocaleDateString('vi-VN'),
-                            subtotal: Number(order.subtotal || 0).toLocaleString('vi-VN'),
-                            vatAmount: Number((order.metadata as any)?.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN'),
-                            totalAmount: Number(order.total || 0).toLocaleString('vi-VN'),
-                            orderUrl: `${webUrl}/profile?tab=orders`,
-                            supportEmail: this.configService.get<string>('email.support') || 'admin@wefarm.com.vn',
+                            orderDate: orderDateStr,
+                            createdAt: orderDateStr,
+                            subtotal: Number(order.subtotal || 0).toLocaleString('vi-VN') + ' VNĐ',
+                            vatAmount: Number(orderMeta.vat || Math.round(order.subtotal * 0.08)).toLocaleString('vi-VN') + ' VNĐ',
+                            totalAmount: totalFormatted,
+                            orderTotal: totalFormatted,
+                            recipientPhone: phone || undefined,
+                            shippingAddress: address || undefined,
+                            orderLink: `${webUrl}/vi/profile?tabs=orders`,
+                            orderUrl: `${webUrl}/vi/profile?tabs=orders`,
+                            supportEmail: this.configService.get<string>('email.support') || 'admin@samngoclinh.vn',
                         },
                         recipients: [customerEmail],
                     });
 
                     // 2. If contract was created, send Contract Created Email
-                    const contractCode = 'CTR-' + order.code.replace('ORD', '');
+                    const contractCode = order.code.startsWith('ORD-')
+                        ? order.code.replace(/^ORD-/, 'CTR-')
+                        : (order.code.startsWith('ORD')
+                            ? order.code.replace(/^ORD/, 'CTR')
+                            : `CTR-${order.code}`);
                     const contract = await this.databaseService.eContract.findUnique({
                         where: { code: contractCode },
                     });
 
                     if (contract) {
+                        const contractMeta = (contract.metadata || {}) as any;
+                        const treeCount = contractMeta.treeQuantity || ((contract as any).items as any[])?.length || 1;
+                        const gardenName = contractMeta.gardenName || 'Vườn bảo tồn Nam Trà My, Kon Tum';
+                        const createdAtStr = new Date(contract.createdAt).toLocaleDateString('vi-VN');
+
                         await this.notificationSmtpService.send({
                             templateName: EnumNotificationProcess.contractCreated,
                             sender,
                             templateData: {
                                 customerName,
-                                orderCode: order.code,
+                                contractNumber: contract.code,
                                 contractCode: contract.code,
+                                orderCode: order.code,
                                 partyA: contract.partyA || 'Công ty Cổ phần Sâm Ngọc Linh',
                                 partyB: contract.partyB || customerName,
-                                contractValue: Number(contract.contractValue || order.total).toLocaleString('vi-VN'),
+                                treeCount,
+                                gardenName,
+                                createdAt: createdAtStr,
+                                contractValue: Number(contract.contractValue || order.total).toLocaleString('vi-VN') + ' VNĐ',
                                 expiredAt: new Date(contract.expiredAt).toLocaleDateString('vi-VN'),
-                                signContractUrl: `${webUrl}/profile?tab=contracts`,
+                                signUrl: `${webUrl}/vi/profile?tabs=contracts`,
+                                signContractUrl: `${webUrl}/vi/profile?tabs=contracts`,
                             },
                             recipients: [customerEmail],
                         });

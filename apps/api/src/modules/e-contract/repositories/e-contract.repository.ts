@@ -1,5 +1,5 @@
 import { DatabaseService } from '@common/database/services/database.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { EContract } from '@generated/prisma-client';
 import { EContractCreateRequestDto } from '@modules/e-contract/dtos/request/e-contract.create.request.dto';
@@ -10,13 +10,44 @@ import { IResponsePagingReturn } from '@common/response/interfaces/response.inte
 
 @Injectable()
 export class EContractRepository {
+    private readonly logger = new Logger(EContractRepository.name);
+
     constructor(
         private readonly databaseService: DatabaseService,
         private readonly paginationService: PaginationService
     ) {}
 
-    async createContract(payload: EContractCreateRequestDto): Promise<EContract> {
-        const code = 'CTR' + Math.random().toString(36).substring(2, 11).toUpperCase();
+    async generateNextCode(year = new Date().getFullYear()): Promise<string> {
+        const prefix = `HĐ-SNL-${year}`;
+        const count = await this.databaseService.eContract.count({
+            where: {
+                code: {
+                    startsWith: prefix,
+                },
+            },
+        });
+        const sequence = (count + 1).toString().padStart(4, '0');
+        let generatedCode = `${prefix}/${sequence}`;
+
+        let probe = 0;
+        while (probe < 10) {
+            const exists = await this.databaseService.eContract.findUnique({
+                where: { code: generatedCode },
+                select: { id: true },
+            });
+            if (!exists) {
+                return generatedCode;
+            }
+            probe++;
+            const fallbackSeq = (count + 1 + probe).toString().padStart(4, '0');
+            generatedCode = `${prefix}/${fallbackSeq}`;
+        }
+
+        return `${prefix}/${Date.now().toString().slice(-6)}`;
+    }
+
+    async createContract(payload: EContractCreateRequestDto & { code?: string }): Promise<EContract> {
+        const code = payload.code || (await this.generateNextCode());
         return this.databaseService.eContract.create({
             data: {
                 code,
@@ -38,21 +69,82 @@ export class EContractRepository {
         });
     }
 
-    async getContractById(id: string): Promise<EContract | null> {
-        return this.databaseService.eContract.findUnique({
-            where: { id },
-        });
+    async getContractById(id: string): Promise<any | null> {
+        try {
+            return await this.databaseService.eContract.findUnique({
+                where: { id },
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
+                },
+            });
+        } catch (error) {
+            this.logger.warn(`Fallback getContractById(${id}) without includes: ${error}`);
+            return this.databaseService.eContract.findUnique({
+                where: { id },
+            });
+        }
     }
 
-    async getContractByCode(code: string): Promise<EContract | null> {
-        return this.databaseService.eContract.findUnique({
-            where: { code },
-        });
+    async getContractByCode(code: string): Promise<any | null> {
+        try {
+            const direct = await this.databaseService.eContract.findUnique({
+                where: { code },
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
+                },
+            });
+            if (direct) {return direct;}
+
+            return await this.databaseService.eContract.findFirst({
+                where: {
+                    OR: [
+                        { id: code },
+                        { code: code },
+                        { code: code.replace(/^HD-/, 'CTR-') },
+                        { code: code.replace(/^CTR-/, 'HD-') },
+                        { code: { contains: code } },
+                    ],
+                },
+                include: {
+                    items: true,
+                    order: true,
+                    amendments: {
+                        orderBy: { amendmentNumber: 'asc' },
+                    },
+                },
+            });
+        } catch (error) {
+            this.logger.warn(`Fallback getContractByCode(${code}) without includes: ${error}`);
+            return this.databaseService.eContract.findFirst({
+                where: {
+                    OR: [
+                        { id: code },
+                        { code: code },
+                        { code: { contains: code } },
+                    ],
+                },
+            });
+        }
     }
 
-    async listContracts(userId?: string): Promise<EContract[]> {
+    async listContracts(userId?: string): Promise<any[]> {
         return this.databaseService.eContract.findMany({
             where: userId ? { userId } : undefined,
+            include: {
+                items: true,
+                order: true,
+                amendments: {
+                    orderBy: { amendmentNumber: 'asc' },
+                },
+            },
             orderBy: { createdAt: 'desc' },
         });
     }
@@ -91,26 +183,13 @@ export class EContractRepository {
         });
     }
 
-    async renewContract(id: string, newExpiredAt: Date, metadata?: Record<string, unknown>): Promise<EContract> {
-        return this.databaseService.eContract.update({
-            where: { id },
-            data: {
-                status: 'signed',
-                expiredAt: newExpiredAt,
-                metadata: metadata as Prisma.InputJsonValue,
-            },
-        });
-    }
-
     async updateContract(id: string, payload: EContractUpdateRequestDto): Promise<EContract> {
         return this.databaseService.eContract.update({
             where: { id },
             data: {
                 title: payload.title,
                 content: payload.content,
-                status: payload.status,
                 contractValue: payload.contractValue,
-                paymentStatus: payload.paymentStatus,
                 expiredAt: payload.expiredAt ? new Date(payload.expiredAt) : undefined,
                 contractType: payload.contractType,
                 partyA: payload.partyA,
@@ -122,6 +201,16 @@ export class EContractRepository {
         });
     }
 
+    async updateStatus(id: string, status: string, additionalData?: Prisma.EContractUpdateInput): Promise<EContract> {
+        return this.databaseService.eContract.update({
+            where: { id },
+            data: {
+                status,
+                ...additionalData,
+            },
+        });
+    }
+
     async deleteContract(id: string): Promise<boolean> {
         await this.databaseService.eContract.delete({
             where: { id },
@@ -129,18 +218,57 @@ export class EContractRepository {
         return true;
     }
 
-    async getExpiringContracts(daysLimit: number): Promise<EContract[]> {
+    async getExpiringContracts(daysLimit: number): Promise<any[]> {
         const thresholdDate = new Date();
         thresholdDate.setDate(thresholdDate.getDate() + daysLimit);
+        const now = new Date();
 
-        return this.databaseService.eContract.findMany({
+        const activeContracts = await this.databaseService.eContract.findMany({
             where: {
                 status: 'signed',
-                expiredAt: {
-                    lte: thresholdDate,
-                    gte: new Date(),
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+                amendments: {
+                    where: { status: 'signed' },
+                    orderBy: { amendmentNumber: 'desc' },
+                    take: 1,
                 },
             },
+        });
+
+        return activeContracts.filter((c: any) => {
+            const latestAmendment = c.amendments?.[0];
+            const effectiveExpiry = latestAmendment ? new Date(latestAmendment.newExpiredAt) : new Date(c.expiredAt);
+            return effectiveExpiry >= now && effectiveExpiry <= thresholdDate;
+        });
+    }
+
+    async getOverdueExpiredContracts(): Promise<any[]> {
+        const now = new Date();
+        const activeContracts = await this.databaseService.eContract.findMany({
+            where: {
+                status: 'signed',
+            },
+            include: {
+                amendments: {
+                    where: { status: 'signed' },
+                    orderBy: { amendmentNumber: 'desc' },
+                    take: 1,
+                },
+            },
+        });
+
+        return activeContracts.filter((c: any) => {
+            const latestAmendment = c.amendments?.[0];
+            const effectiveExpiry = latestAmendment ? new Date(latestAmendment.newExpiredAt) : new Date(c.expiredAt);
+            return effectiveExpiry < now;
         });
     }
 }

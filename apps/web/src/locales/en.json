@@ -2,8 +2,7 @@
   "RootLayout": {
     "home_link": "Home",
     "about_link": "About",
-    "counter_link": "Counter",
-    "portfolio_link": "Portfolio",
+    "portfolio_link": "Collection",
     "sign_in_link": "Sign In",
     "sign_up_link": "Sign Up"
   },
@@ -14,43 +13,19 @@
   },
   "Index": {
     "meta_title": "Ngoc Linh Ginseng Liquor | Digitizing Value Chain",
-    "meta_description": "First app in Vietnam to buy, own, care, and trace genuine Ngoc Linh Ginseng products directly via mobile.",
-    "sponsors_title": "Partners",
-    "zap_emoji_label": "Lightning"
-  },
-  "Counter": {
-    "meta_title": "Counter",
-    "meta_description": "DB Operation Example",
-    "security_powered_by": "Security, bot detection & rate limiting by"
-  },
-  "CounterForm": {
-    "presentation": "Counter is stored in database and incremented by provided value.",
-    "label_increment": "Increment by",
-    "button_increment": "Increment",
-    "error_increment_range": "Value must be between 1 and 3"
-  },
-  "CurrentCount": {
-    "count": "Quantity: {count}"
+    "meta_description": "First platform in Vietnam to own, care, and trace genuine Ngoc Linh Ginseng trees and premium liquor.",
+    "sponsors_title": "Partners"
   },
   "About": {
     "meta_title": "About Us",
-    "meta_description": "About description",
-    "about_paragraph": "Welcome to our about page! We are a passionate team dedicated to software excellence.",
-    "translation_powered_by": "Translation powered by"
+    "meta_description": "Preserving the national treasure of Ngoc Linh Ginseng with transparent digitalization.",
+    "about_paragraph": "We are a passionate team dedicated to the sustainable value chain of Ngoc Linh Ginseng."
   },
   "Portfolio": {
-    "meta_title": "Portfolio",
-    "meta_description": "Welcome to my portfolio!",
-    "presentation": "Welcome to our portfolio page! Here you will find carefully selected projects and achievements.",
-    "portfolio_name": "Portfolio {name}",
-    "error_reporting_powered_by": "Error reporting powered by"
-  },
-  "PortfolioSlug": {
-    "meta_title": "Portfolio {slug}",
-    "meta_description": "Portfolio description {slug}",
-    "header": "Portfolio {slug}",
-    "content": "Branding & communication media design for enterprises including logo, flyers, banners, and digital assets.",
-    "code_review_powered_by": "Code review powered by"
+    "meta_title": "Collection",
+    "meta_description": "Explore our exclusive aged Ngoc Linh Ginseng liquor collection.",
+    "presentation": "Welcome to our exclusive Ngoc Linh Ginseng liquor collection.",
+    "portfolio_name": "Collection {name}"
   },
   "SignIn": {
     "meta_title": "Sign In",
@@ -76,6 +51,13 @@
     "change_language": "Change Language"
   },
   "homepage": {
+    "heroBadge": "VIETNAM NATIONAL TREASURE",
+    "heroTitle": "Ngoc Linh Ginseng",
+    "heroSubtitle": "Digital platform for Ngoc Linh Ginseng value chain & plant ownership",
+    "ctaTitle": "Explore the Ngoc Linh Ginseng Ecosystem",
+    "ctaSubtitle": "Own authentic Kon Tum ginseng plants and companion care with farm experts.",
+    "exploreProducts": "Explore Products",
+    "bannerDefaultSubtitle": "Elevating the value of Vietnam National Treasure",
     "aboutUsBadge": "ABOUT US",
     "aboutTitle": "Journey Preserving Vietnamese Heritage",
     "aboutDesc": "Dedicated to preserving the value of Ngoc Linh Ginseng – treasure of the mountains, combining traditional recipes to craft premium liquor.",
@@ -222,12 +204,12 @@
     "verified": "Certified Genuine Ngoc Linh Ginseng"
   },
   "addressSelector": {
-    "title": "DELIVERY ADDRESS (REQUIRED FOR PHYSICAL PRODUCTS)",
+    "title": "DELIVERY ADDRESS",
     "addNewAddress": "+ Add New Address",
     "addAddress": "+ Add New Address",
     "defaultBadge": "Default",
     "emptyState": {
-      "description": "You don't have any delivery address yet. Please click \"+ Add New Address\".",
+      "description": "You do not have any saved delivery address.",
       "addAddress": "Add Address"
     }
   },
@@ -240,17 +222,17 @@
     "defaultProtectionDesc": "100% comprehensive risk insurance"
   },
   "addAddressModal": {
-    "title": "Add Shipping Address",
-    "subtitle": "GPS location or select on OpenStreetMap",
-    "recipientNameLabel": "Recipient Name",
+    "title": "Add Delivery Address",
+    "subtitle": "Pick your location on the map or enter details manually",
+    "recipientNameLabel": "Recipient Full Name",
     "recipientNamePlaceholder": "Enter recipient name...",
     "phoneLabel": "Phone Number",
     "phonePlaceholder": "Enter phone number...",
-    "addressLabel": "Detailed Address (House number, Street...)",
-    "addressPlaceholder": "Enter or locate address...",
+    "addressLabel": "Detailed Address",
+    "addressPlaceholder": "Enter house number, street or pick on map...",
     "cancel": "Cancel",
-    "saveAndUse": "Save & Use This Address",
-    "savedSuccess": "Saved new address to Address Book!"
+    "saveAndUse": "Save & Use Address",
+    "savedSuccess": "Delivery address saved successfully!"
   },
   "changeAddressModal": {
     "title": "Shipping Address Book",

@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { userService } from '@/services/user.service';
 
 export function useRequestEmailVerification() {
   return useMutation({
-    mutationFn: () =>
-      fetchApiClient('/v1/shared/user/verify-email/request', {
-        method: 'POST',
-      }),
+    mutationFn: async () => await userService.requestEmailVerification(),
   });
 }
 
@@ -14,11 +11,7 @@ export function useConfirmEmailVerification() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (otp: string) =>
-      fetchApiClient('/v1/shared/user/verify-email/confirm', {
-        method: 'POST',
-        body: JSON.stringify({ otp }),
-      }),
+    mutationFn: async (otp: string) => await userService.confirmEmailVerification(otp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
     },

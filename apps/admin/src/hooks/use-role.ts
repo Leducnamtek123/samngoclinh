@@ -2,13 +2,23 @@ import { useSession } from "next-auth/react"
 
 export type UserRole = "SUPER_ADMIN" | "ADMIN" | "USER"
 
+interface SessionUserExtended {
+  email?: string | null
+  role?: string | { code?: string; name?: string }
+  accessToken?: string
+  [key: string]: unknown
+}
+
 export function useRole() {
   const { data: session, status } = useSession()
 
-  const user = session?.user as any
+  const user = session?.user as SessionUserExtended | undefined
   const email = user?.email?.toLowerCase() || ""
 
-  const rawRole = user?.role?.code || user?.role?.name || user?.role || ""
+  const rawRole =
+    (typeof user?.role === "object" && user?.role !== null
+      ? user.role.code || user.role.name
+      : user?.role) || ""
   const strRole = String(rawRole).toUpperCase()
 
   const isSuperAdmin =

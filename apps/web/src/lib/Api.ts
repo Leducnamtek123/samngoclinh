@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
-import { Env } from '@/lib/Env';
 import { API_KEY } from '@/lib/apiKey';
+import { Env } from '@/lib/Env';
 
 export async function getUserSessionToken() {
   const cookieStore = await cookies();
@@ -22,13 +22,13 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  if (token && !headers.Authorization && !headers.authorization) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const url = `${baseUrl}${endpoint}`;
 
-  return fetch(url, {
+  return await fetch(url, {
     ...options,
     headers,
   });

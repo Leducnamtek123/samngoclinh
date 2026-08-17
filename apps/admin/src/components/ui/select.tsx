@@ -159,7 +159,7 @@ export function SelectItem({
   )
 }
 
-export function SelectSeparator({
+function SelectSeparator({
   className,
   ...props
 }: ComponentProps<typeof SelectPrimitive.Separator>) {

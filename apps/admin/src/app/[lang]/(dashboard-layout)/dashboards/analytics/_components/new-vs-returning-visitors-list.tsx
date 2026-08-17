@@ -13,7 +13,16 @@ export function NewVsReturningVisitorsList({
 }: {
   data: NewVsReturningVisitorsType["visitors"]
 }) {
-  const { new: newVisitors, returning: returningVisitors } = data
+  const newVisitors = data?.new || {
+    value: 0,
+    percentageChange: 0,
+    fill: "hsl(var(--chart-1))",
+  }
+  const returningVisitors = data?.returning || {
+    value: 0,
+    percentageChange: 0,
+    fill: "hsl(var(--chart-2))",
+  }
 
   return (
     <ul className="flex justify-between items-center">
@@ -28,7 +37,7 @@ export function NewVsReturningVisitorsList({
           <span>Mới</span>
         </h3>
         <p className="text-2xl font-semibold leading-tight">
-          {newVisitors.value.toLocaleString()}
+          {Number(newVisitors.value ?? 0).toLocaleString()}
         </p>
         <p
           style={{
@@ -36,7 +45,7 @@ export function NewVsReturningVisitorsList({
           }}
           className="text-3xl"
         >
-          {formatPercent(newVisitors.percentageChange)}
+          {formatPercent(Number(newVisitors.percentageChange ?? 0))}
         </p>
       </li>
       <SeparatorWithText orientation="vertical" className="h-full">
@@ -56,7 +65,7 @@ export function NewVsReturningVisitorsList({
           />
         </h3>
         <p className="text-2xl font-semibold leading-tight">
-          {returningVisitors.value.toLocaleString()}
+          {Number(returningVisitors.value ?? 0).toLocaleString()}
         </p>
         <p
           style={{
@@ -64,7 +73,7 @@ export function NewVsReturningVisitorsList({
           }}
           className="text-3xl"
         >
-          {formatPercent(returningVisitors.percentageChange)}
+          {formatPercent(Number(returningVisitors.percentageChange ?? 0))}
         </p>
       </li>
     </ul>

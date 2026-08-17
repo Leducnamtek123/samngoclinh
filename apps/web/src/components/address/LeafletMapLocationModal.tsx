@@ -1,31 +1,32 @@
 'use client';
 
-
-import dynamic from 'next/dynamic';
 import { MapPin, Locate, Search, Check, X, Navigation } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import 'leaflet/dist/leaflet.css';
+import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 import { LoadingState } from '@/components/common/LoadingState';
+import { Button } from '@/components/ui/button';
 import { useMapLocationPicker } from './useMapLocationPicker';
 
 const MapContainer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
+  async () => await import('react-leaflet').then((mod) => mod.MapContainer),
+  {
+    ssr: false,
+  },
 );
-const TileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
-);
+const TileLayer = dynamic(async () => await import('react-leaflet').then((mod) => mod.TileLayer), {
+  ssr: false,
+});
+const Marker = dynamic(async () => await import('react-leaflet').then((mod) => mod.Marker), {
+  ssr: false,
+});
 
-interface LeafletMapLocationModalProps {
+type LeafletMapLocationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSelectLocation: (address: string, lat?: number, lng?: number) => void;
   initialAddress?: string;
-}
+};
 
 export function LeafletMapLocationModal({
   isOpen,
@@ -33,32 +34,37 @@ export function LeafletMapLocationModal({
   onSelectLocation,
   initialAddress = '',
 }: LeafletMapLocationModalProps) {
+  const t = useTranslations('addAddressModal');
+  const tActions = useTranslations('actions');
+
   const mapPicker = useMapLocationPicker({
     initialAddress,
     onSelectLocation,
     onClose,
   });
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/65 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 bg-card text-card-foreground border border-border w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[92vh] shrink-0">
+    <div className="animate-in fade-in fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-black/65 p-4 backdrop-blur-md transition-opacity duration-200">
+      <div className="flex max-h-[92vh] w-full max-w-4xl shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-card bg-white text-card-foreground shadow-xl dark:bg-slate-900">
         {/* Sleek Header */}
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-white dark:bg-slate-900 bg-card">
+        <div className="flex items-center justify-between border-b border-border bg-card bg-white px-6 py-4 dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60">
-              <MapPin className="w-5 h-5" />
+            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50 p-2 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/60 dark:text-emerald-400">
+              <MapPin className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <span>Chọn địa chỉ trên Bản đồ</span>
-                <span className="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300">
-                  OpenStreetMap Miễn phí
+              <h3 className="flex items-center gap-2 text-base font-bold text-gray-900 dark:text-gray-100">
+                <span>{t('shippingAddressLabel')}</span>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-emerald-800 uppercase dark:bg-emerald-900/50 dark:text-emerald-300">
+                  OpenStreetMap
                 </span>
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Nhấp vào bản đồ hoặc kéo thả ghim để chọn chính xác địa chỉ nhận hàng
+                {t('shippingAddressPlaceholder')}
               </p>
             </div>
           </div>
@@ -66,36 +72,43 @@ export function LeafletMapLocationModal({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            className="rounded-xl text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-gray-200"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </Button>
         </div>
 
         {/* Map Container Body with Floating Search Bar Overlay */}
-        <div className="relative flex-1 min-h-[420px] bg-slate-100 dark:bg-slate-950">
+        <div className="relative min-h-[420px] flex-1 bg-slate-100 dark:bg-slate-950">
           {/* Floating Search & GPS Controls Card */}
-          <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap sm:flex-nowrap gap-2 pointer-events-auto">
+          <div className="pointer-events-auto absolute top-4 right-4 left-4 z-20 flex flex-wrap gap-2 sm:flex-nowrap">
             <form
               onSubmit={mapPicker.handleSearchAddress}
-              className="flex-1 flex items-center gap-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-1.5 pl-3 rounded-xl border border-gray-200/80 dark:border-gray-800/80 shadow-lg"
+              className="flex flex-1 items-center gap-2 rounded-xl border border-gray-200/80 bg-white/95 p-1.5 pl-3 shadow-lg backdrop-blur-md dark:border-gray-800/80 dark:bg-slate-900/95"
             >
-              <Search className="w-4 h-4 text-emerald-600 shrink-0" />
+              <label htmlFor="map-address-search-input" className="sr-only">
+                {t('shippingAddressPlaceholder')}
+              </label>
+              <Search className="h-4 w-4 shrink-0 text-emerald-600" />
               <input
+                id="map-address-search-input"
                 type="text"
-                placeholder="Nhập số nhà, tên đường, phường/xã, quận/huyện..."
+                aria-label={t('shippingAddressPlaceholder')}
+                placeholder={t('shippingAddressPlaceholder')}
                 value={mapPicker.searchQuery}
-                onChange={(e) => mapPicker.setSearchQuery(e.target.value)}
-                className="w-full text-xs font-semibold bg-transparent focus:outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
+                onChange={(e) => {
+                  mapPicker.setSearchQuery(e.target.value);
+                }}
+                className="w-full bg-transparent text-xs font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none dark:text-gray-100"
               />
               <Button
                 type="submit"
                 disabled={mapPicker.isLoading}
                 isLoading={mapPicker.isLoading}
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shrink-0 h-auto py-1.5 px-3.5"
+                className="h-auto shrink-0 bg-emerald-700 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-800"
               >
-                Tìm địa chỉ
+                Search
               </Button>
             </form>
 
@@ -105,10 +118,10 @@ export function LeafletMapLocationModal({
               onClick={mapPicker.handleGetCurrentLocation}
               disabled={mapPicker.isLocating}
               isLoading={mapPicker.isLocating}
-              className="flex items-center gap-1.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 text-xs font-bold border border-gray-200/80 dark:border-gray-800/80 shadow-lg shrink-0 h-auto py-2 px-4"
+              className="flex h-auto shrink-0 items-center gap-1.5 border border-gray-200/80 bg-white/95 px-4 py-2 text-xs font-bold text-emerald-700 shadow-lg backdrop-blur-md hover:bg-emerald-50 dark:border-gray-800/80 dark:bg-slate-900/95 dark:text-emerald-400 dark:hover:bg-emerald-950/60"
             >
-              {!mapPicker.isLocating && <Locate className="w-4 h-4 text-emerald-600" />}
-              <span>Định vị GPS</span>
+              {!mapPicker.isLocating && <Locate className="h-4 w-4 text-emerald-600" />}
+              <span>GPS</span>
             </Button>
           </div>
 
@@ -118,7 +131,7 @@ export function LeafletMapLocationModal({
               center={[mapPicker.position.lat, mapPicker.position.lng]}
               zoom={16}
               scrollWheelZoom={true}
-              className="w-full h-full min-h-[420px] z-0"
+              className="z-0 h-full min-h-[420px] w-full"
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -138,29 +151,29 @@ export function LeafletMapLocationModal({
               />
             </MapContainer>
           ) : (
-            <div className="w-full h-full min-h-[420px] flex items-center justify-center">
-              <LoadingState message="Đang tải bản đồ OpenStreetMap..." />
+            <div className="flex h-full min-h-[420px] w-full items-center justify-center">
+              <LoadingState message="Loading OpenStreetMap..." />
             </div>
           )}
         </div>
 
         {/* Selected Address Display & Bottom Actions */}
-        <div className="p-5 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-4">
-          <div className="flex items-start gap-3 text-sm text-gray-800 dark:text-gray-200 bg-emerald-50/60 dark:bg-emerald-950/30 p-3.5 rounded-xl border border-emerald-200/70 dark:border-emerald-800/70">
-            <div className="p-1.5 bg-emerald-600 text-white rounded-lg shrink-0 mt-0.5 shadow-2xs">
-              <Navigation className="w-4 h-4" />
+        <div className="flex flex-col gap-4 border-t border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-slate-900">
+          <div className="flex items-start gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50/60 p-3.5 text-sm text-gray-800 dark:border-emerald-800/70 dark:bg-emerald-950/30 dark:text-gray-200">
+            <div className="mt-0.5 shrink-0 rounded-lg bg-emerald-600 p-1.5 text-white shadow-2xs">
+              <Navigation className="h-4 w-4" />
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="font-extrabold text-[11px] text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block mb-0.5">
-                Vị trí được ghim trên bản đồ:
+            <div className="min-w-0 flex-1">
+              <span className="mb-0.5 block text-[11px] font-extrabold tracking-wider text-emerald-800 uppercase dark:text-emerald-400">
+                {t('shippingAddressLabel')}:
               </span>
-              <p className="text-xs font-bold leading-relaxed text-gray-900 dark:text-gray-100 line-clamp-2">
+              <p className="line-clamp-2 text-xs leading-relaxed font-bold text-gray-900 dark:text-gray-100">
                 {mapPicker.isLoading ? (
-                  <span className="inline-flex items-center gap-1.5 text-gray-400 font-normal">
-                    <LoadingState message="Đang cập nhật địa chỉ..." />
+                  <span className="inline-flex items-center gap-1.5 font-normal text-gray-400">
+                    <LoadingState message="Loading..." />
                   </span>
                 ) : (
-                  mapPicker.address || 'Vui lòng chọn vị trí trên bản đồ...'
+                  mapPicker.address || '—'
                 )}
               </p>
             </div>
@@ -171,17 +184,17 @@ export function LeafletMapLocationModal({
               type="button"
               variant="outline"
               onClick={onClose}
-              className="px-5 py-2.5 text-xs font-bold rounded-xl h-auto"
+              className="h-auto rounded-xl px-5 py-2.5 text-xs font-bold"
             >
-              Hủy
+              {tActions('cancel')}
             </Button>
             <Button
               type="button"
               onClick={mapPicker.handleConfirm}
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md h-auto"
+              className="flex h-auto items-center gap-2 rounded-xl bg-emerald-700 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-800"
             >
-              <Check className="w-4 h-4" />
-              <span>Xác nhận địa chỉ này</span>
+              <Check className="h-4 w-4" />
+              <span>{tActions('save')}</span>
             </Button>
           </div>
         </div>

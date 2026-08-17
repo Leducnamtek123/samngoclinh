@@ -6,28 +6,42 @@ import { ITermPolicyTemplateService } from '@modules/term-policy/interfaces/term
 import { TermPolicyUtil } from '@modules/term-policy/utils/term-policy.util';
 import { Injectable, Logger } from '@nestjs/common';
 import { EnumTermPolicyType } from '@generated/prisma-client';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 @Injectable()
 export class TermPolicyTemplateService implements ITermPolicyTemplateService {
     private readonly logger = new Logger(TermPolicyTemplateService.name);
-    private readonly templatesDir = join(
-        process.cwd(),
-        'src/modules/term-policy/templates'
-    );
 
     constructor(
         private readonly termPolicyUtil: TermPolicyUtil,
         private readonly fileService: FileService
     ) {}
 
+    private getTemplatePath(fileName: string): string {
+        const candidatePaths = [
+            join(__dirname, '../templates', fileName),
+            join(__dirname, '../../templates', fileName),
+            join(__dirname, '../../../templates', fileName),
+            join(process.cwd(), 'dist/modules/term-policy/templates', fileName),
+            join(process.cwd(), 'src/modules/term-policy/templates', fileName),
+            join(process.cwd(), 'apps/api/dist/modules/term-policy/templates', fileName),
+            join(process.cwd(), 'apps/api/src/modules/term-policy/templates', fileName),
+            join(process.cwd(), 'templates', fileName),
+        ];
+
+        for (const p of candidatePaths) {
+            if (existsSync(p)) {
+                return p;
+            }
+        }
+
+        return candidatePaths[0];
+    }
+
     async importTermsOfService(): Promise<ILocalStorage | null> {
         try {
-            const templatePath = join(
-                this.templatesDir,
-                'term-policy.term.en.hbs'
-            );
+            const templatePath = this.getTemplatePath('term-policy.term.en.hbs');
             const templateContent = readFileSync(templatePath);
             const randomKey =
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
@@ -49,10 +63,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
 
     async importPrivacy(): Promise<ILocalStorage | null> {
         try {
-            const templatePath = join(
-                this.templatesDir,
-                'term-policy.privacy.en.hbs'
-            );
+            const templatePath = this.getTemplatePath('term-policy.privacy.en.hbs');
             const templateContent = readFileSync(templatePath);
             const randomKey =
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
@@ -74,10 +85,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
 
     async importCookie(): Promise<ILocalStorage | null> {
         try {
-            const templatePath = join(
-                this.templatesDir,
-                'term-policy.cookies.en.hbs'
-            );
+            const templatePath = this.getTemplatePath('term-policy.cookies.en.hbs');
             const templateContent = readFileSync(templatePath);
             const randomKey =
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
@@ -99,10 +107,7 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
 
     async importMarketing(): Promise<ILocalStorage | null> {
         try {
-            const templatePath = join(
-                this.templatesDir,
-                'term-policy.marketing.en.hbs'
-            );
+            const templatePath = this.getTemplatePath('term-policy.marketing.en.hbs');
             const templateContent = readFileSync(templatePath);
             const randomKey =
                 this.termPolicyUtil.createRandomFilenameContentWithPath(

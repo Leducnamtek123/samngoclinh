@@ -30,7 +30,7 @@ export function CustomerInsightItem({
         <h4 className="text-sm text-muted-foreground leading-tight break-all truncate">
           {title}
         </h4>
-        <p className="text-2xl font-semibold">{value.toLocaleString()}</p>
+        <p className="text-2xl font-semibold">{Number(value ?? 0).toLocaleString()}</p>
       </div>
     </li>
   )

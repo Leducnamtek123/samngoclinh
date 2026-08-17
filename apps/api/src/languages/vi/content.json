@@ -1,3 +1,8 @@
 {
-    "listArticles": "Đã tải danh sách bài viết thành công."
+    "listArticles": "Đã tải danh sách bài viết thành công.",
+    "list": "Lấy danh sách bài viết thành công.",
+    "detail": "Lấy chi tiết bài viết thành công.",
+    "create": "Tạo bài viết mới thành công.",
+    "update": "Cập nhật bài viết thành công.",
+    "delete": "Xóa bài viết thành công."
 }

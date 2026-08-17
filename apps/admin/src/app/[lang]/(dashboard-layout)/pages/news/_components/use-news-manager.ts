@@ -3,26 +3,11 @@
 import { useCallback, useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
+import type { Article } from "@/types"
+
 import { fetchApi } from "@/lib/api"
 
 import { useEvent } from "@/hooks/use-event"
-
-interface Article {
-  id: string
-  slug: string
-  title: string
-  category: string
-  summary: string
-  body?: string
-  status: string
-  sortOrder?: number
-  coverImage?: string
-  image?: string
-  metadata?: {
-    authorName?: string
-  }
-  createdAt: string
-}
 
 interface UseNewsManagerProps {
   initialArticles: Article[]
@@ -203,11 +188,13 @@ export function useNewsManager({
         }))
         setSuccessMsg("Tải ảnh bìa bài viết lên thành công!")
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
+      const message =
+        err instanceof Error ? err.message : "Lỗi kết nối khi tải ảnh lên"
       setDialogState((prev) => ({
         ...prev,
-        error: err?.message || "Lỗi kết nối khi tải ảnh lên",
+        error: message,
       }))
     } finally {
       setDialogState((prev) => ({ ...prev, uploadingImage: false }))
@@ -247,8 +234,8 @@ export function useNewsManager({
       formData: {
         title: article.title,
         slug: article.slug,
-        category: article.category,
-        summary: article.summary,
+        category: article.category || "news",
+        summary: article.summary || "",
         body: "",
         status: "published",
         sortOrder: 0,
@@ -335,11 +322,13 @@ export function useNewsManager({
         setDialogState((prev) => ({ ...prev, isOpen: false }))
         router.refresh()
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
+      const message =
+        err instanceof Error ? err.message : "Lỗi máy chủ khi lưu tin tức"
       setDialogState((prev) => ({
         ...prev,
-        error: err?.message || "Lỗi máy chủ khi lưu tin tức",
+        error: message,
       }))
     } finally {
       setDialogState((prev) => ({ ...prev, loading: false }))

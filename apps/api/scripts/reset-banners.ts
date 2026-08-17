@@ -1,42 +1,10 @@
 import { PrismaClient } from '../generated/prisma-client/index.js';
-import { v2 as cloudinary } from 'cloudinary';
-import * as path from 'path';
-import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 // Load env variables
 dotenv.config();
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-async function uploadToCloudinary(localPath: string): Promise<string> {
-  const absPath = path.join(__dirname, '..', '..', 'web', 'public', localPath);
-  
-  if (!fs.existsSync(absPath)) {
-    throw new Error(`File not found: ${absPath}`);
-  }
-
-  console.log(`Uploading ${localPath} to Cloudinary...`);
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload(
-      absPath,
-      {
-        folder: 'banners',
-        resource_type: 'image',
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          console.log(`Uploaded successfully: ${result?.secure_url}`);
-          resolve(result?.secure_url || '');
-        }
-      }
-    );
-  });
+function getLocalImageUrl(localPath: string): string {
+  return localPath;
 }
 
 async function run(): Promise<void> {
@@ -50,16 +18,16 @@ async function run(): Promise<void> {
     await prisma.banner.deleteMany({});
     console.log('Cleared existing banners.');
 
-    // Upload local assets to Cloudinary and retrieve URLs
-    const homeUrl1 = await uploadToCloudinary('/images/banners/homepage_banner_1.png');
-    const homeUrl2 = await uploadToCloudinary('/images/banners/homepage_banner_2.png');
-    const homeUrl3 = await uploadToCloudinary('/images/banners/homepage_banner_3.png');
-    const homeUrl4 = await uploadToCloudinary('/images/banners/homepage_banner_4.png');
-    const homeUrl5 = await uploadToCloudinary('/images/banners/homepage_banner_5.png');
+    // Use local asset paths
+    const homeUrl1 = getLocalImageUrl('/images/banners/homepage_banner_1.png');
+    const homeUrl2 = getLocalImageUrl('/images/banners/homepage_banner_2.png');
+    const homeUrl3 = getLocalImageUrl('/images/banners/homepage_banner_3.png');
+    const homeUrl4 = getLocalImageUrl('/images/banners/homepage_banner_4.png');
+    const homeUrl5 = getLocalImageUrl('/images/banners/homepage_banner_5.png');
     
-    const aboutUrl = await uploadToCloudinary('/images/banners/about_banner.png');
-    const newsUrl = await uploadToCloudinary('/images/banners/news_banner.png');
-    const campaignsUrl = await uploadToCloudinary('/images/banners/campaigns_banner.png');
+    const aboutUrl = getLocalImageUrl('/images/banners/about_banner.png');
+    const newsUrl = getLocalImageUrl('/images/banners/news_banner.png');
+    const campaignsUrl = getLocalImageUrl('/images/banners/campaigns_banner.png');
 
     // Seed banners into PostgreSQL
     const banners = [

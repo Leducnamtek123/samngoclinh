@@ -274,10 +274,9 @@ export function DashboardCardActionsDropdown({
           children
         ) : (
           <>
-            {/* These items are just for showcase purposes. Use 'children' prop to add items. */}
-            <DropdownMenuItem>Last week</DropdownMenuItem>
-            <DropdownMenuItem disabled>Last month</DropdownMenuItem>
-            <DropdownMenuItem>Last year</DropdownMenuItem>
+            <DropdownMenuItem>7 ngày qua</DropdownMenuItem>
+            <DropdownMenuItem>30 ngày qua</DropdownMenuItem>
+            <DropdownMenuItem>Toàn thời gian</DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>

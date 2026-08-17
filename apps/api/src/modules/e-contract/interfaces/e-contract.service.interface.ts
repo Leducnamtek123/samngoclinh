@@ -18,7 +18,13 @@ export interface IEContractService {
         status?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<EContract>>;
     signContract(id: string, userId: string, payload: EContractSignRequestDto, clientIp?: string): Promise<IResponseReturn<EContract>>;
-    renewContract(id: string, userId: string, payload: EContractRenewRequestDto): Promise<IResponseReturn<EContract>>;
+    renewContract(id: string, userId: string, payload: EContractRenewRequestDto, clientIp?: string): Promise<IResponseReturn<any>>;
+    getEffectiveExpiredAt(contractId: string): Promise<Date>;
+    createAmendment(contractId: string, payload: any, userId?: string, clientIp?: string): Promise<IResponseReturn<any>>;
+    signAmendment(amendmentId: string, userId: string, payload: any, clientIp?: string): Promise<IResponseReturn<any>>;
+    cancelAmendment(amendmentId: string, userId: string): Promise<IResponseReturn<any>>;
+    getAmendmentsByContractId(contractId: string): Promise<IResponseReturn<any>>;
+    getAmendmentPdfBuffer(contractCode: string, amendmentCode: string): Promise<{ buffer: Buffer; fileName: string }>;
     updateContract(id: string, payload: EContractUpdateRequestDto): Promise<IResponseReturn<EContract>>;
     deleteContract(id: string): Promise<IResponseReturn<{ success: boolean }>>;
     checkExpiringContracts(): Promise<IResponseReturn<{ count: number; notified: string[] }>>;

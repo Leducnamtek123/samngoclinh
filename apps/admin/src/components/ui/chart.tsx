@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useId, useMemo } from "react"
+import React, { createContext, useContext, useId, useMemo } from "react"
 
 import type {
   CSSProperties,
@@ -75,7 +75,7 @@ export function ChartContainer({
         <ChartStyle id={chartId} config={config} />
         {recharts ? (
           <recharts.ResponsiveContainer>
-            {children}
+            {React.isValidElement(children) ? children : <div>{children}</div>}
           </recharts.ResponsiveContainer>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -120,14 +120,17 @@ ${colorConfig
   )
 }
 
-export function ChartTooltip(props: any) {
+type ValueType = number | string | Array<number | string>
+type NameType = number | string
+
+export function ChartTooltip(props: Record<string, unknown>) {
   const recharts = useRecharts()
   if (!recharts) return null
   const Tooltip = recharts.Tooltip
   return <Tooltip {...props} />
 }
 
-type ChartTooltipContentProps = TooltipProps<any, any> &
+type ChartTooltipContentProps = TooltipProps<ValueType, NameType> &
   ComponentProps<"div"> & {
     hideLabel?: boolean
     hideIndicator?: boolean
@@ -135,6 +138,8 @@ type ChartTooltipContentProps = TooltipProps<any, any> &
     nameKey?: string
     labelKey?: string
   }
+
+type TooltipPayload = NonNullable<TooltipProps<ValueType, NameType>["payload"]>
 
 function ChartTooltipLabel({
   hideLabel,
@@ -146,11 +151,13 @@ function ChartTooltipLabel({
   labelClassName,
 }: {
   hideLabel: boolean
-  payload: any[] | undefined
+  payload: TooltipPayload | undefined
   labelKey: string | undefined
-  config: any
-  label: any
-  labelFormatter: any
+  config: ChartConfig
+  label: unknown
+  labelFormatter:
+    | ((label: unknown, payload: TooltipPayload) => ReactNode)
+    | undefined
   labelClassName: string | undefined
 }) {
   if (hideLabel || !payload?.length) {
@@ -293,7 +300,7 @@ export function ChartTooltipContent({
   )
 }
 
-export function ChartLegend(props: any) {
+export function ChartLegend(props: Record<string, unknown>) {
   const recharts = useRecharts()
   if (!recharts) return null
   const Legend = recharts.Legend
@@ -306,7 +313,7 @@ type ChartLegendContentProps = ComponentProps<"div"> &
     nameKey?: string
   }
 
-export function ChartLegendContent({
+function ChartLegendContent({
   className,
   hideIcon = false,
   payload,

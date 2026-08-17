@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': fileURLToPath(new URL('src', import.meta.url)),
     },
   },
   test: {
@@ -14,7 +14,7 @@ export default defineConfig({
       exclude: ['src/**/*.stories.{js,jsx,ts,tsx}'],
     },
     environment: 'node',
-    include: ['src/**/*.test.{js,ts}'],
+    include: ['src/**/*.test.{js,ts}', 'tests/**/*.test.{js,ts}'],
     reporters: [
       'default',
       // conditional reporter

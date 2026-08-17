@@ -1,33 +1,27 @@
 'use client';
 
-import * as React from 'react';
-import {
-  Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
-  FormProvider,
-  useFormContext,
-  UseFormReturn,
-} from 'react-hook-form';
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import * as React from 'react';
+import type {
+  ControllerFieldState,
+  ControllerProps,
+  FieldError,
+  FieldPath,
+  FieldValues,
+  UseFormReturn,
+} from 'react-hook-form';
+import { Controller, FormProvider, useFormContext } from 'react-hook-form';
 
-export interface FormProps<TFieldValues extends FieldValues = FieldValues>
-  extends React.FormHTMLAttributes<HTMLFormElement> {
-  form?: UseFormReturn<TFieldValues, any, any>;
-}
+export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form?: UseFormReturn<TFieldValues, any, any> | UseFormReturn<any, any, any>;
+} & React.FormHTMLAttributes<HTMLFormElement>;
 
 const Form = React.forwardRef<HTMLFormElement, FormProps<any>>(
   ({ className, onSubmit, children, form, noValidate = true, ...props }, ref) => {
     const formContent = (
-      <form
-        ref={ref}
-        noValidate={noValidate}
-        onSubmit={onSubmit}
-        className={className}
-        {...props}
-      >
+      <form ref={ref} noValidate={noValidate} onSubmit={onSubmit} className={className} {...props}>
         {children}
       </form>
     );
@@ -37,31 +31,27 @@ const Form = React.forwardRef<HTMLFormElement, FormProps<any>>(
     }
 
     return formContent;
-  }
+  },
 );
 Form.displayName = 'Form';
 
 type FormItemContextValue = {
   id: string;
-  error?: any;
+  error?: FieldError | string | { message?: string };
 };
 
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-);
+const FormItemContext = React.createContext<FormItemContextValue>({} as FormItemContextValue);
 
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
-  return (
-    <FormItemContext.Provider value={{ id: props.name }}>
-      <Controller {...props} />
-    </FormItemContext.Provider>
-  );
-};
+}: ControllerProps<TFieldValues, TName>) => (
+  <FormItemContext.Provider value={{ id: props.name }}>
+    <Controller {...props} />
+  </FormItemContext.Provider>
+);
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormItemContext);
@@ -69,7 +59,7 @@ const useFormField = () => {
 
   const id = fieldContext?.id || '';
 
-  let fieldState: any = {};
+  let fieldState: Partial<ControllerFieldState> = {};
   if (formContext && id) {
     const { getFieldState, formState } = formContext;
     if (getFieldState) {
@@ -90,74 +80,75 @@ const useFormField = () => {
   };
 };
 
-export interface FormItemProps extends React.HTMLAttributes<HTMLDivElement> {
+export type FormItemProps = {
   fullWidth?: boolean;
   name?: string;
-  error?: any;
-}
+  error?: FieldError | string | { message?: string };
+} & React.HTMLAttributes<HTMLDivElement>;
 
 const FormItem = React.forwardRef<HTMLDivElement, FormItemProps>(
-  ({ className, fullWidth = true, name = '', error, children, ...props }, ref) => {
-    return (
-      <FormItemContext.Provider value={{ id: name, error }}>
-        <div
-          ref={ref}
-          className={`space-y-1.5 ${fullWidth ? 'w-full' : ''} ${className || ''}`}
-          {...props}
-        >
-          {children}
-        </div>
-      </FormItemContext.Provider>
-    );
-  }
+  ({ className, fullWidth = true, name = '', error, children, ...props }, ref) => (
+    <FormItemContext.Provider value={{ id: name, error }}>
+      <div
+        ref={ref}
+        className={`space-y-1.5 ${fullWidth ? 'w-full' : ''} ${className || ''}`}
+        {...props}
+      >
+        {children}
+      </div>
+    </FormItemContext.Provider>
+  ),
 );
 FormItem.displayName = 'FormItem';
 
-type FormLabelProps = React.LabelHTMLAttributes<HTMLLabelElement> & {
+export type FormLabelProps = {
   required?: boolean;
-};
+} & React.LabelHTMLAttributes<HTMLLabelElement>;
 
 const FormLabel = React.forwardRef<HTMLLabelElement, FormLabelProps>(
-  ({ className, children, required, ...props }, ref) => {
-    const { error, formItemId } = useFormField();
+  ({ className, required, children, ...props }, ref) => {
+    const { formItemId } = useFormField();
 
     return (
       <label
         ref={ref}
         htmlFor={formItemId}
-        className={`text-xs font-bold uppercase tracking-wider block ${
-          error ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300'
-        } ${className || ''}`}
+        className={`block text-xs font-bold text-gray-700 uppercase dark:text-gray-300 ${className || ''}`}
         {...props}
       >
         {children}
+        {required && <span className="ml-1 text-red-500">*</span>}
       </label>
     );
-  }
+  },
 );
 FormLabel.displayName = 'FormLabel';
 
-const FormControl = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
+export type FormControlProps = {
+  children?: React.ReactNode;
+} & React.HTMLAttributes<HTMLDivElement>;
 
-  return (
-    <div
-      ref={ref}
-      id={formItemId}
-      aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
-      }
-      aria-invalid={!!error}
-      {...props}
-    />
-  );
-});
+const FormControl = React.forwardRef<HTMLDivElement, FormControlProps>(
+  ({ className, children, ...props }, ref) => {
+    const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
+
+    return (
+      <div
+        ref={ref}
+        id={formItemId}
+        aria-describedby={error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId}
+        aria-invalid={Boolean(error)}
+        className={className}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
 FormControl.displayName = 'FormControl';
+
+export type FormDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
 
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -169,61 +160,50 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={`text-xs text-gray-500 dark:text-gray-400 font-medium ${className || ''}`}
+      className={`text-xs font-medium text-gray-500 dark:text-gray-400 ${className || ''}`}
       {...props}
     />
   );
 });
 FormDescription.displayName = 'FormDescription';
 
-export interface FormMessageProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  error?: any;
-}
+export type FormMessageProps = {
+  error?: FieldError | string | { message?: string };
+} & React.HTMLAttributes<HTMLParagraphElement>;
 
-const FormMessage = React.forwardRef<
-  HTMLParagraphElement,
-  FormMessageProps
->(({ className, children, error: propError, ...props }, ref) => {
-  const { error: contextError, formMessageId } = useFormField();
-  const tVal = useTranslations('validation');
+const FormMessage = React.forwardRef<HTMLParagraphElement, FormMessageProps>(
+  ({ className, children, error: propError, ...props }, ref) => {
+    const { error: contextError, formMessageId } = useFormField();
+    const tVal = useTranslations('validation');
 
-  const error = propError || contextError;
-  let body = error ? String((error as any)?.message || error) : children;
+    const error = propError || contextError;
+    let body = error ? (typeof error === 'string' ? error : error.message || '') : children;
 
-  if (typeof body === 'string' && body.startsWith('validation.')) {
-    try {
-      body = tVal(body.replace(/^validation\./, ''));
-    } catch {
-      // fallback if key missing
+    if (typeof body === 'string' && body.startsWith('validation.')) {
+      try {
+        body = tVal(body.replace(/^validation\./, ''));
+      } catch {
+        // fallback if key missing
+      }
     }
-  }
 
-  if (!body) {
-    return null;
-  }
+    if (!body) {
+      return null;
+    }
 
-  return (
-    <p
-      ref={ref}
-      id={formMessageId}
-      className={`text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5 pt-1 animate-in fade-in slide-in-from-top-1 duration-200 ${className || ''}`}
-      {...props}
-    >
-      <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-500" />
-      <span>{body}</span>
-    </p>
-  );
-});
+    return (
+      <p
+        ref={ref}
+        id={formMessageId}
+        className={`animate-in fade-in slide-in-from-top-1 flex items-center gap-1.5 pt-1 text-xs font-semibold text-red-600 duration-200 dark:text-red-400 ${className || ''}`}
+        {...props}
+      >
+        <AlertCircle className="h-3.5 w-3.5 shrink-0 text-red-500" />
+        <span>{body}</span>
+      </p>
+    );
+  },
+);
 FormMessage.displayName = 'FormMessage';
 
-export {
-  Form,
-  FormProvider,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-  useFormField,
-};
+export { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage };

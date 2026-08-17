@@ -1,9 +1,10 @@
-import { Cairo, Lato } from "next/font/google"
+import { Inter } from "next/font/google"
 import { cookies } from "next/headers"
 import { getServerSession } from "next-auth"
 
 import { i18n } from "@/configs/i18n"
 import { authOptions } from "@/configs/next-auth"
+import { getDictionary } from "@/lib/get-dictionary"
 import { cn } from "@/lib/utils"
 
 import "../globals.css"
@@ -19,13 +20,22 @@ import { Toaster } from "@/components/ui/toaster"
 
 // Define metadata for the application
 // More info: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+const getMetadataBase = (): URL => {
+  try {
+    const base = process.env.BASE_URL || "http://localhost:3000"
+    return new URL(base.startsWith("http") ? base : `http://${base}`)
+  } catch {
+    return new URL("http://localhost:3000")
+  }
+}
+
 export const metadata: Metadata = {
   title: {
     template: "%s | Sâm Ngọc Linh Admin",
     default: "Sâm Ngọc Linh Admin",
   },
   description: "Trang quản trị Rượu Sâm Ngọc Linh",
-  metadataBase: new URL(process.env.BASE_URL as string),
+  metadataBase: getMetadataBase(),
   icons: [
     {
       rel: "apple-touch-icon",
@@ -52,18 +62,11 @@ export const metadata: Metadata = {
 }
 
 // Define fonts for the application
-// More info: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
-const latoFont = Lato({
-  subsets: ["latin"],
-  weight: ["100", "300", "400", "700", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-lato",
-})
-const cairoFont = Cairo({
-  subsets: ["arabic"],
-  weight: ["400", "700"],
-  style: ["normal"],
-  variable: "--font-cairo",
+const interFont = Inter({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
+  display: "swap",
 })
 
 export default async function RootLayout(props: {
@@ -99,10 +102,9 @@ export default async function RootLayout(props: {
         className={cn(
           `theme-${initialTheme}`,
           `radius-${initialRadius}`,
-          "[&:lang(en)]:font-lato [&:lang(vi)]:font-lato", // Set font styles based on the language
-          "bg-background text-foreground antialiased overscroll-none", // Set background, text, , anti-aliasing styles, and overscroll behavior
-          latoFont.variable, // Include Lato font variable
-          cairoFont.variable // Include Cairo font variable
+          "[&:lang(en)]:font-sans [&:lang(vi)]:font-sans font-sans",
+          "bg-background text-foreground antialiased overscroll-none",
+          interFont.variable
         )}
       >
         <script
@@ -129,7 +131,12 @@ export default async function RootLayout(props: {
             `,
           }}
         />
-        <Providers locale={lang} direction={direction} session={session}>
+        <Providers
+          locale={lang}
+          direction={direction}
+          session={session}
+          dictionary={await getDictionary(lang)}
+        >
           {children}
           <Toaster />
           <Sonner />

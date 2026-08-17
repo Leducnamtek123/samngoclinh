@@ -21,14 +21,14 @@ import { WalletTransactionResponseDto } from '@modules/wallet/dtos/response/wall
 @ApiTags('modules.user.wallet')
 @Controller({
     version: VERSION_NEUTRAL,
-    path: '/wallet',
+    path: ['/wallet', '/user/wallet'],
 })
 export class WalletUserController {
     constructor(private readonly walletService: WalletService) {}
 
     @WalletUserSummaryDoc()
     @Response('wallet.summary')
-    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -41,7 +41,7 @@ export class WalletUserController {
 
     @WalletUserTransactionsDoc()
     @Response('wallet.transactions')
-    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.provider, EnumRoleType.user)
+    @RoleProtected(EnumRoleType.superAdmin, EnumRoleType.admin, EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

@@ -70,4 +70,10 @@ export class ContactRepository {
             data: { isRead: true },
         });
     }
+
+    async delete(id: string): Promise<ContactRequest> {
+        return this.databaseService.contactRequest.delete({
+            where: { id },
+        });
+    }
 }

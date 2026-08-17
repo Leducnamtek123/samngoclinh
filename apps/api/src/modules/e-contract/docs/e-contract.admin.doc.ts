@@ -42,6 +42,30 @@ export function EContractAdminListDoc(): MethodDecorator {
     );
 }
 
+export function EContractAdminGetDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get details of a single contract by ID or Code',
+        }),
+        DocRequest({
+            params: [
+                {
+                    name: 'id',
+                    description: 'Contract ID or Code',
+                    required: true,
+                    type: 'string',
+                },
+            ],
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true }),
+        DocResponse('eContract.get')
+    );
+}
+
 export function EContractAdminUpdateDoc(): MethodDecorator {
     return applyDecorators(
         Doc({

@@ -88,7 +88,7 @@ export function SalesByCountryChart({
           tickLine={false}
           axisLine={false}
           tickMargin={20}
-          tickFormatter={(value: any) => formatCurrency(value)}
+          tickFormatter={(value: number) => formatCurrency(value)}
         />
         <XAxis reversed={isRtl} dataKey="countryName" hide />
         <ChartTooltip

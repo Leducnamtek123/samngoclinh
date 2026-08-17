@@ -1,6 +1,13 @@
 import type { AddressItem } from './address';
 
-export interface UserProfile {
+export type UserMobileNumber = {
+  id?: string;
+  number: string;
+  phoneCode?: string;
+  countryId?: string;
+};
+
+export type UserProfile = {
   id: string;
   fullName: string;
   name?: string;
@@ -19,30 +26,26 @@ export interface UserProfile {
     id: string;
     phoneCode?: string[];
   };
-  mobileNumbers?: Array<{
-    id: string;
-    number: string;
-  }>;
+  mobileNumbers?: UserMobileNumber[];
   addresses?: AddressItem[];
-}
+};
 
-export interface UserBusiness {
+export type UserBusiness = {
   id: string;
   phone?: string;
   companyName?: string;
-}
+};
 
-export interface IdentityVerificationStatus {
-  status: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'UNSUBMITTED';
+export type IdentityVerificationStatus = {
+  status: 'PENDING' | 'VERIFIED' | 'APPROVED' | 'REJECTED' | 'UNSUBMITTED' | string;
   rejectedReason?: string;
   frontImageUrl?: string;
   backImageUrl?: string;
-}
+};
 
-export interface WalletSummary {
+export type WalletSummary = {
   totalTrees?: number;
   totalPoints?: number;
   balance?: number;
   pendingTrees?: number;
-}
-
+};

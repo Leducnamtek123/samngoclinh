@@ -32,7 +32,7 @@ import {
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
 import { ICultivationBedLocationsGenerateResult } from '@modules/cultivation/interfaces/cultivation.interface';
 
-@ApiTags('modules.provider.cultivation')
+@ApiTags('modules.admin.cultivation')
 @Controller({
     version: VERSION_NEUTRAL,
     path: '/cultivation',

@@ -5,9 +5,12 @@ export async function POST(request: Request) {
   try {
     const { email, password, type, phone, otp } = await request.json();
 
-    const apiBaseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+    const apiBaseUrl =
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:3000/api';
     let endpoint = `${apiBaseUrl}/v1/public/user/login/credential`;
-    let bodyPayload: any = {
+    let bodyPayload: Record<string, unknown> = {
       email,
       password,
       from: 'website',
@@ -41,7 +44,7 @@ export async function POST(request: Request) {
       const payload = await apiRes.json().catch(() => null);
       return NextResponse.json(
         { message: payload?.message ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' },
-        { status: apiRes.status }
+        { status: apiRes.status },
       );
     }
 
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
     if (!payload.data?.tokens?.accessToken) {
       return NextResponse.json(
         { message: payload?.message ?? 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,10 +65,10 @@ export async function POST(request: Request) {
     const parts = token.split('.');
     if (parts.length === 3) {
       try {
-        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
         userEmail = decodedPayload.email || '';
-      } catch (e) {
-        console.error('Failed to decode JWT token payload:', e);
+      } catch (error) {
+        console.error('Failed to decode JWT token payload:', error);
       }
     }
 
@@ -102,7 +105,7 @@ export async function POST(request: Request) {
     console.error('Sign-in route handler error:', error);
     return NextResponse.json(
       { message: 'Đã xảy ra lỗi kết nối. Vui lòng thử lại sau.' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

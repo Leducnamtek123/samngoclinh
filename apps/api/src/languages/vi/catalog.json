@@ -1,4 +1,9 @@
 {
     "listPlants": "Đã tải danh mục cây trồng thành công.",
-    "listShopItems": "Đã tải danh mục cửa hàng thành công."
+    "listShopItems": "Đã tải danh mục cửa hàng thành công.",
+    "list": "Lấy danh mục sản phẩm thành công.",
+    "get": "Lấy thông tin sản phẩm thành công.",
+    "create": "Tạo sản phẩm mới thành công.",
+    "update": "Cập nhật sản phẩm thành công.",
+    "delete": "Xóa sản phẩm thành công."
 }

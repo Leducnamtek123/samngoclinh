@@ -1,36 +1,49 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useProfileMe, useProfileBusiness } from '@/hooks/queries/useProfile';
-import { useWalletSummary } from '@/hooks/queries/useWallet';
-import { useCultivationTrees } from '@/hooks/queries/useCultivation';
-import { useIdentityVerificationStatus, useSubmitIdentityVerification } from '@/hooks/queries/useIdentityVerification';
-import { useEContracts } from '@/hooks/queries/useEContract';
-import { SepayPaymentModal } from '@/components/payment/SepayPaymentModal';
-import { EContractModal } from '@/components/contract/EContractModal';
-import { OrderDetailModal } from '@/components/orders/OrderDetailModal';
 import { toast } from 'sonner';
-
-import { ProfileInfoTab } from './profile/ProfileInfoTab';
-import { ProfileOrdersTab } from './profile/ProfileOrdersTab';
-import { ProfileTreesTab } from './profile/ProfileTreesTab';
-import { ProfileKycTab } from './profile/ProfileKycTab';
-import { ProfileContractsTab } from './profile/ProfileContractsTab';
-import { ProfileSettingsTab } from './profile/ProfileSettingsTab';
-import { ProfileChangePasswordTab } from './profile/ProfileChangePasswordTab';
-import { ProfileAddressTab } from './profile/ProfileAddressTab';
-import { VerifyEmailModal } from './profile/VerifyEmailModal';
 import { ConfirmModal } from '@/components/common/ConfirmModal';
 import { ErrorState } from '@/components/common/ErrorState';
-import { AccountLayout } from './profile/AccountLayout';
 
+const EContractModal = dynamic(
+  () => import('@/components/contract/EContractModal').then((mod) => mod.EContractModal),
+  { ssr: false },
+);
+const OrderDetailModal = dynamic(
+  () => import('@/components/orders/OrderDetailModal').then((mod) => mod.OrderDetailModal),
+  { ssr: false },
+);
+const SepayPaymentModal = dynamic(
+  () => import('@/components/payment/SepayPaymentModal').then((mod) => mod.SepayPaymentModal),
+  { ssr: false },
+);
+import { useCultivationTrees } from '@/hooks/queries/useCultivation';
+import { useEContracts } from '@/hooks/queries/useEContract';
+import {
+  useIdentityVerificationStatus,
+  useSubmitIdentityVerification,
+} from '@/hooks/queries/useIdentityVerification';
+import { useProfileMe, useProfileBusiness } from '@/hooks/queries/useProfile';
+import { useWalletSummary } from '@/hooks/queries/useWallet';
 import { useAddressBook } from '@/hooks/useAddressBook';
-import { useProfileUpdate } from '@/hooks/useProfileUpdate';
 import { useProfileOrders } from '@/hooks/useProfileOrders';
-import { useRouter } from 'next/navigation';
+import { useProfileUpdate } from '@/hooks/useProfileUpdate';
 import { apiSignOut } from '@/services/auth.service';
-
-import type { UserProfile, UserBusiness, WalletSummary, GinsengTreeItem } from '@/types';
+import type { UserProfile, UserBusiness, WalletSummary, CultivationTree } from '@/types';
+import { AccountLayout } from './profile/AccountLayout';
+import { ProfileAddressTab } from './profile/ProfileAddressTab';
+import { ProfileChangePasswordTab } from './profile/ProfileChangePasswordTab';
+import { ProfileContractsTab } from './profile/ProfileContractsTab';
+import { ProfileInfoTab } from './profile/ProfileInfoTab';
+import { ProfileKycTab } from './profile/ProfileKycTab';
+import { ProfileOrdersTab } from './profile/ProfileOrdersTab';
+import { ProfileReferralTab } from './profile/ProfileReferralTab';
+import { ProfileSettingsTab } from './profile/ProfileSettingsTab';
+import { ProfileTreesTab } from './profile/ProfileTreesTab';
+import { VerifyEmailModal } from './profile/VerifyEmailModal';
 
 type ProfileClientProps = {
   locale: string;
@@ -38,7 +51,7 @@ type ProfileClientProps = {
   initialProfile?: UserProfile;
   initialBusiness?: UserBusiness;
   initialWallet?: WalletSummary;
-  initialTrees?: GinsengTreeItem[];
+  initialTrees?: CultivationTree[];
 };
 
 export const ProfileClient = ({
@@ -50,6 +63,10 @@ export const ProfileClient = ({
   initialTrees,
 }: ProfileClientProps) => {
   const router = useRouter();
+  const t = useTranslations('profile');
+  const tActions = useTranslations('actions');
+  const tConfirm = useTranslations('confirmModal');
+  const tCart = useTranslations('cart');
   const [tabs, setTabs] = useState(initialTab);
 
   // Queries
@@ -59,7 +76,7 @@ export const ProfileClient = ({
   const { data: trees } = useCultivationTrees(initialTrees);
   const { data: kycStatusData, refetch: refetchKycStatus } = useIdentityVerificationStatus();
   const submitKycMutation = useSubmitIdentityVerification();
-  const { data: contractsData } = useEContracts();
+  const { data: contractsData, isLoading: contractsLoading } = useEContracts();
 
   // Custom Hooks
   const { saveInlineProfile } = useProfileUpdate(profile, refetchProfile);
@@ -99,8 +116,10 @@ export const ProfileClient = ({
 
   const handleCopyText = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
-    setCopyToast(`Đã sao chép ${label}!`);
-    setTimeout(() => setCopyToast(null), 2500);
+    setCopyToast(`${label} ${tActions('copy')}`);
+    setTimeout(() => {
+      setCopyToast(null);
+    }, 2500);
   };
 
   const handleRelogin = async () => {
@@ -112,31 +131,34 @@ export const ProfileClient = ({
 
   if (isError) {
     return (
-      <div className="max-w-4xl mx-auto py-16 px-4">
-        <ErrorState
-          title="Phiên làm việc đã hết hạn"
-          description="Vui lòng đăng nhập lại để tiếp tục quản lý thông tin tài khoản và tài sản cây sâm."
-          retryLabel="Đăng nhập lại"
-          onRetry={handleRelogin}
-        />
+      <div className="mx-auto max-w-4xl px-4 py-16">
+        <ErrorState title={t('title')} message={t('subtitle')} onRetry={handleRelogin} />
       </div>
     );
   }
 
   const safeOrders = Array.isArray(userOrders) ? userOrders : [];
-  const safeTrees = Array.isArray(trees) ? trees : Array.isArray(trees?.data) ? trees.data : [];
+  const safeTrees = Array.isArray(trees) ? trees : [];
   const safeAddresses = Array.isArray(addresses) ? addresses : [];
 
   const fullName = profile?.fullName ?? profile?.name ?? '—';
   const email = profile?.email || '';
-  const rank = profile?.rank || 'Đồng';
-  const referralCode = profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
+  const rank = profile?.rank || 'bronze';
+  const referralCode =
+    profile?.referralCode || (profile?.id ? String(profile.id).slice(0, 6).toUpperCase() : 'N/A');
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8 relative">
+    <div className="relative min-h-screen w-full bg-gray-50 px-4 py-10 sm:px-6 lg:px-8">
       {copyToast && (
-        <div className="fixed top-6 right-6 bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl z-50 animate-bounce flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+        <div className="animate-in fade-in slide-in-from-top-2 fixed top-6 right-6 z-50 flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xl transition-opacity duration-200">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4 text-emerald-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           <span>{copyToast}</span>
@@ -151,11 +173,15 @@ export const ProfileClient = ({
             window.history.pushState(null, '', `/${locale}/profile?tabs=${tabKey}`);
           }
         }}
-        profile={{ fullName, email, rank }}
+        profile={profile || { id: '', fullName, email, rank }}
         treesCount={safeTrees.length > 0 ? safeTrees.length : undefined}
-        contractsCount={Array.isArray(contractsData) && contractsData.length > 0 ? contractsData.length : undefined}
+        contractsCount={
+          Array.isArray(contractsData) && contractsData.length > 0
+            ? contractsData.length
+            : undefined
+        }
       >
-        <div className="bg-white border border-gray-100/80 rounded-2xl p-6 sm:p-8 shadow-xs">
+        <div className="rounded-2xl border border-gray-100/80 bg-white p-6 shadow-xs sm:p-8">
           {tabs === 'info' && (
             <ProfileInfoTab
               fullName={fullName}
@@ -166,7 +192,9 @@ export const ProfileClient = ({
               business={business}
               editPhone={business?.phone || ''}
               onCopyText={handleCopyText}
-              onVerifyEmailClick={() => setIsVerifyEmailOpen(true)}
+              onVerifyEmailClick={() => {
+                setIsVerifyEmailOpen(true);
+              }}
               onSaveProfile={saveInlineProfile}
             />
           )}
@@ -182,7 +210,7 @@ export const ProfileClient = ({
               pagination={pagination}
               hasMore={hasMore}
               onLoadMore={loadMore}
-              onViewDetail={(ord) => handleViewOrderDetail(ord)}
+              onViewDetail={async (ord) => await handleViewOrderDetail(ord)}
               onPayOrder={(ord) => {
                 window.location.href = `/api/proxy/public/payment/sepay/pay/${ord.code || ord.id}`;
               }}
@@ -199,7 +227,9 @@ export const ProfileClient = ({
               safeAddresses={safeAddresses}
               isAddAddressOpen={isAddAddressOpen}
               setIsAddAddressOpen={setIsAddAddressOpen}
-              onAddAddress={addAddress}
+              onAddAddress={(data) => {
+                void addAddress(data);
+              }}
               onSetDefaultAddress={setDefaultAddress}
               onDeleteAddress={setDeletingAddressId}
             />
@@ -216,32 +246,40 @@ export const ProfileClient = ({
 
           {tabs === 'contracts' && (
             <ProfileContractsTab
-              contractsLoading={false}
+              contractsLoading={contractsLoading}
               contractsData={Array.isArray(contractsData) ? contractsData : []}
               onOpenContractModal={setSelectedContractId}
             />
           )}
 
-          {tabs === 'settings' && <ProfileSettingsTab />}
+          {(tabs === 'password' || tabs === 'change-password') && (
+            <ProfileChangePasswordTab locale={locale} />
+          )}
 
-          {tabs === 'password' && <ProfileChangePasswordTab />}
+          {(tabs === 'settings' || tabs === 'pin') && <ProfileSettingsTab locale={locale} />}
+
+          {tabs === 'referral' && (
+            <ProfileReferralTab referralCode={referralCode} onCopyText={handleCopyText} />
+          )}
         </div>
       </AccountLayout>
 
       {selectedOrderForPayment && (
         <SepayPaymentModal
           isOpen={!!selectedOrderForPayment}
-          onClose={() => setSelectedOrderForPayment(null)}
+          onClose={() => {
+            setSelectedOrderForPayment(null);
+          }}
           paymentInfo={{
             qrUrl: '',
             accountNumber: '',
             accountName: '',
             bankBrand: '',
             amount: selectedOrderForPayment.totalAmount,
-            orderCode: selectedOrderForPayment.code,
+            orderCode: selectedOrderForPayment.code || selectedOrderForPayment.id || '',
           }}
           onPaymentSuccess={() => {
-            toast.success('Thanh toán đơn hàng thành công!');
+            toast.success(tCart('paymentSuccess'));
             setSelectedOrderForPayment(null);
             refetchOrders();
           }}
@@ -251,7 +289,9 @@ export const ProfileClient = ({
       {viewingOrderDetail && (
         <OrderDetailModal
           order={viewingOrderDetail}
-          onClose={() => setViewingOrderDetail(null)}
+          onClose={() => {
+            setViewingOrderDetail(null);
+          }}
           onRefreshOrders={refetchOrders}
         />
       )}
@@ -259,26 +299,32 @@ export const ProfileClient = ({
       {selectedContractId && (
         <EContractModal
           contractId={selectedContractId}
-          onClose={() => setSelectedContractId(null)}
+          onClose={() => {
+            setSelectedContractId(null);
+          }}
         />
       )}
 
       <VerifyEmailModal
         isOpen={isVerifyEmailOpen}
-        onClose={() => setIsVerifyEmailOpen(false)}
+        onClose={() => {
+          setIsVerifyEmailOpen(false);
+        }}
         userEmail={email}
       />
 
       <ConfirmModal
         isOpen={!!deletingAddressId}
-        title="Xóa địa chỉ giao hàng?"
-        description="Bạn có chắc chắn muốn xóa địa chỉ này khỏi Sổ địa chỉ? Hành động này không thể hoàn tác."
-        cancelText="Hủy"
-        confirmText="Xóa địa chỉ"
+        title={tConfirm('title')}
+        description={tConfirm('description')}
+        cancelText={tActions('cancel')}
+        confirmText={tActions('delete')}
         isDestructive={true}
         isLoading={isDeletingAddress}
         onConfirm={confirmDeleteAddress}
-        onCancel={() => setDeletingAddressId(null)}
+        onCancel={() => {
+          setDeletingAddressId(null);
+        }}
       />
     </div>
   );

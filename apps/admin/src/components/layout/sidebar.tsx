@@ -148,7 +148,7 @@ export function Sidebar({ dictionary }: { dictionary: DictionaryType }) {
           onClick={() => isMobile && setOpenMobile(!openMobile)}
         >
           <Image
-            src="/images/logo_ruou_sam.png?v=2"
+            src="/images/logo_ruou_sam.png"
             alt="Logo"
             height={24}
             width={24}

@@ -1,6 +1,10 @@
 export async function fetchApiClient(endpoint: string, options: RequestInit = {}) {
-  const baseUrl = '/api/proxy';
-  const url = `${baseUrl}${endpoint}`;
+  const origin =
+    typeof window !== 'undefined' && window.location?.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const baseUrl = `${origin}/api/proxy`;
+  const url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${endpoint}`;
 
   const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
   const customHeaders = (options.headers as Record<string, string>) || {};
@@ -17,10 +21,22 @@ export async function fetchApiClient(endpoint: string, options: RequestInit = {}
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || 'Có lỗi xảy ra khi gọi API.');
+    if (res.status === 401) {
+      if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/sign-in') && !currentPath.includes('/sign-up')) {
+          const localeMatch = currentPath.match(/^\/(vi|en)/);
+          const locale = localeMatch ? localeMatch[1] : 'vi';
+          setTimeout(() => {
+            window.location.href = `/${locale}/sign-in?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          }, 1200);
+        }
+      }
+      throw new Error('Phiên đăng nhập đã hết hạn. Đang chuyển hướng đến trang đăng nhập...');
+    }
+    throw new Error(data.message || data.error || 'Có lỗi xảy ra khi gọi API.');
   }
 
   const data = await res.json().catch(() => ({}));
   return data;
 }
-

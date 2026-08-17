@@ -1,15 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchApiClient } from '@/lib/ApiClient';
+import { useQuery } from '@tanstack/react-query';
+import { userService } from '@/services/user.service';
 import type { UserProfile, UserBusiness } from '@/types';
 
 export function useProfileMe(initialData?: UserProfile) {
   return useQuery<UserProfile | null>({
     queryKey: ['profile', 'me'],
-    queryFn: () =>
-      fetchApiClient('/user/profile/me')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
-    initialData: initialData ?? null,
+    queryFn: async () => await userService.getProfile(),
+    initialData,
     retry: false,
   });
 }
@@ -17,53 +14,8 @@ export function useProfileMe(initialData?: UserProfile) {
 export function useProfileBusiness(initialData?: UserBusiness) {
   return useQuery<UserBusiness | null>({
     queryKey: ['profile', 'business'],
-    queryFn: () =>
-      fetchApiClient('/user/profile/business')
-        .then((res) => (res?.data !== undefined ? res.data : null))
-        .catch(() => null),
-    initialData: initialData ?? null,
+    queryFn: async () => await userService.getBusiness(),
+    initialData,
     retry: false,
   });
 }
-
-export function useUpdateProfile() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: Partial<UserProfile>) =>
-      fetchApiClient('/v1/shared/user/profile/update', {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-    },
-  });
-}
-
-export function useAddAddress() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: { detail: string; label?: string; recipient?: string; phone?: string; isDefault?: boolean }) =>
-      fetchApiClient('/v1/shared/user/address/add', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-    },
-  });
-}
-
-export function useDeleteAddress() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (addressId: string) =>
-      fetchApiClient(`/v1/shared/user/address/delete/${addressId}`, {
-        method: 'DELETE',
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-    },
-  });
-}
-
